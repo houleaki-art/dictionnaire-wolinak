@@ -756,6 +756,7 @@ textarea{resize:vertical;min-height:68px}
   <div class="apr" id="apprendreView">
     <div class="aprnav" id="aprNav">
       <button data-p="parcours" class="on">Parcours</button>
+      <button data-p="rev">🔁 Révision</button>
       <button data-p="decor">Décortiqueur</button>
       <button data-p="conj">Conjugueur</button>
       <button data-p="nomb">Chiffres</button>
@@ -1137,8 +1138,9 @@ function sbUseAuth(token){ SB_AUTH=token; SB_HEADERS['Authorization']='Bearer '+
     // Nouvelle version → vider TOUT le localStorage lié au dico
     localStorage.removeItem(SK.words);
     localStorage.removeItem(SK.pending);
-    // Vider toutes les clés aln8ba_ pour être sûr
-    Object.keys(localStorage).filter(k=>k.startsWith('aln8ba')).forEach(k=>localStorage.removeItem(k));
+    // Vider toutes les clés aln8ba_ pour être sûr — SAUF la progression d'apprentissage
+    const KEEP=['aln8ba_prog','aln8ba_rev'];
+    Object.keys(localStorage).filter(k=>k.startsWith('aln8ba')&&!KEEP.includes(k)).forEach(k=>localStorage.removeItem(k));
     localStorage.setItem(SK.version, DATA_VERSION);
   }
 })();
@@ -3296,14 +3298,26 @@ function aprInit(){
   document.querySelectorAll('#aprNav button').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('#aprNav button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
-    ({parcours:aprParcours,decor:aprDecorView,conj:aprConjView,nomb:aprNombView,gram:aprGramView})[b.dataset.p]();
+    ({parcours:aprParcours,rev:aprRevView,decor:aprDecorView,conj:aprConjView,nomb:aprNombView,gram:aprGramView})[b.dataset.p]();
   });
   const box=document.getElementById('aprBody');
   if(box && !box.innerHTML.trim()) aprParcours();
 }
 const NIVEAUX=[
-{id:'p',t:'Primaire',d:"Reconnaître et nommer. Des mots concrets, aucun mécanisme de grammaire.",
+{id:'p',t:'Primaire',d:"La fondation complète : vingt modules, des sons jusqu'à ta première conversation. Aucun mécanisme de grammaire — on nomme, on répète, on retient, on utilise.",
  c:'var(--green)',mods:[
+ {t:"Les sons d'abord",d:"Une seule lettre nouvelle à apprendre : le 8. Tout le reste se lit presque comme en français.",cat:'salut',ex:'vocab',lec:`
+  <p>L'aln8ba s'écrit presque comme il se prononce. Avant le premier mot, deux minutes pour l'alphabet.</p>
+  <div class="aprnote"><b>Le 8 se dit comme un « an » nasal</b>
+   Entre le <i>an</i> et le <i>on</i>. Alors <span class="al8">8h8</span> (oui) sonne à peu près « anhan »,
+   et <span class="al8">W8linak</span> sonne « Wanlinak ».</div>
+  <div class="aprnote"><b>L'apostrophe marque une lettre qui est tombée</b>
+   Quand deux sons se cognent, la langue les soude : <span class="al8">N'</span> + <i>aliwizi</i>
+   devient <span class="al8">Nd'aliwizi</span>. Tu verras le pourquoi au secondaire — pour l'instant,
+   lis-le tel quel.</div>
+  <div class="aprnote w"><b>Dis tout à voix haute, toujours</b>
+   Une langue ne s'apprend pas des yeux. Chaque mot de ce parcours doit sortir de ta bouche,
+   même seul dans ton char.</div>`},
  {t:"Kwaï — saluer",d:"Les premiers mots qu'on dit en arrivant.",cat:'salut',ex:'vocab',lec:`
   <p>On commence par les mots qui servent tous les jours.</p>
   <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>
@@ -3315,6 +3329,19 @@ const NIVEAUX=[
   <tr><td class="k">Adio</td><td>Au revoir</td></tr></table>
   <div class="aprnote"><b>Le 8 se dit comme un « an » nasal</b>
    Entre le <i>an</i> et le <i>on</i>. Alors <span class="al8">8h8</span> sonne à peu près « anhan ».</div>`},
+ {t:"Se présenter",d:"Dire son nom, demander celui de l'autre, remercier.",cat:'salut',ex:'vocab',lec:`
+  <p>Tes premières phrases complètes — quatre échanges, c'est tout ce qu'il faut pour se présenter.</p>
+  <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>
+  <tr><td class="k">Kwaï!</td><td>Bonjour!</td></tr>
+  <tr><td class="k">T8ni aliwizian?</td><td>Comment t'appelles-tu?</td></tr>
+  <tr><td class="k">Nd'aliwizi Mali.</td><td>Je m'appelle Mali. (mets ton nom à la place)</td></tr>
+  <tr><td class="k">T8ni kd'al8wzin?</td><td>Comment vas-tu?</td></tr>
+  <tr><td class="k">N'wal8wzi, wliwni.</td><td>Je vais bien, merci.</td></tr>
+  <tr><td class="k">Adio!</td><td>Au revoir!</td></tr></table>
+  <div class="aprnote"><b>La méthode des trois voix</b>
+   1. Dis chaque phrase en lisant. 2. Redis-la en regardant seulement le français.
+   3. Redis-la sans rien regarder. Si ça bloque, recommence — c'est normal, c'est comme ça
+   que la mémoire se construit.</div>`},
  {t:"Les couleurs",d:"Dix couleurs, toutes bâties de la même façon.",cat:'couleur',ex:'vocab',lec:`
   <p>En abénakis, la couleur se dit avec un verbe : pas « rouge » mais <i>c'est rouge</i>.
   Toutes ces formes finissent par <code>-igen</code>.</p>
@@ -3325,6 +3352,12 @@ const NIVEAUX=[
   <tr><td class="k">Wl8wigen</td><td>c'est bleu</td></tr>
   <tr><td class="k">Wiz8wigen</td><td>c'est jaune</td></tr>
   <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>`},
+ {t:"Décrire le monde",d:"Grand, petit, beau — les mots qui décrivent tout ce qui t'entoure.",cat:'description',ex:'vocab',lec:aprAutoLec(`
+  <p>Avec les couleurs, tu sais déjà dire <i>comment</i> sont les choses. Voici le reste de la
+  famille des descriptions — les mots les plus courts d'abord, c'est plus facile pour la mémoire.</p>`,'description',16,`
+  <div class="aprnote"><b>⏱ Cinq mots par jour, pas plus</b>
+   La mémoire n'avale pas une liste — elle la digère. Choisis cinq mots aujourd'hui,
+   cinq autres demain. L'onglet <b>🔁 Révision</b> te les resservira au bon moment.</div>`)},
  {t:"Compter jusqu'à dix",d:"Les dix premiers chiffres.",cat:'nombre',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Pazokw</td><td>1</td></tr><tr><td class="k">Nis</td><td>2</td></tr>
@@ -3334,6 +3367,12 @@ const NIVEAUX=[
   <tr><td class="k">Noliwi</td><td>9</td></tr><tr><td class="k">Mdala</td><td>10</td></tr></table>
   <div class="aprnote"><b>Zéro se dit Ndakagwi</b>
    C'est le même mot que « rien » et que « de rien » quand on répond à un merci.</div>`},
+ {t:"Compter plus loin",d:"Toute la famille des nombres, au-delà de dix.",cat:'nombre',ex:'vocab',lec:aprAutoLec(`
+  <p>Tu connais déjà <span class="al8">Pazokw</span> à <span class="al8">Mdala</span>. Voici le reste
+  des nombres attestés du dictionnaire — les plus courts d'abord.</p>`,'nombre',18,`
+  <div class="aprnote"><b>Compte ce qui t'entoure</b>
+   Les arbres dehors, les tasses dans l'armoire, les autos qui passent. Un nombre qu'on utilise
+   est un nombre qu'on garde.</div>`)},
  {t:"Les animaux",d:"L'ours, le loup, l'aigle et les autres.",cat:'animal',ex:'vocab',lec:`
   <p>Les animaux sont tous du genre <b>animé</b>. Tu verras ce que ça change au niveau secondaire.</p>
   <table class="aprtab">
@@ -3341,6 +3380,12 @@ const NIVEAUX=[
   <tr><td class="k">Mgezo</td><td>l'aigle</td></tr><tr><td class="k">Tmakwa</td><td>le castor</td></tr>
   <tr><td class="k">Nolka</td><td>le chevreuil</td></tr><tr><td class="k">Tolba</td><td>la tortue</td></tr>
   <tr><td class="k">Moz</td><td>l'orignal</td></tr><tr><td class="k">Sips</td><td>l'oiseau</td></tr></table>`},
+ {t:"Les bêtes de chez nous",d:"Toute la faune du territoire, du plus petit au plus grand.",cat:'animal',ex:'vocab',lec:aprAutoLec(`
+  <p>Tu as rencontré les huit grands. Voici toutes les autres bêtes attestées dans le
+  dictionnaire — les noms les plus courts d'abord.</p>`,'animal',16,`
+  <div class="aprnote"><b>Les animaux sont animés</b>
+   Retiens-le pour le secondaire : leur pluriel finira en <b>K</b>, comme
+   <span class="al8">Abazi</span> → <span class="al8">Abaziak</span>.</div>`)},
  {t:"Mon corps",d:"De la tête aux pieds.",cat:'corps',ex:'vocab',lec:`
   <p>Les parties du corps portent toujours un possesseur. <b>N-</b> veut dire <i>mon</i>.</p>
   <table class="aprtab">
@@ -3350,6 +3395,12 @@ const NIVEAUX=[
   <tr><td class="k">Nzit</td><td>mon pied</td></tr><tr><td class="k">Nhaga</td><td>mon corps</td></tr></table>
   <div class="aprnote"><b>Change le N pour un K et ça devient « ton »</b>
    <span class="al8">Ndep</span> ma tête → <span class="al8">Kdep</span> ta tête.</div>`},
+ {t:"Le corps en entier",d:"Toutes les parties du corps attestées dans le dictionnaire.",cat:'corps',ex:'vocab',lec:aprAutoLec(`
+  <p>Après la tête et les mains, le reste du corps — toujours avec son possesseur,
+  comme tu l'as vu avec <span class="al8">Ndep</span>.</p>`,'corps',16,`
+  <div class="aprnote"><b>Touche et nomme</b>
+   Le corps est le meilleur professeur : touche ta main en disant <span class="al8">Nelji</span>.
+   Le mouvement grave le mot deux fois plus vite.</div>`)},
  {t:"Ma famille",d:"Les mots qu'on dit à la maison.",cat:'famille',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Nigawes</td><td>ma mère</td></tr><tr><td class="k">Nmit8gwes</td><td>mon père</td></tr>
@@ -3360,17 +3411,59 @@ const NIVEAUX=[
    Un garçon dit <span class="al8">Nijia</span> pour son frère.
    Une fille dit <span class="al8">Nijakaso</span> pour sa sœur.
    Et <span class="al8">Nid8pso</span> sert quand c'est l'inverse.</div>`},
+ {t:"La famille au grand complet",d:"Toute la parenté attestée : les aînés, les enfants, les liens.",cat:'famille',ex:'vocab',lec:aprAutoLec(`
+  <p>Après papa et maman, tout le reste de la parenté. La famille est au cœur de la langue —
+  prends ton temps, c'est le plus gros module de vocabulaire du primaire.</p>`,'famille',18,`
+  <div class="aprnote"><b>⏱ Deux ou trois visites, c'est normal</b>
+   Personne ne retient 18 mots d'un coup. Fais le quiz, reviens demain, refais-le.
+   La deuxième passe est toujours plus facile — c'est la preuve que ça rentre.</div>`)},
  {t:"Les arbres",d:"Le pin, le cèdre, l'érable.",cat:'plante',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Abazi</td><td>un arbre</td></tr><tr><td class="k">Koa</td><td>le pin</td></tr>
   <tr><td class="k">Molodagw</td><td>le cèdre</td></tr><tr><td class="k">Senomozi</td><td>l'érable</td></tr>
   <tr><td class="k">Maskwamozi</td><td>le bouleau</td></tr><tr><td class="k">Mahlakws</td><td>le frêne</td></tr></table>`},
+ {t:"Les plantes et la nourriture",d:"Ce qui pousse, ce qu'on cueille, ce qu'on mange.",cat:'plante',ex:'vocab',lec:aprAutoLec(`
+  <p>Après les arbres, tout le monde végétal et la nourriture — le garde-manger de la langue.</p>`,'plante',18,`
+  <div class="aprnote"><b>Le lien avec la terre</b>
+   Beaucoup de ces mots racontent la récolte et la saison. Quand tu en apprends un,
+   demande-toi où tu l'as déjà vu pousser — le souvenir s'accroche à l'image.</div>`)},
  {t:"La nature autour",d:"Le soleil, la rivière, la montagne.",cat:'nature',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Kizos</td><td>le soleil</td></tr><tr><td class="k">P8guas</td><td>la lune</td></tr>
   <tr><td class="k">Alakws</td><td>une étoile</td></tr><tr><td class="k">Sibo</td><td>la rivière</td></tr>
   <tr><td class="k">Watzo</td><td>la montagne</td></tr><tr><td class="k">Aki</td><td>la terre</td></tr>
-  <tr><td class="k">Nebi</td><td>l'eau</td></tr><tr><td class="k">Skweda</td><td>le feu</td></tr></table>`}]},
+  <tr><td class="k">Nebi</td><td>l'eau</td></tr><tr><td class="k">Skweda</td><td>le feu</td></tr></table>`},
+ {t:"Le territoire",d:"Les lieux, les eaux et les chemins — nommer le pays.",cat:'territoire',ex:'vocab',lec:aprAutoLec(`
+  <p>Le territoire se nomme morceau par morceau. Ces mots-là ont été prononcés ici
+  pendant des générations avant toi — tu les remets en marche.</p>`,'territoire',16,`
+  <div class="aprnote"><b>Sors dehors avec</b>
+   La prochaine fois que tu passes devant la rivière, dis <span class="al8">Sibo</span>.
+   Un mot dit sur le territoire vaut dix mots lus sur un écran.</div>`)},
+ {t:"Le temps et les saisons",d:"Hier, demain, l'hiver, le printemps.",cat:'temps',ex:'vocab',lec:aprAutoLec(`
+  <p>Tu connais déjà <span class="al8">Pamkizgak</span> (aujourd'hui) — voici toute la famille
+  du temps : les saisons, les jours, les moments.</p>`,'temps',16,`
+  <div class="aprnote"><b>Réflexe du matin</b>
+   Chaque matin, nomme la saison et le moment de la journée en aln8ba.
+   Trente secondes par jour, et ces mots-là ne te quitteront plus.</div>`)},
+ {t:"Les actions de tous les jours",d:"Manger, dormir, parler, marcher — la langue commence à bouger.",cat:'action',ex:'vocab',lec:aprAutoLec(`
+  <p>C'est le module qui change tout : avec les actions, tu passes du nommage à la phrase.
+  Au primaire, apprends juste à les reconnaître — au secondaire, tu apprendras à les conjuguer.</p>`,'action',18,`
+  <div class="aprnote"><b>Mime chaque action</b>
+   Dis le mot en faisant le geste. Ton corps retient ce que ta tête oublie.</div>`)},
+ {t:"Ma première conversation",d:"Le test final du primaire : tenir un échange complet, du bonjour à l'au revoir.",cat:'salut',ex:'vocab',lec:`
+  <p>Tout ce que tu as appris tient dans un vrai petit dialogue. Lis-le à deux voix —
+   avec quelqu'un, ou tout seul en changeant de chaise.</p>
+  <table class="aprtab">
+  <tr><td class="k">— Kwaï! T8ni aliwizian?</td><td>Bonjour! Comment t'appelles-tu?</td></tr>
+  <tr><td class="k">— Nd'aliwizi Mali. T8ni kd'al8wzin?</td><td>Je m'appelle Mali. Comment vas-tu?</td></tr>
+  <tr><td class="k">— N'wal8wzi, wliwni. Kia?</td><td>Je vais bien, merci. Et toi?</td></tr>
+  <tr><td class="k">— N'wal8wzi. Adio!</td><td>Je vais bien. Au revoir!</td></tr></table>
+  <div class="aprnote"><b>Le vrai examen</b>
+   Dis ce dialogue à quelqu'un de la communauté. Même imparfait, il sera compris.
+   Quand tu y arrives sans lire, le primaire est réussi — direction le secondaire.</div>
+  <div class="aprnote w"><b>Après le primaire</b>
+   Garde l'habitude : cinq minutes de <b>🔁 Révision</b> par jour pendant que tu montes
+   de niveau. C'est ce qui transforme des mots appris en mots acquis.</div>`}]},
 
 {id:'s',t:'Secondaire',d:"Comprendre comment les mots changent. Le genre, le pluriel, les verbes.",
  c:'var(--gold)',mods:[
@@ -3536,30 +3629,60 @@ const NIVEAUX=[
 let aprNiv='p', aprMod=null;
 
 function aprParcours(){
+  const prog=progAll();
   document.getElementById('aprBody').innerHTML=`
    <div class="aprcard"><h3>Parcours</h3>
-     <p class="aprlead">Trois niveaux. Chacun s'appuie sur le précédent — commence par le premier
-       même si tu connais déjà des mots, les mécanismes s'y installent.</p>
+     <p class="aprlead">Trois niveaux qui s'appuient l'un sur l'autre. Chaque module se travaille
+       en trois temps : <b>📖 lire</b> la leçon à voix haute, <b>🧠 retenir</b> avec le quiz,
+       <b>✍️ utiliser</b> en écrivant les mots — puis l'onglet <b>🔁 Révision</b> les fait durer.
+       Quinze minutes par jour battent trois heures le dimanche.</p>
      <div class="aprnav" style="margin:0">${NIVEAUX.map(n=>
        `<button data-n="${n.id}" class="${n.id===aprNiv?'on':''}" onclick="aprNiv='${n.id}';aprParcours()">${n.t}</button>`).join('')}</div>
    </div>
-   ${NIVEAUX.filter(n=>n.id===aprNiv).map(n=>`
-     <div class="aprnote" style="border-left-color:${n.c}"><b>${n.t}</b>${n.d}</div>
-     <div class="lzgrid">${n.mods.map((m,i)=>`<button class="lz" onclick="aprMod=${i};aprLecon(${i})">
-       <div class="n" style="color:${n.c}">${String(i+1).padStart(2,'0')}</div>
-       <b>${m.t}</b><span>${m.d}</span></button>`).join('')}</div>`).join('')}`;
+   ${NIVEAUX.filter(n=>n.id===aprNiv).map(n=>{
+     const maitrises=n.mods.filter((m,i)=>{ const s=prog[n.id+'.'+i];
+       return s && (s.retenir>=75) && (!m.cat || s.utiliser>=75); }).length;
+     const commences=n.mods.filter((m,i)=>prog[n.id+'.'+i]).length;
+     return `
+     <div class="aprnote" style="border-left-color:${n.c}"><b>${n.t}</b>${n.d}<br>
+       <span style="font-size:.78rem;color:var(--text2)">✓ ${maitrises} module${maitrises>1?'s':''} maîtrisé${maitrises>1?'s':''}
+       · ${commences} commencé${commences>1?'s':''} sur ${n.mods.length}</span>
+       <div style="height:4px;background:var(--border);border-radius:2px;margin-top:8px">
+         <div style="height:100%;width:${Math.round(maitrises/n.mods.length*100)}%;background:${n.c};border-radius:2px;transition:.3s"></div>
+       </div></div>
+     <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[n.id+'.'+i];
+       const done=s&&s.retenir>=75&&(!m.cat||s.utiliser>=75);
+       const badge=done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
+       return `<button class="lz" onclick="aprMod=${i};aprLecon(${i})">
+       <div class="n" style="color:${n.c}">${badge}</div>
+       <b>${m.t}</b><span>${m.d}</span></button>`;}).join('')}</div>`;}).join('')}`;
 }
 function aprLecon(i){
+  aprMod=i;
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n.mods[i];
+  const lecHtml = typeof m.lec==='function' ? m.lec() : m.lec;
+  const st=progGet(aprNiv+'.'+i), tt=m.t.replace(/'/g,"\\'");
   document.getElementById('aprBody').innerHTML=`
     <div class="aprback" onclick="aprParcours()">← ${n.t}</div>
     <div class="aprcard">
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
-        ${n.t} · module ${String(i+1).padStart(2,'0')}</div>
-      <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>${m.lec}
-      <div style="text-align:center;margin-top:22px">
-        <button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${m.t.replace(/'/g,"\\'")}')">
-          Exercice →</button></div>
+        ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
+      <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
+      <div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en trois temps</b>
+        1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
+        3. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. Puis reviens demain
+        dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>
+      ${lecHtml}
+      ${st?`<div class="aprnote"><b>Ta progression dans ce module</b>
+        🧠 Retenir : ${st.retenir!=null?st.retenir+'%':'pas encore fait'} ·
+        ✍️ Utiliser : ${st.utiliser!=null?st.utiliser+'%':'pas encore fait'}</div>`:''}
+      <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${tt}','retenir')">
+          🧠 Retenir — le quiz</button>
+        ${m.cat?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
+          onclick="aprEx('ecris','${m.cat}','${tt}','utiliser')">
+          ✍️ Utiliser — écris le mot</button>`:''}
+      </div>
     </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -3936,10 +4059,11 @@ function jCaches(){
 }
 
 /* ═══════ MOTEUR D'EXERCICES — gradué par niveau ═══════ */
-let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='';
+let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exPoolOverride=null;
 
-function aprEx(type,cat,titre){
-  exType=type; exCat=cat; exTitre=titre; exQ=0; exOk=0;
+function aprEx(type,cat,titre,mode){
+  exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
+  exQ=0; exOk=0; exTot=8; exPoolOverride=null;
   exSuivant();
 }
 function exCadre(corps){
@@ -3963,6 +4087,7 @@ function exRepond(bon,i,retour){
   btns[i].classList.add(i===bon?'ok':'no');
   if(i!==bon) btns[bon].classList.add('ok');
   if(i===bon) exOk++;
+  if(window._ex && window._ex.aln8ba) revNote(window._ex.aln8ba, i===bon);
   exQ++;
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
     `<div class="jafter">${retour}</div>
@@ -3972,6 +4097,8 @@ function exRepond(bon,i,retour){
 function exFin(){
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   const pc=Math.round(exOk/exTot*100);
+  if(exMode!=='rev' && aprMod!==null && aprMod!==undefined)
+    progRecord(aprNiv+'.'+aprMod, exMode, pc);
   const msg = pc===100 ? "Parfait. Tu peux passer au module suivant."
             : pc>=75  ? "Bien joué. Le mécanisme est en place."
             : pc>=50  ? "C'est en train de rentrer. Relis la leçon et refais l'exercice."
@@ -3980,7 +4107,7 @@ function exFin(){
     <div class="aprcard" style="text-align:center;padding:40px 24px">
       <div style="font-size:3rem;font-weight:700;color:${n.c};line-height:1">${exOk} / ${exTot}</div>
       <p class="aprlead" style="margin:14px 0 22px;font-size:.95rem">${msg}</p>
-      <button class="aprbtn" onclick="aprEx(exType,exCat,exTitre)">Refaire</button>
+      <button class="aprbtn" onclick="aprEx(exType,exCat,exTitre,exMode)">Refaire</button>
       <button class="aprbtn" style="background:var(--surface2);color:var(--text);margin-left:8px"
         onclick="aprLecon(aprMod)">Relire la leçon</button>
       <button class="aprbtn" style="background:var(--surface2);color:var(--text);margin-left:8px"
@@ -3990,14 +4117,15 @@ function exFin(){
 }
 function exSuivant(){
   if(exQ>=exTot) return exFin();
-  ({vocab:exVocab, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
+  ({vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
     negs:exNegs, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
     src:exSrc, trad:exTrad})[exType]();
 }
 
 /* — primaire : reconnaissance de vocabulaire — */
 function exVocab(){
-  let pool=aprSur().filter(w=>w.cat===exCat && w.aln8ba.length<=18);
+  let pool=(exPoolOverride&&exPoolOverride.length>=4)?exPoolOverride
+    :aprSur().filter(w=>w.cat===exCat && w.aln8ba.length<=18);
   if(pool.length<4) pool=aprSur();
   const bon=jPick(pool);
   const tous=jShuf([bon,...jShuf(pool.filter(w=>w.aln8ba!==bon.aln8ba)).slice(0,3)]);
@@ -4013,6 +4141,108 @@ function exRetVocab(){ const b=window._ex;
   return `<b>${b.aln8ba} — ${b.fr}</b>${b.grammar?`<em>${b.grammar}</em>`:''}
     ${b.example_a?`<div style="margin-top:6px">${b.example_a} — <em>${b.example_f||''}</em></div>`:''}
     <span class="aprsrc">${aprSrc(b.source)}</span>`; }
+
+/* ═══════ OUTILS DU PARCOURS PROFOND ═══════ */
+/* — leçons auto : tableaux tirés en direct du dictionnaire (aucun mot inventé) — */
+function aprAutoWords(cat,n,maxLen){
+  let pool=aprSur().filter(w=>w.cat===cat&&w.fr&&(w.aln8ba||'').length<=(maxLen||20));
+  pool.sort((a,b)=>a.aln8ba.length-b.aln8ba.length||a.aln8ba.localeCompare(b.aln8ba));
+  return pool.slice(0,n||14);
+}
+function aprAutoLec(intro,cat,n,note){
+  return function(){
+    const ws=aprAutoWords(cat,n);
+    const tab=ws.length
+      ? `<table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>${ws.map(w=>`<tr><td class="k">${w.aln8ba}</td><td>${w.fr}</td></tr>`).join('')}</table>`
+      : `<p class="aprlead">Les mots de cette famille arrivent bientôt.</p>`;
+    return intro+tab+(note||'');
+  };
+}
+/* — progression par module (survit aux mises à jour du site) — */
+function progAll(){ try{ return JSON.parse(localStorage.getItem('aln8ba_prog')||'{}'); }catch(e){ return {}; } }
+function progGet(k){ return progAll()[k]||null; }
+function progRecord(k,mode,pc){
+  const p=progAll(); p[k]=p[k]||{};
+  if(!p[k][mode]||pc>p[k][mode]) p[k][mode]=pc;
+  localStorage.setItem('aln8ba_prog',JSON.stringify(p));
+}
+/* — mémoire par mot : chaque réponse, partout, nourrit la révision espacée — */
+function revLoad(){ try{ return JSON.parse(localStorage.getItem('aln8ba_rev')||'{}'); }catch(e){ return {}; } }
+function revNote(mot,ok){
+  if(!mot) return;
+  const r=revLoad(); const s=r[mot]||{ok:0,no:0,t:0};
+  if(ok) s.ok++; else s.no++;
+  s.t=Date.now(); r[mot]=s;
+  localStorage.setItem('aln8ba_rev',JSON.stringify(r));
+}
+/* — phase 3 : écrire le mot soi-même (utiliser, pas juste reconnaître) — */
+function exEcris(){
+  let pool=(exPoolOverride&&exPoolOverride.length>=4)?exPoolOverride
+    :aprSur().filter(w=>w.cat===exCat&&w.aln8ba.length<=18);
+  if(pool.length<4) pool=aprSur().filter(w=>w.aln8ba.length<=18);
+  const bon=jPick(pool); window._ex=bon;
+  exCadre(`
+    <div class="jprompt"><div class="q">Écris ce mot en aln8ba</div>
+      <div class="w" style="font-size:clamp(1.2rem,4vw,1.7rem)">${bon.fr}</div></div>
+    <div class="aprtool"><input id="exIn" autocomplete="off" autocapitalize="off"
+        placeholder="Écris le mot ici…">
+      <button class="aprbtn" onclick="exVerif()">Vérifier</button></div>
+    <div class="jhint">Pas de stress sur les apostrophes, les espaces ni le 8 —
+      l'important, ce sont les lettres.</div>`);
+  const inp=document.getElementById('exIn');
+  if(inp){ inp.focus(); inp.onkeydown=e=>{ if(e.key==='Enter') exVerif(); }; }
+}
+function exVerif(){
+  const bon=window._ex, inp=document.getElementById('exIn');
+  if(!inp||inp.disabled) return;
+  const ok=aprNorm(inp.value)===aprNorm(bon.aln8ba);
+  if(ok) exOk++;
+  revNote(bon.aln8ba,ok);
+  exQ++;
+  inp.disabled=true;
+  document.getElementById('exBody').insertAdjacentHTML('beforeend',
+    `<div class="jafter">${ok?'✓ Exact — de mémoire!':'✗ Pas encore. La bonne orthographe :'}
+       <b><span class="al8">${bon.aln8ba}</span></b> — ${bon.fr}
+       <span class="aprsrc">${aprSrc(bon.source)}</span></div>
+     <div style="text-align:center;margin-top:16px">
+       <button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
+}
+/* — révision espacée : les mots ratés et les mots qui datent passent en premier — */
+function aprRevView(){
+  const stats=revLoad(), now=Date.now();
+  const pool=aprSur().filter(w=>w.aln8ba&&w.aln8ba.length<=18&&w.fr);
+  const vus=pool.filter(w=>stats[w.aln8ba]);
+  const aRevoir=pool.filter(w=>{ const s=stats[w.aln8ba];
+    return s && (s.no>0 || (now-s.t)>2*86400000); }).length;
+  document.getElementById('aprBody').innerHTML=`
+   <div class="aprcard"><h3>🔁 Révision</h3>
+    <p class="aprlead">On retient un mot en le revoyant juste avant de l'oublier.
+    Cet onglet surveille toutes tes réponses, dans tous les exercices, et te ressert
+    en premier les mots qui t'ont échappé et ceux qui commencent à dater.</p>
+    <table class="aprtab"><tr><th>Ta mémoire en ce moment</th><th></th></tr>
+    <tr><td>Mots déjà rencontrés dans tes exercices</td><td class="k">${vus.length}</td></tr>
+    <tr><td>Mots à retravailler aujourd'hui</td><td class="k">${aRevoir}</td></tr></table>
+    <div class="aprnote"><b>⏱ Le rythme qui marche</b>
+     Cinq à dix minutes par jour, tous les jours. La mémoire se consolide pendant le sommeil —
+     celui qui révise le soir et revient le lendemain retient deux fois mieux.</div>
+    <div style="text-align:center;margin-top:18px">
+      <button class="aprbtn" onclick="aprRevStart()">Commencer la révision — 10 questions</button></div>
+   </div>`;
+}
+function aprRevStart(){
+  const stats=revLoad(), now=Date.now();
+  const pool=aprSur().filter(w=>w.aln8ba&&w.aln8ba.length<=18&&w.fr);
+  let choix=pool.map(w=>{ const s=stats[w.aln8ba];
+    const poids=s ? (s.no*4 - s.ok + (now-(s.t||0))/86400000) : -1;
+    return {w,poids}; }).filter(x=>x.poids>0)
+    .sort((a,b)=>b.poids-a.poids).slice(0,60).map(x=>x.w);
+  if(choix.length<8) choix=pool.filter(w=>['salut','nombre','couleur','famille'].includes(w.cat)).slice(0,30);
+  exPoolOverride=choix;
+  exType='rev'; exMode='rev'; exCat=''; exTitre='Révision';
+  exQ=0; exOk=0; exTot=10;
+  exSuivant();
+}
+function exRev(){ (exQ%2===0?exVocab:exEcris)(); }
 
 /* — secondaire : animé ou inanimé — */
 function exGenre(){
