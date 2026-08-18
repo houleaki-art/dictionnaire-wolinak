@@ -4489,17 +4489,22 @@ function renderArchives(){
     <div class="aprcard">
       <h3>📜 Les mots des ancêtres</h3>
       <p class="aprlead">Ces formes ont été relevées dans les écrits des anciens — Rasles en 1691,
-      Laurent en 1884, Masta en 1932. Leur sens exact reste à décoder : elles ne font pas partie
-      du dictionnaire moderne, mais elles sont conservées ici avec respect, comme des pierres
-      qu'on n'a pas encore taillées. Chacune attend qu'un aîné ou un linguiste lui redonne sa voix.</p>
+      Laurent en 1884, Masta en 1932. Certaines sont des <b>anciennes graphies ou tournures</b> dont
+      la forme moderne figure au dictionnaire : leur traduction est indiquée. D'autres sont des
+      pierres qu'on n'a pas encore taillées — leur sens exact reste à décoder. Toutes sont conservées
+      ici avec respect, hors du dictionnaire moderne, en attendant qu'un aîné ou un linguiste leur redonne leur voix.</p>
     </div>
     ${ordre.filter(g=>groupes[g]).map(g=>`
       <div class="aprcard" style="margin-top:14px">
         <h3 style="font-size:1rem">${g} <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${groupes[g].length} formes</span></h3>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
-          ${groupes[g].sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba)).map(w=>
-            `<span class="al8" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.9rem"
-               title="${(w.notes||'Sens à décoder').replace(/"/g,'&quot;')}">${w.aln8ba}</span>`).join('')}
+          ${groupes[g].sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba)).map(w=>{
+            const sens=w.fr&&!w.fr.startsWith('⚠')?w.fr:null;
+            return sens
+              ?`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.9rem;display:inline-flex;flex-direction:column;gap:1px"
+                 title="${(w.notes||'').replace(/"/g,'&quot;')}"><span class="al8">${w.aln8ba}</span><span style="font-size:.72rem;color:var(--text2)">${sens}</span></span>`
+              :`<span class="al8" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.9rem"
+                 title="${(w.notes||'Sens à décoder').replace(/"/g,'&quot;')}">${w.aln8ba}</span>`;}).join('')}
         </div>
       </div>`).join('')}`;
 }
