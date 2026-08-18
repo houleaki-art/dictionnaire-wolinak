@@ -210,17 +210,6 @@ textarea{resize:vertical;min-height:68px}
 /* flashcard */
 .fcmode{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:480px;gap:20px}
 .fcmode.open{display:flex}
-/* ── S'exercer : hub + sous-onglets ── */
-.exo-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.exo-tabs button{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:.8rem;cursor:pointer;transition:var(--tr)}
-.exo-tabs button:hover{border-color:var(--accent);color:var(--accent)}
-.exo-tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-.exo-hub{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:6px}
-.exo-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:22px 18px;cursor:pointer;transition:var(--tr)}
-.exo-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.exo-icon{font-size:2.2rem;margin-bottom:8px}
-.exo-name{font-weight:700;margin-bottom:6px}
-.exo-desc{font-size:.82rem;color:var(--text3)}
 .fc{width:100%;max-width:480px;height:280px;perspective:1000px;cursor:pointer}
 .fci{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s}
 .fc.flip .fci{transform:rotateY(180deg)}
@@ -655,7 +644,7 @@ textarea{resize:vertical;min-height:68px}
     <button class="sb" data-view="stats" onclick="setView('stats')"><span class="ic">📊</span>Statistiques</button>
     <button class="sb" data-view="traducteur" onclick="setView('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
       <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
-      <button class="sb" data-view="exercices" onclick="setView('exercices')"><span class="ic">🏋️</span>S'exercer</button>
+      <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique</button>
 
   </div>
   <div style="margin-bottom:4px">
@@ -703,32 +692,8 @@ textarea{resize:vertical;min-height:68px}
     <div id="wordsContainer"></div>
   </div>
   <!-- FLASHCARD VIEW -->
-  <!-- S'EXERCER — HUB (remplace les 3 anciens onglets) -->
-  <div id="exercicesView" style="display:none">
-    <div class="exo-hub">
-      <div class="exo-card" onclick="setView('flashcard')">
-        <div class="exo-icon">🃏</div>
-        <div class="exo-name">Cartes mémoire</div>
-        <div class="exo-desc">Révise le vocabulaire carte par carte. Clique sur la carte pour révéler la traduction.</div>
-      </div>
-      <div class="exo-card" onclick="setView('pratique')">
-        <div class="exo-icon">🧩</div>
-        <div class="exo-name">Pratique grammaire</div>
-        <div class="exo-desc">4 niveaux progressifs : reconnaissance, identification, production, maîtrise totale.</div>
-      </div>
-      <div class="exo-card" onclick="setView('jeux')">
-        <div class="exo-icon">🎯</div>
-        <div class="exo-name">Jeux</div>
-        <div class="exo-desc">Apprends en jouant : des défis rapides pour ancrer les mots en s'amusant.</div>
-      </div>
-    </div>
-  </div>
   <div class="fcmode" id="fcView">
-    <div class="exo-tabs">
-      <button class="on" onclick="setView('flashcard')">🃏 Cartes</button>
-      <button onclick="setView('pratique')">🧩 Grammaire</button>
-      <button onclick="setView('jeux')">🎯 Jeux</button>
-    </div>
+    <div id="fcCtxBar" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center"></div>
     <div class="fcprog" id="fcProg">Carte 1/0</div>
     <div class="fc" id="fcCard" onclick="fcFlip()">
       <div class="fci">
@@ -742,11 +707,6 @@ textarea{resize:vertical;min-height:68px}
   </div>
   <!-- PRATIQUE GRAMMAIRE VIEW -->
   <div class="pratique-view" id="pratiqueView">
-    <div class="exo-tabs">
-      <button onclick="setView('flashcard')">🃏 Cartes</button>
-      <button class="on" onclick="setView('pratique')">🧩 Grammaire</button>
-      <button onclick="setView('jeux')">🎯 Jeux</button>
-    </div>
     <div class="prat-header">
       <div>
         <h2>🧩 Pratique · Aln8ba8dwaw8gan</h2>
@@ -804,11 +764,7 @@ textarea{resize:vertical;min-height:68px}
     <div id="aprBody"></div>
   </div>
   <div class="jeu" id="jeuxView">
-    <div class="exo-tabs">
-      <button onclick="setView('flashcard')">🃏 Cartes</button>
-      <button onclick="setView('pratique')">🧩 Grammaire</button>
-      <button class="on" onclick="setView('jeux')">🎯 Jeux</button>
-    </div>
+    <div id="jCtxBar"></div>
     <div class="jmenu" id="jMenu"></div>
     <div class="jstage" id="jStage"><div style="text-align:center;color:var(--text3);padding:40px 20px">
       Choisis un jeu ci-dessus.</div></div>
@@ -1136,7 +1092,7 @@ textarea{resize:vertical;min-height:68px}
       <button class="sb" onclick="mobileNav('stats')"><span class="ic">📊</span>Statistiques</button>
       <button class="sb" onclick="mobileNav('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
       <button class="sb" onclick="mobileNav('apprendre')"><span class="ic">🎓</span>Apprendre</button>
-      <button class="sb" onclick="mobileNav('exercices')"><span class="ic">🏋️</span>S'exercer</button>
+      <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique</button>
       <div class="sl" style="margin-top:12px">Catégories</div>
       <button class="sb" onclick="mobileFilterCat('')">🔷 Toutes</button>
       <button class="sb" onclick="mobileFilterCat('salut')">🤝 Salutations</button>
@@ -1747,7 +1703,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 function setView(v){
   S.view=v; S.cat=''; S.letter='';
-  const gv=['flashcard','pratique','jeux'].includes(v)?'exercices':v;
+  const gv=['flashcard','jeux'].includes(v)?'apprendre':v;
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===gv));
   document.querySelectorAll('.ab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.sb[data-cat]').forEach(b=>b.classList.remove('on'));
@@ -1760,8 +1716,7 @@ function setView(v){
   document.getElementById('traducteurView').style.display = v==='traducteur'?'block':'none';
   document.getElementById('apprendreView').className = 'apr'+(v==='apprendre'?' show':'');
   document.getElementById('jeuxView').className      = 'jeu'+(v==='jeux'?' show':'');
-  document.getElementById('exercicesView').style.display = v==='exercices'?'block':'none';
-  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Recherche dictionnaire',apprendre:'Apprendre la langue',jeux:'Jeux',exercices:"S'exercer"}[v]||'';
+  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Recherche dictionnaire',apprendre:'Apprendre la langue',jeux:'Jeux'}[v]||'';
   if(['all','favorites'].includes(v)) renderWords();
   if(v==='flashcard') initFC();
   if(v==='stats') renderStats();
@@ -1781,7 +1736,6 @@ function filterCat(cat){
   document.getElementById('adminView').className='admin-panel';
   document.getElementById('aboutView').className='about-open';
   document.getElementById('pratiqueView').className='pratique-view';
-  document.getElementById('exercicesView').style.display='none';
   document.getElementById('viewTitle').textContent=cat?catLabel(cat):'Tous les mots';
   renderWords();
 }
@@ -1801,8 +1755,21 @@ function setLayout(lv){
 // ══════════════════════════════════════════════════════════
 //  FLASHCARD
 // ══════════════════════════════════════════════════════════
-function initFC(){
-  S.fcWords=[...WORDS].sort(()=>Math.random()-.5); S.fcIdx=0; showFC();
+let fcCtx=null;
+function initFC(list,ctx){
+  fcCtx=ctx||null;
+  S.fcWords=(list&&list.length?[...list]:[...WORDS]).sort(()=>Math.random()-.5); S.fcIdx=0;
+  const bar=document.getElementById('fcCtxBar');
+  if(bar) bar.innerHTML=fcCtx
+    ?`<button class="btn btn-secondary" style="font-size:.78rem" onclick="setView('apprendre')">← Retour au module</button><span style="font-size:.8rem;color:var(--text2)">🃏 ${fcCtx.label} · ${S.fcWords.length} mots</span>`
+    :'';
+  showFC();
+}
+/* Lance les cartes mémoire sur le vocabulaire d'un module du parcours */
+function aprFC(cat,titre){
+  const pool=aprPool().filter(w=>w.cat===cat);
+  if(pool.length<2){ toast('Pas assez de mots dans ce module pour les cartes.'); return; }
+  setView('flashcard'); initFC(pool,{label:titre});
 }
 function showFC(){
   if(!S.fcWords.length) return;
@@ -3604,13 +3571,22 @@ function aprParcours(){
        · ${commences} commencé${commences>1?'s':''} sur ${n.mods.length}</span>
        <div style="height:4px;background:var(--border);border-radius:2px;margin-top:8px">
          <div style="height:100%;width:${Math.round(maitrises/n.mods.length*100)}%;background:${n.c};border-radius:2px;transition:.3s"></div>
-       </div></div>
+       </div>
+       <div style="margin-top:12px"><button class="aprbtn" onclick="aprJeux('${n.id}')">🎯 Jeux du niveau ${n.t}</button>
+       <span style="font-size:.75rem;color:var(--text3);margin-left:8px">Les questions pigent seulement dans les mots de ce niveau.</span></div></div>
      <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[n.id+'.'+i];
        const done=s&&s.retenir>=75&&(!m.cat||s.utiliser>=75);
        const badge=done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
        return `<button class="lz" onclick="aprMod=${i};aprLecon(${i})">
        <div class="n" style="color:${n.c}">${badge}</div>
        <b>${m.t}</b><span>${m.d}</span></button>`;}).join('')}</div>`;}).join('')}`;
+}
+/* Lance les jeux limités aux catégories de mots d'un niveau du parcours */
+function aprJeux(nivId){
+  const n=NIVEAUX.find(x=>x.id===nivId);
+  jCtx={label:n.t,cats:[...new Set(n.mods.map(m=>m.cat).filter(Boolean))]};
+  jCat='toutes';
+  setView('jeux');
 }
 function aprLecon(i){
   aprMod=i;
@@ -3634,6 +3610,8 @@ function aprLecon(i){
       <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
         ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
       <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        ${m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
+          onclick="aprFC('${m.cat}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
         <button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${tt}','retenir')">
           🧠 Retenir — le quiz</button>
         ${m.cat?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
@@ -3810,6 +3788,9 @@ function aprGramView(){
    JEUX
    ═══════════════════════════════════════════════════════ */
 let jCur=null, jSc={ok:0,no:0}, jCat='toutes', jInv=false, jWS='animal';
+/* Contexte niveau : rempli par aprJeux() quand on vient du parcours */
+let jCtx=null;
+function jPoolSur(){ let p=aprSur(); if(jCtx&&jCtx.cats&&jCtx.cats.length) p=p.filter(w=>jCtx.cats.includes(w.cat)); return p; }
 const jPick=a=>a[Math.floor(Math.random()*a.length)];
 const jShuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
 const JEUX_L=[
@@ -3820,8 +3801,11 @@ const JEUX_L=[
  {id:'fam',t:'Familles de mots',d:"Quel mot partage la même racine? Cent familles au dictionnaire.",n:'Racines'},
  {id:'caches',t:'Mots cachés',d:"Une grille, huit mots à trouver. Choisis un thème.",n:'Jeu'}];
 function jeuInit(){
-  const nSur=aprSur().length, nTot=aprPool().length;
-  document.getElementById('jMenu').insertAdjacentHTML('beforebegin','');
+  const nSur=jPoolSur().length, nTot=(jCtx&&jCtx.cats.length?aprPool().filter(w=>jCtx.cats.includes(w.cat)):aprPool()).length;
+  const cb=document.getElementById('jCtxBar');
+  if(cb) cb.innerHTML=jCtx?`<div class="aprnote" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <button class="btn btn-secondary" style="font-size:.78rem" onclick="setView('apprendre')">← Retour au parcours</button>
+    <span style="font-size:.85rem"><b>🎯 Jeux du niveau ${jCtx.label}</b> — les questions pigent seulement dans les mots de ce niveau.</span></div>`:'';
   document.getElementById('jMenu').innerHTML=JEUX_L.map(j=>
     `<button class="gcard" data-j="${j.id}"><b>${j.t}</b><span>${j.d}</span><i>${j.n}</i></button>`).join('');
   document.querySelectorAll('#jMenu .gcard').forEach(b=>b.onclick=()=>{
@@ -3857,7 +3841,7 @@ function jAns(bon,i,retour){
        <button class="aprbtn" onclick="({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})['${jCur}']()">Suivant →</button></div>`);
 }
 function jGenre(){
-  const pool=aprSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||''));
+  const pool=jPoolSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||''));
   if(pool.length<2) return jFrame('Animé ou inanimé?','<p style="text-align:center;color:var(--text2)">Pas assez de mots marqués.</p>');
   const w=jPick(pool), an=/nom animé/i.test(w.grammar);
   jFrame('Animé ou inanimé?',`
@@ -3878,9 +3862,9 @@ function jRetGenre(){ const w=window._jw,an=window._jan;
     ${w.example_a?`<div style="margin-top:7px">${w.example_a} — <em>${w.example_f||''}</em></div>`:''}
     <span class="aprsrc">${aprSrc(w.source)}</span>`; }
 function jSens(){
-  let pool=aprSur(); if(jCat!=='toutes') pool=pool.filter(w=>w.cat===jCat);
+  let pool=jPoolSur(); if(jCat!=='toutes') pool=pool.filter(w=>w.cat===jCat);
   if(pool.length<4) return jFrame('Devinette','<p style="text-align:center;color:var(--text2)">Pas assez de mots dans cette catégorie.</p>');
-  const cats=[...new Set(aprSur().map(w=>w.cat))].sort();
+  const cats=[...new Set(jPoolSur().map(w=>w.cat))].sort();
   const ctrl=`<select onchange="jCat=this.value;jSens()" style="font-family:inherit;font-size:.78rem;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text)">
       ${['toutes',...cats].map(c=>`<option ${c===jCat?'selected':''}>${c}</option>`).join('')}</select>
     <button class="chip" onclick="jInv=!jInv;jSens()">${jInv?'Sens → Mot':'Mot → Sens'}</button>`;
@@ -3968,9 +3952,11 @@ function jRetFam(){ const {fid,mem,cous}=window._jf;
     <div style="margin-top:7px">${cous.aln8ba} — ${cous.fr}</div>
     <span class="aprsrc">Une racine se combine à des préfixes et des suffixes pour former toute une famille.</span>`; }
 function jCaches(){
-  const cats=['animal','plante','nature','territoire','famille','corps','temps','couleur','salut','nombre'];
-  let pool=jShuf(aprSur().filter(w=>w.cat===jWS&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba))).slice(0,8);
-  if(pool.length<5){ jWS='animal'; pool=jShuf(aprSur().filter(w=>w.cat==='animal'&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba))).slice(0,8); }
+  const ALLCATS=['animal','plante','nature','territoire','famille','corps','temps','couleur','salut','nombre'];
+  const cats=(jCtx&&jCtx.cats.length)?ALLCATS.filter(c=>jCtx.cats.includes(c)):ALLCATS;
+  if(!cats.includes(jWS)) jWS=cats[0]||'animal';
+  let pool=jShuf(jPoolSur().filter(w=>w.cat===jWS&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba))).slice(0,8);
+  if(pool.length<5){ jWS=cats[0]||'animal'; pool=jShuf(jPoolSur().filter(w=>w.cat===jWS&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba))).slice(0,8); }
   const N=13, G=Array.from({length:N},()=>Array(N).fill('')), DIR=[[0,1],[1,0],[1,1],[-1,1]], PL=[];
   pool.forEach(w=>{ const L=w.aln8ba.toUpperCase().replace(/[^A-Z8]/g,'');
     for(let t=0;t<250;t++){ const [dy,dx]=jPick(DIR);
