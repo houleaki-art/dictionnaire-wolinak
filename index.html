@@ -1815,6 +1815,7 @@ function buildQueue(){
     w.aln8ba && w.aln8ba.length > 1 && w.fr &&
     !/[()[\]{}'"]/.test(w.aln8ba) &&
     !w.aln8ba.startsWith('-') &&
+    !enAttente(w) &&
     isConfirmed(w)
   );
   let pool;
@@ -1847,7 +1848,7 @@ function buildQueue(){
 
 // Meilleurs distracteurs : même catégorie en priorité, sinon autres
 function getBestDistractors(w, n){
-  const base = WORDS.filter(x => x.id !== w.id && x.aln8ba && x.fr && isConfirmed(x) && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
+  const base = WORDS.filter(x => x.id !== w.id && x.aln8ba && x.fr && !enAttente(x) && isConfirmed(x) && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
   const samecat = shuffle(base.filter(x => x.cat === w.cat));
   const others  = shuffle(base.filter(x => x.cat !== w.cat));
   return [...samecat, ...others].slice(0, n);
@@ -2957,7 +2958,7 @@ function traduire(){
   const inputClean = clean(input);
   const inputTokens = inputClean.split(/\s+/).filter(t => t.length >= 3);
 
-  const pool = WORDS.filter(w => isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-'));
+  const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-'));
 
   const scored = pool.map(w => {
     const srcClean = clean(w[srcField]);
