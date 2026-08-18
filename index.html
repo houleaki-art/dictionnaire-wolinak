@@ -2479,7 +2479,7 @@ function openAdmin(){
   if(adminUnlocked) renderAdmin();
 }
 async function checkPin(){
-  const v=document.getElementById('pinIn').value;
+  const v=(document.getElementById('pinIn').value||'').trim();
   const err=document.getElementById('pinErr');
   err.style.display='none';
   try{
@@ -3311,10 +3311,14 @@ const NIVEAUX=[
   <div class="aprnote"><b>Le 8 se dit comme un « an » nasal</b>
    Entre le <i>an</i> et le <i>on</i>. Alors <span class="al8">8h8</span> (oui) sonne à peu près « anhan »,
    et <span class="al8">W8linak</span> sonne « Wanlinak ».</div>
-  <div class="aprnote"><b>L'apostrophe marque une lettre qui est tombée</b>
-   Quand deux sons se cognent, la langue les soude : <span class="al8">N'</span> + <i>aliwizi</i>
-   devient <span class="al8">Nd'aliwizi</span>. Tu verras le pourquoi au secondaire — pour l'instant,
-   lis-le tel quel.</div>
+  <table class="aprtab"><tr><th>Lettre</th><th>Comment la dire (Manuel de l'étudiant 1, pages 9 à 13)</th></tr>
+  <tr><td class="k">CH</td><td>se prononce <b>TS</b>, jamais comme dans « chien »</td></tr>
+  <tr><td class="k">J</td><td>se prononce <b>DZ</b>, jamais comme en français</td></tr>
+  <tr><td class="k">8</td><td>le « an » nasal — le son signature de la langue</td></tr></table>
+  <div class="aprnote"><b>Quatre lettres ne commencent jamais un mot</b>
+   <b>B, D, G et Z</b> ne se trouvent jamais en première position d'un mot aln8ba.
+   Si tu vois un D au début, c'est qu'un préfixe s'est soudé — comme dans
+   <span class="al8">Nd'aliwizi</span> (N' + aliwizi).</div>
   <div class="aprnote w"><b>Dis tout à voix haute, toujours</b>
    Une langue ne s'apprend pas des yeux. Chaque mot de ce parcours doit sortir de ta bouche,
    même seul dans ton char.</div>`},
@@ -3476,7 +3480,10 @@ const NIVEAUX=[
   le <b>tambour</b>, le <b>couteau</b>, la <b>bouteille</b> et le <b>pain</b>.</p>
   <div class="aprnote w"><b>Deux à retenir par cœur</b>
    La fraise <span class="al8">Mskikwimens</span> est animée, le bleuet <span class="al8">Sata</span> ne l'est pas.
-   La montagne <span class="al8">Watzo</span> est animée, la pierre <span class="al8">Sen</span> ne l'est pas.</div>`},
+   La montagne <span class="al8">Watzo</span> est animée, la pierre <span class="al8">Sen</span> ne l'est pas.</div>`,
+  coach:`Ne mémorise pas une liste de catégories — pose-toi une seule question devant chaque mot :
+   « est-ce que ça agit, est-ce que ça porte quelque chose? » Le tambour est animé parce qu'il porte
+   la voix de la communauté. Dans trois mois, tu <i>sentiras</i> la réponse avant de la vérifier.`},
  {t:"Le pluriel",d:"Cinq terminaisons, et la fin du mot décide.",ex:'plur',lec:`
   <h3>Si le mot est animé</h3>
   <table class="aprtab">
@@ -3486,7 +3493,10 @@ const NIVEAUX=[
   <h3>Si le mot est inanimé</h3>
   <table class="aprtab">
   <tr><td class="k">-al</td><td>en général — Sibo → <b>Siboal</b></td></tr>
-  <tr><td class="k">-ol</td><td>après KW, GW, GEN — Pilaskw → <b>Pilaskol</b></td></tr></table>`},
+  <tr><td class="k">-ol</td><td>après KW, GW, GEN — Pilaskw → <b>Pilaskol</b></td></tr></table>`,
+  coach:`Retiens deux questions, pas cinq règles : 1) le mot est-il animé? 2) comment finit-il?
+   La terminaison suit toute seule. Et si tu bloques : le dictionnaire donne le genre de chaque nom —
+   tricher en regardant, c'est encore apprendre.`},
  {t:"Moi, toi, nous",d:"Sept pronoms — et deux façons de dire « nous ».",cat:'grammaire',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Nia</td><td>moi</td></tr><tr><td class="k">Kia</td><td>toi</td></tr>
@@ -3496,7 +3506,10 @@ const NIVEAUX=[
   <tr><td class="k">Kiow8</td><td>vous</td></tr><tr><td class="k">Agm8w8</td><td>eux, elles</td></tr></table>
   <div class="aprnote"><b>La différence que le français ne fait pas</b>
    Si tu dis <span class="al8">Niona W8banakiak</span>, tu dis « nous les Abénakis, pas toi ».<br>
-   Si tu dis <span class="al8">Kiona W8banakiak</span>, la personne à qui tu parles est incluse.</div>`},
+   Si tu dis <span class="al8">Kiona W8banakiak</span>, la personne à qui tu parles est incluse.</div>`,
+  coach:`Pour Niona et Kiona, imagine un cercle autour d'un feu : est-ce que la personne à qui tu
+   parles fait partie du « nous »? Cette distinction n'existe pas en français — elle dit quelque chose
+   de précieux sur la façon dont ta langue voit la communauté. Ne la traduis jamais, vis-la.`},
  {t:"Mon, ton, son",d:"Des mots qui ne peuvent jamais rester seuls.",ex:'poss',lec:`
   <p>Certains mots doivent <b>toujours</b> porter un possesseur. On ne peut pas dire « ami »
   tout court, ni « tête ».</p>
@@ -3506,7 +3519,10 @@ const NIVEAUX=[
   <tr><td class="k">W'- · Wd'-</td><td>son</td><td class="k">Wid8ba · Wdep</td></tr></table>
   <div class="aprnote"><b>Le D apparaît devant une voyelle</b>
    On dit <span class="al8">N'kika</span> mais <span class="al8">Nd'aliwizi</span> —
-   parce que <i>aliwizi</i> commence par une voyelle.</div>`},
+   parce que <i>aliwizi</i> commence par une voyelle.</div>`,
+  coach:`N, K, W — moi, toi, lui. Une fois que tu l'as vu, tu le vois partout. Amuse-toi une semaine
+   à lire le dictionnaire en chassant ces préfixes : tu devineras le sens des mots avant de lire
+   la traduction, et c'est le jour où tu commences à <i>lire</i> la langue au lieu de la traduire.`},
  {t:"Les verbes au présent",d:"Un préfixe devant le verbe, et c'est tout.",ex:'conjp',lec:`
   <p>Pour dire qui fait l'action, on colle un préfixe devant le verbe. Le même que pour les possessifs.</p>
   <table class="aprtab"><tr><th>Personne</th><th>Exemple</th></tr>
@@ -3519,7 +3535,10 @@ const NIVEAUX=[
   <div class="aprnote"><b>Quelques verbes utiles</b>
    <span class="al8">N'klozi</span> je parle · <span class="al8">N'wigi</span> j'habite ·
    <span class="al8">N'kawi</span> je dors · <span class="al8">Nd'aloka</span> je travaille ·
-   <span class="al8">N'pemeg8</span> je danse</div>`},
+   <span class="al8">N'pemeg8</span> je danse</div>`,
+  coach:`Conjuguer au présent, c'est du lego : le verbe garde sa forme, tu changes juste la tête.
+   Prends UN verbe que tu aimes et décline-le en marchant — je, tu, il. Demain, un autre.
+   En huit jours, les huit verbes du module sont à toi, sans une seule séance pénible.`},
  {t:"Poser une question",d:"Qui, quoi, où, quand, comment.",cat:'grammaire',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Awani</td><td>qui</td></tr><tr><td class="k">Kagwi</td><td>quoi</td></tr>
@@ -3530,7 +3549,10 @@ const NIVEAUX=[
   <tr><td class="k">T8ni kd'al8wzin?</td><td>Comment vas-tu?</td></tr>
   <tr><td class="k">T8ni aliwizian?</td><td>Comment t'appelles-tu?</td></tr>
   <tr><td class="k">T8ni wigian?</td><td>Où habites-tu?</td></tr>
-  <tr><td class="k">K'kasigadma?</td><td>Quel âge as-tu?</td></tr></table>`},
+  <tr><td class="k">K'kasigadma?</td><td>Quel âge as-tu?</td></tr></table>`,
+  coach:`<span class="al8">T8ni</span> est un couteau suisse : comment, où, combien. Apprends les quatre
+   questions types comme des chansons — répète-les jusqu'à ce qu'elles sortent sans réfléchir.
+   Poser une question sans hésiter, c'est le moment où tu passes d'élève à interlocuteur.`},
  {t:"Le temps qui passe",d:"Les jours, les mois, les saisons.",cat:'temps',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Sigwan</td><td>le printemps</td></tr><tr><td class="k">Niben</td><td>l'été</td></tr>
@@ -3540,7 +3562,10 @@ const NIVEAUX=[
   <div class="aprnote"><b>Les mois racontent ce qui se passe dehors</b>
    <span class="al8">Kikas</span> mai, quand on travaille la terre ·
    <span class="al8">Skamonkas</span> septembre, la récolte du maïs ·
-   <span class="al8">Pnibagos</span> octobre, quand les feuilles tombent.</div>`},
+   <span class="al8">Pnibagos</span> octobre, quand les feuilles tombent.</div>`,
+  coach:`Les saisons se collent au territoire : apprends-les en regardant dehors, pas dans l'écran.
+   Quand les feuilles tomberont, pense <span class="al8">Pnibagos</span>. Une langue qui colle
+   au pays s'apprend dans le pays — c'est ta grand-force à Wôlinak.`},
  {t:"Dire non",d:"Nda devant le verbe.",ex:'negs',lec:`
   <p>Pour dire le contraire, on met <b>Nda</b> devant le verbe, et on ajoute un petit suffixe au bout.</p>
   <table class="aprtab"><tr><th>Affirmatif</th><th>Négatif</th></tr>
@@ -3548,7 +3573,72 @@ const NIVEAUX=[
   <tr><td class="k">N'wal8wzi</td><td class="k">Nda n'wal8wzi<b>w</b></td></tr>
   <tr><td class="k">Nd'agakimzi</td><td class="k">Nda nd'agakimzi<b>w</b></td></tr></table>
   <div class="aprnote"><b>Ici, le suffixe est toujours -W</b>
-   Parce que ces verbes finissent tous par <b>-i</b>. Au cégep, tu verras les deux autres cas.</div>`}]},
+   Parce que ces verbes finissent tous par <b>-i</b>. Au cégep, tu verras les deux autres cas.</div>`,
+  coach:`La négation est un sandwich : <span class="al8">Nda</span> devant, le petit suffixe derrière.
+   Dis les paires à voix haute, affirmative puis négative, comme un refrain — l'oreille apprend
+   le rythme avant que la tête apprenne la règle.`},
+ {t:"Les objets qui vivent",d:"Pourquoi le tambour et le pain sont animés — comprendre au lieu de mémoriser.",ex:'genre',lec:`
+  <p>Tu as appris la règle : animé ou inanimé. Maintenant, comprends-la.</p>
+  <p>Sont animés, bien sûr, les gens et les animaux. Mais la langue va plus loin :</p>
+  <table class="aprtab"><tr><th>Animé (pluriel en K)</th><th>Inanimé (pluriel en L)</th></tr>
+  <tr><td class="k">Kizos — le soleil</td><td class="k">Sen — la pierre</td></tr>
+  <tr><td class="k">Alakws — l'étoile</td><td class="k">Nebi — l'eau</td></tr>
+  <tr><td class="k">Pakholigan — le tambour</td><td class="k">Awikhigan — le livre</td></tr>
+  <tr><td class="k">Mskikwimens — la fraise</td><td class="k">Sata — le bleuet</td></tr>
+  <tr><td class="k">Watzo — la montagne</td><td class="k">Wigw8m — la maison</td></tr></table>
+  <div class="aprnote"><b>Ce n'est pas une liste, c'est une façon de voir</b>
+   Le tambour porte la voix de la communauté. Le soleil donne la vie. La langue classe le monde
+   selon la <b>force</b> des choses, pas leur apparence.</div>`,
+  coach:`Quand tu apprends un mot dans le dictionnaire, regarde son genre et demande-toi
+   <i>pourquoi</i> — dix secondes par mot. Au début tu vérifieras souvent; dans quelques mois,
+   ta première intuition sera la bonne. C'est ça, penser en aln8ba.`},
+ {t:"Les mois qui racontent l'année",d:"Douze mois qui décrivent ce qui se passe dehors.",cat:'temps',ex:'vocab',lec:`
+  <p>En aln8ba, les mois ne sont pas des noms — ce sont des <b>observations du territoire</b> :</p>
+  <table class="aprtab"><tr><th>Mois</th><th>Aln8ba</th><th>Ce que ça raconte</th></tr>
+  <tr><td>Janvier</td><td class="k">Alamikos</td><td>le mois des salutations</td></tr>
+  <tr><td>Février</td><td class="k">Pia8dagos</td><td>le petit bourgeon d'arbre</td></tr>
+  <tr><td>Mars</td><td class="k">Mozokas</td><td>la chasse à l'orignal</td></tr>
+  <tr><td>Avril</td><td class="k">Sogalikas</td><td>la récolte du sucre</td></tr>
+  <tr><td>Mai</td><td class="k">Kikas</td><td>on travaille la terre</td></tr>
+  <tr><td>Juin</td><td class="k">Nokahigas</td><td>la binette, le sarclage</td></tr>
+  <tr><td>Juillet</td><td class="k">Tmaskikos</td><td>on coupe l'herbage — la fenaison</td></tr>
+  <tr><td>Août</td><td class="k">Tmez8was</td><td>la récolte</td></tr>
+  <tr><td>Septembre</td><td class="k">Skamonkas</td><td>la récolte du maïs</td></tr>
+  <tr><td>Octobre</td><td class="k">Pnibagos</td><td>les feuilles tombent</td></tr>
+  <tr><td>Novembre</td><td class="k">Mzatanos</td><td>l'eau fait des mottons de glace</td></tr>
+  <tr><td>Décembre</td><td class="k">Pbonkas</td><td>on crée l'hiver</td></tr></table>
+  <div class="aprnote w"><b>Deux graphies se côtoient</b>
+   Chez Laurent (1884), février s'écrit <i>Piaddagos</i>, juillet <i>Temaskikos</i>,
+   août <i>Temezdwas</i>. Mêmes mots, deux époques d'écriture. Les explications des mois
+   viennent des notes de cours du Manuel — à faire valider comme tout le reste.</div>`,
+  coach:`Apprends le mois présent, pas les douze d'un coup. On est en août : dis
+   <span class="al8">Tmez8was</span> en regardant dehors, la saison de la récolte.
+   Le mois prochain, <span class="al8">Skamonkas</span>. En un an, tu les connais tous —
+   sans une seule séance de mémorisation.`},
+ {t:"Nommer les lieux",d:"Le suffixe des endroits, et les vrais noms du territoire.",cat:'toponymie',ex:'vocab',lec:aprAutoLec(`
+  <p>Pour dire « à » un endroit, l'aln8ba colle un suffixe au nom : <b>-k</b> ou <b>-ok</b> —
+   c'est le <b>locatif</b>. <span class="al8">Odanak</span>, c'est littéralement « au village ».
+   Voici les noms de lieux attestés du dictionnaire :</p>`,'toponymie',14,`
+  <div class="aprnote"><b>Chaque toponyme est une histoire</b>
+   Les noms de lieux décrivent l'endroit. Quand tu en apprends un, demande à un aîné
+   ce que le nom raconte — la réponse vaut souvent une leçon entière.</div>`),
+  coach:`Le locatif est partout : chaque fois que tu entends un nom de lieu finir en
+   <b>-k</b> ou <b>-ok</b>, tu entends « à ». Écoute les anciens parler de leurs déplacements —
+   tu vas commencer à les entendre, ces petits suffixes.`},
+ {t:"Ma journée en aln8ba",d:"Le test du secondaire : raconter une journée entière au présent.",ex:'conjp',lec:`
+  <p>Avec les verbes du module « Les verbes au présent », tu peux déjà raconter ta journée :</p>
+  <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>
+  <tr><td class="k">N'toki</td><td>je me réveille</td></tr>
+  <tr><td class="k">N'michi</td><td>je mange</td></tr>
+  <tr><td class="k">Nd'aloka</td><td>je travaille</td></tr>
+  <tr><td class="k">N'klozi</td><td>je parle</td></tr>
+  <tr><td class="k">N'kawi</td><td>je dors</td></tr></table>
+  <div class="aprnote"><b>Le rituel du soir</b>
+   Ce soir, raconte ta journée avec ces cinq phrases, dans l'ordre où tu l'as vécue.
+   Demain, recommence — puis essaie la négation du module « Dire non » sur une des phrases.</div>`,
+  coach:`Une journée racontée chaque soir : c'est l'exercice le plus puissant qui existe.
+   Cinq phrases suffisent. Le jour où tu te surprends à <i>penser</i> ta journée en aln8ba
+   avant de la dire, le secondaire est derrière toi.`}]},
 
 {id:'c',t:'Cégep',d:"Analyser. Les classes de verbes, la morphologie, les sources.",
  c:'var(--accent)',mods:[
@@ -3564,7 +3654,10 @@ const NIVEAUX=[
   <tr><td>je possède</td><td class="k">N'waj8n8</td><td class="k">N'waj8nem</td></tr>
   <tr><td>je prends</td><td class="k">N'wdn8</td><td class="k">N'wdnem</td></tr>
   <tr><td>je donne</td><td class="k">N'mil8</td><td class="k">N'mildo</td></tr>
-  <tr><td>je mange</td><td class="k">N'mow8</td><td class="k">N'miji</td></tr></table></div>`},
+  <tr><td>je mange</td><td class="k">N'mow8</td><td class="k">N'miji</td></tr></table></div>`,
+  coach:`Tu ne traduis plus, tu analyses. Avant chaque verbe transitif, une seule question :
+   « mon objet est-il animé? » C'est elle qui choisit la forme, pas toi. Pose-la à voix haute
+   dans les exercices — l'automatisme vient de la répétition de la question, pas de la réponse.`},
  {t:"Les trois ordres",d:"La conjugaison change selon le type de phrase.",ex:'ordre',lec:`
   <table class="aprtab"><tr><th>Ordre</th><th>Quand</th><th>Exemple</th></tr>
   <tr><td class="k">Indépendant</td><td>phrase ordinaire</td><td class="k">N'michi</td></tr>
@@ -3572,7 +3665,11 @@ const NIVEAUX=[
   <tr><td class="k">Conjonctif</td><td>une question</td><td class="k">Kagwi k'michi?</td></tr></table>
   <h3>L'impératif collectif</h3>
   <p>Le suffixe <code>-oda</code> dit ce qu'on se propose de faire ensemble.
-  <span class="al8">Wig8damoda!</span> réjouissons-nous · <span class="al8">Losada</span> allons.</p>`},
+  <span class="al8">Wig8damoda!</span> réjouissons-nous · <span class="al8">Losada</span> allons.</p>`,
+  coach:`Trois ordres, trois intentions : on constate, on ordonne, on questionne. Quand tu entends
+   une phrase, repère d'abord l'<b>intention</b> — la forme suit l'intention, jamais l'inverse.
+   Et note la beauté du <span class='al8'>-oda</span> : la langue a un mode pour ce qu'on fait
+   <i>ensemble</i>.`},
  {t:"La négation complète",d:"Trois suffixes selon la voyelle du radical.",ex:'neg',lec:`
   <table class="aprtab"><tr><th>Le radical finit par</th><th>Suffixe</th><th>Exemple</th></tr>
   <tr><td class="k">-i</td><td class="k">-w</td><td class="k">Nda nd'aliwiziw</td></tr>
@@ -3582,7 +3679,10 @@ const NIVEAUX=[
    Masta écrit en 1932 <span class="al8">8nda tabi mhz8dwawi</span> — la négation d'un verbe
    bâti sur la même racine <i>-8dwa-</i> que <i>nd'aln8ba8dwa</i>.</div>
   <div class="aprnote w"><b>Les graphies anciennes</b>
-   Laurent écrit <i>8da</i> en 1884, Masta écrit <i>8nda</i> en 1932. La forme actuelle est <b>Nda</b>.</div>`},
+   Laurent écrit <i>8da</i> en 1884, Masta écrit <i>8nda</i> en 1932. La forme actuelle est <b>Nda</b>.</div>`,
+  coach:`Les trois suffixes suivent la voyelle du radical — c'est elle qui décide. Entraîne ton
+   oreille à entendre cette voyelle finale avant ta mémoire : dis le verbe, allonge la dernière
+   voyelle, et le bon suffixe se pose tout seul.`},
  {t:"Racines et suffixes",d:"Un mot se construit. Apprends à le démonter.",ex:'suf',lec:`
   <table class="aprtab"><tr><th>Suffixe</th><th>Ce qu'il fait</th><th>Exemple</th></tr>
   <tr><td class="k">-w8gan</td><td>le fait de…</td><td>Lintow8gan le chant</td></tr>
@@ -3595,7 +3695,11 @@ const NIVEAUX=[
   <div class="aprnote"><b>Le radical -aldam-, la famille de l'esprit</b>
    <span class="al8">wan</span>-aldam oublier · <span class="al8">waw</span>-aldam savoir ·
    <span class="al8">mikw</span>-aldam se souvenir · <span class="al8">el</span>-aldam penser ·
-   <span class="al8">mosk</span>-aldam la colère · <span class="al8">wiag</span>-aldam la joie</div>`},
+   <span class="al8">mosk</span>-aldam la colère · <span class="al8">wiag</span>-aldam la joie</div>`,
+  coach:`Chaque suffixe est un outil de construction : <span class="al8">-higan</span> l'instrument,
+   <span class="al8">-gamikw</span> le lieu, <span class="al8">-winno</span> la personne. Collectionne-les
+   comme des outils dans ta boîte de mécanicien — un mot long n'est plus un obstacle,
+   c'est un assemblage que tu sais démonter.`},
  {t:"Décomposer un mot",d:"Préfixe, racine, suffixe — et la famille.",ex:'fam',lec:`
   <p>Chaque mot long est un assemblage. Prends <span class="al8">Pakholigan</span> :
   la racine <i>pakhol-</i> qui veut dire frapper, plus <i>-igan</i>, le suffixe des instruments.
@@ -3603,7 +3707,10 @@ const NIVEAUX=[
   <p>Même chose pour <span class="al8">Nodab8nkat</span> : <i>nod-</i> celui qui fait habituellement,
   <i>ab8n</i> le pain, <i>-kat</i> qui produit. Le boulanger.</p>
   <div class="aprnote"><b>Sers-toi du Décortiqueur</b>
-   L'onglet à côté démonte n'importe quel mot et te montre toute sa famille.</div>`},
+   L'onglet à côté démonte n'importe quel mot et te montre toute sa famille.</div>`,
+  coach:`Un mot par jour dans le Décortiqueur. La famille qui apparaît en bas est ta vraie leçon :
+   elle te montre comment la langue <i>pense</i>. Trente mots décortiqués en un mois valent
+   mieux que trois cents mots mémorisés.`},
  {t:"Les sources et les graphies",d:"Un même mot écrit de neuf façons en trois siècles.",ex:'src',lec:`
   <p>Le mot « enfant » à travers les auteurs :</p>
   <table class="aprtab">
@@ -3617,16 +3724,85 @@ const NIVEAUX=[
    anciennes en note plutôt que de les effacer.</div>
   <div class="aprnote w"><b>Le passage du R au L</b>
    Entre la fin du 18e siècle et le début du 19e, le R a été remplacé par le L dans la langue.
-   Certaines formes comme <i>nlhoak</i> gardent la trace de cette époque.</div>`},
+   Certaines formes comme <i>nlhoak</i> gardent la trace de cette époque.</div>`,
+  coach:`Les anciennes graphies sont des témoins, pas des erreurs. Quand une vieille écriture
+   te bloque, prononce-la à voix haute — ta langue était orale avant d'être écrite,
+   et ton oreille reconnaît souvent le mot avant tes yeux.`},
  {t:"Traduire une phrase",d:"Mettre ensemble tout ce que tu sais.",ex:'trad',lec:`
   <p>Une phrase abénakise se lit en repérant d'abord le verbe et son préfixe.</p>
   <table class="aprtab"><tr><th>Phrase</th><th>Analyse</th></tr>
   <tr><td class="k">Nd'aliwizi Mali</td><td>Nd'- (je) + aliwizi (s'appeler) + le nom</td></tr>
   <tr><td class="k">T8ni tali wigian?</td><td>T8ni (où) + tali (l'endroit) + wigian (tu habites)</td></tr>
   <tr><td class="k">Nda n'wawaldamowen</td><td>Nda (ne pas) + n'- (je) + wawaldam (savoir) + -owen</td></tr>
-  <tr><td class="k">Kiona W8banakiak</td><td>Kiona (nous, toi inclus) + W8banakiak (les Abénakis)</td></tr></table>`}]}];
+  <tr><td class="k">Kiona W8banakiak</td><td>Kiona (nous, toi inclus) + W8banakiak (les Abénakis)</td></tr></table>`,
+  coach:`Lis lentement, trois passes : 1) trouve le verbe, 2) trouve son préfixe, 3) assemble le reste.
+   La vitesse viendra d'elle-même — la méthode, elle, se choisit maintenant.`},
+ {t:"La racine de l'esprit",d:"Une seule racine, six mots de la vie intérieure.",ex:'fam',lec:`
+  <p>La racine <b>-aldam-</b> porte tout ce qui se passe dans la tête et le cœur :</p>
+  <table class="aprtab"><tr><th>Début</th><th>Mot</th><th>Sens</th></tr>
+  <tr><td class="k">waw-</td><td class="k">wawaldam</td><td>savoir</td></tr>
+  <tr><td class="k">wan-</td><td class="k">wanaldam</td><td>oublier</td></tr>
+  <tr><td class="k">mikw-</td><td class="k">mikwaldam</td><td>se souvenir</td></tr>
+  <tr><td class="k">el-</td><td class="k">elaldam</td><td>penser</td></tr>
+  <tr><td class="k">mosk-</td><td class="k">moskaldam</td><td>la colère</td></tr>
+  <tr><td class="k">wiag-</td><td class="k">wiagaldam</td><td>la joie</td></tr></table>
+  <div class="aprnote"><b>Pourquoi c'est puissant</b>
+   Savoir, oublier, se souvenir, penser : la langue dit que tout ça est <i>la même famille</i>.
+   Une fois que tu vois la racine, tu ne traduis plus — tu reconnais.</div>`,
+  coach:`Cherche les familles toi-même : ouvre le Décortiqueur, entre
+   <span class="al8">Wanaldamw8gan</span>, et regarde la famille apparaître. On devient locuteur
+   en collectionnant les racines, pas les mots — une racine maîtrisée, c'est dix mots d'un coup.`},
+ {t:"Lire les anciens",d:"Laurent 1884, Masta 1932 : lire les vieilles graphies sans se perdre.",ex:'src',lec:`
+  <p>Les anciens écrivaient ce qu'ils entendaient, avec l'alphabet de leur époque. Un même mot
+  voyage à travers les siècles :</p>
+  <table class="aprtab"><tr><th>Aujourd'hui</th><th>Avant</th><th>Source</th></tr>
+  <tr><td class="k">8h8 — oui</td><td class="k">O'hoo</td><td>Laurent 1884</td></tr>
+  <tr><td class="k">Aw8sis — enfant</td><td class="k">A8añsis · Awôssis</td><td>Rasles 1691 · Laurent 1884</td></tr>
+  <tr><td class="k">Chegwal — grenouille</td><td class="k">Chegual</td><td>Masta 1932</td></tr>
+  <tr><td class="k">Nda — non</td><td class="k">8da · 8nda</td><td>Laurent 1884 · Masta 1932</td></tr></table>
+  <div class="aprnote"><b>La méthode : prononce d'abord, lis ensuite</b>
+   Quand une vieille graphie te bloque, dis-la à voix haute. La langue était orale avant
+   d'être écrite — ton oreille reconnaît souvent le mot avant tes yeux.</div>`,
+  coach:`Le dictionnaire garde les anciennes formes dans les notes de chaque mot : c'est ta machine
+   à voyager dans le temps. Chaque note « ⚠️ graphies anciennes » prouve que le mot a vécu
+   trois siècles. Ces témoins certifient ton savoir — cite-les quand tu enseignes.`},
+ {t:"Les niveaux de certitude",d:"Lire les marques du dictionnaire : ce qui est sûr, ce qui attend validation.",ex:'src',lec:`
+  <p>Un dictionnaire vivant dit la vérité sur ses propres limites. Chaque entrée porte des marques :</p>
+  <table class="aprtab"><tr><th>Marque</th><th>Ce qu'elle veut dire</th></tr>
+  <tr><td class="k">✓ Orthographe confirmée</td><td>le mot apparaît dans deux sources ou plus</td></tr>
+  <tr><td class="k">★ Citation exacte</td><td>reproduit tel quel, vérifiable dans l'ouvrage</td></tr>
+  <tr><td class="k">✳ Forme de 1932</td><td>attestée chez Masta — à valider dans l'usage actuel</td></tr>
+  <tr><td class="k">⚠️ Graphies anciennes fusionnées</td><td>plusieurs écritures historiques réunies en une entrée</td></tr>
+  <tr><td class="k">⚠️ Étymologie de l'enseignant</td><td>explication donnée au cours — à faire valider</td></tr></table>
+  <div class="aprnote"><b>Pourquoi c'est une force</b>
+   Un dictionnaire qui cache ses doutes ment. Celui-ci les affiche. Quand tu cites un mot,
+   cite son niveau de certitude — c'est ça, la rigueur.</div>`,
+  coach:`L'autorité finale reste Hélène O'Bomsawin : ce dictionnaire prépare le travail,
+   elle le confirme. Apprends la différence entre « attesté dans une source » et « confirmé dans
+   l'usage actuel » — cette discipline te rendra crédible devant n'importe quel aîné.`},
+ {t:"Décortiquer ensemble",d:"L'examen final du cégep : démonter deux mots longs, morceau par morceau.",ex:'fam',lec:`
+  <h3>Pakholigan — le tambour</h3>
+  <p><i>pakhol-</i> frapper + <i>-igan</i> l'instrument → <b>la chose avec laquelle on frappe</b>.</p>
+  <h3>Nodab8nkat — le boulanger</h3>
+  <p><i>nod-</i> celui qui fait habituellement + <i>ab8n</i> le pain + <i>-kat</i> qui produit
+  → <b>celui qui fait le pain</b>.</p>
+  <h3>À toi maintenant</h3>
+  <p>Ouvre le Décortiqueur et entre <span class="al8">Aln8ba8dwaw8gan</span>. Écris ce que tu vois
+  sur un papier : préfixes, racine, suffixes, famille. Puis explique chaque morceau à quelqu'un
+  d'autre, à voix haute. Si tu y arrives, le cégep est réussi.</p>`,
+  coach:`Enseigner est la dernière marche de l'apprentissage. Le jour où tu expliques un mot
+   à quelqu'un sans hésiter, il t'appartient pour de bon — et tu es devenu à ton tour
+   quelqu'un qui transmet.`}]}];
 
 let aprNiv='p', aprMod=null;
+
+const COACH_TIPS=[
+ "Un mot dit à voix haute vaut dix lectures silencieuses. Toujours, toujours à voix haute.",
+ "Si un mot long te bloque, découpe-le : l'onglet Décortiqueur est fait exactement pour ça.",
+ "Apprends avec les mains : touche, mime, pointe. Le corps est une mémoire que la tête oublie d'utiliser.",
+ "L'erreur est ton amie : chaque mot raté reviendra dans l'onglet 🔁 Révision jusqu'à ce qu'il tienne.",
+ "Le soir avant de dormir, repasse trois mots. C'est pendant le sommeil que la mémoire les grave.",
+ "N'apprends pas des listes, apprends des images : colle chaque mot à un objet, un visage, un endroit de Wôlinak."];
 
 function aprParcours(){
   const prog=progAll();
@@ -3676,6 +3852,8 @@ function aprLecon(i){
       ${st?`<div class="aprnote"><b>Ta progression dans ce module</b>
         🧠 Retenir : ${st.retenir!=null?st.retenir+'%':'pas encore fait'} ·
         ✍️ Utiliser : ${st.utiliser!=null?st.utiliser+'%':'pas encore fait'}</div>`:''}
+      <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
+        ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
       <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         <button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${tt}','retenir')">
           🧠 Retenir — le quiz</button>
