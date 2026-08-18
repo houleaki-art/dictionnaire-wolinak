@@ -645,6 +645,7 @@ textarea{resize:vertical;min-height:68px}
     <button class="sb" data-view="traducteur" onclick="setView('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
       <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
       <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique</button>
+      <button class="sb" data-view="archives" onclick="setView('archives')"><span class="ic">📜</span>Archives<span class="cn" id="cn-arch">0</span></button>
 
   </div>
   <div style="margin-bottom:4px">
@@ -750,6 +751,10 @@ textarea{resize:vertical;min-height:68px}
         <p>Choisis un niveau ci-dessus pour commencer.</p>
       </div>
     </div>
+  </div>
+  <!-- ARCHIVES — les mots des ancêtres -->
+  <div id="archivesView" style="display:none">
+    <div id="archBody"></div>
   </div>
   <!-- TRADUCTEUR IA VIEW -->
   <div class="apr" id="apprendreView">
@@ -1093,6 +1098,7 @@ textarea{resize:vertical;min-height:68px}
       <button class="sb" onclick="mobileNav('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
       <button class="sb" onclick="mobileNav('apprendre')"><span class="ic">🎓</span>Apprendre</button>
       <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique</button>
+      <button class="sb" onclick="mobileNav('archives')"><span class="ic">📜</span>Archives</button>
       <div class="sl" style="margin-top:12px">Catégories</div>
       <button class="sb" onclick="mobileFilterCat('')">🔷 Toutes</button>
       <button class="sb" onclick="mobileFilterCat('salut')">🤝 Salutations</button>
@@ -1525,7 +1531,7 @@ function isConfirmed(w){
 /* Une forme est EN ATTENTE tant qu'elle n'a pas de sens :
    elle reste hors du dictionnaire et n'apparaît que dans l'atelier de validation. */
 function enAttente(w){
-  return w && (w.cat === 'corpus' || (w.fr || '').includes('⚠'));
+  return w && (w.cat === 'corpus' || w.cat === 'archive' || (w.fr || '').includes('⚠'));
 }
 function filtered(){
   // Les formes en attente ne figurent jamais dans le dictionnaire, même pour l'admin
@@ -1716,7 +1722,8 @@ function setView(v){
   document.getElementById('traducteurView').style.display = v==='traducteur'?'block':'none';
   document.getElementById('apprendreView').className = 'apr'+(v==='apprendre'?' show':'');
   document.getElementById('jeuxView').className      = 'jeu'+(v==='jeux'?' show':'');
-  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Recherche dictionnaire',apprendre:'Apprendre la langue',jeux:'Jeux'}[v]||'';
+  document.getElementById('archivesView').style.display = v==='archives'?'block':'none';
+  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Recherche dictionnaire',apprendre:'Apprendre la langue',jeux:'Jeux',archives:'Archives — les mots des ancêtres'}[v]||'';
   if(['all','favorites'].includes(v)) renderWords();
   if(v==='flashcard') initFC();
   if(v==='stats') renderStats();
@@ -1724,6 +1731,7 @@ function setView(v){
   if(v==='pratique') initPratique();
   if(v==='apprendre') aprInit();
   if(v==='jeux') jeuInit();
+  if(v==='archives') renderArchives();
 }
 function filterCat(cat){
   S.cat=cat; S.letter=''; S.view='all';
@@ -1736,6 +1744,7 @@ function filterCat(cat){
   document.getElementById('adminView').className='admin-panel';
   document.getElementById('aboutView').className='about-open';
   document.getElementById('pratiqueView').className='pratique-view';
+  document.getElementById('archivesView').style.display='none';
   document.getElementById('viewTitle').textContent=cat?catLabel(cat):'Tous les mots';
   renderWords();
 }
@@ -2817,6 +2826,7 @@ function updateCounts(){
   document.getElementById('hTot').textContent=visible.length;
   document.getElementById('cn-all').textContent=visible.length;
   document.getElementById('cn-fav').textContent=FAVS.length;
+  const cnArch=document.getElementById('cn-arch'); if(cnArch) cnArch.textContent=WORDS.filter(w=>w.cat==='archive').length;
   document.getElementById('cn-cat-all').textContent=visible.length;
   ['salut','famille','territoire','nature','animal','plante','action'].forEach(c=>{
     const el=document.getElementById('cn-cat-'+c);
@@ -2999,7 +3009,7 @@ const APR_META=/^(RÈGLE|SUFFIXE|RACINE|DIVERGENCE|CORPUS|PRONONCIATION|HISTOIRE
 const APR_DOUTE=/FORME CONSTRUITE|à confirmer|Sens à confirmer|reconstruite|à faire valider|non attestée|par analogie|HYPOTHÈSE|à valider|non glosée|Forme construite/i;
 /* pool large — pour le décortiqueur et la consultation */
 function aprPool(){ return WORDS.filter(w=>w.aln8ba&&!APR_META.test(w.aln8ba)&&w.fr
-  &&!w.fr.includes('⚠')&&w.cat!=='corpus'&&w.aln8ba!=='__version__'); }
+  &&!w.fr.includes('⚠')&&w.cat!=='corpus'&&w.cat!=='archive'&&w.aln8ba!=='__version__'); }
 /* pool sûr — pour les jeux : uniquement ce qui est attesté sans réserve */
 function aprSur(){ return aprPool().filter(w=>!APR_DOUTE.test(w.notes||'')); }
 /* un mot porte-t-il une réserve ? */
@@ -4460,6 +4470,38 @@ function atlListe(){
     r = r.filter(w => (w.source||'').includes(atlSrc));
   }
   return r.sort((a,b)=>(a.aln8ba||'').localeCompare(b.aln8ba||'','fr'));
+}
+
+// ══════════════════════════════════════════════════════════
+//  ARCHIVES — les mots des ancêtres (formes anciennes, sens à décoder)
+// ══════════════════════════════════════════════════════════
+function renderArchives(){
+  const box=document.getElementById('archBody');
+  const arch=WORDS.filter(w=>w.cat==='archive');
+  const groupes={};
+  arch.forEach(w=>{
+    const s=w.source||'';
+    const g=/Laurent/.test(s)?'Jos. Laurent — Dialogues (1884)':/Masta/.test(s)?'Henry Lorne Masta (1932)':/Rasles/.test(s)?'Sébastien Rasles (1691)':'Autres sources anciennes';
+    (groupes[g]=groupes[g]||[]).push(w);
+  });
+  const ordre=['Sébastien Rasles (1691)','Jos. Laurent — Dialogues (1884)','Henry Lorne Masta (1932)','Autres sources anciennes'];
+  box.innerHTML=`
+    <div class="aprcard">
+      <h3>📜 Les mots des ancêtres</h3>
+      <p class="aprlead">Ces formes ont été relevées dans les écrits des anciens — Rasles en 1691,
+      Laurent en 1884, Masta en 1932. Leur sens exact reste à décoder : elles ne font pas partie
+      du dictionnaire moderne, mais elles sont conservées ici avec respect, comme des pierres
+      qu'on n'a pas encore taillées. Chacune attend qu'un aîné ou un linguiste lui redonne sa voix.</p>
+    </div>
+    ${ordre.filter(g=>groupes[g]).map(g=>`
+      <div class="aprcard" style="margin-top:14px">
+        <h3 style="font-size:1rem">${g} <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${groupes[g].length} formes</span></h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+          ${groupes[g].sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba)).map(w=>
+            `<span class="al8" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.9rem"
+               title="${(w.notes||'Sens à décoder').replace(/"/g,'&quot;')}">${w.aln8ba}</span>`).join('')}
+        </div>
+      </div>`).join('')}`;
 }
 
 function renderAtelier(){
