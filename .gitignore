@@ -1,0 +1,29 @@
+# ============================================
+# Dictionnaire Wôlinak — .gitignore
+# RÈGLE D'OR : les DONNÉES du dictionnaire ne
+# vont JAMAIS sur GitHub. Seulement le code.
+# La base vit dans Supabase, point.
+# ============================================
+
+# Dumps et exports de données
+*.json
+!package.json
+words_dump*.json
+*.csv
+*.xlsx
+
+# Sauvegardes locales de la base
+backup*/
+backups/
+*.bak
+*.sql
+
+# Fichiers temporaires
+*.tmp
+*.log
+~$*
+.DS_Store
+Thumbs.db
+
+# Dépendances (si ajoutées un jour)
+node_modules/
