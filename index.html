@@ -777,8 +777,8 @@ textarea{resize:vertical;min-height:68px}
   <div id="traducteurView" style="display:none">
     <div class="trad-wrap">
       <div class="trad-header">
-        <h2>🔍 Recherche dans le dictionnaire</h2>
-        <p class="trad-sub">Recherche dans les mots confirmés du dictionnaire Aln8ba8dwaw8gan</p>
+        <h2>🪶 Traducteur de phrases</h2>
+        <p class="trad-sub">Écris une phrase complète — le traducteur la compose morceau par morceau avec les mots confirmés du dictionnaire</p>
       </div>
       <div class="trad-direction-bar">
         <button class="trad-dir-btn on" id="btnFrToAln" onclick="setTradDir('fr-aln')">
@@ -795,7 +795,7 @@ textarea{resize:vertical;min-height:68px}
           <div class="trad-actions">
             <button class="trad-clear-btn" onclick="clearTrad()">✕ Effacer</button>
             <button class="trad-btn" id="tradBtn" onclick="traduire()">
-              <span id="tradBtnTxt">Rechercher →</span>
+              <span id="tradBtnTxt">Traduire →</span>
             </button>
           </div>
         </div>
@@ -2946,63 +2946,111 @@ function traduire(){
   const input = document.getElementById('tradInput').value.trim();
   if(!input) return;
 
-  document.getElementById('tradBtnTxt').textContent = 'Recherche…';
+  document.getElementById('tradBtnTxt').textContent = 'Traduction…';
   document.getElementById('tradCopyBtn').style.display = 'none';
   document.getElementById('tradMeta').textContent = '';
 
   const srcField = TRAD_DIR==='fr-aln' ? 'fr' : 'aln8ba';
   const dstField = TRAD_DIR==='fr-aln' ? 'aln8ba' : 'fr';
 
-  const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/['’]/g,"'");
+  const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[’]/g,"'");
   const clean = s => norm(s).replace(/[^a-z0-9\s'8]/g,' ').replace(/\s+/g,' ').trim();
-  const inputClean = clean(input);
-  const inputTokens = inputClean.split(/\s+/).filter(t => t.length >= 3);
+  // Élisions françaises : j'aime → je aime (mais c'est reste c'est)
+  const elargir = s => s.replace(/\bj'/g,"je ").replace(/\bl'/g,"le ").replace(/\bd'/g,"de ")
+                        .replace(/\bn'/g,"ne ").replace(/\bs'/g,"se ").replace(/\bqu'/g,"que ")
+                        .replace(/\bm'/g,"me ").replace(/\bt'/g,"tu ");
+  const tokEq = (a,b) => a===b || (a.length>3&&a+'s'===b) || (b.length>3&&b+'s'===a)
+                       || (a.length>=6&&b.startsWith(a)) || (b.length>=6&&a.startsWith(b));
 
+  // Index des sens : chaque entrée est éclatée en sens (« · »), chaque sens indexé par son 1er token
+  const idx = new Map();
   const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-'));
+  pool.forEach(w => {
+    const sensList = srcField==='fr' ? (w.fr||'').split(/[·;]/) : [w.aln8ba];
+    sensList.forEach(sens0 => {
+      let s = clean(sens0.replace(/\([^)]*\)/g,' '));
+      if(srcField==='fr') s = elargir(s);
+      const toks = s.split(' ').filter(t=>t.length>0);
+      if(!toks.length || toks.length>6) return;
+      const key = toks[0];
+      if(!idx.has(key)) idx.set(key,[]);
+      idx.get(key).push({toks, w, sens: sens0.trim()});
+    });
+  });
+  idx.forEach(lst => lst.sort((a,b)=>b.toks.length-a.toks.length));
 
-  const scored = pool.map(w => {
-    const srcClean = clean(w[srcField]);
-    const srcTokens = srcClean.split(/[\s\/·,\-–—]+/).filter(t => t.length >= 3);
-    let score = 0;
-    if(srcClean === inputClean){ score = 100; }
-    else {
-      inputTokens.forEach(tok => {
-        if(srcTokens.includes(tok)){ score += 50; return; }
-        if(tok.length >= 4 && srcTokens.some(st => st.startsWith(tok) || tok.startsWith(st))){ score += 25; return; }
-        const wb = new RegExp('\\b' + tok.replace(/'/g,"'?") + '\\b');
-        if(wb.test(srcClean)){ score += 40; }
-      });
-    }
-    return {w, score};
-  }).filter(x => x.score >= 40).sort((a,b) => b.score - a.score).slice(0, 6);
+  // Découpage de la phrase : correspondance la plus longue d'abord
+  let inputClean = clean(input);
+  if(TRAD_DIR==='fr-aln') inputClean = elargir(inputClean);
+  const inToks = inputClean.split(' ').filter(Boolean);
+  const seqOk = (i,cand) => {
+    if(i+cand.toks.length>inToks.length) return false;
+    for(let k=0;k<cand.toks.length;k++) if(!tokEq(inToks[i+k],cand.toks[k])) return false;
+    return true;
+  };
+  const chunks=[]; let i=0;
+  while(i<inToks.length){
+    const lst = idx.get(inToks[i]) || idx.get(inToks[i].replace(/s$/,'')) || [];
+    const trouves = lst.filter(c=>seqOk(i,c));
+    if(trouves.length){
+      const bestLen = trouves[0].toks.length;
+      const alts = trouves.filter(c=>c.toks.length===bestLen);
+      const vu = new Set(); const uniqAlts = alts.filter(c=>{const k=c.w[dstField]; if(vu.has(k)) return false; vu.add(k); return true;});
+      chunks.push({type:'hit', toks:inToks.slice(i,i+bestLen), w:uniqAlts[0].w, sens:uniqAlts[0].sens, alts:uniqAlts.slice(1,3)});
+      i += bestLen;
+    } else { chunks.push({type:'miss', toks:[inToks[i]]}); i++; }
+  }
 
   const outEl = document.getElementById('tradOutput');
+  const hits = chunks.filter(c=>c.type==='hit');
 
-  if(scored.length === 0){
-    outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot trouvé dans le dictionnaire pour « ' + input + ' ».<br><br>Essaie un seul mot à la fois (ex : bonjour, eau, terre...).</span>';
-    document.getElementById('tradBtnTxt').textContent = 'Rechercher →';
+  if(hits.length===0){
+    outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples (ex : bonjour, eau, je m\'appelle...) ou propose le mot manquant avec le bouton ✍️ Suggérer.</span>';
+    document.getElementById('tradBtnTxt').textContent = 'Traduire →';
     return;
   }
 
-  let html = '<div style="font-size:.78rem;color:var(--text2);margin-bottom:10px">📖 ' + scored.length + ' correspondance' + (scored.length>1?'s':'') + ' :</div>';
-  scored.forEach(function(item){
-    const w = item.w; const score = item.score;
-    const badge = score===100 ? '✅' : score>=50 ? '🔶' : '🔸';
-    html += '<div style="display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--border)">'
-      + '<span style="font-size:1.05rem;font-weight:700;color:var(--accent);min-width:130px">' + w[dstField] + '</span>'
-      + '<span style="color:var(--text2);font-size:.82rem">' + badge + ' ' + w[srcField] + '</span>'
-      + (w.grammar ? '<span style="color:var(--text3,#aaa);font-size:.75rem;font-style:italic">' + w.grammar + '</span>' : '')
-      + '</div>';
-    if(w.example_a && w.example_f){
-      html += '<div style="font-size:.75rem;color:var(--text2);padding:2px 0 6px 4px;font-style:italic">Ex : ' + w.example_a + ' — ' + w.example_f + '</div>';
+  // Phrase composée
+  const sortie = chunks.map(c => c.type==='hit' ? c.w[dstField] : '«'+c.toks.join(' ')+'»').join(' ');
+  const couverts = hits.reduce((n,c)=>n+c.toks.length,0);
+  const pct = Math.round(100*couverts/inToks.length);
+  const pcCol = pct>=80 ? '#2e7d32' : pct>=50 ? '#b8860b' : '#c0392b';
+  const pcTxt = pct>=80 ? 'Bonne couverture' : pct>=50 ? 'Couverture partielle' : 'Couverture faible';
+
+  let html = '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+    + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5">' + sortie + '</div>'
+    + '<div style="margin-top:8px;display:flex;align-items:center;gap:8px">'
+    +   '<div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+pcCol+';border-radius:3px"></div></div>'
+    +   '<span style="font-size:.75rem;font-weight:700;color:'+pcCol+'">'+pct+'% · '+pcTxt+'</span>'
+    + '</div></div>';
+
+  // Détail morceau par morceau
+  html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">🧩 Comment la phrase est composée :</div>';
+  chunks.forEach(c => {
+    if(c.type==='hit'){
+      html += '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
+        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + '</span>'
+        + '<span style="font-weight:700;color:var(--accent)">' + c.w[dstField] + '</span>'
+        + '<span style="color:#2e7d32;font-size:.75rem">✅</span></div>';
+      c.alts.forEach(a => {
+        html += '<div style="font-size:.75rem;color:var(--text2);padding:1px 0 3px 130px">ou aussi : <b>' + a.w[dstField] + '</b></div>';
+      });
+      if(c.w.example_a && c.w.example_f){
+        html += '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">Ex : ' + c.w.example_a + ' — ' + c.w.example_f + '</div>';
+      }
+    } else {
+      html += '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
+        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + '</span>'
+        + '<span style="color:#c0392b;font-size:.82rem">❓ pas encore dans le dictionnaire</span></div>';
     }
   });
 
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = 'block';
-  document.getElementById('tradMeta').textContent = '⚠️ Recherche mot à mot dans le dictionnaire. Pour une traduction complète, consulte Hélène O’Bomsawin.';
-  document.getElementById('tradBtnTxt').textContent = 'Rechercher →';
+  document.getElementById('tradMeta').textContent = '⚠️ Traduction composée morceau par morceau à partir du dictionnaire — l\'ordre des mots aln8ba peut différer du français. Pour un usage officiel ou cérémoniel, valide avec Hélène O\'Bomsawin.';
+  document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
+
 /* ═══════════════════════════════════════════════════════
    APPRENDRE  ·  Parcours · Décortiqueur · Conjugueur · Chiffres · Grammaire
    ═══════════════════════════════════════════════════════ */
