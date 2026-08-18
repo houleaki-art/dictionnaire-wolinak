@@ -822,7 +822,7 @@ textarea{resize:vertical;min-height:68px}
       <h3>🔒 Administration</h3>
       <div class="pinlock" id="pinLock">
         <p class="pininfo">Entrez le mot de passe administrateur</p>
-        <input type="password" id="pinIn" placeholder="• • • •" maxlength="64" onkeydown="if(event.key==='Enter')checkPin()">
+        <input type="password" id="pinIn" placeholder="• • • •" maxlength="64" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkPin()">
         <button class="btn btn-primary" onclick="checkPin()">Accéder</button>
         <p class="pininfo" id="pinErr" style="color:var(--red);display:none">Mot de passe incorrect</p>
       </div>
