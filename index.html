@@ -820,17 +820,17 @@ textarea{resize:vertical;min-height:68px}
       <button onclick="setView('all')" style="display:none;margin-bottom:16px;width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:.85rem;cursor:pointer;text-align:left" id="adminBackBtn">← Retour au dictionnaire</button>
       <h3>🔒 Administration</h3>
       <div class="pinlock" id="pinLock">
-        <p class="pininfo">Entrez le code PIN administrateur</p>
-        <input type="password" id="pinIn" placeholder="• • • •" maxlength="20" onkeydown="if(event.key==='Enter')checkPin()">
+        <p class="pininfo">Entrez le mot de passe administrateur</p>
+        <input type="password" id="pinIn" placeholder="• • • •" maxlength="64" onkeydown="if(event.key==='Enter')checkPin()">
         <button class="btn btn-primary" onclick="checkPin()">Accéder</button>
-        <p class="pininfo" id="pinErr" style="color:var(--red);display:none">Code incorrect</p>
+        <p class="pininfo" id="pinErr" style="color:var(--red);display:none">Mot de passe incorrect</p>
       </div>
       <div id="adminContent" style="display:none">
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
           <button class="btn btn-success" onclick="exportJSON()">📥 Exporter JSON</button>
           <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📤 Importer JSON</button>
           <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-          <button class="btn btn-secondary" onclick="changePin()">🔑 Changer PIN</button>
+          <button class="btn btn-secondary" onclick="changePin()">🔑 Changer mot de passe</button>
           <button class="btn btn-secondary" onclick="runLinguisticAudit()" title="Analyser tous les mots selon les règles grammaticales abenakises">🔬 Audit linguistique</button>
         </div>
         <div id="auditResults" style="display:none;margin-bottom:18px"></div>
@@ -1122,7 +1122,11 @@ const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v
 const SB_URL = 'https://exjfbddebsmkgbehhfod.supabase.co';
 const SB_KEY = 'sb_publishable_BT4lsOg6E0k6NANAQqN9Wg_15qPRM6r';
 const SB_HEADERS = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
-const DEFAULT_PIN = 'Odanak2025';
+// ── AUTH ADMIN — le mot de passe n'est JAMAIS dans le code ──
+// Connexion réelle via Supabase Auth; le token remplace la clé anon pour les écritures.
+const ADMIN_EMAIL = 'guillaumhoule2001@gmail.com';
+let SB_AUTH = null;
+function sbUseAuth(token){ SB_AUTH=token; SB_HEADERS['Authorization']='Bearer '+token; }
 
 // ── Vérification de version — efface le cache si nouvelle version détectée ──
 (function checkVersion(){
@@ -1734,8 +1738,6 @@ async function deletePending(id){
 }
 function loadFavs(){ return JSON.parse(localStorage.getItem(SK.favs)||'[]'); }
 function saveFavs(f){ localStorage.setItem(SK.favs,JSON.stringify(f)); }
-function getPin(){ return DEFAULT_PIN; }
-function setPin(p){ /* PIN intouchable — défini uniquement dans le code source */ }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
 // ══════════════════════════════════════════════════════════
@@ -2472,15 +2474,42 @@ function openAdmin(){
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.remove('on'));
   if(adminUnlocked) renderAdmin();
 }
-function checkPin(){
+async function checkPin(){
   const v=document.getElementById('pinIn').value;
-  if(v===getPin()){ adminUnlocked=true; document.getElementById('pinLock').style.display='none'; document.getElementById('adminContent').style.display='block'; renderAdmin(); }
-  else{ document.getElementById('pinErr').style.display='block'; document.getElementById('pinIn').value=''; }
+  const err=document.getElementById('pinErr');
+  err.style.display='none';
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email:ADMIN_EMAIL,password:v})
+    });
+    if(!r.ok) throw new Error('auth');
+    const d=await r.json();
+    sbUseAuth(d.access_token);
+    adminUnlocked=true;
+    document.getElementById('pinLock').style.display='none';
+    document.getElementById('adminContent').style.display='block';
+    renderAdmin();
+  }catch(e){
+    err.style.display='block';
+    document.getElementById('pinIn').value='';
+  }
 }
-function changePin(){
-  const np=prompt('Nouveau code PIN administrateur:');
-  if(np&&np.length>=4){ setPin(np); toast('PIN mis à jour'); }
-  else if(np) toast('PIN trop court (minimum 4 caractères)');
+async function changePin(){
+  const np=prompt('Nouveau mot de passe administrateur (minimum 6 caractères):');
+  if(!np) return;
+  if(np.length<6){ toast('Mot de passe trop court (minimum 6 caractères)'); return; }
+  if(!SB_AUTH){ toast('Session expirée — reconnecte-toi'); return; }
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/user',{
+      method:'PUT',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_AUTH,'Content-Type':'application/json'},
+      body:JSON.stringify({password:np})
+    });
+    if(!r.ok) throw new Error('update');
+    toast('Mot de passe mis à jour');
+  }catch(e){ toast('Échec — reconnecte-toi et réessaie'); }
 }
 // ══════════════════════════════════════════════════════════
 //  AUDIT LINGUISTIQUE
@@ -4359,5 +4388,9 @@ async function atlEcarter(id){
 }
 
 </script>
+<footer style="text-align:center;padding:18px 12px;font-size:.75rem;color:var(--text2);opacity:.7;border-top:1px solid var(--border)">
+  © 2026 Guillaum Houle — Première Nation Abénakise de Wôlinak. Tous droits réservés.<br>
+  Les mots, traductions et contenus linguistiques de ce dictionnaire sont protégés. Toute reproduction sans autorisation est interdite.
+</footer>
 </body>
 </html>
