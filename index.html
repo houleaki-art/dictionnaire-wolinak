@@ -210,6 +210,17 @@ textarea{resize:vertical;min-height:68px}
 /* flashcard */
 .fcmode{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:480px;gap:20px}
 .fcmode.open{display:flex}
+/* ── S'exercer : hub + sous-onglets ── */
+.exo-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.exo-tabs button{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:.8rem;cursor:pointer;transition:var(--tr)}
+.exo-tabs button:hover{border-color:var(--accent);color:var(--accent)}
+.exo-tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.exo-hub{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:6px}
+.exo-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:22px 18px;cursor:pointer;transition:var(--tr)}
+.exo-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.exo-icon{font-size:2.2rem;margin-bottom:8px}
+.exo-name{font-weight:700;margin-bottom:6px}
+.exo-desc{font-size:.82rem;color:var(--text3)}
 .fc{width:100%;max-width:480px;height:280px;perspective:1000px;cursor:pointer}
 .fci{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s}
 .fc.flip .fci{transform:rotateY(180deg)}
@@ -641,12 +652,10 @@ textarea{resize:vertical;min-height:68px}
     <div class="sl">Vues</div>
     <button class="sb on" data-view="all" onclick="setView('all')"><span class="ic">📖</span>Tous les mots<span class="cn" id="cn-all">0</span></button>
     <button class="sb" data-view="favorites" onclick="setView('favorites')"><span class="ic">⭐</span>Favoris<span class="cn" id="cn-fav">0</span></button>
-    <button class="sb" data-view="flashcard" onclick="setView('flashcard')"><span class="ic">🃏</span>Cartes mémoire</button>
     <button class="sb" data-view="stats" onclick="setView('stats')"><span class="ic">📊</span>Statistiques</button>
-    <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique grammaire</button>
     <button class="sb" data-view="traducteur" onclick="setView('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
       <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
-      <button class="sb" data-view="jeux" onclick="setView('jeux')"><span class="ic">🎯</span>Jeux</button>
+      <button class="sb" data-view="exercices" onclick="setView('exercices')"><span class="ic">🏋️</span>S'exercer</button>
 
   </div>
   <div style="margin-bottom:4px">
@@ -694,7 +703,32 @@ textarea{resize:vertical;min-height:68px}
     <div id="wordsContainer"></div>
   </div>
   <!-- FLASHCARD VIEW -->
+  <!-- S'EXERCER — HUB (remplace les 3 anciens onglets) -->
+  <div id="exercicesView" style="display:none">
+    <div class="exo-hub">
+      <div class="exo-card" onclick="setView('flashcard')">
+        <div class="exo-icon">🃏</div>
+        <div class="exo-name">Cartes mémoire</div>
+        <div class="exo-desc">Révise le vocabulaire carte par carte. Clique sur la carte pour révéler la traduction.</div>
+      </div>
+      <div class="exo-card" onclick="setView('pratique')">
+        <div class="exo-icon">🧩</div>
+        <div class="exo-name">Pratique grammaire</div>
+        <div class="exo-desc">4 niveaux progressifs : reconnaissance, identification, production, maîtrise totale.</div>
+      </div>
+      <div class="exo-card" onclick="setView('jeux')">
+        <div class="exo-icon">🎯</div>
+        <div class="exo-name">Jeux</div>
+        <div class="exo-desc">Apprends en jouant : des défis rapides pour ancrer les mots en s'amusant.</div>
+      </div>
+    </div>
+  </div>
   <div class="fcmode" id="fcView">
+    <div class="exo-tabs">
+      <button class="on" onclick="setView('flashcard')">🃏 Cartes</button>
+      <button onclick="setView('pratique')">🧩 Grammaire</button>
+      <button onclick="setView('jeux')">🎯 Jeux</button>
+    </div>
     <div class="fcprog" id="fcProg">Carte 1/0</div>
     <div class="fc" id="fcCard" onclick="fcFlip()">
       <div class="fci">
@@ -708,6 +742,11 @@ textarea{resize:vertical;min-height:68px}
   </div>
   <!-- PRATIQUE GRAMMAIRE VIEW -->
   <div class="pratique-view" id="pratiqueView">
+    <div class="exo-tabs">
+      <button onclick="setView('flashcard')">🃏 Cartes</button>
+      <button class="on" onclick="setView('pratique')">🧩 Grammaire</button>
+      <button onclick="setView('jeux')">🎯 Jeux</button>
+    </div>
     <div class="prat-header">
       <div>
         <h2>🧩 Pratique · Aln8ba8dwaw8gan</h2>
@@ -765,6 +804,11 @@ textarea{resize:vertical;min-height:68px}
     <div id="aprBody"></div>
   </div>
   <div class="jeu" id="jeuxView">
+    <div class="exo-tabs">
+      <button onclick="setView('flashcard')">🃏 Cartes</button>
+      <button onclick="setView('pratique')">🧩 Grammaire</button>
+      <button class="on" onclick="setView('jeux')">🎯 Jeux</button>
+    </div>
     <div class="jmenu" id="jMenu"></div>
     <div class="jstage" id="jStage"><div style="text-align:center;color:var(--text3);padding:40px 20px">
       Choisis un jeu ci-dessus.</div></div>
@@ -1089,12 +1133,10 @@ textarea{resize:vertical;min-height:68px}
       <div class="sl">Vues</div>
       <button class="sb" onclick="mobileNav('all')"><span class="ic">📖</span>Tous les mots</button>
       <button class="sb" onclick="mobileNav('favorites')"><span class="ic">⭐</span>Favoris</button>
-      <button class="sb" onclick="mobileNav('flashcard')"><span class="ic">🃏</span>Cartes mémoire</button>
       <button class="sb" onclick="mobileNav('stats')"><span class="ic">📊</span>Statistiques</button>
-      <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique grammaire</button>
       <button class="sb" onclick="mobileNav('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
       <button class="sb" onclick="mobileNav('apprendre')"><span class="ic">🎓</span>Apprendre</button>
-      <button class="sb" onclick="mobileNav('jeux')"><span class="ic">🎯</span>Jeux</button>
+      <button class="sb" onclick="mobileNav('exercices')"><span class="ic">🏋️</span>S'exercer</button>
       <div class="sl" style="margin-top:12px">Catégories</div>
       <button class="sb" onclick="mobileFilterCat('')">🔷 Toutes</button>
       <button class="sb" onclick="mobileFilterCat('salut')">🤝 Salutations</button>
@@ -1705,7 +1747,8 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 function setView(v){
   S.view=v; S.cat=''; S.letter='';
-  document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  const gv=['flashcard','pratique','jeux'].includes(v)?'exercices':v;
+  document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===gv));
   document.querySelectorAll('.ab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.sb[data-cat]').forEach(b=>b.classList.remove('on'));
   document.getElementById('dictView').style.display  = ['all','favorites'].includes(v)?'block':'none';
@@ -1717,7 +1760,8 @@ function setView(v){
   document.getElementById('traducteurView').style.display = v==='traducteur'?'block':'none';
   document.getElementById('apprendreView').className = 'apr'+(v==='apprendre'?' show':'');
   document.getElementById('jeuxView').className      = 'jeu'+(v==='jeux'?' show':'');
-  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Recherche dictionnaire',apprendre:'Apprendre la langue',jeux:'Jeux'}[v]||'';
+  document.getElementById('exercicesView').style.display = v==='exercices'?'block':'none';
+  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Recherche dictionnaire',apprendre:'Apprendre la langue',jeux:'Jeux',exercices:"S'exercer"}[v]||'';
   if(['all','favorites'].includes(v)) renderWords();
   if(v==='flashcard') initFC();
   if(v==='stats') renderStats();
@@ -1737,6 +1781,7 @@ function filterCat(cat){
   document.getElementById('adminView').className='admin-panel';
   document.getElementById('aboutView').className='about-open';
   document.getElementById('pratiqueView').className='pratique-view';
+  document.getElementById('exercicesView').style.display='none';
   document.getElementById('viewTitle').textContent=cat?catLabel(cat):'Tous les mots';
   renderWords();
 }
