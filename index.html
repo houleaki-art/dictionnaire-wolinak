@@ -3073,10 +3073,13 @@ function traduire(){
         if(trouves.length){ viaSyn = syn; break; }
       }
       if(!trouves.length){
-        // le synonyme peut couvrir un autre nombre de tokens : accepter la 1re entrée du synonyme
+        // le synonyme peut couvrir un autre nombre de tokens : préférer le sens le plus court (le plus général)
         for(const syn of SYN[t]){
           const lst2 = idx.get(syn) || [];
-          if(lst2.length){ trouves=[lst2[0]]; viaSyn=syn; break; }
+          if(lst2.length){
+            const trie=[...lst2].sort((a,b)=>a.toks.length-b.toks.length);
+            trouves=[trie[0]]; viaSyn=syn; break;
+          }
         }
       }
     }
