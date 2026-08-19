@@ -2989,160 +2989,303 @@ function traduire(){
 
   const srcField = TRAD_DIR==='fr-aln' ? 'fr' : 'aln8ba';
   const dstField = TRAD_DIR==='fr-aln' ? 'aln8ba' : 'fr';
+  const FR = TRAD_DIR==='fr-aln';
 
   const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[’]/g,"'");
-  const clean = s => norm(s).replace(/[^a-z0-9\s'8]/g,' ').replace(/\s+/g,' ').trim();
-  // Élisions françaises : j'aime → je aime (mais c'est reste c'est)
-  const elargir = s => s.replace(/\bj'/g,"je ").replace(/\bl'/g,"le ").replace(/\bd'/g,"de ")
-                        .replace(/\bn'/g,"ne ").replace(/\bs'/g,"se ").replace(/\bqu'/g,"que ")
-                        .replace(/\bm'/g,"me ").replace(/\bt'/g,"tu ");
-
-  // ── Comprendre le français courant ──
-  // Équivalences de phrases : ce que les gens écrivent → ce que le dictionnaire connaît
-  const EQUIV = [
-    ["comment ca va",        "comment vas tu"],
-    ["comment allez vous",   "comment vas tu"],
-    ["ca va bien",           "je vais bien"],
-    ["ca va",                "comment vas tu"],
-    ["merci beaucoup",       "merci"],
-    ["merci a tous",         "merci"],
-    ["bonjour a tous",       "bonjour"],
-    ["quelle heure est il",  "quelle heure"],
-    ["quel age as tu",       "quel age"],
-    ["je t aime",            "je te aime"],
-  ];
-  // Synonymes mot à mot : si le token n'est pas trouvé, essayer ceux-là
-  const SYN = {
-    salut:["bonjour"], coucou:["bonjour"], allo:["bonjour"],
-    ciao:["au revoir"], adieu:["au revoir"],
-    papa:["pere"], papi:["grand pere"], papy:["grand pere"],
-    maman:["mere"], mamie:["grand mere"], mammy:["grand mere"],
-    auto:["voiture"], char:["voiture"],
-    piastre:["argent"], piastres:["argent"],
-    gars:["garcon"], mec:["homme"], fillette:["petite fille"],
-    maisonnette:["petite maison"],
-  };
-  // Articles français : pas d'équivalent en aln8ba — on les ignore sans pénalité
-  const ARTICLES = new Set(["le","la","les","un","une","des","du","de","au","aux","a"]);
-
-  const tokEq = (a,b) => a===b || (a.length>3&&a+'s'===b) || (b.length>3&&b+'s'===a)
-                       || (a.length>=6&&b.startsWith(a)) || (b.length>=6&&a.startsWith(b));
-  // Distance d'édition — pour la tolérance aux fautes de frappe
   const levDist=(a,b)=>{const m=a.length,n=b.length;if(Math.abs(m-n)>2)return 9;
     const d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
     for(let j=1;j<=n;j++)d[0][j]=j;
     for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
       d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
     return d[m][n];};
+  const tokEq = (a,b) => a===b || (a.length>3&&a+'s'===b) || (b.length>3&&b+'s'===a)
+                       || (a.length>=6&&b.startsWith(a)) || (b.length>=6&&a.startsWith(b));
+  const tokFuzzy = (a,b) => tokEq(a,b) || (a.length>=4 && b.length>=4 && levDist(a,b)<=(a.length>=7?2:1));
 
-  // Index des sens : chaque entrée est éclatée en sens (« · »), chaque sens indexé par son 1er token
-  // + variante sans article initial (« le tambour » est aussi trouvé par « tambour »)
-  const idx = new Map();
-  const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-') && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
-  const pushIdx = (toks,w,sens) => {
-    if(!toks.length || toks.length>6) return;
-    const key = toks[0];
-    if(!idx.has(key)) idx.set(key,[]);
-    idx.get(key).push({toks, w, sens});
+  // Élisions et contractions françaises — appliquées aux entrées du dictionnaire ET à la phrase
+  // (t' = te, jamais « tu » — sinon « je t'aime » ne peut pas être reconnu)
+  const elargirFr = s => (' '+s+' ')
+    .replace(/\bjusqu'/g,' jusque ').replace(/\blorsqu'/g,' lorsque ').replace(/\bpuisqu'/g,' puisque ')
+    .replace(/\bqu'/g,' que ').replace(/\bj'/g,' je ').replace(/\bm'/g,' me ')
+    .replace(/\bt'/g,' te ').replace(/\bs'/g,' se ').replace(/\bl'/g,' le ')
+    .replace(/\bd'/g,' de ').replace(/\bn'/g,' ne ').replace(/\bc'/g,' ce ')
+    .replace(/\bdu\b/g,' de le ').replace(/\bdes\b/g,' de les ')
+    .replace(/\bau\b/g,' a le ').replace(/\baux\b/g,' a les ')
+    .replace(/\s+/g,' ').trim();
+
+  // Formulations courantes → formulation du dictionnaire
+  const EQUIV = [
+    ["comment ca va",        "comment vas tu"],
+    ["comment allez vous",   "comment vas tu"],
+    ["comment te sens tu",   "comment vas tu"],
+    ["comment tu te sens",   "comment vas tu"],
+    ["ca va bien",           "je vais bien"],
+    ["ca va",                "comment vas tu"],
+    ["quelle heure est il",  "quelle heure"],
+    ["quel age as tu",       "quel age"],
+  ];
+  // Synonymes mot à mot — essayés seulement si le mot est absent du dictionnaire
+  const SYN = {
+    salut:["bonjour"], coucou:["bonjour"], allo:["bonjour"],
+    ciao:["au revoir"], adieu:["au revoir"],
+    papa:["pere"], papi:["grand pere"], papy:["grand pere"],
+    maman:["mere"], mamie:["grand mere"],
+    auto:["voiture"], char:["voiture"],
+    piastre:["argent"], piastres:["argent"],
+    gars:["garcon"], mec:["homme"], fillette:["petite fille"],
+    prenom:["nom"],
   };
+  // Articles français : pas d'équivalent en aln8ba — on les retire sans pénalité
+  const ARTICLES = new Set(["le","la","les","un","une","des","du","de","au","aux","a"]);
+
+  // ── Le dictionnaire de travail ──
+  const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-') && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
+  const byId = id => pool.find(w=>w.id===id);
+
+  // Index 1 : premier token du sens → expressions (correspondance de phrases, la plus longue gagne)
+  // Index 2 : chaque token de contenu → expressions (repli pour un mot seul, ex : « appeler » dans « Appeler · nommer »)
+  const idx = new Map(), tokIdx = new Map();
+  const pushIdx=(map,key,ent)=>{ if(!key) return; if(!map.has(key)) map.set(key,[]); map.get(key).push(ent); };
   pool.forEach(w => {
-    const sensList = srcField==='fr' ? (w.fr||'').split(/[·;]/) : [w.aln8ba];
+    const sensList = FR ? (w.fr||'').split(/[·;]/) : [w.aln8ba];
     sensList.forEach(sens0 => {
-      let s = clean(sens0.replace(/\([^)]*\)/g,' '));
-      if(srcField==='fr') s = elargir(s);
+      let s = norm(sens0.replace(/\([^)]*\)/g,' ')).replace(/[^a-z0-9\s'8]/g,' ').replace(/\s+/g,' ').trim();
+      if(FR) s = elargirFr(s);
       const toks = s.split(' ').filter(t=>t.length>0);
-      pushIdx(toks, w, sens0.trim());
-      if(srcField==='fr' && toks.length>1 && ARTICLES.has(toks[0]))
-        pushIdx(toks.slice(1), w, sens0.trim());
+      if(!toks.length || toks.length>6) return;
+      const ent = {toks, w, sens:sens0.trim()};
+      pushIdx(idx, toks[0], ent);
+      if(FR && toks.length>1 && ARTICLES.has(toks[0])) pushIdx(idx, toks[1], ent);
+      toks.forEach(t=>{ if(t.length>=3 && !ARTICLES.has(t)) pushIdx(tokIdx, t, ent); });
     });
   });
   idx.forEach(lst => lst.sort((a,b)=>b.toks.length-a.toks.length));
 
-  // Découpage de la phrase : correspondance la plus longue d'abord
-  let inputClean = clean(input);
-  if(TRAD_DIR==='fr-aln'){
-    inputClean = elargir(inputClean);
-    EQUIV.sort((a,b)=>b[0].length-a[0].length).forEach(([de,vers])=>{
-      inputClean = inputClean.replace(new RegExp('(^| )'+de.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?= |$)','g'), '$1'+vers);
+  // Lemmes : ramener un verbe conjugué à l'infinitif — accepté seulement si l'infinitif existe dans le dictionnaire
+  const IRREG = {suis:'etre',es:'etre',est:'etre',sommes:'etre',etes:'etre',sont:'etre',etais:'etre',etait:'etre',
+    ai:'avoir',as:'avoir',avons:'avoir',avez:'avoir',ont:'avoir',avais:'avoir',avait:'avoir',
+    vais:'aller',vas:'aller',va:'aller',allons:'aller',allez:'aller',vont:'aller',
+    fais:'faire',fait:'faire',font:'faire',faites:'faire',dis:'dire',dit:'dire',disent:'dire',
+    peux:'pouvoir',peut:'pouvoir',peuvent:'pouvoir',pourrais:'pouvoir',pourrait:'pouvoir',
+    veux:'vouloir',veut:'vouloir',veulent:'vouloir',voudrais:'vouloir',
+    sais:'savoir',sait:'savoir',savent:'savoir',vois:'voir',voit:'voir',voient:'voir',
+    viens:'venir',vient:'venir',viennent:'venir',prends:'prendre',prend:'prendre',prennent:'prendre',
+    mets:'mettre',met:'mettre',dors:'dormir',sors:'sortir',pars:'partir',
+    appelle:'appeler',appelles:'appeler',appellent:'appeler',comprends:'comprendre',comprend:'comprendre',
+    entends:'entendre',entend:'entendre',rejoins:'rejoindre',rejoint:'rejoindre'};
+  const lemmes = t => {
+    const c=[];
+    if(IRREG[t]) c.push(IRREG[t]);
+    if(t.endsWith('ent')&&t.length>4) c.push(t.slice(0,-3)+'r');
+    if(t.endsWith('ez')&&t.length>3)  c.push(t.slice(0,-2)+'r', t.slice(0,-2)+'ir');
+    if(t.endsWith('ons')&&t.length>4) c.push(t.slice(0,-3)+'r', t.slice(0,-3)+'ir');
+    if(t.endsWith('es')&&t.length>3)  c.push(t.slice(0,-2)+'r', t.slice(0,-2));
+    if(t.endsWith('e')&&t.length>3)   c.push(t+'r');
+    if(t.endsWith('s')&&t.length>3)   c.push(t.slice(0,-1), t.slice(0,-1)+'r');
+    return [...new Set(c)];
+  };
+
+  // ── Pronoms, possessifs, négation : expliqués, pas traduits bêtement ──
+  const PRON={};
+  const addPron=(keys,id,note)=>{const w=byId(id); if(w) keys.forEach(k=>PRON[k]={w,note});};
+  if(FR){
+    addPron(['je','moi'],'mst077',"« je » voyage avec le verbe (préfixe n'- / nd'-). « Nia » = moi, quand on insiste.");
+    addPron(['tu','toi'],'man_p02',"« tu » se porte sur le verbe (préfixe k'- / kd'-). « Kia » = toi, quand on insiste.");
+    addPron(['il','elle','lui'],'man_p03',"« il / elle » se porte sur le verbe (préfixe w'- / wd'-). « Agma » = lui / elle.");
+    addPron(['nous'],'cor0126',"Deux « nous » en aln8ba : Kiona = avec toi · Niona = sans toi.");
+    addPron(['vous'],'man_p06',"« vous » — le verbe prend le préfixe k'- avec la fin -ba.");
+  }
+  const POSS = {mon:"n'-",ma:"n'-",mes:"n'-",ton:"k'-",ta:"k'-",tes:"k'-",son:"w'-",sa:"w'-",ses:"w'-"};
+  const wNeg   = FR ? byId('gram_neg')      : null;   // Nda … -wi
+  const wNegEx = FR ? byId('lau_negwawald') : null;   // Nda n'wawaldamowen — Je ne sais pas
+
+  // ── Tokenisation — la casse d'origine est gardée pour repérer les noms propres ──
+  const ELI = {j:'je',m:'me',t:'te',s:'se',l:'le',d:'de',n:'ne',qu:'que',c:'ce',jusqu:'jusque',lorsqu:'lorsque',puisqu:'puisque'};
+  const CONTR = {du:['de','le'],des:['de','les'],au:['a','le'],aux:['a','les']};
+  let TOKS=[];
+  (input.match(/[A-Za-zÀ-ÿ0-9'8]+/g)||[]).forEach(w=>{
+    const lw = norm(w);
+    if(!lw) return;
+    if(FR && CONTR[lw]){ CONTR[lw].forEach(p=>TOKS.push({n:p,o:w})); return; }
+    if(FR){
+      const m = lw.match(/^([a-z]+)'(.+)$/);
+      if(m && ELI[m[1]] && m[2]){
+        TOKS.push({n:ELI[m[1]], o:m[1]+"'"}, {n:m[2], o:w.slice(m[1].length+1)});
+        return;
+      }
+    }
+    TOKS.push({n:lw, o:w});
+  });
+  if(FR){
+    EQUIV.forEach(([de,vers])=>{
+      const dt=de.split(' '), vt=vers.split(' ');
+      for(let i=0;i+dt.length<=TOKS.length;i++){
+        if(dt.every((t,k)=>TOKS[i+k]&&TOKS[i+k].n===t)){ TOKS.splice(i,dt.length,...vt.map(v=>({n:v,o:v}))); i--; }
+      }
     });
   }
-  const inToks = inputClean.split(' ').filter(Boolean);
-  const seqOk = (i,cand) => {
-    if(i+cand.toks.length>inToks.length) return false;
-    for(let k=0;k<cand.toks.length;k++) if(!tokEq(inToks[i+k],cand.toks[k])) return false;
-    return true;
+
+  // ── Patrons de phrase à trous — bâtis sur des entrées réelles du dictionnaire ──
+  const patChunks=[];
+  if(FR){
+    const isAppel = t => tokFuzzy(t,'appelle') || t==='appeler';
+    // « je m'appelle X » → Nd'alewizi X (le prénom se garde tel quel)
+    const pNom = byId('s10');
+    if(pNom){
+      for(let i=0;i+2<TOKS.length+1 && TOKS[i+2];i++){
+        if(TOKS[i].n==='je' && TOKS[i+1].n==='me' && isAppel(TOKS[i+2].n)){
+          const nomToks = TOKS.splice(i+3);
+          TOKS.splice(i,3);
+          const nom = nomToks.map(t=>t.o).join(' ');
+          patChunks.push({type:'pat', label:"je m'appelle"+(nom?' '+nom:''), w:pNom,
+            out: pNom[dstField] + (nom? ' ' + nom : ' …'),
+            note:"« Nd'alewizi » = je me nomme — le prénom reste tel quel."});
+          break;
+        }
+      }
+    }
+    // « comment t'appelles-tu » → T8ni aliwizian?
+    const pQ = byId('man_q43');
+    if(pQ && TOKS.length){
+      const ci = TOKS.findIndex(t=>t.n==='comment');
+      const ai = TOKS.findIndex(t=>isAppel(t.n));
+      if(ci>=0 && ai>ci){
+        patChunks.push({type:'pat', label:TOKS.map(t=>t.o||t.n).join(' '), w:pQ, out:pQ[dstField], note:''});
+        TOKS=[];
+      }
+    }
+  }
+
+  // ── Découpage : expression la plus longue d'abord, une faute tolérée par mot ──
+  const chunks=[]; let negVu=false; let i=0;
+  const seqMatch = (pos,cand) => {
+    if(pos+cand.toks.length>TOKS.length) return null;
+    const corr=[];
+    for(let k=0;k<cand.toks.length;k++){
+      const a=TOKS[pos+k].n, b=cand.toks[k];
+      if(tokEq(a,b)) continue;
+      if(tokFuzzy(a,b)){ corr.push(a+' → '+b); continue; }
+      return null;
+    }
+    return corr;
   };
-  const chunks=[]; let i=0;
-  while(i<inToks.length){
-    const t=inToks[i];
-    let lst = idx.get(t) || idx.get(t.replace(/s$/,'')) || [];
-    let trouves = lst.filter(c=>seqOk(i,c));
-    let viaSyn = null;
-    if(!trouves.length && TRAD_DIR==='fr-aln' && SYN[t]){
+  while(i<TOKS.length){
+    const T=TOKS[i], t=T.n;
+    // 1) expression (la plus longue gagne ; tolère les fautes de frappe)
+    let best=null, bestCorr=null;
+    const matches=[];
+    const lst = idx.get(t) || idx.get(t.replace(/s$/,'')) || [];
+    for(const c of lst){
+      const corr = seqMatch(i,c);
+      if(corr!==null){ matches.push({c,corr}); if(!best){ best=c; bestCorr=corr; } }
+    }
+    if(best){
+      const vu=new Set([best.w[dstField]]); const alts=[];
+      matches.forEach(m=>{ if(m.c!==best && m.c.toks.length===best.toks.length && !vu.has(m.c.w[dstField])){ vu.add(m.c.w[dstField]); alts.push(m.c); } });
+      chunks.push({type:'hit', toks:TOKS.slice(i,i+best.toks.length), w:best.w, sens:best.sens,
+        alts:alts.slice(0,2), corrige:bestCorr&&bestCorr.length?bestCorr.join(' · '):null, expr:best.toks.length>1});
+      i+=best.toks.length; continue;
+    }
+    // 2) article — pas d'équivalent, on le retire
+    if(FR && ARTICLES.has(t)){ chunks.push({type:'skip', toks:[T]}); i++; continue; }
+    // 3) pronom — expliqué
+    if(FR && PRON[t]){ const p=PRON[t]; chunks.push({type:'gram', toks:[T], titre:p.w[dstField], note:p.note}); i++; continue; }
+    // 4) possessif — préfixe sur le nom
+    if(FR && POSS[t]){ chunks.push({type:'gram', toks:[T], titre:POSS[t], note:"Le possesseur colle directement au nom : "+POSS[t]+" devant le mot (ex : n'+mot = mon…)."}); i++; continue; }
+    // 5) négation « ne … pas »
+    if(FR && t==='ne' && wNeg && TOKS.slice(i+1).some(x=>x.n==='pas'||x.n==='plus')){
+      negVu=true;
+      chunks.push({type:'gram', toks:[T], titre:wNeg[dstField], note:"La négation aln8ba encadre le verbe : nda + verbe + -wi."+(wNegEx?" Ex : "+wNegEx[dstField]+" — "+wNegEx[srcField]:"")});
+      i++; continue;
+    }
+    if(FR && (t==='pas'||t==='plus') && negVu){ chunks.push({type:'skip', toks:[T], note:'fait partie de la négation'}); i++; continue; }
+    // 6) lemme — verbe conjugué ramené à l'infinitif du dictionnaire
+    if(FR){
+      let lemHit=null;
+      for(const lem of lemmes(t)){
+        const cands = idx.get(lem) || tokIdx.get(lem) || [];
+        if(cands.length){ lemHit={lem, ent:cands[0]}; break; }
+      }
+      if(lemHit){ chunks.push({type:'hit', toks:[T], w:lemHit.ent.w, sens:lemHit.ent.sens, alts:[], lemme:lemHit.lem}); i++; continue; }
+    }
+    // 7) synonyme
+    if(FR && SYN[t]){
+      let synHit=null;
       for(const syn of SYN[t]){
-        const lst2 = idx.get(syn) || [];
-        trouves = lst2.filter(c=>seqOk(i,c)); // la longueur diffère : on teste les tokens du synonyme
-        if(trouves.length){ viaSyn = syn; break; }
+        const l2 = idx.get(syn) || tokIdx.get(syn) || [];
+        if(l2.length){ synHit={syn, ent:l2[0]}; break; }
       }
-      if(!trouves.length){
-        // le synonyme peut couvrir un autre nombre de tokens : accepter la 1re entrée du synonyme
-        for(const syn of SYN[t]){
-          const lst2 = idx.get(syn) || [];
-          if(lst2.length){ trouves=[lst2[0]]; viaSyn=syn; break; }
+      if(synHit){ chunks.push({type:'hit', toks:[T], w:synHit.ent.w, sens:synHit.ent.sens, alts:[], viaSyn:synHit.syn}); i++; continue; }
+    }
+    // 8) repli : le mot vit dans un sens plus long (« appeler » dans « Appeler · nommer »)
+    const tk = tokIdx.get(t);
+    if(tk && tk.length){ chunks.push({type:'hit', toks:[T], w:tk[0].w, sens:tk[0].sens, alts:[], dansSens:true}); i++; continue; }
+    // 9) tolérance aux fautes — le mot du dictionnaire le plus proche
+    let cor=null;
+    if(t.length>=4){
+      let bestK=null, bestD=9, bestEnt=null;
+      const tryKeys=(map)=>{ for(const k of map.keys()){
+        if(Math.abs(k.length-t.length)>2) continue;
+        const d=levDist(t,k);
+        if(d<bestD){ bestD=d; bestK=k; bestEnt=map.get(k)[0]; }
+      }};
+      tryKeys(idx); tryKeys(tokIdx);
+      const seuil = t.length>=7 ? 2 : 1;
+      if(bestK && bestD<=seuil) cor={key:bestK, ent:bestEnt};
+    }
+    if(cor){ chunks.push({type:'hit', toks:[T], w:cor.ent.w, sens:cor.ent.sens, alts:[], corrige:t+' → '+cor.key}); i++; continue; }
+    // 10) nom propre — il se garde tel quel en aln8ba
+    if(FR && /^[A-ZÀ-Þ]/.test(T.o)){ chunks.push({type:'nom', toks:[T]}); i++; continue; }
+    // 10bis) aln8ba → français : préfixe de personne détaché (n'- = je…)
+    if(!FR){
+      const mp = t.match(/^(nd'|kd'|wd'|n'|k'|w'|d')(.+)$/);
+      if(mp){
+        const cands = idx.get(mp[2]) || tokIdx.get(mp[2]) || [];
+        if(cands.length){
+          const PREP = {"n'":"je / mon","nd'":"je / mon","k'":"tu / ton","kd'":"tu / ton","w'":"il / son","wd'":"il / son","d'":"(liaison)"};
+          chunks.push({type:'hit', toks:[T], w:cands[0].w, sens:cands[0].sens, alts:[], prefixe:mp[1]+" = "+(PREP[mp[1]]||'')});
+          i++; continue;
         }
       }
     }
-    if(trouves.length){
-      const bestLen = viaSyn ? trouves[0].toks.length : trouves[0].toks.length;
-      const alts = trouves.filter(c=>c.toks.length===bestLen);
-      const vu = new Set(); const uniqAlts = alts.filter(c=>{const k=c.w[dstField]; if(vu.has(k)) return false; vu.add(k); return true;});
-      const consomme = viaSyn ? 1 : bestLen; // un synonyme ne consomme que le token d'origine
-      chunks.push({type:'hit', toks:inToks.slice(i,i+consomme), w:uniqAlts[0].w, sens:uniqAlts[0].sens, alts:uniqAlts.slice(1,3), viaSyn});
-      i += consomme;
-    } else if(TRAD_DIR==='fr-aln' && ARTICLES.has(t)){
-      chunks.push({type:'skip', toks:[t]}); i++;
-    } else {
-      // Tolérance aux fautes de frappe : trouver le mot du dictionnaire le plus proche
-      let corrige=null;
-      if(t.length>=4){
-        let bestK=null, bestD=9;
-        for(const k of idx.keys()){
-          if(Math.abs(k.length-t.length)>2) continue;
-          const d=levDist(t,k);
-          if(d<bestD){ bestD=d; bestK=k; }
-        }
-        const seuil = t.length>=7 ? 2 : 1;
-        if(bestK && bestD<=seuil){
-          const lst3=[...idx.get(bestK)].sort((a,b)=>a.toks.length-b.toks.length);
-          if(lst3.length) corrige={key:bestK, w:lst3[0].w, sens:lst3[0].sens};
-        }
-      }
-      if(corrige){
-        chunks.push({type:'hit', toks:[t], w:corrige.w, sens:corrige.sens, alts:[], corrige:corrige.key});
-      } else { chunks.push({type:'miss', toks:[t]}); }
-      i++;
-    }
+    // 11) inconnu
+    chunks.push({type:'miss', toks:[T]}); i++;
   }
 
   const outEl = document.getElementById('tradOutput');
   const hits = chunks.filter(c=>c.type==='hit');
+  const essais = FR ? ["Je m'appelle…","Comment vas-tu ?","Je t'aime","Merci beaucoup","Je ne sais pas","Bonne nuit"]
+                    : ["Kwai","Wliwni","Nda n'wawaldamowen","T8ni kd'al8wzin"];
+  const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
+    + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
 
-  if(hits.length===0){
-    outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples (ex : bonjour, eau, je m\'appelle...) ou propose le mot manquant avec le bouton ✍️ Suggérer.</span>';
+  if(!hits.length && !patChunks.length){
+    outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples, ou propose le mot manquant avec le bouton ＋ en bas à droite.</span>' + essaisHtml;
     document.getElementById('tradBtnTxt').textContent = 'Traduire →';
     return;
   }
 
-  // Phrase composée
-  const sortie = chunks.map(c => c.type==='hit' ? c.w[dstField] : c.type==='miss' ? '«'+c.toks.join(' ')+'»' : null).filter(x=>x!==null).join(' ');
-  const denomToks = chunks.filter(c=>c.type!=='skip').reduce((n,c)=>n+c.toks.length,0);
+  // Phrase composée : traductions + noms propres ; les pronoms/grammaire s'expliquent dans le détail
+  const morceaux = chunks.map(c => {
+    if(c.type==='hit') return c.w[dstField];
+    if(c.type==='nom') return c.toks[0].o;
+    if(c.type==='miss') return '«'+c.toks.map(x=>x.o||x.n).join(' ')+'»';
+    return null;
+  }).filter(x=>x!==null);
+  patChunks.forEach(p=>morceaux.push(p.out));
+  const sortie = morceaux.join(' ');
+
+  const denomToks = chunks.filter(c=>c.type==='hit'||c.type==='miss').reduce((n,c)=>n+c.toks.length,0);
   const couverts = hits.reduce((n,c)=>n+c.toks.length,0);
-  const pct = denomToks ? Math.round(100*couverts/denomToks) : 0;
+  const pct = denomToks ? Math.round(100*couverts/denomToks) : (patChunks.length?100:0);
   const pcCol = pct>=80 ? '#2e7d32' : pct>=50 ? '#b8860b' : '#c0392b';
   const pcTxt = pct>=80 ? 'Bonne couverture' : pct>=50 ? 'Couverture partielle' : 'Couverture faible';
 
+  const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
+
   let html = '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
-    + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5">' + sortie + '</div>'
+    + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5">' + escH(sortie) + '</div>'
     + '<div style="margin-top:8px;display:flex;align-items:center;gap:8px">'
     +   '<div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+pcCol+';border-radius:3px"></div></div>'
     +   '<span style="font-size:.75rem;font-weight:700;color:'+pcCol+'">'+pct+'% · '+pcTxt+'</span>'
@@ -3150,33 +3293,76 @@ function traduire(){
 
   // Détail morceau par morceau
   html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">🧩 Comment la phrase est composée :</div>';
+  const ligne = (gauche, droite, extra) =>
+    '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
+    + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + gauche + '</span>'
+    + '<span style="font-size:.9rem">' + droite + '</span>' + (extra||'') + '</div>';
+
+  patChunks.forEach(p=>{
+    html += ligne(escH(p.label),
+      '<b style="color:var(--accent)">'+lnk(p.out, dstField==='aln8ba'?'aln8ba':'fr')+'</b>',
+      ' <span style="color:#2e7d32;font-size:.75rem">🌟 phrase modèle</span>')
+      + (p.note? '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">'+escH(p.note)+'</div>':'');
+  });
   chunks.forEach(c => {
+    const gaucheBase = escH(c.toks.map(x=>x.o||x.n).join(' '));
     if(c.type==='hit'){
-      html += '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
-        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + (c.viaSyn?' <span style="font-size:.7rem;color:var(--text3)">(= '+c.viaSyn+')</span>':'') + (c.corrige?' <span style="font-size:.7rem;color:#b8860b">✏️ corrigé : '+c.corrige+'</span>':'') + '</span>'
-        + '<span style="font-weight:700;color:var(--accent)">' + c.w[dstField] + '</span>'
-        + '<span style="color:#2e7d32;font-size:.75rem">✅</span></div>';
+      let badge = ' <span style="color:#2e7d32;font-size:.75rem">'+(c.expr?'🧩 expression':'✅')+'</span>';
+      let notes = '';
+      if(c.viaSyn)  notes += ' <span style="font-size:.7rem;color:var(--text3)">(= '+escH(c.viaSyn)+')</span>';
+      if(c.corrige) notes += ' <span style="font-size:.7rem;color:#b8860b">✏️ '+escH(c.corrige)+'</span>';
+      if(c.lemme)   notes += ' <span style="font-size:.7rem;color:#7b5ea7">🔁 infinitif : '+escH(c.lemme)+'</span>';
+      if(c.dansSens) notes += ' <span style="font-size:.7rem;color:var(--text3)">dans « '+escH(c.sens)+' »</span>';
+      if(c.prefixe) notes += ' <span style="font-size:.7rem;color:#7b5ea7">🧩 préfixe '+escH(c.prefixe)+'</span>';
+      html += ligne(gaucheBase + notes, '<b style="color:var(--accent)">'+lnk(c.w[dstField], dstField==='aln8ba'?'aln8ba':'fr')+'</b>', badge);
       c.alts.forEach(a => {
-        html += '<div style="font-size:.75rem;color:var(--text2);padding:1px 0 3px 130px">ou aussi : <b>' + a.w[dstField] + '</b></div>';
+        html += '<div style="font-size:.75rem;color:var(--text2);padding:1px 0 3px 130px">ou aussi : <b>' + escH(a.w[dstField]) + '</b></div>';
       });
       if(c.w.example_a && c.w.example_f){
-        html += '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">Ex : ' + c.w.example_a + ' — ' + c.w.example_f + '</div>';
+        html += '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">Ex : ' + escH(c.w.example_a) + ' — ' + escH(c.w.example_f) + '</div>';
       }
+    } else if(c.type==='nom'){
+      html += ligne(gaucheBase, '<b style="color:var(--accent)">'+escH(c.toks[0].o)+'</b>',
+        ' <span style="color:#7b5ea7;font-size:.75rem">🔤 nom propre — il reste tel quel en aln8ba</span>');
+    } else if(c.type==='gram'){
+      html += ligne(gaucheBase, '<b style="color:#7b5ea7">'+escH(c.titre)+'</b>',
+        ' <span style="color:#7b5ea7;font-size:.75rem">🗣️ grammaire</span>')
+        + '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">'+escH(c.note)+'</div>';
     } else if(c.type==='skip'){
       html += '<div style="display:flex;gap:10px;align-items:baseline;padding:3px 0;border-bottom:1px dashed var(--border)">'
-        + '<span style="font-size:.8rem;color:var(--text3);min-width:120px">' + c.toks.join(' ') + '</span>'
-        + '<span style="color:var(--text3);font-size:.75rem;font-style:italic">pas d\'article en aln8ba — on l\'enlève</span></div>';
+        + '<span style="font-size:.8rem;color:var(--text3);min-width:120px">' + gaucheBase + '</span>'
+        + '<span style="color:var(--text3);font-size:.75rem;font-style:italic">' + escH(c.note||"pas d'article en aln8ba — on l'enlève") + '</span></div>';
     } else {
-      html += '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
-        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + '</span>'
-        + '<span style="color:#c0392b;font-size:.82rem">❓ pas encore dans le dictionnaire</span></div>';
+      html += ligne(gaucheBase,
+        '<span style="color:#c0392b;font-size:.82rem">❓ pas encore dans le dictionnaire</span>'
+        + ' <button class="btn btn-secondary" style="padding:1px 8px;font-size:.68rem" onclick="tradProposer(\''+escQ(c.toks.map(x=>x.o||x.n).join(' '))+'\')">＋ Proposer</button>');
     }
   });
+  if(chunks.some(c=>c.type==='miss')) html += essaisHtml;
 
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = 'block';
   document.getElementById('tradMeta').textContent = '⚠️ Traduction composée morceau par morceau à partir du dictionnaire — l\'ordre des mots aln8ba peut différer du français. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
+}
+
+function tradEssayer(t){
+  const inp=document.getElementById('tradInput');
+  inp.value=t; onTradInput(); traduire();
+}
+function tradProposer(mot){
+  openAddWord();
+  const f=document.getElementById(TRAD_DIR==='fr-aln'?'f-fr':'f-aln8ba');
+  if(f) f.value=mot;
+  toast('Propose « '+mot+' » — il sera validé avant d\'entrer au dictionnaire');
+}
+function tradGoto(mot,lang){
+  const si=document.getElementById('searchIn');
+  si.value=mot; S.q=mot; S.lang=lang||'aln8ba';
+  document.getElementById('searchX').style.display='block';
+  document.querySelectorAll('.ltog button').forEach(b=>b.classList.toggle('on',b.dataset.l===S.lang));
+  setView('all'); renderWords();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 /* ═══════════════════════════════════════════════════════
