@@ -1844,6 +1844,7 @@ function buildQueue(){
     w.aln8ba && w.aln8ba.length > 1 && w.fr &&
     !/[()[\]{}'"]/.test(w.aln8ba) &&
     !w.aln8ba.startsWith('-') &&
+    !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba) &&
     !enAttente(w) &&
     isConfirmed(w)
   );
@@ -1877,7 +1878,7 @@ function buildQueue(){
 
 // Meilleurs distracteurs : même catégorie en priorité, sinon autres
 function getBestDistractors(w, n){
-  const base = WORDS.filter(x => x.id !== w.id && x.aln8ba && x.fr && !enAttente(x) && isConfirmed(x) && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
+  const base = WORDS.filter(x => x.id !== w.id && x.aln8ba && x.fr && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(x.aln8ba) && !enAttente(x) && isConfirmed(x) && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
   const samecat = shuffle(base.filter(x => x.cat === w.cat));
   const others  = shuffle(base.filter(x => x.cat !== w.cat));
   return [...samecat, ...others].slice(0, n);
@@ -1905,11 +1906,13 @@ function progressBar(pct){
   return `<div class="prat-progress"><div class="prat-prog-bar" style="width:${pct}%"></div></div>`;
 }
 
-// Feedback enrichi avec exemple
+// Feedback enrichi : paire mot-traduction toujours visible + pluriel si c'est un nom + exemple
 function richFeedback(w, correct){
-  const ex = w.example_a ? `<div style="margin-top:8px;font-size:.8rem;color:var(--text3);font-style:italic">"${w.example_a}" — ${w.example_f||''}</div>` : '';
-  if(correct) return `<div class="prat-feedback ok">✓ Excellent !${ex}</div>`;
-  return `<div class="prat-feedback ko">✗ Réponse : <strong>${w.aln8ba}</strong> = ${w.fr}${ex}</div>`;
+  const pl = /nom (animé|inanimé)/i.test(w.grammar||'') ? (()=>{ const p=resolvePlural(w);
+    return `<div style="margin-top:6px;font-size:.88rem">Pluriel : <b>${p.form}</b> <span style="font-size:.72rem;opacity:.75">(${p.type})</span></div>`; })() : '';
+  const ex = w.example_a ? `<div style="margin-top:8px;font-size:.8rem;font-style:italic;opacity:.8">"${w.example_a}" — ${w.example_f||''}</div>` : '';
+  if(correct) return `<div class="prat-feedback ok">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
+  return `<div class="prat-feedback ko">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
 }
 
 // ── NIVEAU 1 : Tu vois le mot abenakis → reconnais la traduction ──
@@ -2993,7 +2996,7 @@ function traduire(){
 
   // Index des sens : chaque entrée est éclatée en sens (« · »), chaque sens indexé par son 1er token
   const idx = new Map();
-  const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-'));
+  const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-') && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
   pool.forEach(w => {
     const sensList = srcField==='fr' ? (w.fr||'').split(/[·;]/) : [w.aln8ba];
     sensList.forEach(sens0 => {
