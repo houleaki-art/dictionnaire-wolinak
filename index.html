@@ -816,7 +816,7 @@ textarea{resize:vertical;min-height:68px}
         </div>
       </div>
       <div class="trad-disclaimer">
-        ⚠️ Traduction expérimentale — L'aln8ba est une langue vivante en revitalisation. Toujours valider avec Hélène O'Bomsawin pour usage officiel ou cérémoniel.
+        ⚠️ Traduction expérimentale — L'aln8ba est une langue vivante en revitalisation. Pour un usage officiel ou cérémoniel, valide avec les aînés et les gardiens de la langue de la Nation.
       </div>
     </div>
   </div>
@@ -3065,7 +3065,7 @@ function traduire(){
 
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = 'block';
-  document.getElementById('tradMeta').textContent = '⚠️ Traduction composée morceau par morceau à partir du dictionnaire — l\'ordre des mots aln8ba peut différer du français. Pour un usage officiel ou cérémoniel, valide avec Hélène O\'Bomsawin.';
+  document.getElementById('tradMeta').textContent = '⚠️ Traduction composée morceau par morceau à partir du dictionnaire — l\'ordre des mots aln8ba peut différer du français. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
 
@@ -3602,9 +3602,10 @@ const NIVEAUX=[
   <div class="aprnote"><b>Pourquoi c'est une force</b>
    Un dictionnaire qui cache ses doutes ment. Celui-ci les affiche. Quand tu cites un mot,
    cite son niveau de certitude — c'est ça, la rigueur.</div>`,
-  coach:`L'autorité finale reste Hélène O'Bomsawin : ce dictionnaire prépare le travail,
-   elle le confirme. Apprends la différence entre « attesté dans une source » et « confirmé dans
-   l'usage actuel » — cette discipline te rendra crédible devant n'importe quel aîné.`},
+  coach:`Les gardiens de la langue de la Nation — aînés, locuteurs, enseignants — ont le dernier mot :
+   ce dictionnaire prépare le travail, la communauté le confirme. Apprends la différence entre
+   « attesté dans une source » et « confirmé dans l'usage actuel » — cette discipline te rendra
+   crédible devant n'importe quel aîné.`},
  {t:"Décortiquer ensemble",d:"L'examen final du cégep : démonter deux mots longs, morceau par morceau.",ex:'fam',lec:`
   <h3>Pakholigan — le tambour</h3>
   <p><i>pakhol-</i> frapper + <i>-igan</i> l'instrument → <b>la chose avec laquelle on frappe</b>.</p>
@@ -4544,36 +4545,95 @@ function atlListe(){
 // ══════════════════════════════════════════════════════════
 function renderArchives(){
   const box=document.getElementById('archBody');
-  const arch=WORDS.filter(w=>w.cat==='archive');
-  const groupes={};
-  arch.forEach(w=>{
-    const s=w.source||'';
-    const g=/Laurent/.test(s)?'Jos. Laurent — Dialogues (1884)':/Masta/.test(s)?'Henry Lorne Masta (1932)':/Rasles/.test(s)?'Sébastien Rasles (1691)':'Autres sources anciennes';
-    (groupes[g]=groupes[g]||[]).push(w);
-  });
-  const ordre=['Sébastien Rasles (1691)','Jos. Laurent — Dialogues (1884)','Henry Lorne Masta (1932)','Autres sources anciennes'];
+  const arch=WORDS.filter(w=>w.cat==='archive'&&w.aln8ba&&w.aln8ba!=='__version__');
+  const normS=s=>(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9'8 ]/g,' ').replace(/\s+/g,' ').trim();
+  const normFr=s=>normS((s||'').split(/[·;(]/)[0]);
+  const actifs=WORDS.filter(w=>w.cat!=='archive'&&w.cat!=='corpus'&&w.fr);
+  const parFr={}; actifs.forEach(w=>{const k=normFr(w.fr); if(k&&!(k in parFr)) parFr[k]=w;});
+
+  const connus=arch.filter(w=>w.fr&&!w.fr.startsWith('⚠'));
+  const inconnus=arch.filter(w=>!w.fr||w.fr.startsWith('⚠'));
+  const phrases=connus.filter(w=>w.aln8ba.trim().split(/\s+/).length>=2)
+                      .sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba));
+  const mots=connus.filter(w=>w.aln8ba.trim().split(/\s+/).length<2)
+                   .sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba));
+
+  // Regroupement des variantes d'orthographe (distance d'édition)
+  const lev=(a,b)=>{const m=a.length,n=b.length;if(Math.abs(m-n)>2)return 9;
+    const d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+    for(let j=1;j<=n;j++)d[0][j]=j;
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+      d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    return d[m][n];};
+  const forms=inconnus.map(w=>({w,n:normS(w.aln8ba)})).filter(f=>f.n);
+  const parent=forms.map((_,i)=>i);
+  const find=i=>parent[i]===i?i:(parent[i]=find(parent[i]));
+  for(let i=0;i<forms.length;i++)for(let j=i+1;j<forms.length;j++){
+    const a=forms[i].n,b=forms[j].n;
+    const seuil=Math.min(a.length,b.length)>=7?2:1;
+    if(lev(a,b)<=seuil){const ri=find(i),rj=find(j);if(ri!==rj)parent[rj]=ri;}
+  }
+  const clusters={};
+  forms.forEach((f,i)=>{const r=find(i);(clusters[r]=clusters[r]||[]).push(f);});
+  const groupes=Object.values(clusters).map(g=>{
+    g.sort((a,b)=>b.n.length-a.n.length||a.n.localeCompare(b.n));
+    return g;
+  }).sort((a,b)=>a[0].n.localeCompare(b[0].n));
+  const nVar=groupes.filter(g=>g.length>1).length;
+
+  const chipMot=w=>{
+    const jumeau=parFr[normFr(w.fr)];
+    return `<span style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:6px 12px;display:inline-flex;flex-direction:column;gap:1px;max-width:100%">
+      <span class="al8" style="font-size:.92rem">${w.aln8ba}</span>
+      <span style="font-size:.74rem;color:var(--text2)">${w.fr}</span>
+      ${jumeau?`<span style="font-size:.7rem;color:var(--accent)">→ aujourd'hui : <b>${jumeau.aln8ba}</b></span>`:''}
+    </span>`;};
+  const srcTag=w=>{const s=(w.source||'').toLowerCase();
+    return s.includes('rasles')?'1691':s.includes('masta')?'1932':'1884';};
+
   box.innerHTML=`
+  <div style="max-width:1100px;margin:0 auto;padding:8px 0 32px">
     <div class="aprcard">
       <h3>📜 Les mots des ancêtres</h3>
-      <p class="aprlead">Ces formes ont été relevées dans les écrits des anciens — Rasles en 1691,
-      Laurent en 1884, Masta en 1932. Certaines sont des <b>anciennes graphies ou tournures</b> dont
-      la forme moderne figure au dictionnaire : leur traduction est indiquée. D'autres sont des
-      pierres qu'on n'a pas encore taillées — leur sens exact reste à décoder. Toutes sont conservées
-      ici avec respect, hors du dictionnaire moderne, en attendant qu'un aîné ou un linguiste leur redonne leur voix.</p>
+      <p class="aprlead">Ici vivent les formes relevées dans les écrits de Rasles (1691), Laurent (1884)
+      et Masta (1932). Ce ne sont <b>pas</b> des fautes : ce sont les écritures d'une autre époque,
+      quand la langue se transmettait à l'oreille et que chaque auteur l'écrivait à sa manière.
+      Les formes proches sont regroupées ensemble — plusieurs écritures, une même parole.
+      Le sens de certaines reste à décoder : elles attendent qu'un aîné, une aînée ou un gardien
+      de la langue leur redonne leur voix.</p>
     </div>
-    ${ordre.filter(g=>groupes[g]).map(g=>`
-      <div class="aprcard" style="margin-top:14px">
-        <h3 style="font-size:1rem">${g} <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${groupes[g].length} formes</span></h3>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
-          ${groupes[g].sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba)).map(w=>{
-            const sens=w.fr&&!w.fr.startsWith('⚠')?w.fr:null;
-            return sens
-              ?`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.9rem;display:inline-flex;flex-direction:column;gap:1px"
-                 title="${(w.notes||'').replace(/"/g,'&quot;')}"><span class="al8">${w.aln8ba}</span><span style="font-size:.72rem;color:var(--text2)">${sens}</span></span>`
-              :`<span class="al8" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.9rem"
-                 title="${(w.notes||'Sens à décoder').replace(/"/g,'&quot;')}">${w.aln8ba}</span>`;}).join('')}
-        </div>
-      </div>`).join('')}`;
+
+    ${mots.length?`<div class="aprcard" style="margin-top:14px">
+      <h3 style="font-size:1rem">🔤 Anciennes formes de mots connus <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${mots.length}</span></h3>
+      <p style="font-size:.78rem;color:var(--text2);margin:6px 0 0">La forme d'aujourd'hui est indiquée quand elle existe au dictionnaire.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">${mots.map(chipMot).join('')}</div>
+    </div>`:''}
+
+    ${phrases.length?`<div class="aprcard" style="margin-top:14px">
+      <h3 style="font-size:1rem">💬 Phrases complètes des anciens <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${phrases.length}</span></h3>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+        ${phrases.map(w=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline">
+          <span class="al8" style="font-size:.95rem">${w.aln8ba}</span>
+          <span style="font-size:.8rem;color:var(--text2)">${w.fr}</span>
+          <span style="font-size:.68rem;color:var(--text3);margin-left:auto">${srcTag(w)}</span>
+        </div>`).join('')}
+      </div>
+    </div>`:''}
+
+    <div class="aprcard" style="margin-top:14px">
+      <h3 style="font-size:1rem">🧩 Formes à décoder <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${inconnus.length} formes · ${groupes.length} groupes${nVar?` dont ${nVar} familles de variantes`:''}</span></h3>
+      <p style="font-size:.78rem;color:var(--text2);margin:6px 0 0">Chaque auteur écrivait la langue comme il l'entendait :
+      les écritures proches d'une même parole sont présentées ensemble.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+        ${groupes.map(g=>g.length===1
+          ?`<span class="al8" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.88rem">${g[0].w.aln8ba}</span>`
+          :`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:6px 12px;display:inline-flex;flex-direction:column;gap:2px">
+              <span class="al8" style="font-size:.9rem">${g[0].w.aln8ba}</span>
+              <span style="font-size:.7rem;color:var(--text2)">variantes : ${g.slice(1).map(f=>f.w.aln8ba).join(' · ')}</span>
+            </span>`).join('')}
+      </div>
+    </div>
+  </div>`;
 }
 
 function renderAtelier(){
