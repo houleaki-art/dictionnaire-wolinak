@@ -3022,6 +3022,13 @@ function traduire(){
 
   const tokEq = (a,b) => a===b || (a.length>3&&a+'s'===b) || (b.length>3&&b+'s'===a)
                        || (a.length>=6&&b.startsWith(a)) || (b.length>=6&&a.startsWith(b));
+  // Distance d'édition — pour la tolérance aux fautes de frappe
+  const levDist=(a,b)=>{const m=a.length,n=b.length;if(Math.abs(m-n)>2)return 9;
+    const d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+    for(let j=1;j<=n;j++)d[0][j]=j;
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+      d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    return d[m][n];};
 
   // Index des sens : chaque entrée est éclatée en sens (« · »), chaque sens indexé par son 1er token
   // + variante sans article initial (« le tambour » est aussi trouvé par « tambour »)
@@ -3073,13 +3080,10 @@ function traduire(){
         if(trouves.length){ viaSyn = syn; break; }
       }
       if(!trouves.length){
-        // le synonyme peut couvrir un autre nombre de tokens : préférer le sens le plus court (le plus général)
+        // le synonyme peut couvrir un autre nombre de tokens : accepter la 1re entrée du synonyme
         for(const syn of SYN[t]){
           const lst2 = idx.get(syn) || [];
-          if(lst2.length){
-            const trie=[...lst2].sort((a,b)=>a.toks.length-b.toks.length);
-            trouves=[trie[0]]; viaSyn=syn; break;
-          }
+          if(lst2.length){ trouves=[lst2[0]]; viaSyn=syn; break; }
         }
       }
     }
@@ -3092,7 +3096,27 @@ function traduire(){
       i += consomme;
     } else if(TRAD_DIR==='fr-aln' && ARTICLES.has(t)){
       chunks.push({type:'skip', toks:[t]}); i++;
-    } else { chunks.push({type:'miss', toks:[t]}); i++; }
+    } else {
+      // Tolérance aux fautes de frappe : trouver le mot du dictionnaire le plus proche
+      let corrige=null;
+      if(t.length>=4){
+        let bestK=null, bestD=9;
+        for(const k of idx.keys()){
+          if(Math.abs(k.length-t.length)>2) continue;
+          const d=levDist(t,k);
+          if(d<bestD){ bestD=d; bestK=k; }
+        }
+        const seuil = t.length>=7 ? 2 : 1;
+        if(bestK && bestD<=seuil){
+          const lst3=[...idx.get(bestK)].sort((a,b)=>a.toks.length-b.toks.length);
+          if(lst3.length) corrige={key:bestK, w:lst3[0].w, sens:lst3[0].sens};
+        }
+      }
+      if(corrige){
+        chunks.push({type:'hit', toks:[t], w:corrige.w, sens:corrige.sens, alts:[], corrige:corrige.key});
+      } else { chunks.push({type:'miss', toks:[t]}); }
+      i++;
+    }
   }
 
   const outEl = document.getElementById('tradOutput');
@@ -3124,7 +3148,7 @@ function traduire(){
   chunks.forEach(c => {
     if(c.type==='hit'){
       html += '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
-        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + (c.viaSyn?' <span style="font-size:.7rem;color:var(--text3)">(= '+c.viaSyn+')</span>':'') + '</span>'
+        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + (c.viaSyn?' <span style="font-size:.7rem;color:var(--text3)">(= '+c.viaSyn+')</span>':'') + (c.corrige?' <span style="font-size:.7rem;color:#b8860b">✏️ corrigé : '+c.corrige+'</span>':'') + '</span>'
         + '<span style="font-weight:700;color:var(--accent)">' + c.w[dstField] + '</span>'
         + '<span style="color:#2e7d32;font-size:.75rem">✅</span></div>';
       c.alts.forEach(a => {
