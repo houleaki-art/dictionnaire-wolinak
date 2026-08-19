@@ -658,6 +658,13 @@ textarea{resize:vertical;min-height:68px}
     <button class="sb" data-cat="animal" onclick="filterCat('animal')"><span class="ic">🦌</span>Animaux<span class="cn" id="cn-cat-animal">0</span></button>
     <button class="sb" data-cat="plante" onclick="filterCat('plante')"><span class="ic">🌱</span>Plantes / Nourriture<span class="cn" id="cn-cat-plante">0</span></button>
     <button class="sb" data-cat="action" onclick="filterCat('action')"><span class="ic">💡</span>Actions / Valeurs<span class="cn" id="cn-cat-action">0</span></button>
+    <button class="sb" data-cat="temps" onclick="filterCat('temps')"><span class="ic">⏰</span>Temps<span class="cn" id="cn-cat-temps">0</span></button>
+    <button class="sb" data-cat="nombre" onclick="filterCat('nombre')"><span class="ic">🔢</span>Nombres<span class="cn" id="cn-cat-nombre">0</span></button>
+    <button class="sb" data-cat="description" onclick="filterCat('description')"><span class="ic">🎨</span>Description<span class="cn" id="cn-cat-description">0</span></button>
+    <button class="sb" data-cat="corps" onclick="filterCat('corps')"><span class="ic">🫁</span>Corps humain<span class="cn" id="cn-cat-corps">0</span></button>
+    <button class="sb" data-cat="couleur" onclick="filterCat('couleur')"><span class="ic">🌈</span>Couleurs<span class="cn" id="cn-cat-couleur">0</span></button>
+    <button class="sb" data-cat="grammaire" onclick="filterCat('grammaire')"><span class="ic">📝</span>Grammaire<span class="cn" id="cn-cat-grammaire">0</span></button>
+    <button class="sb" data-cat="toponymie" onclick="filterCat('toponymie')"><span class="ic">📍</span>Toponymie<span class="cn" id="cn-cat-toponymie">0</span></button>
   </div>
   <div>
     <div class="sl">Alphabétique</div>
@@ -929,6 +936,13 @@ textarea{resize:vertical;min-height:68px}
             <option value="animal">🦌 Animaux / Êtres vivants</option>
             <option value="plante">🌱 Plantes / Nourriture</option>
             <option value="action">💡 Actions / Concepts / Valeurs</option>
+            <option value="temps">⏰ Temps / Jours / Saisons</option>
+            <option value="nombre">🔢 Nombres</option>
+            <option value="description">🎨 Description / Adjectifs</option>
+            <option value="corps">🫁 Corps humain</option>
+            <option value="couleur">🌈 Couleurs</option>
+            <option value="grammaire">📝 Grammaire / Pronoms</option>
+            <option value="toponymie">📍 Toponymie / Noms de lieux</option>
           </select>
         </div>
         <div class="fg">
@@ -1015,6 +1029,10 @@ textarea{resize:vertical;min-height:68px}
             <option value="territoire">Territoire</option><option value="nature">Nature / Ciel</option>
             <option value="animal">Animaux</option><option value="plante">Plantes / Nourriture</option>
             <option value="action">Actions / Valeurs</option>
+            <option value="temps">Temps</option><option value="nombre">Nombres</option>
+            <option value="description">Description</option><option value="corps">Corps humain</option>
+            <option value="couleur">Couleurs</option><option value="grammaire">Grammaire</option>
+            <option value="toponymie">Toponymie</option>
           </select>
         </div>
         <div class="fg"><label>Type grammatical</label><input type="text" id="e-gram"></div>
@@ -1113,7 +1131,7 @@ textarea{resize:vertical;min-height:68px}
       <button class="sb" onclick="mobileFilterCat('description')">🎨 Description</button>
       <button class="sb" onclick="mobileFilterCat('corps')">🫁 Corps humain</button>
       <button class="sb" onclick="mobileFilterCat('grammaire')">📝 Grammaire</button>
-      <button class="sb" onclick="mobileFilterCat('identite')">👤 Identité</button>
+      <button class="sb" onclick="mobileFilterCat('couleur')">🌈 Couleurs</button>
       <button class="sb" onclick="mobileFilterCat('toponymie')">📍 Toponymie</button>
     </div>
   </div>
@@ -2829,7 +2847,7 @@ function updateCounts(){
   document.getElementById('cn-fav').textContent=FAVS.length;
   const cnArch=document.getElementById('cn-arch'); if(cnArch) cnArch.textContent=WORDS.filter(w=>w.cat==='archive').length;
   document.getElementById('cn-cat-all').textContent=visible.length;
-  ['salut','famille','territoire','nature','animal','plante','action'].forEach(c=>{
+  ['salut','famille','territoire','nature','animal','plante','action','temps','nombre','description','corps','couleur','grammaire','toponymie'].forEach(c=>{
     const el=document.getElementById('cn-cat-'+c);
     if(el) el.textContent=cats[c]||0;
   });
@@ -2851,7 +2869,7 @@ function updateAdminBadge(){
 // ══════════════════════════════════════════════════════════
 //  HELPERS
 // ══════════════════════════════════════════════════════════
-function catLabel(c){return{salut:'Salutations',famille:'Famille',territoire:'Territoire',nature:'Nature / Ciel',animal:'Animaux',plante:'Plantes / Nourriture',action:'Actions / Valeurs'}[c]||c;}
+function catLabel(c){return{salut:'Salutations',famille:'Famille',territoire:'Territoire',nature:'Nature / Ciel',animal:'Animaux',plante:'Plantes / Nourriture',action:'Actions / Valeurs',temps:'Temps',nombre:'Nombres',description:'Description',corps:'Corps humain',couleur:'Couleurs',grammaire:'Grammaire',toponymie:'Toponymie'}[c]||c;}
 function catIcon(c){return{salut:'🤝',famille:'👨‍👩‍👧',territoire:'🌍',nature:'🌿',animal:'🦌',plante:'🌱',action:'💡'}[c]||'📖';}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
