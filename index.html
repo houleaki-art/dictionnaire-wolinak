@@ -1249,8 +1249,19 @@ const LANG = {
 
   getDirectPlural(word, grammar) {
     const g = (grammar || '').toLowerCase();
-    if (g.includes('inanimé')) return { form: this._addPlural(word, this.PLURAL_INANIM), type: 'inanimé (-al)' };
-    if (g.includes('animé'))   return { form: this._addPlural(word, this.PLURAL_ANIM),   type: 'animé (-ak)' };
+    const lw = word.toLowerCase();
+    // Règles documentées (Manuel de l'étudiant 1, pages 16 à 18)
+    if (g.includes('inanimé')) {
+      if (/[kg]w$/.test(lw))  return { form: word.slice(0,-1) + 'ol', type: 'inanimé (-ol après kw/gw)' }; // Pilaskw → Pilaskol
+      if (/gen$/.test(lw))    return { form: word + 'ol',             type: 'inanimé (-ol après -gen)' };  // Mdawagen → Mdawagenol
+      return { form: this._addPlural(word, this.PLURAL_INANIM), type: 'inanimé (-al)' };
+    }
+    if (g.includes('animé')) {
+      if (/em$/.test(lw))     return { form: word + 'ok',             type: 'animé (-ok après -em)' };     // M8lsem → M8lsemok
+      if (/kw$/.test(lw))     return { form: word.slice(0,-1) + 'ok', type: 'animé (-ok après -kw)' }; // Agaskw → Agaskok
+      if (/[ai]t$/.test(lw))  return { form: word.slice(0,-1) + 'jik', type: 'animé (-jik après -at/-it)' }; // Sigwit → Sigwijik
+      return { form: this._addPlural(word, this.PLURAL_ANIM), type: 'animé (-ak)' };
+    }
     return null;
   },
 
@@ -3937,8 +3948,10 @@ function jGenre(){
   window._jw=w; window._jan=an;
 }
 function jRetGenre(){ const w=window._jw,an=window._jan;
+  const pl=resolvePlural(w);
   return `<b>${w.aln8ba} — ${w.fr}</b>
     <em>${an?'Genre animé : son pluriel se termine par K.':'Genre inanimé : son pluriel se termine par L.'}</em>
+    <div style="margin-top:7px;font-size:1.05rem">Pluriel : <b class="al8" style="color:var(--accent)">${pl.form}</b> <span style="font-size:.72rem;color:var(--text2)">(${pl.type})</span></div>
     ${w.example_a?`<div style="margin-top:7px">${w.example_a} — <em>${w.example_f||''}</em></div>`:''}
     <span class="aprsrc">${aprSrc(w.source)}</span>`; }
 function jSens(){
@@ -4281,8 +4294,10 @@ function exGenre(){
         <span class="al">Inanimé</span><span style="font-size:.75rem;color:var(--text2)">pluriel en L</span></button></div>`);
 }
 function exRetGenre(){ const w=window._ex,a=window._exa;
+  const pl=resolvePlural(w);
   return `<b>${w.aln8ba} — ${w.fr}</b><em>${a?'Genre animé : le pluriel se termine par K.'
     :'Genre inanimé : le pluriel se termine par L.'}</em>
+    <div style="margin-top:7px;font-size:1.05rem">Pluriel : <b class="al8" style="color:var(--accent)">${pl.form}</b> <span style="font-size:.72rem;color:var(--text2)">(${pl.type})</span></div>
     <span class="aprsrc">${aprSrc(w.source)}</span>`; }
 
 /* — secondaire : le pluriel — */
