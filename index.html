@@ -2234,18 +2234,25 @@ function mobileScrollToNav(){
 //  STATS
 // ══════════════════════════════════════════════════════════
 function renderStats(){
+  // Le dictionnaire vivant = ce que le public voit. Les archives (anciennes formes)
+  // et le corpus (à valider) sont comptés À PART — jamais mélangés aux mots approuvés.
+  const vivant  = WORDS.filter(w=>!enAttente(w) && w.cat!=='system' && w.aln8ba!=='__version__');
+  const publics = vivant.filter(w=>isConfirmed(w));
+  const aValider = vivant.length - publics.length;
+  const archives = WORDS.filter(w=>w.cat==='archive').length;
+  const corpus   = WORDS.filter(w=>w.cat==='corpus').length;
   const cats={};
-  WORDS.forEach(w=>{cats[w.cat]=(cats[w.cat]||0)+1;});
+  vivant.forEach(w=>{cats[w.cat]=(cats[w.cat]||0)+1;});
   const maxC=Math.max(...Object.values(cats),1);
   const withCorrCount = WORDS.filter(w=>w.corrections&&w.corrections.length>0).length;
   const withAudio = WORDS.filter(w=>w.audio).length;
   document.getElementById('sgrid').innerHTML=`
-    <div class="scard"><div class="snum">${WORDS.length}</div><div class="slbl">Mots approuvés</div></div>
-    <div class="scard"><div class="snum">${PENDING_CACHE.length}</div><div class="slbl">En attente</div></div>
-    <div class="scard"><div class="snum">${FAVS.length}</div><div class="slbl">Favoris</div></div>
+    <div class="scard"><div class="snum">${publics.length}</div><div class="slbl">Mots au dictionnaire</div></div>
+    <div class="scard"><div class="snum">${aValider}</div><div class="slbl">À valider (🟠)</div></div>
+    <div class="scard"><div class="snum">${archives}</div><div class="slbl">Archives (anciennes formes)</div></div>
+    <div class="scard"><div class="snum">${corpus + PENDING_CACHE.length}</div><div class="slbl">En attente (corpus + propositions)</div></div>
     <div class="scard"><div class="snum">${withCorrCount}</div><div class="slbl">Avec corrections</div></div>
     <div class="scard"><div class="snum">${withAudio}</div><div class="slbl">Avec audio</div></div>
-    <div class="scard"><div class="snum">${Object.keys(cats).length}</div><div class="slbl">Catégories</div></div>
   `;
   document.getElementById('cbars').innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,cnt])=>`
     <div class="cbrow">
@@ -3085,6 +3092,33 @@ function traduire(){
     return [...new Set(c)];
   };
 
+  // ── Conjugaison : cartes bâties à partir des entrées réelles du dictionnaire ──
+  // SUBJ : sujets reconnus · OBJPRO : clitiques entre le sujet et le verbe
+  const SUBJ = {je:'je',tu:'tu',il:'il',elle:'il',on:'on',nous:'nous',vous:'vous',ils:'ils',elles:'ils'};
+  const OBJPRO = new Set(['me','te','se','nous','vous','le','la','les','lui','leur','en','y']);
+  // CONJ : « je|danser » → entrée « Je danse » · NEG : « je|savoir » → entrée « Je ne sais pas »
+  const CONJ = new Map(), NEG = new Map();
+  if(FR){
+    pool.forEach(w=>{
+      (w.fr||'').split(/[·;]/).forEach(sens0=>{
+        let s = norm(sens0.replace(/\([^)]*\)/g,' ')).replace(/[^a-z0-9\s'8]/g,' ').trim();
+        s = elargirFr(s);
+        const toks = s.split(' ').filter(Boolean);
+        if(toks.length<2 || toks.length>6 || !SUBJ[toks[0]]) return;
+        const isNegEnt = toks[1]==='ne' && toks.some(x=>x==='pas'||x==='plus');
+        let vi = 1;
+        while(vi<toks.length && (OBJPRO.has(toks[vi]) || toks[vi]==='ne')) vi++;
+        if(vi>=toks.length) return;
+        const map = isNegEnt ? NEG : CONJ;
+        [toks[vi], ...lemmes(toks[vi])].forEach(k=>{
+          const kk = SUBJ[toks[0]]+'|'+k;
+          if(!map.has(kk)) map.set(kk, []);
+          map.get(kk).push({toks, w, sens:sens0.trim()});
+        });
+      });
+    });
+  }
+
   // ── Pronoms, possessifs, négation : expliqués, pas traduits bêtement ──
   const PRON={};
   const addPron=(keys,id,note)=>{const w=byId(id); if(w) keys.forEach(k=>PRON[k]={w,note});};
@@ -3096,6 +3130,16 @@ function traduire(){
     addPron(['vous'],'man_p06',"« vous » — le verbe prend le préfixe k'- avec la fin -ba.");
   }
   const POSS = {mon:"n'-",ma:"n'-",mes:"n'-",ton:"k'-",ta:"k'-",tes:"k'-",son:"w'-",sa:"w'-",ses:"w'-"};
+  // Pronoms objets — expliqués avec des exemples réels du dictionnaire
+  const OBJP = {};
+  const addObj=(keys,titre,id,note)=>{const w=id?byId(id):null; const ex=w?" Ex : "+w[dstField]+" — "+w[srcField]:""; keys.forEach(k=>OBJP[k]={titre, note:note+ex});};
+  if(FR){
+    addObj(['me'],"me / m'-",'lau_kkezalmi',"« me » est porté par le verbe, pas dit à part.");
+    addObj(['te'],"te / t'-",'lau_kkezalmel',"« te » est porté par le verbe, pas dit à part.");
+    addObj(['se'],"se / s'-",'mas_liwitozik',"« se » (réfléchi) devient souvent le suffixe -d8zo / -t8zo.");
+    addObj(['lui'],"lui",null,"« lui » objet se porte sur le verbe.");
+    addObj(['leur'],"leur",null,"« leur » se porte sur le verbe ou par le préfixe w'- … -w8.");
+  }
   const wNeg   = FR ? byId('gram_neg')      : null;   // Nda … -wi
   const wNegEx = FR ? byId('lau_negwawald') : null;   // Nda n'wawaldamowen — Je ne sais pas
 
@@ -3133,7 +3177,7 @@ function traduire(){
     const pNom = byId('s10');
     if(pNom){
       for(let i=0;i+2<TOKS.length+1 && TOKS[i+2];i++){
-        if(TOKS[i].n==='je' && TOKS[i+1].n==='me' && isAppel(TOKS[i+2].n)){
+        if(TOKS[i].n==='je' && TOKS[i+1].n==='me' && isAppel(TOKS[i+2].n) && !(i>0 && TOKS[i-1].n==='ne')){
           const nomToks = TOKS.splice(i+3);
           TOKS.splice(i,3);
           const nom = nomToks.map(t=>t.o).join(' ');
@@ -3157,7 +3201,7 @@ function traduire(){
   }
 
   // ── Découpage : expression la plus longue d'abord, une faute tolérée par mot ──
-  const chunks=[]; let negVu=false; let i=0;
+  const chunks=[]; let negVu=false; let lastPron=null; let i=0;
   const seqMatch = (pos,cand) => {
     if(pos+cand.toks.length>TOKS.length) return null;
     const corr=[];
@@ -3186,16 +3230,78 @@ function traduire(){
         alts:alts.slice(0,2), corrige:bestCorr&&bestCorr.length?bestCorr.join(' · '):null, expr:best.toks.length>1});
       i+=best.toks.length; continue;
     }
+    // 1b) sujet + verbe — on cherche la VRAIE forme conjuguée dans le dictionnaire
+    //     (« tu parle » → Kd'aln8ba8dwa, pas l'infinitif ; « je ne m'appelle pas » → Nda nd'aliwiziw)
+    if(FR && SUBJ[t]){
+      let j=i+1, neg=false;
+      if(TOKS[j]&&TOKS[j].n==='ne'){ neg=true; j++; }
+      let obj=null;
+      while(TOKS[j] && OBJPRO.has(TOKS[j].n)){ obj=(obj?obj+' ':'')+TOKS[j].n; j++; }
+      const hasPas = TOKS.slice(j+1).some(x=>x.n==='pas'||x.n==='plus');
+      if(TOKS[j]){
+        const vt = TOKS[j].n;
+        const vkeys = [vt, ...lemmes(vt)];
+        const objToks = obj ? obj.split(' ').filter(x=>x!=='en'&&x!=='y') : [];
+        // Choisir la forme conjuguée compatible : les clitiques de l'entrée doivent
+        // correspondre à ceux de la phrase (« je t'aime » ne peut pas traduire « j'aime »)
+        const pickBest = (l) => {
+          if(!l) return null;
+          let bestC=null, bestScore=-1;
+          for(const cand of l){
+            let vi=1;
+            while(vi<cand.toks.length && (OBJPRO.has(cand.toks[vi]) || cand.toks[vi]==='ne')) vi++;
+            const clit = cand.toks.slice(1,vi).filter(x=>x!=='ne' && x!=='en' && x!=='y');
+            if(clit.length && JSON.stringify(clit)!==JSON.stringify(objToks)) continue;
+            const ev = cand.toks[vi]||'';
+            let score = tokEq(vt, ev) ? 2 : 1;
+            if(!clit.length && !objToks.length) score += 0.5;
+            if(score>bestScore){ bestScore=score; bestC=cand; }
+          }
+          return bestC ? {ent:bestC, exact:bestScore>=2} : null;
+        };
+        let sel=null, isNeg=false;
+        if(neg && hasPas){
+          for(const k of vkeys){ const s=pickBest(NEG.get(SUBJ[t]+'|'+k)); if(s){ sel=s; isNeg=true; break; } }
+        }
+        if(!sel){
+          for(const k of vkeys){ const s=pickBest(CONJ.get(SUBJ[t]+'|'+k)); if(s){ sel=s; break; } }
+        }
+        const ent = sel && sel.ent;
+        if(ent){
+          let end=j+1;
+          if(neg && hasPas){ const pi=TOKS.findIndex((x,xi)=>xi>j&&(x.n==='pas'||x.n==='plus')); if(pi>j) end=pi+1; }
+          let out = ent.w[dstField], badge = isNeg ? '✅ forme négative attestée' : '✅ conjugué', note = null;
+          if(!isNeg && !sel.exact){
+            badge = '🟡 forme la plus proche';
+            note = "Le dictionnaire connaît « "+ent.sens+" » — ta forme exacte n'est pas attestée. À valider.";
+          }
+          if(neg && hasPas && !isNeg){
+            out = 'Nda ' + out + ' …(-wi)';
+            badge = '🧪 construction — à valider';
+            note = "Négation construite : nda + verbe conjugué + fin négative (-wi / -owen, selon le verbe). Aucune source ne confirme cette forme exacte — à faire valider par un aîné ou une aînée.";
+          }
+          if(obj && !ent.toks.slice(1,-1).some(x=>OBJPRO.has(x))){
+            note = (note?note+' ':'') + "« "+obj+" » se porterait sur le verbe (ex : K'kezalmi = tu m'aimes).";
+          }
+          chunks.push({type:'hit', toks:TOKS.slice(i,end), w:ent.w, sens:ent.sens, alts:[], badge, note, forceOut:out});
+          if(neg && hasPas) negVu=true;
+          lastPron=null;
+          i=end; continue;
+        }
+      }
+    }
     // 2) article — pas d'équivalent, on le retire
     if(FR && ARTICLES.has(t)){ chunks.push({type:'skip', toks:[T]}); i++; continue; }
-    // 3) pronom — expliqué
-    if(FR && PRON[t]){ const p=PRON[t]; chunks.push({type:'gram', toks:[T], titre:p.w[dstField], note:p.note}); i++; continue; }
+    // 3) pronom sujet — expliqué
+    if(FR && PRON[t]){ const p=PRON[t]; chunks.push({type:'gram', toks:[T], titre:p.w[dstField], note:p.note}); lastPron=t; i++; continue; }
+    // 3b) pronom objet (me/te/se…) — expliqué avec un exemple réel
+    if(FR && OBJP[t]){ const o=OBJP[t]; chunks.push({type:'gram', toks:[T], titre:o.titre, note:o.note}); i++; continue; }
     // 4) possessif — préfixe sur le nom
     if(FR && POSS[t]){ chunks.push({type:'gram', toks:[T], titre:POSS[t], note:"Le possesseur colle directement au nom : "+POSS[t]+" devant le mot (ex : n'+mot = mon…)."}); i++; continue; }
     // 5) négation « ne … pas »
     if(FR && t==='ne' && wNeg && TOKS.slice(i+1).some(x=>x.n==='pas'||x.n==='plus')){
       negVu=true;
-      chunks.push({type:'gram', toks:[T], titre:wNeg[dstField], note:"La négation aln8ba encadre le verbe : nda + verbe + -wi."+(wNegEx?" Ex : "+wNegEx[dstField]+" — "+wNegEx[srcField]:"")});
+      chunks.push({type:'gram', toks:[T], titre:wNeg[dstField], inSentence:true, note:"La négation aln8ba encadre le verbe : nda + verbe + -wi."+(wNegEx?" Ex : "+wNegEx[dstField]+" — "+wNegEx[srcField]:"")});
       i++; continue;
     }
     if(FR && (t==='pas'||t==='plus') && negVu){ chunks.push({type:'skip', toks:[T], note:'fait partie de la négation'}); i++; continue; }
@@ -3206,7 +3312,11 @@ function traduire(){
         const cands = idx.get(lem) || tokIdx.get(lem) || [];
         if(cands.length){ lemHit={lem, ent:cands[0]}; break; }
       }
-      if(lemHit){ chunks.push({type:'hit', toks:[T], w:lemHit.ent.w, sens:lemHit.ent.sens, alts:[], lemme:lemHit.lem}); i++; continue; }
+      if(lemHit){
+        const note = lastPron ? "La forme conjuguée avec « "+lastPron+" » n'est pas encore au dictionnaire — voici l'infinitif." : null;
+        chunks.push({type:'hit', toks:[T], w:lemHit.ent.w, sens:lemHit.ent.sens, alts:[], lemme:lemHit.lem, note});
+        i++; continue;
+      }
     }
     // 7) synonyme
     if(FR && SYN[t]){
@@ -3268,7 +3378,8 @@ function traduire(){
 
   // Phrase composée : traductions + noms propres ; les pronoms/grammaire s'expliquent dans le détail
   const morceaux = chunks.map(c => {
-    if(c.type==='hit') return c.w[dstField];
+    if(c.type==='hit') return c.forceOut || c.w[dstField];
+    if(c.type==='gram' && c.inSentence) return 'Nda';   // la négation doit paraître — sinon le sens s'inverse
     if(c.type==='nom') return c.toks[0].o;
     if(c.type==='miss') return '«'+c.toks.map(x=>x.o||x.n).join(' ')+'»';
     return null;
@@ -3308,13 +3419,15 @@ function traduire(){
     const gaucheBase = escH(c.toks.map(x=>x.o||x.n).join(' '));
     if(c.type==='hit'){
       let badge = ' <span style="color:#2e7d32;font-size:.75rem">'+(c.expr?'🧩 expression':'✅')+'</span>';
+      if(c.badge) badge = ' <span style="font-size:.75rem;color:'+(/🧪|🟡/.test(c.badge)?'#b8860b':'#2e7d32')+'">'+escH(c.badge)+'</span>';
       let notes = '';
       if(c.viaSyn)  notes += ' <span style="font-size:.7rem;color:var(--text3)">(= '+escH(c.viaSyn)+')</span>';
       if(c.corrige) notes += ' <span style="font-size:.7rem;color:#b8860b">✏️ '+escH(c.corrige)+'</span>';
       if(c.lemme)   notes += ' <span style="font-size:.7rem;color:#7b5ea7">🔁 infinitif : '+escH(c.lemme)+'</span>';
       if(c.dansSens) notes += ' <span style="font-size:.7rem;color:var(--text3)">dans « '+escH(c.sens)+' »</span>';
       if(c.prefixe) notes += ' <span style="font-size:.7rem;color:#7b5ea7">🧩 préfixe '+escH(c.prefixe)+'</span>';
-      html += ligne(gaucheBase + notes, '<b style="color:var(--accent)">'+lnk(c.w[dstField], dstField==='aln8ba'?'aln8ba':'fr')+'</b>', badge);
+      html += ligne(gaucheBase + notes, '<b style="color:var(--accent)">'+lnk(c.forceOut||c.w[dstField], dstField==='aln8ba'?'aln8ba':'fr')+'</b>', badge)
+        + (c.note? '<div style="font-size:.73rem;color:#b8860b;padding:0 0 5px 130px;font-style:italic">'+escH(c.note)+'</div>':'');
       c.alts.forEach(a => {
         html += '<div style="font-size:.75rem;color:var(--text2);padding:1px 0 3px 130px">ou aussi : <b>' + escH(a.w[dstField]) + '</b></div>';
       });
