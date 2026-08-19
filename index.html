@@ -642,7 +642,7 @@ textarea{resize:vertical;min-height:68px}
     <button class="sb on" data-view="all" onclick="setView('all')"><span class="ic">📖</span>Tous les mots<span class="cn" id="cn-all">0</span></button>
     <button class="sb" data-view="favorites" onclick="setView('favorites')"><span class="ic">⭐</span>Favoris<span class="cn" id="cn-fav">0</span></button>
     <button class="sb" data-view="stats" onclick="setView('stats')"><span class="ic">📊</span>Statistiques</button>
-    <button class="sb" data-view="traducteur" onclick="setView('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
+    <button class="sb" data-view="traducteur" onclick="setView('traducteur')"><span class="ic">🪶</span>Traducteur</button>
       <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
       <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique</button>
       <button class="sb" data-view="archives" onclick="setView('archives')"><span class="ic">📜</span>Archives<span class="cn" id="cn-arch">0</span></button>
@@ -2991,29 +2991,69 @@ function traduire(){
   const elargir = s => s.replace(/\bj'/g,"je ").replace(/\bl'/g,"le ").replace(/\bd'/g,"de ")
                         .replace(/\bn'/g,"ne ").replace(/\bs'/g,"se ").replace(/\bqu'/g,"que ")
                         .replace(/\bm'/g,"me ").replace(/\bt'/g,"tu ");
+
+  // ── Comprendre le français courant ──
+  // Équivalences de phrases : ce que les gens écrivent → ce que le dictionnaire connaît
+  const EQUIV = [
+    ["comment ca va",        "comment vas tu"],
+    ["comment allez vous",   "comment vas tu"],
+    ["ca va bien",           "je vais bien"],
+    ["ca va",                "comment vas tu"],
+    ["merci beaucoup",       "merci"],
+    ["merci a tous",         "merci"],
+    ["bonjour a tous",       "bonjour"],
+    ["quelle heure est il",  "quelle heure"],
+    ["quel age as tu",       "quel age"],
+    ["je t aime",            "je te aime"],
+  ];
+  // Synonymes mot à mot : si le token n'est pas trouvé, essayer ceux-là
+  const SYN = {
+    salut:["bonjour"], coucou:["bonjour"], allo:["bonjour"],
+    ciao:["au revoir"], adieu:["au revoir"],
+    papa:["pere"], papi:["grand pere"], papy:["grand pere"],
+    maman:["mere"], mamie:["grand mere"], mammy:["grand mere"],
+    auto:["voiture"], char:["voiture"],
+    piastre:["argent"], piastres:["argent"],
+    gars:["garcon"], mec:["homme"], fillette:["petite fille"],
+    maisonnette:["petite maison"],
+  };
+  // Articles français : pas d'équivalent en aln8ba — on les ignore sans pénalité
+  const ARTICLES = new Set(["le","la","les","un","une","des","du","de","au","aux","a"]);
+
   const tokEq = (a,b) => a===b || (a.length>3&&a+'s'===b) || (b.length>3&&b+'s'===a)
                        || (a.length>=6&&b.startsWith(a)) || (b.length>=6&&a.startsWith(b));
 
   // Index des sens : chaque entrée est éclatée en sens (« · »), chaque sens indexé par son 1er token
+  // + variante sans article initial (« le tambour » est aussi trouvé par « tambour »)
   const idx = new Map();
   const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-') && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
+  const pushIdx = (toks,w,sens) => {
+    if(!toks.length || toks.length>6) return;
+    const key = toks[0];
+    if(!idx.has(key)) idx.set(key,[]);
+    idx.get(key).push({toks, w, sens});
+  };
   pool.forEach(w => {
     const sensList = srcField==='fr' ? (w.fr||'').split(/[·;]/) : [w.aln8ba];
     sensList.forEach(sens0 => {
       let s = clean(sens0.replace(/\([^)]*\)/g,' '));
       if(srcField==='fr') s = elargir(s);
       const toks = s.split(' ').filter(t=>t.length>0);
-      if(!toks.length || toks.length>6) return;
-      const key = toks[0];
-      if(!idx.has(key)) idx.set(key,[]);
-      idx.get(key).push({toks, w, sens: sens0.trim()});
+      pushIdx(toks, w, sens0.trim());
+      if(srcField==='fr' && toks.length>1 && ARTICLES.has(toks[0]))
+        pushIdx(toks.slice(1), w, sens0.trim());
     });
   });
   idx.forEach(lst => lst.sort((a,b)=>b.toks.length-a.toks.length));
 
   // Découpage de la phrase : correspondance la plus longue d'abord
   let inputClean = clean(input);
-  if(TRAD_DIR==='fr-aln') inputClean = elargir(inputClean);
+  if(TRAD_DIR==='fr-aln'){
+    inputClean = elargir(inputClean);
+    EQUIV.sort((a,b)=>b[0].length-a[0].length).forEach(([de,vers])=>{
+      inputClean = inputClean.replace(new RegExp('(^| )'+de.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?= |$)','g'), '$1'+vers);
+    });
+  }
   const inToks = inputClean.split(' ').filter(Boolean);
   const seqOk = (i,cand) => {
     if(i+cand.toks.length>inToks.length) return false;
@@ -3022,15 +3062,34 @@ function traduire(){
   };
   const chunks=[]; let i=0;
   while(i<inToks.length){
-    const lst = idx.get(inToks[i]) || idx.get(inToks[i].replace(/s$/,'')) || [];
-    const trouves = lst.filter(c=>seqOk(i,c));
+    const t=inToks[i];
+    let lst = idx.get(t) || idx.get(t.replace(/s$/,'')) || [];
+    let trouves = lst.filter(c=>seqOk(i,c));
+    let viaSyn = null;
+    if(!trouves.length && TRAD_DIR==='fr-aln' && SYN[t]){
+      for(const syn of SYN[t]){
+        const lst2 = idx.get(syn) || [];
+        trouves = lst2.filter(c=>seqOk(i,c)); // la longueur diffère : on teste les tokens du synonyme
+        if(trouves.length){ viaSyn = syn; break; }
+      }
+      if(!trouves.length){
+        // le synonyme peut couvrir un autre nombre de tokens : accepter la 1re entrée du synonyme
+        for(const syn of SYN[t]){
+          const lst2 = idx.get(syn) || [];
+          if(lst2.length){ trouves=[lst2[0]]; viaSyn=syn; break; }
+        }
+      }
+    }
     if(trouves.length){
-      const bestLen = trouves[0].toks.length;
+      const bestLen = viaSyn ? trouves[0].toks.length : trouves[0].toks.length;
       const alts = trouves.filter(c=>c.toks.length===bestLen);
       const vu = new Set(); const uniqAlts = alts.filter(c=>{const k=c.w[dstField]; if(vu.has(k)) return false; vu.add(k); return true;});
-      chunks.push({type:'hit', toks:inToks.slice(i,i+bestLen), w:uniqAlts[0].w, sens:uniqAlts[0].sens, alts:uniqAlts.slice(1,3)});
-      i += bestLen;
-    } else { chunks.push({type:'miss', toks:[inToks[i]]}); i++; }
+      const consomme = viaSyn ? 1 : bestLen; // un synonyme ne consomme que le token d'origine
+      chunks.push({type:'hit', toks:inToks.slice(i,i+consomme), w:uniqAlts[0].w, sens:uniqAlts[0].sens, alts:uniqAlts.slice(1,3), viaSyn});
+      i += consomme;
+    } else if(TRAD_DIR==='fr-aln' && ARTICLES.has(t)){
+      chunks.push({type:'skip', toks:[t]}); i++;
+    } else { chunks.push({type:'miss', toks:[t]}); i++; }
   }
 
   const outEl = document.getElementById('tradOutput');
@@ -3043,9 +3102,10 @@ function traduire(){
   }
 
   // Phrase composée
-  const sortie = chunks.map(c => c.type==='hit' ? c.w[dstField] : '«'+c.toks.join(' ')+'»').join(' ');
+  const sortie = chunks.map(c => c.type==='hit' ? c.w[dstField] : c.type==='miss' ? '«'+c.toks.join(' ')+'»' : null).filter(x=>x!==null).join(' ');
+  const denomToks = chunks.filter(c=>c.type!=='skip').reduce((n,c)=>n+c.toks.length,0);
   const couverts = hits.reduce((n,c)=>n+c.toks.length,0);
-  const pct = Math.round(100*couverts/inToks.length);
+  const pct = denomToks ? Math.round(100*couverts/denomToks) : 0;
   const pcCol = pct>=80 ? '#2e7d32' : pct>=50 ? '#b8860b' : '#c0392b';
   const pcTxt = pct>=80 ? 'Bonne couverture' : pct>=50 ? 'Couverture partielle' : 'Couverture faible';
 
@@ -3061,7 +3121,7 @@ function traduire(){
   chunks.forEach(c => {
     if(c.type==='hit'){
       html += '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
-        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + '</span>'
+        + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + (c.viaSyn?' <span style="font-size:.7rem;color:var(--text3)">(= '+c.viaSyn+')</span>':'') + '</span>'
         + '<span style="font-weight:700;color:var(--accent)">' + c.w[dstField] + '</span>'
         + '<span style="color:#2e7d32;font-size:.75rem">✅</span></div>';
       c.alts.forEach(a => {
@@ -3070,6 +3130,10 @@ function traduire(){
       if(c.w.example_a && c.w.example_f){
         html += '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">Ex : ' + c.w.example_a + ' — ' + c.w.example_f + '</div>';
       }
+    } else if(c.type==='skip'){
+      html += '<div style="display:flex;gap:10px;align-items:baseline;padding:3px 0;border-bottom:1px dashed var(--border)">'
+        + '<span style="font-size:.8rem;color:var(--text3);min-width:120px">' + c.toks.join(' ') + '</span>'
+        + '<span style="color:var(--text3);font-size:.75rem;font-style:italic">pas d\'article en aln8ba — on l\'enlève</span></div>';
     } else {
       html += '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
         + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + c.toks.join(' ') + '</span>'
