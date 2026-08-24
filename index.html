@@ -1138,7 +1138,7 @@ textarea{resize:vertical;min-height:68px}
       <button class="sb" onclick="mobileNav('all')"><span class="ic">📖</span>Tous les mots</button>
       <button class="sb" onclick="mobileNav('favorites')"><span class="ic">⭐</span>Favoris</button>
       <button class="sb" onclick="mobileNav('stats')"><span class="ic">📊</span>Statistiques</button>
-      <button class="sb" onclick="mobileNav('traducteur')"><span class="ic">🔍</span>Recherche dictionnaire</button>
+      <button class="sb" onclick="mobileNav('traducteur')"><span class="ic">🪶</span>Traducteur</button>
       <button class="sb" onclick="mobileNav('apprendre')"><span class="ic">🎓</span>Apprendre</button>
       <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique</button>
       <button class="sb" onclick="mobileNav('archives')"><span class="ic">📜</span>Archives</button>
@@ -1787,7 +1787,7 @@ function setView(v,keepGameContext=false){
   document.getElementById('apprendreView').className = 'apr'+(v==='apprendre'?' show':'');
   document.getElementById('jeuxView').className      = 'jeu'+(v==='jeux'?' show':'');
   document.getElementById('archivesView').style.display = v==='archives'?'block':'none';
-  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Recherche dictionnaire',apprendre:'Apprendre la langue',jeux:'Jeux',archives:'Archives — les mots des ancêtres'}[v]||'';
+  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Traducteur',apprendre:'Apprendre la langue',jeux:'Jeux',archives:'Archives — les mots des ancêtres'}[v]||'';
   if(['all','favorites'].includes(v)) renderWords();
   if(v==='flashcard') initFC();
   if(v==='stats') renderStats();
@@ -1868,7 +1868,7 @@ function fcNext(){ S.fcIdx++; if(S.fcIdx>=S.fcWords.length){S.fcWords.sort(()=>M
 // ══════════════════════════════════════════════════════════
 //  PRATIQUE GRAMMAIRE
 // ══════════════════════════════════════════════════════════
-const PS = { level:1, queue:[], idx:0, ok:0, ko:0, streak:0, answered:false };
+const PS = { level:1, queue:[], idx:0, ok:0, ko:0, streak:0, bestStreak:0, answered:false };
 
 function initPratique(){
   updatePratScoreDisplay();
@@ -1905,7 +1905,7 @@ function buildQueue(){
   }
   if(pool.length < 2){ toast('Pas assez de mots confirmés pour ce niveau. Confirme d\'abord des mots en admin.'); return; }
   PS.queue = shuffle([...pool]).slice(0, Math.min(pool.length, 20));
-  PS.idx = 0; PS.ok = 0; PS.ko = 0; PS.streak = 0; PS.answered = false;
+  PS.idx = 0; PS.ok = 0; PS.ko = 0; PS.streak = 0; PS.bestStreak = 0; PS.answered = false;
   updatePratScoreDisplay();
   showQuestion();
 }
@@ -2200,7 +2200,7 @@ function markAnswer(correct, inp, displayAnswer, fullAnswer){
 }
 
 function recordAnswer(correct, answer){
-  if(correct){ PS.ok++; PS.streak++; }
+  if(correct){ PS.ok++; PS.streak++; PS.bestStreak=Math.max(PS.bestStreak,PS.streak); }
   else { PS.ko++; PS.streak=0; }
   updatePratScoreDisplay();
 }
@@ -2225,7 +2225,7 @@ function showPratEnd(){
     <div class="prat-end">
       <div class="prat-end-icon">${emoji}</div>
       <h3>${pct}% — ${PS.ok} / ${total}</h3>
-      <p>Série maximale : 🔥${PS.streak} · Niveau ${PS.level}</p>
+      <p>Série maximale : 🔥${PS.bestStreak} · Niveau ${PS.level}</p>
       <div class="prat-nav" style="justify-content:center">
         <button class="btn btn-primary" onclick="buildQueue()">Recommencer ce niveau</button>
         <button class="btn btn-secondary" onclick="resetPrat()">Réinitialiser les scores</button>
@@ -2233,7 +2233,7 @@ function showPratEnd(){
     </div>`;
 }
 
-function resetPrat(){ PS.ok=0; PS.ko=0; PS.streak=0; updatePratScoreDisplay(); buildQueue(); }
+function resetPrat(){ PS.ok=0; PS.ko=0; PS.streak=0; PS.bestStreak=0; updatePratScoreDisplay(); buildQueue(); }
 
 function escQ(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 function escH(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
@@ -2860,7 +2860,7 @@ function stopRec(){
 //  PRATIQUE VOCALE — écoute, micro et comparaison phonétique
 // ══════════════════════════════════════════════════════════
 let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
-let voiceRecognition=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[];
+let voiceRecognition=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null;
 
 function alnToVoiceCue(value){
   return (value||'').toLowerCase()
@@ -2938,6 +2938,7 @@ function voiceResetMic(){
 }
 function voiceStopActive(){
   if(voiceRecognition){try{voiceRecognition.abort();}catch(e){} voiceRecognition=null;}
+  if(voiceFallbackTimer){clearTimeout(voiceFallbackTimer);voiceFallbackTimer=null;}
   if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
     try{voiceFallbackRecorder.stop();}catch(e){}
   }
@@ -3017,6 +3018,7 @@ async function voiceStartFallback(){
     voiceFallbackChunks=[]; voiceFallbackRecorder=new MediaRecorder(voiceFallbackStream);
     voiceFallbackRecorder.ondataavailable=e=>voiceFallbackChunks.push(e.data);
     voiceFallbackRecorder.onstop=()=>{
+      if(voiceFallbackTimer){clearTimeout(voiceFallbackTimer);voiceFallbackTimer=null;}
       const url=URL.createObjectURL(new Blob(voiceFallbackChunks,{type:'audio/webm'}));
       const player=document.getElementById('voicePlayback');
       if(player){player.src=url;player.style.display='block';}
@@ -3025,9 +3027,12 @@ async function voiceStartFallback(){
       voiceResetMic();
     };
     voiceFallbackRecorder.start();
+    voiceFallbackTimer=setTimeout(()=>{
+      if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording') voiceFallbackRecorder.stop();
+    },8000);
     const btn=document.getElementById('voiceMic');
     if(btn){btn.classList.add('listening');btn.textContent='⏹ Arrêter l’enregistrement';}
-    voiceSetStatus('Enregistrement local en cours. Appuie de nouveau pour arrêter.');
+    voiceSetStatus('Enregistrement local en cours. Il s’arrête automatiquement après huit secondes; tu peux aussi l’arrêter maintenant.');
   }catch(e){voiceRecognitionError('not-allowed');}
 }
 function aprVoiceTargets(m,lecHtml){
@@ -3078,7 +3083,7 @@ function aprVoiceRender(){
       </div>
       <div class="voice-status" id="voiceStatus" aria-live="polite">Écoute le modèle, puis prononce le mot naturellement.</div>
       <audio id="voicePlayback" controls style="display:none;width:100%;margin-top:10px"></audio>
-      <div id="voiceResult"></div>
+      <div id="voiceResult" aria-live="polite" aria-atomic="true"></div>
       <div class="voice-nav">
         <button class="voice-btn" onclick="aprVoiceMove(-1)" ${VOICE_INDEX===0?'disabled':''}>← Précédent</button>
         <div class="voice-dots" id="voiceDots"></div>
