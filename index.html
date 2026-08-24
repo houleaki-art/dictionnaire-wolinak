@@ -748,7 +748,7 @@ textarea{resize:vertical;min-height:68px}
       <div class="plvl lvl-4" data-lvl="4" onclick="selectLevel(4)">
         <div class="plvl-icon">🪶</div>
         <div class="plvl-name">Expert — Maîtrise totale</div>
-        <div class="plvl-desc">3 types de questions mixtes sans aucun indice : écris le mot, traduis, donne le pluriel.</div>
+        <div class="plvl-desc">3 types de questions mixtes : écris le mot, traduis et donne un pluriel documenté.</div>
         <span class="plvl-badge">Niveau 4</span>
       </div>
     </div>
@@ -867,7 +867,7 @@ textarea{resize:vertical;min-height:68px}
     <div class="acards">
       <div class="acard"><h3>✍️ Le chiffre 8</h3><p>Le <strong>8</strong> représente un son qui est « en » et « on » en même temps — une voyelle nasale unique à l'abenakis. Le <strong>o</strong> existe aussi comme son distinct dans la langue. Ex: <em>Aln8ba</em>, <em>j8n</em> (le nez).</p></div>
       <div class="acard"><h3>🔊 Règles de prononciation</h3>
-        <table class="ptable"><tr><td>i</td><td>= se prononce é</td></tr><tr><td>o</td><td>= se prononce ou (ex: Awassos = awassouuss)</td></tr><tr><td>w</td><td>= <b>ô</b> devant une consonne (Wli = ôli) · <b>wa</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= « en » + « on » simultanément</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= pluriel des êtres animés (vivants)</td></tr><tr><td>-al</td><td>= pluriel des choses inanimées</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
+        <table class="ptable"><tr><td>i</td><td>= se prononce é</td></tr><tr><td>o</td><td>= se prononce ou (ex: Awassos = awassouuss)</td></tr><tr><td>w</td><td>= <b>ô</b> devant une consonne (Wli = ôli) · <b>wa</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= « en » + « on » simultanément</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
       <div class="acard"><h3>➕ Contribuer</h3><p>Cliquez le bouton <strong>+</strong> pour proposer un mot. Votre contribution sera examinée avant d'être publiée dans le dictionnaire.</p></div>
@@ -898,8 +898,8 @@ textarea{resize:vertical;min-height:68px}
           <span class="lr"><strong>8</strong> = « en » + « on » en même temps</span>
           <span class="lr"><strong>Ch</strong> = son ts</span>
           <span class="lr"><strong>J</strong> = son dz</span>
-          <span class="lr"><strong>-ak</strong> = pluriel animé (ex: Koak, Awassosak)</span>
-          <span class="lr"><strong>-al</strong> = pluriel inanimé (ex: Satal)</span>
+          <span class="lr"><strong>-ak</strong> = pluriel animé documenté (ex: Koak, Awassosak)</span>
+          <span class="lr"><strong>-al</strong> = pluriel inanimé documenté (ex: Satal)</span>
           <span class="lr"><strong>nda</strong> = notre (pas je/mon)</span>
         </div>
       </div>
@@ -1857,18 +1857,8 @@ function buildQueue(){
     // Niveau 3 : mots simples (pas composés d'espaces multiples)
     pool = confirmed.filter(w => w.fr && !w.aln8ba.includes(' '));
   } else {
-    // Niveau 4 : noms animés/inanimés — capables d'avoir un pluriel
-    pool = confirmed.filter(w => {
-      const g = (w.grammar||'').toLowerCase();
-      const hasPlural = g.includes('animé') || g.includes('inanimé') ||
-        (w.related||[]).some(r => /ak$|al$/.test(r.toLowerCase()));
-      const isAlreadyPlural = g.includes('pluriel');
-      return hasPlural && !isAlreadyPlural && !w.aln8ba.includes(' ');
-    });
-    if(pool.length < 4){
-      // Fallback si pas assez de mots avec pluriel
-      pool = confirmed.filter(w => !(w.grammar||'').toLowerCase().includes('pluriel'));
-    }
+    // Chaque troisième question demande un pluriel : garder uniquement les paires documentées.
+    pool = confirmed.filter(w => DOCUMENTED_PLURALS[w.aln8ba] && !w.aln8ba.includes(' '));
   }
   if(pool.length < 2){ toast('Pas assez de mots confirmés pour ce niveau. Confirme d\'abord des mots en admin.'); return; }
   PS.queue = shuffle([...pool]).slice(0, Math.min(pool.length, 20));
@@ -1878,11 +1868,18 @@ function buildQueue(){
 }
 
 // Meilleurs distracteurs : même catégorie en priorité, sinon autres
-function getBestDistractors(w, n){
+function getBestDistractors(w, n, field){
   const base = WORDS.filter(x => x.id !== w.id && x.aln8ba && x.fr && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(x.aln8ba) && !enAttente(x) && isConfirmed(x) && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
   const samecat = shuffle(base.filter(x => x.cat === w.cat));
   const others  = shuffle(base.filter(x => x.cat !== w.cat));
-  return [...samecat, ...others].slice(0, n);
+  const seen=new Set([(w[field]||'').trim().toLowerCase()]), out=[];
+  for(const x of [...samecat,...others]){
+    const key=(x[field]||'').trim().toLowerCase();
+    if(!key||seen.has(key)) continue;
+    seen.add(key); out.push(x);
+    if(out.length===n) break;
+  }
+  return out;
 }
 
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -1918,7 +1915,7 @@ function richFeedback(w, correct){
 
 // ── NIVEAU 1 : Tu vois le mot abenakis → reconnais la traduction ──
 function renderLvl1(arena, w, idx, total, pct){
-  const others = getBestDistractors(w, 3);
+  const others = getBestDistractors(w, 3, 'fr');
   const choices = shuffle([w, ...others]);
   const choiceHTML = choices.map(c=>`
     <button class="prat-choice" onclick="checkLvl1QCM('${escQ(c.id)}','${escQ(w.id)}')" id="pch-${c.id}">${c.fr}</button>
@@ -1952,7 +1949,7 @@ function checkLvl1QCM(chosenId, correctId){
 
 // ── NIVEAU 2 : Tu vois la traduction → choisis le mot abenakis (QCM) ──
 function renderLvl2(arena, w, idx, total, pct){
-  const others = getBestDistractors(w, 3);
+  const others = getBestDistractors(w, 3, 'aln8ba');
   const choices = shuffle([w, ...others]);
   const choiceHTML = choices.map(c=>`
     <button class="prat-choice" onclick="checkLvl2('${escQ(c.id)}','${escQ(w.id)}')" id="pch-${c.id}">${c.aln8ba}</button>
@@ -2021,31 +2018,16 @@ function checkLvl3Write(answer, wid){
   if(nav){ const v=nav.querySelector('.btn-primary'); if(v){v.textContent='Suivant →';v.onclick=nextQ;} }
 }
 
-// ── RÉSOLUTION DU PLURIEL (logique correcte) ──
-// Priorité : 1) pluriel exact (base+ak / base+al) dans related
-//            2) grammaire (animé → ak, inanimé → al)
-//            3) premier mot related finissant en ak/al
-//            4) défaut animé
+// ── PLURIELS DOCUMENTÉS ──
+// Ne jamais générer une forme à partir de la seule classe grammaticale.
+const DOCUMENTED_PLURALS={
+  Alakws:'Alakwsak', Awassos:'Awassosak', Awassosis:'Awassosisak',
+  Koa:'Koak', Mskikwimen:'Mskikwimenak', Namasis:'Namasisak', Sata:'Satal'
+};
 function resolvePlural(w){
-  const gram = (w.grammar||'').toLowerCase();
-  const base = w.aln8ba;
-  // 1. Chercher le pluriel documenté dans related
-  //    Règle : le mot doit commencer par la base ET finir en -ak/-al
-  //    ET ne pas être un pluriel de diminutif (ex: Namasisak ≠ pluriel de Namas)
-  //    Cette approche gère les fusions vocaliques : Koa → Koak (pas Koaak)
-  const relPlural = (w.related||[]).find(r => {
-    if (!LANG.isPlural(r)) return false;
-    if (LANG.isDiminutivePluralOf(r, base)) return false; // Exclusion critique
-    return r.toLowerCase().startsWith(base.toLowerCase());
-  });
-  if (relPlural) {
-    return { form: relPlural, type: relPlural.toLowerCase().endsWith(LANG.PLURAL_ANIM) ? 'animé (-ak)' : 'inanimé (-al)' };
-  }
-  // 2. Fallback grammaire (seulement si rien dans related)
-  const direct = LANG.getDirectPlural(base, w.grammar);
-  if (direct) return direct;
-  // 3. Défaut animé — avec la règle phonologique de fusion vocalique
-  return { form: LANG._addPlural(base, LANG.PLURAL_ANIM), type: 'animé (-ak)' };
+  const form=DOCUMENTED_PLURALS[w.aln8ba];
+  if(!form) return {form:'non documenté',type:'aucune forme inventée'};
+  return {form,type:form.endsWith('al')?'inanimé (-al)':'animé (-ak)'};
 }
 
 // ── NIVEAU 4 : EXPERT — questions mixtes, aucune aide ──
@@ -2093,7 +2075,7 @@ function renderLvl4(arena, w, idx, total, pct){
       ${progressBar(pct)}
       <div class="prat-question-lbl">Question ${idx+1} / ${total} · Expert — donne le pluriel</div>
       <div class="prat-word" style="font-size:2rem;color:var(--accent);font-family:Georgia,serif">${w.aln8ba}</div>
-      <div class="prat-hint">${w.fr} · <em>animé (-ak) ou inanimé (-al) ?</em></div>
+      <div class="prat-hint">${w.fr} · <em>paire documentée à rappeler de mémoire</em></div>
       <div class="prat-input-wrap">
         <input class="prat-input" id="pratIn" placeholder="Pluriel…" autocomplete="off" spellcheck="false">
       </div>
@@ -3611,7 +3593,8 @@ const NIVEAUX=[
    Les arbres dehors, les tasses dans l'armoire, les autos qui passent. Un nombre qu'on utilise
    est un nombre qu'on garde.</div>`)},
  {t:"Les animaux",d:"L'ours, le loup, l'aigle et les autres.",cat:'animal',ex:'vocab',lec:`
-  <p>Les animaux sont tous du genre <b>animé</b>. Tu verras ce que ça change au niveau secondaire.</p>
+  <p>Dans ce module, les noms d'animaux présentés sont de classe grammaticale <b>animée</b>.
+  Tu apprendras à vérifier cette classe mot par mot au niveau secondaire.</p>
   <table class="aprtab">
   <tr><td class="k">Awassos</td><td>l'ours</td></tr><tr><td class="k">M8lsem</td><td>le loup</td></tr>
   <tr><td class="k">Mgezo</td><td>l'aigle</td></tr><tr><td class="k">Tmakwa</td><td>le castor</td></tr>
@@ -3620,9 +3603,9 @@ const NIVEAUX=[
  {t:"Les bêtes de chez nous",d:"Toute la faune du territoire, du plus petit au plus grand.",cat:'animal',ex:'vocab',lec:aprAutoLec(`
   <p>Tu as rencontré les huit grands. Voici toutes les autres bêtes attestées dans le
   dictionnaire — les noms les plus courts d'abord.</p>`,'animal',16,`
-  <div class="aprnote"><b>Les animaux sont animés</b>
-   Retiens-le pour le secondaire : leur pluriel finira en <b>K</b>, comme
-   <span class="al8">Abazi</span> → <span class="al8">Abaziak</span>.</div>`)},
+  <div class="aprnote"><b>Retiens la classe avec le mot</b>
+   La classe grammaticale et le pluriel sont deux informations distinctes. Un pluriel ne doit
+   être utilisé que lorsque sa forme est documentée dans le dictionnaire.</div>`)},
  {t:"Mon corps",d:"De la tête aux pieds.",cat:'corps',ex:'vocab',lec:`
   <p>Les parties du corps portent toujours un possesseur. <b>N-</b> veut dire <i>mon</i>.</p>
   <table class="aprtab">
@@ -3669,7 +3652,7 @@ const NIVEAUX=[
   <tr><td class="k">Kizos</td><td>le soleil</td></tr><tr><td class="k">P8guas</td><td>la lune</td></tr>
   <tr><td class="k">Alakws</td><td>une étoile</td></tr><tr><td class="k">Nebi</td><td>l'eau</td></tr>
   <tr><td class="k">Watzo</td><td>la montagne</td></tr><tr><td class="k">Aki</td><td>la terre</td></tr>
-  <tr><td class="k">Nebi</td><td>l'eau</td></tr><tr><td class="k">Skweda</td><td>le feu</td></tr></table>`},
+  <tr><td class="k">Skweda</td><td>le feu</td></tr></table>`},
  {t:"Le territoire",d:"Les lieux, les eaux et les chemins — nommer le pays.",cat:'territoire',ex:'vocab',lec:aprAutoLec(`
   <p>Le territoire se nomme morceau par morceau. Ces mots-là ont été prononcés ici
   pendant des générations avant toi — tu les remets en marche.</p>`,'territoire',16,`
@@ -3820,11 +3803,11 @@ const NIVEAUX=[
  {t:"Vérifier la classe grammaticale",d:"Observer des noms actuels et retenir leur classe grammaticale.",ex:'genre',lec:`
   <p>On continue ici le même travail : vérifier pour chaque nom s'il est <b>animé</b> ou <b>inanimé</b>.</p>
   <p>Le but n'est pas d'inventer une explication générale, mais d'apprendre des exemples actuels et sûrs :</p>
-  <table class="aprtab"><tr><th>Animé (pluriel en K)</th><th>Inanimé (pluriel en L)</th></tr>
+  <table class="aprtab"><tr><th>Classe animée</th><th>Classe inanimée</th></tr>
   <tr><td class="k">Kizos — le soleil</td><td class="k">Sen — la pierre</td></tr>
   <tr><td class="k">Alakws — l'étoile</td><td class="k">Nebi — l'eau</td></tr>
   <tr><td class="k">Pakholigan — le tambour</td><td class="k">Awikhigan — le livre</td></tr>
-  <tr><td class="k">Mskikwimens — la fraise</td><td class="k">Sata — le bleuet</td></tr>
+  <tr><td class="k">Mskikwimen — la fraise</td><td class="k">Sata — le bleuet</td></tr>
   <tr><td class="k">Watzo — la montagne</td><td class="k">Wigw8m — la maison</td></tr></table>
   <div class="aprnote"><b>Le bon réflexe</b>
    Regarde la classe grammaticale sur la fiche, puis retiens-la avec le mot. Le pluriel vient ensuite,
@@ -4286,11 +4269,21 @@ let jCtx=null;
 function jPoolSur(){ let p=aprSur(); if(jCtx&&jCtx.cats&&jCtx.cats.length) p=p.filter(w=>jCtx.cats.includes(w.cat)); return p; }
 const jPick=a=>a[Math.floor(Math.random()*a.length)];
 const jShuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+function jUniqueBy(pool,key,n,used=[]){
+  const seen=new Set(used.map(x=>(x||'').trim().toLowerCase())), out=[];
+  for(const w of jShuf(pool)){
+    const k=(key(w)||'').trim().toLowerCase();
+    if(!k||seen.has(k)) continue;
+    seen.add(k); out.push(w);
+    if(out.length===n) break;
+  }
+  return out;
+}
 const JEUX_L=[
- {id:'genre',t:'Animé ou inanimé?',d:"La division fondamentale. Le pluriel en K ou en L trahit le genre.",n:'Grammaire'},
+ {id:'genre',t:'Animé ou inanimé?',d:"Retrouve la classe grammaticale indiquée dans le dictionnaire.",n:'Grammaire'},
  {id:'sens',t:'Devinette',d:"Un mot, quatre sens. Ou l'inverse. Filtrable par catégorie.",n:'Vocabulaire'},
  {id:'negat',t:'La négation',d:"Nda plus quel suffixe? Trois règles selon la voyelle du radical.",n:'Grammaire'},
- {id:'plur',t:'Le bon pluriel',d:"-ak, -ok, -jik pour l'animé. -al, -ol pour l'inanimé.",n:'Grammaire'},
+ {id:'plur',t:'Le bon pluriel',d:"Choisis une forme complète parmi des paires documentées.",n:'Grammaire'},
  {id:'fam',t:'Familles de mots',d:"Quel mot partage la même racine? Cent familles au dictionnaire.",n:'Racines'},
  {id:'caches',t:'Mots cachés',d:"Une grille, huit mots à trouver. Choisis un thème.",n:'Jeu'}];
 function jeuInit(){
@@ -4342,17 +4335,16 @@ function jGenre(){
       <div class="w">${w.aln8ba}</div><div class="h">${w.fr}</div></div>
     <div class="jopts two">
       <button class="jopt" onclick="jAns(${an?0:1},0,jRetGenre())" style="text-align:center">
-        <span class="al">Animé</span><span style="font-size:.75rem;color:var(--text2)">pluriel en K</span></button>
+        <span class="al">Animé</span><span style="font-size:.75rem;color:var(--text2)">classe grammaticale</span></button>
       <button class="jopt" onclick="jAns(${an?0:1},1,jRetGenre())" style="text-align:center">
-        <span class="al">Inanimé</span><span style="font-size:.75rem;color:var(--text2)">pluriel en L</span></button></div>
-    <div class="jhint">Sont animés : les êtres vivants, mais aussi le soleil, les étoiles,
-      le tambour, le couteau, la bouteille, le pain.</div>`);
+        <span class="al">Inanimé</span><span style="font-size:.75rem;color:var(--text2)">classe grammaticale</span></button></div>
+    <div class="jhint">La classe se vérifie sur la fiche du mot; elle ne se devine pas à partir de son sens.</div>`);
   window._jw=w; window._jan=an;
 }
 function jRetGenre(){ const w=window._jw,an=window._jan;
   const pl=resolvePlural(w);
   return `<b>${w.aln8ba} — ${w.fr}</b>
-    <em>${an?'Genre animé : son pluriel se termine par K.':'Genre inanimé : son pluriel se termine par L.'}</em>
+    <em>Classe grammaticale : ${an?'animé':'inanimé'}.</em>
     <div style="margin-top:7px;font-size:1.05rem">Pluriel : <b class="al8" style="color:var(--accent)">${pl.form}</b> <span style="font-size:.72rem;color:var(--text2)">(${pl.type})</span></div>
     ${w.example_a?`<div style="margin-top:7px">${w.example_a} — <em>${w.example_f||''}</em></div>`:''}
     <span class="aprsrc">${aprSrc(w.source)}</span>`; }
@@ -4363,7 +4355,10 @@ function jSens(){
   const ctrl=`<select onchange="jCat=this.value;jSens()" style="font-family:inherit;font-size:.78rem;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text)">
       ${['toutes',...cats].map(c=>`<option ${c===jCat?'selected':''}>${c}</option>`).join('')}</select>
     <button class="chip" onclick="jInv=!jInv;jSens()">${jInv?'Sens → Mot':'Mot → Sens'}</button>`;
-  const bon=jPick(pool), tous=jShuf([bon,...jShuf(pool.filter(w=>w.aln8ba!==bon.aln8ba)).slice(0,3)]);
+  const bon=jPick(pool), key=w=>jInv?w.aln8ba:w.fr;
+  const autres=jUniqueBy(pool.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
+  if(autres.length<3) return jFrame('Devinette','<p style="text-align:center;color:var(--text2)">Pas assez de réponses distinctes dans cette catégorie.</p>',ctrl);
+  const tous=jShuf([bon,...autres]);
   const ib=tous.indexOf(bon); window._jb=bon;
   jFrame('Devinette',`
     <div class="jprompt"><div class="q">${jInv?'Quel mot dit cela?':'Que veut dire ce mot?'}</div>
@@ -4399,20 +4394,22 @@ function jRetNeg(){ const q=window._jq;
     <span class="aprsrc">Règle établie par recoupement de Laurent 1884, Masta 1932 et du Manuel de l'étudiant 1</span>`; }
 const JPLUR=[
  {s:'Alakws',p:'Alakwsak',f:'étoile',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
- {s:'Awassos',p:'Awassosak',f:'enfant',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
- {s:'Awassosis',p:'Awassosisak',f:'petit enfant',r:0,w:"Paire documentée : diminutif animé avec pluriel actuel attesté."},
+ {s:'Awassos',p:'Awassosak',f:'ours',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
+ {s:'Awassosis',p:'Awassosisak',f:'petit ours',r:0,w:"Paire documentée : diminutif animé avec pluriel actuel attesté."},
  {s:'Koa',p:'Koak',f:'pin',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
  {s:'Mskikwimen',p:'Mskikwimenak',f:'fraise',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
  {s:'Namasis',p:'Namasisak',f:'poisson',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
  {s:'Sata',p:'Satal',f:'bleuet',r:3,w:"Paire documentée : nom inanimé avec pluriel actuel attesté."}];
 function jPlur(){
   const q=jPick(JPLUR); window._jp=q;
+  const autres=jShuf(JPLUR.filter(x=>x.p!==q.p)).slice(0,3).map(x=>x.p);
+  const opts=jShuf([q.p,...autres]), ib=opts.indexOf(q.p);
   jFrame('Le bon pluriel',`
-    <div class="jprompt"><div class="q">Quelle terminaison au pluriel?</div>
+    <div class="jprompt"><div class="q">Quel pluriel est documenté?</div>
       <div class="w">${q.s}</div><div class="h">${q.f}</div></div>
-    <div class="jopts two">${['-ak','-ok','-jik','-al','-ol'].map((o,i)=>
-      `<button class="jopt" onclick="jAns(${q.r},${i},jRetPlur())" style="text-align:center"><span class="al">${o}</span></button>`).join('')}</div>
-    <div class="jhint">Le K appartient à l'animé, le L à l'inanimé. Puis regarde comment le mot se termine.</div>`);
+    <div class="jopts two">${opts.map((o,i)=>
+      `<button class="jopt" onclick="jAns(${ib},${i},jRetPlur())" style="text-align:center"><span class="al">${o}</span></button>`).join('')}</div>
+    <div class="jhint">Choisis la paire déjà attestée; aucune forme n'est construite automatiquement.</div>`);
 }
 function jRetPlur(){ const q=window._jp;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
@@ -4425,7 +4422,8 @@ function jFam(){
   const B=Object.entries(F).filter(([k,v])=>v.length>=3&&!EX.includes(k));
   if(!B.length) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de familles.</p>');
   const [fid,mem]=jPick(B), base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
- const tous=jShuf([cous,...jShuf(aprSur().filter(w=>w.familyId!==fid)).slice(0,3)]);
+ const distracteurs=jUniqueBy(aprSur().filter(w=>w.familyId!==fid),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+ const tous=jShuf([cous,...distracteurs]);
   const ib=tous.indexOf(cous); window._jf={fid,mem,cous};
   jFrame('Familles de mots',`
     <div class="jprompt"><div class="q">Quel mot partage la même racine?</div>
@@ -4557,9 +4555,12 @@ function exVocab(){
     :aprSur().filter(w=>w.cat===exCat && w.aln8ba.length<=18);
   if(pool.length<4) pool=aprSur();
   const bon=jPick(pool);
-  const tous=jShuf([bon,...jShuf(pool.filter(w=>w.aln8ba!==bon.aln8ba)).slice(0,3)]);
-  const ib=tous.indexOf(bon); window._ex=bon;
   const sens = exQ%2===0;
+  const key=w=>sens?w.fr:w.aln8ba;
+  const autres=jUniqueBy(pool.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
+  if(autres.length<3) return exEcris();
+  const tous=jShuf([bon,...autres]);
+  const ib=tous.indexOf(bon); window._ex=bon;
   exCadre(`
     <div class="jprompt"><div class="q">${sens?'Que veut dire ce mot?':'Quel mot dit cela?'}</div>
       <div class="w">${sens?bon.aln8ba:bon.fr}</div></div>
@@ -4682,25 +4683,26 @@ function exGenre(){
       <div class="w">${w.aln8ba}</div><div class="h">${w.fr}</div></div>
     <div class="jopts two">
       <button class="jopt" style="text-align:center" onclick="exRepond(${an?0:1},0,exRetGenre())">
-        <span class="al">Animé</span><span style="font-size:.75rem;color:var(--text2)">pluriel en K</span></button>
+        <span class="al">Animé</span><span style="font-size:.75rem;color:var(--text2)">classe grammaticale</span></button>
       <button class="jopt" style="text-align:center" onclick="exRepond(${an?0:1},1,exRetGenre())">
-        <span class="al">Inanimé</span><span style="font-size:.75rem;color:var(--text2)">pluriel en L</span></button></div>`);
+        <span class="al">Inanimé</span><span style="font-size:.75rem;color:var(--text2)">classe grammaticale</span></button></div>`);
 }
 function exRetGenre(){ const w=window._ex,a=window._exa;
   const pl=resolvePlural(w);
-  return `<b>${w.aln8ba} — ${w.fr}</b><em>${a?'Genre animé : le pluriel se termine par K.'
-    :'Genre inanimé : le pluriel se termine par L.'}</em>
+  return `<b>${w.aln8ba} — ${w.fr}</b><em>Classe grammaticale : ${a?'animé':'inanimé'}.</em>
     <div style="margin-top:7px;font-size:1.05rem">Pluriel : <b class="al8" style="color:var(--accent)">${pl.form}</b> <span style="font-size:.72rem;color:var(--text2)">(${pl.type})</span></div>
     <span class="aprsrc">${aprSrc(w.source)}</span>`; }
 
 /* — secondaire : le pluriel — */
 function exPlur(){
   const q=jPick(JPLUR); window._ex=q;
+  const autres=jShuf(JPLUR.filter(x=>x.p!==q.p)).slice(0,3).map(x=>x.p);
+  const opts=jShuf([q.p,...autres]), ib=opts.indexOf(q.p);
   exCadre(`
-    <div class="jprompt"><div class="q">Quelle terminaison au pluriel?</div>
+    <div class="jprompt"><div class="q">Quel pluriel est documenté?</div>
       <div class="w">${q.s}</div><div class="h">${q.f}</div></div>
-    <div class="jopts two">${['-ak','-ok','-jik','-al','-ol'].map((o,i)=>
-      `<button class="jopt" style="text-align:center" onclick="exRepond(${q.r},${i},exRetPlur())">
+    <div class="jopts two">${opts.map((o,i)=>
+      `<button class="jopt" style="text-align:center" onclick="exRepond(${ib},${i},exRetPlur())">
         <span class="al">${o}</span></button>`).join('')}</div>`);
 }
 function exRetPlur(){ const q=window._ex;
@@ -4870,7 +4872,8 @@ function exFam(){
   const B=Object.entries(F).filter(([k,v])=>v.length>=3&&!EXCL.includes(k));
   if(!B.length) return exVocab();
   const [fid,mem]=jPick(B), base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
-  const tous=jShuf([cous,...jShuf(aprSur().filter(w=>w.familyId!==fid)).slice(0,3)]);
+  const distracteurs=jUniqueBy(aprSur().filter(w=>w.familyId!==fid),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+  const tous=jShuf([cous,...distracteurs]);
   const ib=tous.indexOf(cous); window._ex={fid,mem,cous,base};
   exCadre(`
     <div class="jprompt"><div class="q">Quel mot partage la même racine?</div>
