@@ -3667,14 +3667,14 @@ const NIVEAUX=[
  {t:"La nature autour",d:"Le soleil, la rivière, la montagne.",cat:'nature',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Kizos</td><td>le soleil</td></tr><tr><td class="k">P8guas</td><td>la lune</td></tr>
-  <tr><td class="k">Alakws</td><td>une étoile</td></tr><tr><td class="k">Sibo</td><td>la rivière</td></tr>
+  <tr><td class="k">Alakws</td><td>une étoile</td></tr><tr><td class="k">Nebi</td><td>l'eau</td></tr>
   <tr><td class="k">Watzo</td><td>la montagne</td></tr><tr><td class="k">Aki</td><td>la terre</td></tr>
   <tr><td class="k">Nebi</td><td>l'eau</td></tr><tr><td class="k">Skweda</td><td>le feu</td></tr></table>`},
  {t:"Le territoire",d:"Les lieux, les eaux et les chemins — nommer le pays.",cat:'territoire',ex:'vocab',lec:aprAutoLec(`
   <p>Le territoire se nomme morceau par morceau. Ces mots-là ont été prononcés ici
   pendant des générations avant toi — tu les remets en marche.</p>`,'territoire',16,`
   <div class="aprnote"><b>Sors dehors avec</b>
-   La prochaine fois que tu passes devant la rivière, dis <span class="al8">Sibo</span>.
+   La prochaine fois que tu passes près de l'eau, dis <span class="al8">Nebi</span>.
    Un mot dit sur le territoire vaut dix mots lus sur un écran.</div>`)},
  {t:"Le temps et les saisons",d:"Hier, demain, l'hiver, le printemps.",cat:'temps',ex:'vocab',lec:aprAutoLec(`
   <p>Tu connais déjà <span class="al8">Pamkizgak</span> (aujourd'hui) — voici toute la famille
@@ -3705,31 +3705,38 @@ const NIVEAUX=[
 {id:'s',t:'Secondaire',d:"Comprendre comment les mots changent. Le genre, le pluriel, les verbes.",
  c:'var(--gold)',mods:[
  {t:"Animé ou inanimé",d:"La division qui commande tout le reste.",ex:'genre',lec:`
-  <p>L'abénakis n'a pas de masculin ni de féminin. Il partage le monde en deux : ce qui est
-  <b>animé</b> et ce qui ne l'est pas.</p>
-  <div class="aprnote"><b>Le pluriel dit le genre</b>
-   Finale en <b>K</b> = animé. Finale en <b>L</b> = inanimé.</div>
-  <p>Sont animés : les gens, les animaux, les arbres. Mais aussi le <b>soleil</b>, les <b>étoiles</b>,
-  le <b>tambour</b>, le <b>couteau</b>, la <b>bouteille</b> et le <b>pain</b>.</p>
-  <div class="aprnote w"><b>Deux à retenir par cœur</b>
-   La fraise <span class="al8">Mskikwimens</span> est animée, le bleuet <span class="al8">Sata</span> ne l'est pas.
-   La montagne <span class="al8">Watzo</span> est animée, la pierre <span class="al8">Sen</span> ne l'est pas.</div>`,
-  coach:`Ne mémorise pas une liste de catégories — pose-toi une seule question devant chaque mot :
-   « est-ce que ça agit, est-ce que ça porte quelque chose? » Le tambour est animé parce qu'il porte
-   la voix de la communauté. Dans trois mois, tu <i>sentiras</i> la réponse avant de la vérifier.`},
+  <p>En aln8ba, <b>animé</b> et <b>inanimé</b> sont des classes grammaticales. Ce n'est ni du masculin
+  ni du féminin, ni une explication philosophique du monde.</p>
+  <div class="aprnote"><b>À apprendre mot par mot</b>
+   Le genre grammatical se vérifie avec chaque nom. On l'apprend avec la fiche du dictionnaire,
+   puis on l'emploie dans les accords et dans les pluriels.</div>
+  <p>Quelques repères sûrs : <span class="al8">Alakws</span> et <span class="al8">Awassos</span> sont animés;
+  <span class="al8">Awikhigan</span> et <span class="al8">Sata</span> sont inanimés.</p>
+  <div class="aprnote w"><b>Le pluriel vient après</b>
+   On n'invente pas le genre à partir d'une idée générale. On apprend d'abord la classe grammaticale,
+   puis on vérifie s'il existe un pluriel actuel et documenté.</div>`,
+  coach:`Traite animé et inanimé comme deux étiquettes grammaticales à mémoriser. Le bon réflexe est :
+   regarder la fiche, retenir la classe, puis vérifier séparément si un pluriel documenté existe.`},
  {t:"Le pluriel",d:"Cinq terminaisons, et la fin du mot décide.",ex:'plur',lec:`
   <h3>Si le mot est animé</h3>
   <table class="aprtab">
-  <tr><td class="k">-ak</td><td>en général — Abazi → <b>Abaziak</b></td></tr>
-  <tr><td class="k">-ok</td><td>après EM, AKW, AGW, SKW — Phanem → <b>Phanemok</b></td></tr>
-  <tr><td class="k">-jik</td><td>après AT ou IT — Nodab8nkat → <b>Nodab8nkajik</b></td></tr></table>
+  <tr><td class="k">-ak</td><td>paire documentée — Alakws → <b>Alakwsak</b></td></tr>
+  <tr><td class="k">-ok</td><td>peut exister dans la famille K, mais seulement si la paire est attestée</td></tr>
+  <tr><td class="k">-jik</td><td>peut exister dans la famille K, mais seulement si la paire est attestée</td></tr></table>
   <h3>Si le mot est inanimé</h3>
   <table class="aprtab">
-  <tr><td class="k">-al</td><td>en général — Sibo → <b>Siboal</b></td></tr>
-  <tr><td class="k">-ol</td><td>après KW, GW, GEN — Pilaskw → <b>Pilaskol</b></td></tr></table>`,
-  coach:`Retiens deux questions, pas cinq règles : 1) le mot est-il animé? 2) comment finit-il?
-   La terminaison suit toute seule. Et si tu bloques : le dictionnaire donne le genre de chaque nom —
-   tricher en regardant, c'est encore apprendre.`},
+  <tr><td class="k">-al</td><td>paire documentée — Sata → <b>Satal</b></td></tr>
+  <tr><td class="k">-ol</td><td>peut exister dans la famille L, mais seulement si la paire est attestée</td></tr></table>
+  <div class="aprnote w"><b>Paires sûres à retenir</b>
+   <span class="al8">Alakws → Alakwsak</span> ·
+   <span class="al8">Awassos → Awassosak</span> ·
+   <span class="al8">Awassosis → Awassosisak</span> ·
+   <span class="al8">Koa → Koak</span> ·
+   <span class="al8">Mskikwimen → Mskikwimenak</span> ·
+   <span class="al8">Namasis → Namasisak</span> ·
+   <span class="al8">Sata → Satal</span></div>`,
+  coach:`Le bon ordre est simple : 1) vérifier la classe grammaticale; 2) chercher une paire déjà documentée.
+   S'il n'y a pas de paire sûre, on laisse le pluriel vide ou on note « non documenté ».`},
  {t:"Moi, toi, nous",d:"Sept pronoms — et deux façons de dire « nous ».",cat:'grammaire',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Nia</td><td>moi</td></tr><tr><td class="k">Kia</td><td>toi</td></tr>
@@ -3920,23 +3927,23 @@ const NIVEAUX=[
   <table class="aprtab"><tr><th>Suffixe</th><th>Ce qu'il fait</th><th>Exemple</th></tr>
   <tr><td class="k">-w8gan</td><td>le fait de…</td><td>Lintow8gan le chant</td></tr>
   <tr><td class="k">-higan</td><td>l'objet qui sert à…</td><td>Pakholigan le tambour</td></tr>
-  <tr><td class="k">-gamikw</td><td>le lieu où…</td><td>Kaozigamikw l'écurie</td></tr>
-  <tr><td class="k">-winno</td><td>la personne qui…</td><td>Kikawinno le semeur</td></tr>
+  <tr><td class="k">-gamikw</td><td>le lieu où…</td><td>Pizwagamikw la salle de danse</td></tr>
+  <tr><td class="k">-winno</td><td>la personne qui…</td><td>Agakimzowinno l'étudiant</td></tr>
   <tr><td class="k">-skwa</td><td>féminin</td><td>M8lsemskwa la louve</td></tr>
-  <tr><td class="k">-sis · -is</td><td>diminutif</td><td>Sibosis le ruisseau</td></tr>
+  <tr><td class="k">-sis · -is</td><td>diminutif</td><td>Awassosis le petit enfant</td></tr>
   <tr><td class="k">-ok · -k</td><td>locatif</td><td>Odana → Odanak au village</td></tr></table>
-  <div class="aprnote"><b>Le radical -aldam-, la famille de l'esprit</b>
-   <span class="al8">wan</span>-aldam oublier · <span class="al8">waw</span>-aldam savoir ·
-   <span class="al8">mikw</span>-aldam se souvenir · <span class="al8">el</span>-aldam penser ·
-   <span class="al8">mosk</span>-aldam la colère · <span class="al8">wiag</span>-aldam la joie</div>`,
+  <div class="aprnote"><b>Exemples actifs sûrs</b>
+   <span class="al8">Awikhigan</span> · <span class="al8">Agakimzowinno</span> ·
+   <span class="al8">Pizwagamikw</span> · <span class="al8">Wiagaldamw8gan</span> ·
+   <span class="al8">Moskwaldamw8gan</span> · <span class="al8">Sagezow8gan</span></div>`,
   coach:`Chaque suffixe est un outil de construction : <span class="al8">-higan</span> l'instrument,
    <span class="al8">-gamikw</span> le lieu, <span class="al8">-winno</span> la personne. Collectionne-les
    comme des outils dans ta boîte de mécanicien — un mot long n'est plus un obstacle,
    c'est un assemblage que tu sais démonter.`},
  {t:"Décomposer un mot",d:"Préfixe, racine, suffixe — et la famille.",ex:'fam',lec:`
-  <p>Chaque mot long est un assemblage. Prends <span class="al8">Pakholigan</span> :
-  la racine <i>pakhol-</i> qui veut dire frapper, plus <i>-igan</i>, le suffixe des instruments.
-  Le tambour, c'est <b>la chose avec laquelle on frappe</b>.</p>
+  <p>Chaque mot long est un assemblage. Prends <span class="al8">Agakimzowinno</span> :
+  la racine <i>agakimzo-</i> qui parle de l'étude, plus <i>-winno</i>, le suffixe de la personne.
+  Le mot désigne <b>la personne qui étudie</b>.</p>
   <p>Même chose pour <span class="al8">Nodab8nkat</span> : <i>nod-</i> celui qui fait habituellement,
   <i>ab8n</i> le pain, <i>-kat</i> qui produit. Le boulanger.</p>
   <div class="aprnote"><b>Sers-toi du Décortiqueur</b>
@@ -3970,22 +3977,20 @@ const NIVEAUX=[
   <tr><td class="k">Kiona W8banakiak</td><td>Kiona (nous, toi inclus) + W8banakiak (les Abénakis)</td></tr></table>`,
   coach:`Lis lentement, trois passes : 1) trouve le verbe, 2) trouve son préfixe, 3) assemble le reste.
    La vitesse viendra d'elle-même — la méthode, elle, se choisit maintenant.`},
- {t:"La racine de l'esprit",d:"Une seule racine, six mots de la vie intérieure.",ex:'fam',lec:`
-  <p>La racine <b>-aldam-</b> porte tout ce qui se passe dans la tête et le cœur.
-  Voici les formes attestées du dictionnaire, bâties sur elle :</p>
+ {t:"Lire des mots construits",d:"Repérer une racine et un suffixe dans des formes actuelles.",ex:'fam',lec:`
+  <p>Voici quelques formes actuelles du dictionnaire où l'on peut reconnaître une racine utile
+  et la manière dont le mot a été construit.</p>
   <table class="aprtab"><tr><th>Début</th><th>Forme attestée</th><th>Sens</th></tr>
-  <tr><td class="k">waw-</td><td class="k">N'wawaldamen</td><td>je sais · je connais</td></tr>
-  <tr><td class="k">wan-</td><td class="k">N'wanaldam</td><td>oublier (quelque chose)</td></tr>
-  <tr><td class="k">mikw-</td><td class="k">N'mikwaldam</td><td>je me souviens</td></tr>
-  <tr><td class="k">el-</td><td class="k">Nd'elaldamen</td><td>je pense · je considère</td></tr>
+  <tr><td class="k">agakimzo-</td><td class="k">Agakimzowinno</td><td>l'étudiant</td></tr>
+  <tr><td class="k">sagezo-</td><td class="k">Sagezow8gan</td><td>l'amour</td></tr>
   <tr><td class="k">mosk-</td><td class="k">Moskwaldamw8gan</td><td>la colère</td></tr>
   <tr><td class="k">wiag-</td><td class="k">Wiagaldamw8gan</td><td>la joie</td></tr></table>
-  <div class="aprnote"><b>Pourquoi c'est puissant</b>
-   Savoir, oublier, se souvenir, penser : la langue dit que tout ça est <i>la même famille</i>.
-   Une fois que tu vois la racine, tu ne traduis plus — tu reconnais.</div>`,
-  coach:`Cherche les familles toi-même : ouvre le Décortiqueur, entre
-   <span class="al8">Moskwaldamw8gan</span>, et regarde la famille apparaître. On devient locuteur
-   en collectionnant les racines, pas les mots — une racine maîtrisée, c'est dix mots d'un coup.`},
+  <div class="aprnote"><b>Pourquoi c'est utile</b>
+   Quand tu reconnais une racine et un suffixe, tu lis le mot plus vite et tu le relies à d'autres
+   formes actuelles du dictionnaire.</div>`,
+  coach:`Ouvre le Décortiqueur avec <span class="al8">Agakimzowinno</span> puis avec
+   <span class="al8">Nodab8nkat</span>. L'objectif est de repérer les morceaux du mot, pas d'inventer
+   des familles qui ne sont pas documentées.`},
  {t:"Lire les anciens",d:"Laurent 1884, Masta 1932 : lire les vieilles graphies sans se perdre.",ex:'src',lec:`
   <p>Les anciens écrivaient ce qu'ils entendaient, avec l'alphabet de leur époque. Un même mot
   voyage à travers les siècles :</p>
@@ -4116,7 +4121,7 @@ function aprDecorView(){
       puis cherche la famille du mot dans le dictionnaire.</p>
     <div class="aprtool"><input id="dIn" placeholder="Pakholigan, Nd'aliwizi, Wanaldamw8gan…" autocomplete="off">
       <button class="aprbtn" onclick="aprDecor(document.getElementById('dIn').value)">Décortiquer</button></div>
-    <div class="chips">${["Pakholigan","Nd'aliwizi","Wanaldamw8gan","Nodab8nkat","Kikawinno","Aln8ba8dwaw8gan","Odanak","Nda n'wawaldamowen"]
+    <div class="chips">${["Awikhigan","Nd'aliwizi","Agakimzowinno","Nodab8nkat","Wiagaldamw8gan","Aln8ba8dwaw8gan","Odanak","Moskwaldamw8gan"]
       .map(m=>`<button class="chip" onclick="document.getElementById('dIn').value='${m.replace(/'/g,"\\'")}';aprDecor('${m.replace(/'/g,"\\'")}')"><b>${m}</b></button>`).join('')}</div>
     <div id="dOut" style="margin-top:16px"></div></div>`;
   document.getElementById('dIn').onkeydown=e=>{if(e.key==='Enter')aprDecor(e.target.value)};
@@ -4173,8 +4178,8 @@ const APR_VERBES=[
  {r:"pidiga",f:"entrer",v:"a",ex:"N'pidiga"},{r:"saosa",f:"sortir",v:"a",ex:"N'saosa"},
  {r:"alosa",f:"aller",v:"a",ex:"Nd'alosa"},{r:"aloka",f:"travailler",v:"a",ex:"Nd'aloka"},
  {r:"aln8ba8dwa",f:"parler abénakis",v:"a",ex:"Nd'aln8ba8dwa"},{r:"pemeg8",f:"danser",v:"a",ex:"N'pemeg8"},
- {r:"kika",f:"semer",v:"a",ex:"N'kika"},{r:"wawaldam",f:"savoir",v:"m",ex:"N'wawaldamen"},
- {r:"mikwaldam",f:"se souvenir",v:"m",ex:"N'mikwaldam"},{r:"wanaldam",f:"oublier",v:"m",ex:"N'wanaldamen"}];
+ {r:"kika",f:"semer",v:"a",ex:"N'kika"},{r:"mikwaldam",f:"se souvenir",v:"m",ex:"N'mikwaldam"},
+ {r:"wanaldam",f:"oublier",v:"m",ex:"N'wanaldamen"},{r:"sagezo",f:"aimer",v:"m",ex:"N'sagezo"}];
 function aprConjView(){
   document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Conjugueur</h3>
     <p class="aprlead">Choisis un verbe. L'outil applique les préfixes, les marques de nombre,
@@ -4376,9 +4381,8 @@ const JNEG=[
  {v:"N'wal8wzi",f:"je vais bien",r:0,n:"Nda n'wal8wziw",w:"Le radical finit par -i, donc le suffixe est -W."},
  {v:"Nd'agakimzi",f:"j'étudie",r:0,n:"Nda nd'agakimziw",w:"Le radical finit par -i, donc le suffixe est -W."},
  {v:"Nd'aln8ba8dwa",f:"je parle abénakis",r:1,n:"Nda nd'aln8ba8dwawi",w:"Le radical finit par -a, donc -WI. Masta 1932 écrit mhz8dwawi sur la même racine."},
- {v:"Wajona",f:"il a",r:1,n:"Ôda wajonawi",w:"Le radical finit par -a, donc -WI. Forme attestée par Laurent en 1884."},
- {v:"Lagosa",f:"il va",r:1,n:"Ôda llagosawi",w:"Le radical finit par -a, donc -WI."},
- {v:"N'wawaldamen",f:"je sais",r:2,n:"Nda n'wawaldamowen",w:"Verbe en -aldam-, la famille de l'esprit : le suffixe est -OWEN."},
+ {v:"Nd'aloka",f:"je travaille",r:1,n:"Nda nd'alokawi",w:"Le radical finit par -a, donc le suffixe est -WI."},
+ {v:"N'saosa",f:"je sors",r:1,n:"Nda n'saosawi",w:"Le radical finit par -a, donc le suffixe est -WI."},
  {v:"N'mikwaldam",f:"je me souviens",r:2,n:"Nda n'mikwaldamowen",w:"Verbe en -aldam- : le suffixe est -OWEN."},
  {v:"N'wanaldamen",f:"j'oublie",r:2,n:"Nda n'wanaldamowen",w:"Verbe en -aldam- : le suffixe est -OWEN."}];
 function jNegat(){
@@ -4395,21 +4399,13 @@ function jRetNeg(){ const q=window._jq;
   return `<b>${q.n}</b><em>${q.w}</em>
     <span class="aprsrc">Règle établie par recoupement de Laurent 1884, Masta 1932 et du Manuel de l'étudiant 1</span>`; }
 const JPLUR=[
- {s:'Abazi',p:'Abaziak',f:'arbre',r:0,w:"Nom animé : le pluriel général est -AK."},
- {s:'Mgezo',p:'Mgezoak',f:'aigle',r:0,w:"Nom animé : -AK."},
- {s:'Aw8sis',p:'Aw8sisak',f:'enfant',r:0,w:"Nom animé : -AK."},
- {s:'Phanem',p:'Phanemok',f:'femme',r:1,w:"Le mot finit par EM, donc on ajoute OK."},
- {s:'M8lsem',p:'M8lsemok',f:'loup',r:1,w:"Le mot finit par EM, donc on ajoute OK."},
- {s:'Nsakwakw',p:'Nsakwakok',f:'couteau',r:1,w:"Le mot finit par AKW : le W devient O, ce qui donne OK."},
- {s:'Agaskw',p:'Agaskok',f:'marmotte',r:1,w:"Le mot finit par SKW : le W devient O, ce qui donne OK."},
- {s:'Nodab8nkat',p:'Nodab8nkajik',f:'boulanger',r:2,w:"Le mot finit par AT : le T tombe et devient JIK."},
- {s:'Sigwit',p:'Sigwijik',f:'veuf',r:2,w:"Le mot finit par IT : le T tombe et devient JIK."},
- {s:'Sibo',p:'Siboal',f:'rivière',r:3,w:"Nom inanimé : le pluriel général est -AL."},
- {s:'Awikhigan',p:'Awikhiganal',f:'livre',r:3,w:"Nom inanimé : -AL."},
- {s:'Nebes',p:'Nebesal',f:'lac',r:3,w:"Nom inanimé : -AL."},
- {s:'Pilaskw',p:'Pilaskol',f:'papier',r:4,w:"Le mot finit par KW : le W devient O, ce qui donne OL."},
- {s:'Wanibagw',p:'Wanibagol',f:"feuille d'arbre",r:4,w:"Le mot finit par GW : le W devient O, ce qui donne OL."},
- {s:'Mdawagen',p:'Mdawagenol',f:'drapeau',r:4,w:"Le mot finit par GEN, donc on ajoute OL."}];
+ {s:'Alakws',p:'Alakwsak',f:'étoile',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
+ {s:'Awassos',p:'Awassosak',f:'enfant',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
+ {s:'Awassosis',p:'Awassosisak',f:'petit enfant',r:0,w:"Paire documentée : diminutif animé avec pluriel actuel attesté."},
+ {s:'Koa',p:'Koak',f:'pin',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
+ {s:'Mskikwimen',p:'Mskikwimenak',f:'fraise',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
+ {s:'Namasis',p:'Namasisak',f:'poisson',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
+ {s:'Sata',p:'Satal',f:'bleuet',r:3,w:"Paire documentée : nom inanimé avec pluriel actuel attesté."}];
 function jPlur(){
   const q=jPick(JPLUR); window._jp=q;
   jFrame('Le bon pluriel',`
@@ -4423,14 +4419,14 @@ function jRetPlur(){ const q=window._jp;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
     <span class="aprsrc">Manuel de l'étudiant 1 — Native Montreal, pages 16 à 18</span>`; }
 function jFam(){
-  const F={}; aprSur().filter(w=>(w.family_id||'').trim()).forEach(w=>(F[w.family_id]=F[w.family_id]||[]).push(w));
+ const F={}; aprSur().filter(w=>(w.familyId||'').trim()).forEach(w=>(F[w.familyId]=F[w.familyId]||[]).push(w));
   const EX=['temps_manuel','chiffres','corps_manuel','corps','suffixes','couleurs_manuel','topo_manuel',
     'conversation','questions','pronoms','graphies','histoire','grammaire_manuel','pluriel_manuel',
     'corpus_masta','famille_manuel','mois_etym','negation','phonetique'];
   const B=Object.entries(F).filter(([k,v])=>v.length>=3&&!EX.includes(k));
   if(!B.length) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de familles.</p>');
   const [fid,mem]=jPick(B), base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
-  const tous=jShuf([cous,...jShuf(aprSur().filter(w=>w.family_id!==fid)).slice(0,3)]);
+ const tous=jShuf([cous,...jShuf(aprSur().filter(w=>w.familyId!==fid)).slice(0,3)]);
   const ib=tous.indexOf(cous); window._jf={fid,mem,cous};
   jFrame('Familles de mots',`
     <div class="jprompt"><div class="q">Quel mot partage la même racine?</div>
@@ -4850,7 +4846,7 @@ function exRetNeg(){ const q=window._ex;
 /* — cégep : les suffixes — */
 const EXSUF=[
  {m:'Pakholigan',s:'-higan',r:1,f:'le tambour'},{m:'Lintow8gan',s:'-w8gan',r:0,f:'le chant'},
- {m:'Kikawinno',s:'-winno',r:2,f:'le semeur'},{m:'Kaozigamikw',s:'-gamikw',r:3,f:"l'écurie"},
+ {m:'Agakimzowinno',s:'-winno',r:2,f:'l’étudiant'},{m:'Pizwagamikw',s:'-gamikw',r:3,f:"la salle de danse"},
  {m:'Alokaw8gan',s:'-w8gan',r:0,f:'le travail'},{m:'Pemegawinno',s:'-winno',r:2,f:'le danseur'},
  {m:'Pkwessagahigan',s:'-higan',r:1,f:'la clé'},{m:'Wiagaldamw8gan',s:'-w8gan',r:0,f:'la joie'}];
 function exSuf(){
@@ -4868,14 +4864,14 @@ function exRetSuf(){ const q=window._ex;
 
 /* — cégep : familles de racines — */
 function exFam(){
-  const F={}; aprSur().filter(w=>(w.family_id||'').trim()).forEach(w=>(F[w.family_id]=F[w.family_id]||[]).push(w));
+  const F={}; aprSur().filter(w=>(w.familyId||'').trim()).forEach(w=>(F[w.familyId]=F[w.familyId]||[]).push(w));
   const EXCL=['temps_manuel','chiffres','corps_manuel','corps','suffixes','couleurs_manuel','topo_manuel',
     'conversation','questions','pronoms','graphies','histoire','grammaire_manuel','pluriel_manuel',
     'corpus_masta','famille_manuel','mois_etym','negation','phonetique'];
   const B=Object.entries(F).filter(([k,v])=>v.length>=3&&!EXCL.includes(k));
   if(!B.length) return exVocab();
   const [fid,mem]=jPick(B), base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
-  const tous=jShuf([cous,...jShuf(aprSur().filter(w=>w.family_id!==fid)).slice(0,3)]);
+  const tous=jShuf([cous,...jShuf(aprSur().filter(w=>w.familyId!==fid)).slice(0,3)]);
   const ib=tous.indexOf(cous); window._ex={fid,mem,cous,base};
   exCadre(`
     <div class="jprompt"><div class="q">Quel mot partage la même racine?</div>
