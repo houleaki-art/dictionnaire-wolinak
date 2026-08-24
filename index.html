@@ -510,6 +510,30 @@ textarea{resize:vertical;min-height:68px}
 .mp.plus{background:none;font-size:1.2rem;color:var(--text3);padding:11px 2px;align-self:center;min-width:0}
 .aprres{background:var(--surface2);border-radius:9px;padding:16px;font-size:.85rem;line-height:1.65}
 .aprres .big{font-size:1.7rem;font-weight:700;text-align:center;margin:6px 0 12px;color:var(--accent)}
+.voice-lab{max-width:720px;margin:0 auto}
+.voice-kicker{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);font-weight:700;text-align:center}
+.voice-target{text-align:center;padding:24px 16px 18px}
+.voice-word{font-size:clamp(2rem,8vw,3.8rem);font-weight:700;line-height:1.05;color:var(--text);word-break:break-word}
+.voice-cue{font-size:1rem;color:var(--accent);font-style:italic;margin-top:9px}
+.voice-meaning{font-size:.82rem;color:var(--text2);margin-top:7px}
+.voice-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:8px 0 16px}
+.voice-btn{font-family:inherit;border:1.5px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text);padding:11px 18px;font-weight:700;cursor:pointer;transition:var(--tr)}
+.voice-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.voice-btn.mic{background:var(--accent);border-color:var(--accent);color:#fff}
+.voice-btn.mic.listening{background:var(--red);border-color:var(--red);animation:pulse .8s infinite}
+.voice-status{min-height:48px;border-radius:10px;background:var(--surface2);padding:12px 14px;text-align:center;font-size:.84rem;color:var(--text2);line-height:1.5}
+.voice-result{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:15px;background:var(--bg)}
+.voice-result.good{border-color:var(--green);background:color-mix(in srgb,var(--green) 8%,var(--bg))}
+.voice-result.close{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 8%,var(--bg))}
+.voice-result.retry{border-color:var(--red);background:color-mix(in srgb,var(--red) 6%,var(--bg))}
+.voice-meter{height:8px;border-radius:99px;background:var(--border);overflow:hidden;margin:10px 0 7px}
+.voice-meter span{height:100%;display:block;border-radius:inherit;transition:width .45s ease}
+.voice-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.voice-dots{display:flex;gap:5px;justify-content:center;flex:1}
+.voice-dot{width:9px;height:9px;border-radius:50%;background:var(--border)}
+.voice-dot.on{background:var(--accent)}
+.voice-dot.done{background:var(--green)}
+.voice-privacy{font-size:.7rem;color:var(--text3);line-height:1.5;margin-top:14px;text-align:center}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .chip{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px 11px;
   font-size:.76rem;cursor:pointer;font-family:inherit;color:var(--text);transition:var(--tr)}
@@ -551,7 +575,7 @@ textarea{resize:vertical;min-height:68px}
 .jafter b{font-size:1.05rem;display:block;margin-bottom:5px}
 .jhint{font-size:.75rem;color:var(--text3);text-align:center;margin-top:14px;font-style:italic}
 .wsWrap{display:grid;grid-template-columns:1fr 180px;gap:20px;align-items:start}
-@media(max-width:700px){.wsWrap{grid-template-columns:1fr}.jopts.two{grid-template-columns:1fr}}
+@media(max-width:700px){.wsWrap{grid-template-columns:1fr}.jopts.two{grid-template-columns:1fr}.voice-nav{justify-content:center}.voice-dots{order:-1;flex-basis:100%}}
 .wsgrid{display:grid;gap:2px;user-select:none;touch-action:none}
 .cel{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(9px,2.2vw,17px);
   font-weight:700;background:var(--surface2);border-radius:3px;cursor:pointer;transition:.08s}
@@ -710,6 +734,7 @@ textarea{resize:vertical;min-height:68px}
       </div>
     </div>
     <div style="display:flex;gap:12px">
+      <button class="btn btn-secondary" onclick="fcListen()">🔊 Écouter</button>
       <button class="btn btn-secondary" onclick="fcNext()">Mot suivant →</button>
     </div>
   </div>
@@ -785,7 +810,7 @@ textarea{resize:vertical;min-height:68px}
     <div class="trad-wrap">
       <div class="trad-header">
         <h2>🪶 Traducteur de phrases</h2>
-        <p class="trad-sub">Écris une phrase complète — le traducteur la compose morceau par morceau avec les mots confirmés du dictionnaire</p>
+        <p class="trad-sub">Le traducteur reconnaît d'abord les phrases documentées, puis analyse les autres entrées morceau par morceau</p>
       </div>
       <div class="trad-direction-bar">
         <button class="trad-dir-btn on" id="btnFrToAln" onclick="setTradDir('fr-aln')">
@@ -1628,7 +1653,7 @@ function makeFamilyCard(members){
     <div class="card-top">
       <div><div class="word">${hl(base.aln8ba)}</div>${base.phonetic?`<div class="phonetic">${escH(base.phonetic)}</div>`:''}</div>
       <div class="cacts" onclick="event.stopPropagation()">
-        ${base.audio?`<button class="ca audio" onclick="playAudio('${id}')" title="Écouter">▶</button>`:''}
+        <button class="ca audio" onclick="playAudio('${id}')" title="${base.audio?'Écouter l’enregistrement':'Écouter le guide vocal approximatif'}">${base.audio?'▶':'🔊'}</button>
         <button class="ca" onclick="toggleFav('${id}')" title="Favori" id="fav${id}">${isFav?'⭐':'☆'}</button>
       </div>
     </div>
@@ -1660,7 +1685,7 @@ function makeSingleCard(w){
     <div class="card-top">
       <div><div class="word">${hl(w.aln8ba)}</div>${w.phonetic?`<div class="phonetic">${escH(w.phonetic)}</div>`:''}</div>
       <div class="cacts" onclick="event.stopPropagation()">
-        ${hasAudio?`<button class="ca audio" onclick="playAudio('${w.id}')" title="Écouter">▶</button>`:''}
+        <button class="ca audio" onclick="playAudio('${w.id}')" title="${hasAudio?'Écouter l’enregistrement':'Écouter le guide vocal approximatif'}">${hasAudio?'▶':'🔊'}</button>
         <button class="ca" onclick="toggleFav('${w.id}')" title="Favori" id="fav${w.id}">${isFav?'⭐':'☆'}</button>
       </div>
     </div>
@@ -1723,8 +1748,11 @@ function toggleFav(id){
   saveFavs(FAVS); updateCounts(); renderWords();
 }
 function playAudio(id){
+  const w=WORDS.find(x=>x.id===id);
   const a=document.getElementById('aud'+id);
-  if(a){a.play();}
+  if(a){a.play();return;}
+  if(w&&w.audio){new Audio(w.audio).play();return;}
+  if(w) voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
 }
 function removeAudio(id){
   if(!confirm('Supprimer cet enregistrement audio?')) return;
@@ -1831,6 +1859,10 @@ function showFC(){
   document.getElementById('fcCard').classList.remove('flip');
 }
 function fcFlip(){ document.getElementById('fcCard').classList.toggle('flip'); }
+function fcListen(){
+  const w=S.fcWords[S.fcIdx%S.fcWords.length]; if(!w) return;
+  if(w.audio) new Audio(w.audio).play(); else voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
+}
 function fcNext(){ S.fcIdx++; if(S.fcIdx>=S.fcWords.length){S.fcWords.sort(()=>Math.random()-.5);S.fcIdx=0;toast('🎉 Tour complet!');} showFC(); }
 
 // ══════════════════════════════════════════════════════════
@@ -2821,6 +2853,259 @@ function stopRec(){
 }
 
 // ══════════════════════════════════════════════════════════
+//  PRATIQUE VOCALE — écoute, micro et comparaison phonétique
+// ══════════════════════════════════════════════════════════
+let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
+let voiceRecognition=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[];
+
+function alnToVoiceCue(value){
+  return (value||'').toLowerCase()
+    .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
+    .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s])/g,'ô')
+    .replace(/w\b/g,'').replace(/o/g,'ou').replace(/i\b/g,'é')
+    .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
+    .replace(/-/g,' ').replace(/\s+/g,' ').trim();
+}
+function voiceCueForWord(w){
+  const ph=(w&&w.phonetic||'').replace(/[☼·]/g,' ').replace(/\s+/g,' ').trim();
+  return ph&&ph.length<80?ph:alnToVoiceCue(w&&w.aln8ba||'');
+}
+function voiceKey(value){
+  return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
+    .replace(/eau|au/g,'o').replace(/ou/g,'u').replace(/qu/g,'k').replace(/c/g,'k')
+    .replace(/an|en|on/g,'an').replace(/h/g,'').replace(/[^a-z0-9]/g,'');
+}
+function voiceEditDistance(a,b){
+  const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>Array(n+1).fill(0));
+  for(let i=0;i<=m;i++) d[i][0]=i;
+  for(let j=0;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+function voiceScore(item,alternatives){
+  const expected=[item.text,item.cue,...(item.accepted||[])].map(voiceKey).filter(Boolean);
+  let best=0,heard='';
+  alternatives.forEach(raw=>{
+    const got=voiceKey(raw);
+    expected.forEach(exp=>{
+      let score=0;
+      if(got&&got===exp) score=100;
+      else if(got&&exp&&Math.min(got.length,exp.length)>=3&&(got.includes(exp)||exp.includes(got))) score=88;
+      else if(got&&exp) score=Math.max(0,Math.round(100*(1-voiceEditDistance(got,exp)/Math.max(got.length,exp.length))));
+      if(score>best){best=score;heard=raw;}
+    });
+  });
+  return {score:best,heard:heard||alternatives[0]||''};
+}
+function voiceAdvice(item,score){
+  if(score>=82) return item.focus?`Bon travail. Repère confirmé : ${item.focus}.`:'Le rythme général et les sons ont été bien reconnus.';
+  if(score>=62) return `C'est très proche. Réécoute « ${item.cue} », ralentis légèrement, puis recommence.`;
+  if(item.focus) return `Isole d'abord le son : ${item.focus}. Dis-le seul, puis reprends le mot complet.`;
+  return `Réécoute le guide « ${item.cue} » et prononce une syllabe à la fois.`;
+}
+function voiceSpeak(label,cue,announce=true){
+  if(!('speechSynthesis' in window)){
+    if(announce) voiceSetStatus('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
+    return;
+  }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(cue||alnToVoiceCue(label));
+  const voices=speechSynthesis.getVoices();
+  u.voice=voices.find(v=>/^fr-CA$/i.test(v.lang))||voices.find(v=>/^fr/i.test(v.lang))||null;
+  u.lang=u.voice?u.voice.lang:'fr-CA'; u.rate=.72; u.pitch=.95;
+  speechSynthesis.speak(u);
+  if(announce) voiceSetStatus(`Guide synthétique approximatif : « ${cue} ». Écoute, puis utilise le micro.`);
+}
+function voiceSetStatus(message){
+  const el=document.getElementById('voiceStatus'); if(el) el.textContent=message;
+}
+function voiceListenCurrent(){
+  const item=VOICE_ITEMS[VOICE_INDEX]; if(!item) return;
+  if(item.audio){
+    new Audio(item.audio).play();
+    voiceSetStatus('Enregistrement natif du dictionnaire. Écoute, puis répète.');
+  }else voiceSpeak(item.text,item.cue,true);
+}
+function voiceResetMic(){
+  const btn=document.getElementById('voiceMic');
+  if(btn){btn.classList.remove('listening');btn.textContent='🎙️ Prononcer maintenant';}
+}
+function voiceStopActive(){
+  if(voiceRecognition){try{voiceRecognition.abort();}catch(e){} voiceRecognition=null;}
+  if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
+    try{voiceFallbackRecorder.stop();}catch(e){}
+  }
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  voiceResetMic();
+}
+function voiceRecognitionError(code){
+  const messages={
+    'not-allowed':'Autorise le microphone dans Chrome, puis réessaie.',
+    'service-not-allowed':'La reconnaissance vocale est désactivée dans Chrome.',
+    'no-speech':'Aucune voix détectée. Rapproche-toi du micro et réessaie.',
+    'audio-capture':'Aucun microphone disponible.',
+    'network':'La reconnaissance vocale de Chrome a besoin d’une connexion réseau.'
+  };
+  voiceSetStatus(messages[code]||'La reconnaissance vocale a été interrompue. Réessaie.');
+  voiceResetMic();
+}
+function voiceStartListening(){
+  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!Recognition) return voiceStartFallback();
+  if(voiceRecognition){try{voiceRecognition.abort();}catch(e){}}
+  const item=VOICE_ITEMS[VOICE_INDEX]; if(!item) return;
+  const rec=new Recognition(); voiceRecognition=rec;
+  let gotResult=false;
+  rec.lang='fr-CA'; rec.continuous=false; rec.interimResults=false; rec.maxAlternatives=6;
+  rec.onstart=()=>{
+    const btn=document.getElementById('voiceMic');
+    if(btn){btn.classList.add('listening');btn.textContent='🔴 J’écoute…';}
+    voiceSetStatus('Parle maintenant. Le micro s’arrête automatiquement après ta prononciation.');
+  };
+  rec.onresult=e=>{
+    gotResult=true;
+    const alternatives=[];
+    for(let i=0;i<e.results.length;i++) for(let j=0;j<e.results[i].length;j++)
+      if(e.results[i][j].transcript) alternatives.push(e.results[i][j].transcript.trim());
+    voiceApplyResult(item,alternatives);
+  };
+  rec.onerror=e=>{gotResult=true;voiceRecognitionError(e.error);};
+  rec.onend=()=>{
+    voiceRecognition=null; voiceResetMic();
+    if(!gotResult) voiceSetStatus('Aucune parole reconnue cette fois. Rapproche-toi du micro et réessaie.');
+  };
+  try{rec.start();}catch(e){voiceRecognitionError('audio-capture');}
+}
+function voiceApplyResult(item,alternatives){
+  const result=voiceScore(item,alternatives);
+  VOICE_RESULTS[VOICE_INDEX]=result;
+  try{
+    const saved=JSON.parse(localStorage.getItem('aln_voice_progress')||'{}');
+    const old=saved[item.text]||{};
+    saved[item.text]={best:Math.max(old.best||0,result.score),attempts:(old.attempts||0)+1,date:Date.now()};
+    localStorage.setItem('aln_voice_progress',JSON.stringify(saved));
+  }catch(e){}
+  voiceRenderResult(item,result);
+  aprVoiceDots();
+}
+function voiceRenderResult(item,result){
+  const box=document.getElementById('voiceResult'); if(!box) return;
+  const level=result.score>=82?'good':result.score>=62?'close':'retry';
+  const title=result.score>=82?'Bien reconnu':result.score>=62?'Très proche':'À reprendre tranquillement';
+  const color=result.score>=82?'var(--green)':result.score>=62?'var(--gold)':'var(--red)';
+  box.className='voice-result '+level;
+  box.innerHTML=`<b>${title} · ${result.score}%</b>
+    <div style="font-size:.8rem;color:var(--text2);margin-top:5px">Chrome a entendu : « ${escH(result.heard||'—')} »</div>
+    <div class="voice-meter"><span style="width:${result.score}%;background:${color}"></span></div>
+    <div style="font-size:.8rem;line-height:1.5">${escH(voiceAdvice(item,result.score))}</div>`;
+}
+async function voiceStartFallback(){
+  if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
+    voiceFallbackRecorder.stop(); return;
+  }
+  if(!navigator.mediaDevices||!window.MediaRecorder){
+    voiceSetStatus('Ce navigateur ne permet ni reconnaissance ni enregistrement vocal. Utilise Chrome récent sur HTTPS.'); return;
+  }
+  try{
+    voiceFallbackStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    voiceFallbackChunks=[]; voiceFallbackRecorder=new MediaRecorder(voiceFallbackStream);
+    voiceFallbackRecorder.ondataavailable=e=>voiceFallbackChunks.push(e.data);
+    voiceFallbackRecorder.onstop=()=>{
+      const url=URL.createObjectURL(new Blob(voiceFallbackChunks,{type:'audio/webm'}));
+      const player=document.getElementById('voicePlayback');
+      if(player){player.src=url;player.style.display='block';}
+      voiceFallbackStream.getTracks().forEach(t=>t.stop());
+      voiceSetStatus('Réécoute-toi et compare avec le guide. Le navigateur ne peut pas attribuer de score ici.');
+      voiceResetMic();
+    };
+    voiceFallbackRecorder.start();
+    const btn=document.getElementById('voiceMic');
+    if(btn){btn.classList.add('listening');btn.textContent='⏹ Arrêter l’enregistrement';}
+    voiceSetStatus('Enregistrement local en cours. Appuie de nouveau pour arrêter.');
+  }catch(e){voiceRecognitionError('not-allowed');}
+}
+function aprVoiceTargets(m,lecHtml){
+  if(m.ex==='sons') return [
+    {text:'CH',display:'CH → TS',cue:'tsa',meaning:'Le son de CH',accepted:['tsa','sa','ça'],focus:'CH se prononce TS'},
+    {text:'J',display:'J → DZ',cue:'dza',meaning:'Le son de J',accepted:['dza','za'],focus:'J se prononce DZ'},
+    {text:'8h8',cue:'an-han',meaning:'Oui',accepted:['an han','en han','on hon','han han'],focus:'8 est une voyelle nasale entre AN et ON'},
+    {text:'Wli',cue:'ô-li',meaning:'Bon · bien',accepted:['oli','au lit','wli'],focus:'W devant une consonne sonne Ô'},
+    {text:'Mziwi',cue:'mzi-wé',meaning:'Tout le monde',accepted:['mziwé','mes oui','mziwi'],focus:'I final sonne souvent É'}
+  ];
+  if(m.ex==='trad') return DOCUMENTED_SENTENCES.filter(p=>p.aln8ba.split(/\s+/).length>1).slice(0,7)
+    .map(p=>({text:p.aln8ba,cue:alnToVoiceCue(p.aln8ba),meaning:p.fr[0],accepted:[]}));
+  let pool=[];
+  if(m.cat) pool=aprModulePool(m.cat);
+  if(!pool.length&&lecHtml){
+    const holder=document.createElement('div'); holder.innerHTML=lecHtml;
+    const byName=new Map(aprSur().map(w=>[w.aln8ba.toLowerCase(),w]));
+    const seen=new Set();
+    holder.querySelectorAll('.al8,.k').forEach(el=>{
+      const name=el.textContent.trim().replace(/^[—–-]\s*/,'').replace(/[.!?]$/,'');
+      const w=byName.get(name.toLowerCase());
+      if(w&&!seen.has(w.aln8ba)){seen.add(w.aln8ba);pool.push(w);}
+    });
+  }
+  return pool.slice(0,7).map(w=>({text:w.aln8ba,cue:voiceCueForWord(w),meaning:w.fr,
+    accepted:[w.phonetic||''].filter(Boolean),audio:w.audio||null}));
+}
+function aprVoiceStart(){
+  if(!APR_VOICE_READY.length){toast('Aucun exemple vocal actuel dans ce module.');return;}
+  VOICE_ITEMS=APR_VOICE_READY.slice(); VOICE_INDEX=0; VOICE_RESULTS=[];
+  aprVoiceRender();
+}
+function aprVoiceRender(){
+  const item=VOICE_ITEMS[VOICE_INDEX], n=NIVEAUX.find(x=>x.id===aprNiv);
+  if(!item) return aprLecon(aprMod);
+  document.getElementById('aprBody').innerHTML=`
+    <div class="aprback" onclick="voiceStopActive();aprLecon(aprMod)">← Revenir à la leçon</div>
+    <div class="aprcard voice-lab">
+      <div class="voice-kicker">Pratique vocale · ${n.t} · ${VOICE_INDEX+1} sur ${VOICE_ITEMS.length}</div>
+      <div class="voice-target">
+        <div class="voice-word">${escH(item.display||item.text)}</div>
+        <div class="voice-cue">Guide : ${escH(item.cue)}</div>
+        <div class="voice-meaning">${escH(item.meaning||'')}</div>
+      </div>
+      <div class="voice-actions">
+        <button class="voice-btn" onclick="voiceListenCurrent()">🔊 Écouter</button>
+        <button class="voice-btn mic" id="voiceMic" onclick="voiceStartListening()">🎙️ Prononcer maintenant</button>
+      </div>
+      <div class="voice-status" id="voiceStatus" aria-live="polite">Écoute le modèle, puis prononce le mot naturellement.</div>
+      <audio id="voicePlayback" controls style="display:none;width:100%;margin-top:10px"></audio>
+      <div id="voiceResult"></div>
+      <div class="voice-nav">
+        <button class="voice-btn" onclick="aprVoiceMove(-1)" ${VOICE_INDEX===0?'disabled':''}>← Précédent</button>
+        <div class="voice-dots" id="voiceDots"></div>
+        <button class="voice-btn" onclick="aprVoiceMove(1)">${VOICE_INDEX===VOICE_ITEMS.length-1?'Terminer':'Suivant →'}</button>
+      </div>
+      <div class="voice-privacy">Le site ne sauvegarde aucun enregistrement. Chrome peut utiliser son service de reconnaissance vocale pour produire la transcription. Le score est une aide phonétique tolérante, pas une validation linguistique officielle.</div>
+    </div>`;
+  const old=VOICE_RESULTS[VOICE_INDEX]; if(old) voiceRenderResult(item,old);
+  aprVoiceDots(); window.scrollTo({top:0,behavior:'smooth'});
+}
+function aprVoiceDots(){
+  const el=document.getElementById('voiceDots'); if(!el) return;
+  el.innerHTML=VOICE_ITEMS.map((_,i)=>`<span class="voice-dot ${i===VOICE_INDEX?'on':VOICE_RESULTS[i]?'done':''}"></span>`).join('');
+}
+function aprVoiceMove(delta){
+  voiceStopActive();
+  if(delta>0&&VOICE_INDEX===VOICE_ITEMS.length-1){
+    const tried=VOICE_RESULTS.filter(Boolean), good=tried.filter(r=>r.score>=82).length;
+    document.getElementById('aprBody').innerHTML=`<div class="aprcard" style="text-align:center;padding:38px 24px">
+      <div style="font-size:2.8rem;font-weight:700;color:var(--green)">${good} / ${VOICE_ITEMS.length}</div>
+      <h3>Prononciations bien reconnues</h3>
+      <p class="aprlead">${tried.length<VOICE_ITEMS.length?'Tu peux reprendre les mots non essayés ou continuer tranquillement.':'Réécoute les mots plus faibles; une deuxième tentative est souvent meilleure.'}</p>
+      <button class="aprbtn" onclick="aprVoiceStart()">Recommencer</button>
+      <button class="aprbtn" style="background:var(--surface2);color:var(--text);margin-left:8px" onclick="aprLecon(aprMod)">Retour à la leçon</button>
+      <div class="voice-privacy">Ce résultat reste sur cet appareil; aucun enregistrement vocal n’est conservé.</div></div>`;
+    return;
+  }
+  VOICE_INDEX=Math.max(0,Math.min(VOICE_ITEMS.length-1,VOICE_INDEX+delta)); aprVoiceRender();
+}
+
+// ══════════════════════════════════════════════════════════
 //  EXPORT / IMPORT
 // ══════════════════════════════════════════════════════════
 function exportJSON(){
@@ -2982,6 +3267,26 @@ function copyTrad(){
   if(!TRAD_LAST_OUTPUT) return;
   navigator.clipboard.writeText(TRAD_LAST_OUTPUT).then(()=>toast('📋 Traduction copiée !'));
 }
+
+const DOCUMENTED_SENTENCES=[
+  {fr:['Bonjour'],aln8ba:'Kwaï'},
+  {fr:['Bonjour tout le monde'],aln8ba:'Kwaï mziwi'},
+  {fr:['Oui'],aln8ba:'8h8'},
+  {fr:['Non'],aln8ba:'Nda'},
+  {fr:['Merci'],aln8ba:'Wliwni'},
+  {fr:['Au revoir'],aln8ba:'Adio'},
+  {fr:["Comment t'appelles-tu?","Comment tu t'appelles?"],aln8ba:'T8ni aliwizian?'},
+  {fr:['Comment vas-tu?','Comment allez-vous?'],aln8ba:"T8ni kd'al8wzin?"},
+  {fr:['Je vais bien, merci'],aln8ba:"N'wal8wzi, wliwni"},
+  {fr:["Je m'appelle Mali"],aln8ba:"Nd'aliwizi Mali"},
+  {fr:["Je ne m'appelle pas"],aln8ba:"Nda nd'aliwiziw"},
+  {fr:['Je ne me souviens pas'],aln8ba:"Nda n'mikwaldamowen"},
+  {fr:["J'habite Wôlinak","J'habite Wolinak"],aln8ba:"N'wigi W8linak"},
+  {fr:['Où habites-tu?'],aln8ba:'T8ni tali wigian?'},
+  {fr:['Merci pour ta bonté'],aln8ba:"Wliwni wji k'olidahaw8gan"},
+  {fr:['Nous sommes encore ici'],aln8ba:"Askwa yudali nd'aibena"},
+  {fr:['Nous sommes des Abénakis, toi inclus'],aln8ba:'Kiona W8banakiak'}
+];
 
 function traduire(){
   const input = document.getElementById('tradInput').value.trim();
@@ -3189,9 +3494,25 @@ function traduire(){
     });
   }
 
-  // ── Patrons de phrase à trous — bâtis sur des entrées réelles du dictionnaire ──
+  // Une phrase attestée gagne toujours sur une composition mot à mot.
+  const phraseKey=(s,isFr)=>{
+    let value=norm(s);
+    if(isFr) value=elargirFr(value);
+    return value.replace(/[^a-z0-9'8]+/g,' ').replace(/\s+/g,' ').trim();
+  };
+  const inputPhraseKey=phraseKey(input,FR);
+  const phraseMatch=DOCUMENTED_SENTENCES.find(p=>
+    (FR?p.fr:[p.aln8ba]).some(s=>phraseKey(s,FR)===inputPhraseKey));
+
+  // ── Phrases attestées et patrons à trous bâtis sur les données actuelles ──
   const patChunks=[];
-  if(FR){
+  if(phraseMatch){
+    patChunks.push({type:'pat',label:input,
+      out:FR?phraseMatch.aln8ba:phraseMatch.fr[0],
+      note:'Phrase complète actuelle documentée dans le parcours.'});
+    TOKS=[];
+  }
+  if(FR && !phraseMatch){
     const isAppel = t => tokFuzzy(t,'appelle') || t==='appeler';
     // « je m'appelle X » → Nd'alewizi X (le prénom se garde tel quel)
     const pNom = byId('s10');
@@ -3385,8 +3706,8 @@ function traduire(){
 
   const outEl = document.getElementById('tradOutput');
   const hits = chunks.filter(c=>c.type==='hit');
-  const essais = FR ? ["Je m'appelle…","Comment vas-tu ?","Je t'aime","Merci beaucoup","Je ne sais pas","Bonne nuit"]
-                    : ["Kwaï","Wliwni","Nda n'mikwaldamowen","T8ni kd'al8wzin"];
+  const essais = FR ? ["Je m'appelle Mali","Comment vas-tu ?","J'habite Wôlinak","Nous sommes encore ici","Merci pour ta bonté"]
+                    : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Askwa yudali nd'aibena"];
   const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
@@ -3435,7 +3756,7 @@ function traduire(){
   patChunks.forEach(p=>{
     html += ligne(escH(p.label),
       '<b style="color:var(--accent)">'+lnk(p.out, dstField==='aln8ba'?'aln8ba':'fr')+'</b>',
-      ' <span style="color:#2e7d32;font-size:.75rem">🌟 phrase modèle</span>')
+      ' <span style="color:#2e7d32;font-size:.75rem">🌟 phrase documentée</span>')
       + (p.note? '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">'+escH(p.note)+'</div>':'');
   });
   chunks.forEach(c => {
@@ -4070,8 +4391,8 @@ function aprParcours(){
   const prog=progAll();
   document.getElementById('aprBody').innerHTML=`
    <div class="aprcard"><h3>Parcours</h3>
-     <p class="aprlead">Trois niveaux qui s'appuient l'un sur l'autre. Chaque module se travaille
-       en trois temps : <b>📖 lire</b> la leçon à voix haute, <b>🧠 retenir</b> avec le quiz,
+     <p class="aprlead">Trois niveaux qui s'appuient l'un sur l'autre. Chaque module actif se travaille
+       en quatre temps : <b>📖 lire</b>, <b>🎙️ prononcer</b>, <b>🧠 retenir</b> avec le quiz,
        <b>✍️ utiliser</b> en écrivant les mots — puis l'onglet <b>🔁 Révision</b> les fait durer.
        Quinze minutes par jour battent trois heures le dimanche.</p>
      <div class="aprnav" style="margin:0">${NIVEAUX.map(n=>
@@ -4109,6 +4430,7 @@ function aprLecon(i){
   aprMod=i;
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n.mods[i];
   const lecHtml = typeof m.lec==='function' ? m.lec() : m.lec;
+  APR_VOICE_READY=aprVoiceTargets(m,lecHtml);
   const st=progGet(aprNiv+'.'+i), tt=m.t.replace(/'/g,"\\'");
   document.getElementById('aprBody').innerHTML=`
     <div class="aprback" onclick="aprParcours()">← ${n.t}</div>
@@ -4116,9 +4438,10 @@ function aprLecon(i){
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
-      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${m.cat?'trois':'deux'} temps</b>
-        1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
-        ${m.cat?'3. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. ':''}Puis reviens demain
+      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${m.cat?'quatre':'trois'} temps</b>
+        1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🎙️ <b>Prononcer</b> — écoute, parle et vérifie ce que Chrome reconnaît.
+        3. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
+        ${m.cat?'4. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. ':''}Puis reviens demain
         dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>`:
         `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
         Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
@@ -4130,6 +4453,8 @@ function aprLecon(i){
       <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
         ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
       <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        ${APR_VOICE_READY.length?`<button class="aprbtn" style="background:var(--green)" onclick="aprVoiceStart()">
+          🎙️ Pratique vocale (${APR_VOICE_READY.length})</button>`:''}
         ${m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
           onclick="aprFC('${m.cat}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
         ${m.ex?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${tt}','retenir')">
@@ -4332,7 +4657,7 @@ const JEUX_L=[
  {id:'sens',t:'Devinette',d:"Un mot, quatre sens. Ou l'inverse. Filtrable par catégorie.",n:'Vocabulaire'},
  {id:'negat',t:'La négation',d:"Nda plus quel suffixe? Trois règles selon la voyelle du radical.",n:'Grammaire'},
  {id:'plur',t:'Le bon pluriel',d:"Choisis une forme complète parmi des paires documentées.",n:'Grammaire'},
- {id:'fam',t:'Familles de mots',d:"Quel mot partage la même racine parmi les familles documentées.",n:'Racines'},
+ {id:'fam',t:'Familles de mots',d:"Relie des formes d'une même famille morphologique documentée.",n:'Racines'},
  {id:'caches',t:'Mots cachés',d:"Une grille, huit mots à trouver. Choisis un thème.",n:'Jeu'}];
 function jeuInit(){
   const nSur=jPoolSur().length;
@@ -4467,46 +4792,44 @@ function jRetPlur(){ const q=window._jp;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
     <span class="aprsrc">Manuel de l'étudiant 1 — Native Montreal, pages 16 à 18</span>`; }
 const DOCUMENTED_ROOT_FAMILIES=[
- {root:'alakws-',words:['Alakws','Alakwsak']},
- {root:'awassos-',words:['Awassos','Awassosak','Awassosis','Awassosisak']},
- {root:'koa-',words:['Koa','Koak']},
- {root:'mskikwimen-',words:['Mskikwimen','Mskikwimenak']},
- {root:'namasis-',words:['Namasis','Namasisak']},
- {root:'sata-',words:['Sata','Satal']},
- {root:'agakimzo-',words:['Agakimzo','Agakimzowinno']},
- {root:'-nam- · voir',words:["N'namih8","N'namito"]},
- {root:'-mil- · donner',words:["N'mil8","N'mildo"]},
- {root:'-waj8n- · posséder',words:["N'waj8n8","N'waj8nem"]},
- {root:'-wdn- · prendre',words:["N'wdn8","N'wdnem"]},
- {root:'-pon- · placer',words:["N'pon8","N'ponem"]},
- {root:'-n8zn- · toucher',words:["N'n8zn8","N'n8znem"]}
+ {root:'awassos-',relation:'diminutif en -is',words:['Awassos','Awassosis']},
+ {root:'agakimzo-',relation:'dérivation en -winno',words:['Agakimzo','Agakimzowinno']},
+ {root:'odan-',relation:'nom et forme locative',words:['Odana','Odanak']},
+ {root:'-nam- · voir',relation:'deux formes de la même base verbale',words:["N'namih8","N'namito"]},
+ {root:'-mil- · donner',relation:'deux formes de la même base verbale',words:["N'mil8","N'mildo"]},
+ {root:'-waj8n- · posséder',relation:'deux formes de la même base verbale',words:["N'waj8n8","N'waj8nem"]},
+ {root:'-wdn- · prendre',relation:'deux formes de la même base verbale',words:["N'wdn8","N'wdnem"]},
+ {root:'-pon- · placer',relation:'deux formes de la même base verbale',words:["N'pon8","N'ponem"]},
+ {root:'-n8zn- · toucher',relation:'deux formes de la même base verbale',words:["N'n8zn8","N'n8znem"]}
 ];
 function documentedRootFamilies(){
   const byName=new Map(aprSur().map(w=>[w.aln8ba.toLowerCase(),w]));
-  return DOCUMENTED_ROOT_FAMILIES.map(f=>({root:f.root,
+  return DOCUMENTED_ROOT_FAMILIES.map(f=>({root:f.root,relation:f.relation,
     members:f.words.map(n=>byName.get(n.toLowerCase())).filter(Boolean)}))
     .filter(f=>new Set(f.members.map(w=>w.aln8ba)).size>=2);
 }
 function jFam(){
   const B=documentedRootFamilies();
   if(!B.length) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de familles.</p>');
-  const famille=jPick(B), fid=famille.root, mem=famille.members;
-  const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
+ const famille=jPick(B), fid=famille.root, relation=famille.relation, mem=famille.members;
+ const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
  const nomsFamille=new Set(mem.map(w=>w.aln8ba));
- const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+ const plurielsDocumentes=new Set(Object.values(DOCUMENTED_PLURALS).map(x=>x.toLowerCase()));
+ const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)
+   && !plurielsDocumentes.has(w.aln8ba.toLowerCase())),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
  if(distracteurs.length<3) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de réponses distinctes pour cette famille.</p>');
  const tous=jShuf([cous,...distracteurs]);
-  const ib=tous.indexOf(cous); window._jf={fid,mem,cous};
+  const ib=tous.indexOf(cous); window._jf={fid,relation,mem,cous};
   jFrame('Familles de mots',`
-    <div class="jprompt"><div class="q">Quel mot partage la même racine?</div>
+    <div class="jprompt"><div class="q">Quelle forme appartient à la même famille morphologique?</div>
       <div class="w">${base.aln8ba}</div><div class="h">${base.fr}</div></div>
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="jAns(${ib},${i},jRetFam())">
       <span class="al">${w.aln8ba}</span><span style="font-size:.75rem;color:var(--text2)">${w.fr}</span></button>`).join('')}</div>`);
 }
-function jRetFam(){ const {fid,mem,cous}=window._jf;
+function jRetFam(){ const {fid,relation,mem,cous}=window._jf;
   return `<b>Racine « ${fid} »</b><em>${mem.slice(0,6).map(w=>w.aln8ba).join(' · ')}</em>
     <div style="margin-top:7px">${cous.aln8ba} — ${cous.fr}</div>
-    <span class="aprsrc">Une racine se combine à des préfixes et des suffixes pour former toute une famille.</span>`; }
+    <span class="aprsrc">Relation documentée : ${relation}. Les simples pluriels sont étudiés dans le jeu du pluriel.</span>`; }
 function jCaches(){
   const ALLCATS=['animal','plante','nature','territoire','famille','corps','temps','couleur','salut','nombre'];
   const poolSur=jPoolSur();
@@ -4676,9 +4999,14 @@ function exVocab(){
   const ib=tous.indexOf(bon); window._ex=bon;
   exCadre(`
     <div class="jprompt"><div class="q">${sens?'Que veut dire ce mot?':'Quel mot dit cela?'}</div>
-      <div class="w">${sens?bon.aln8ba:bon.fr}</div></div>
+      <div class="w">${sens?bon.aln8ba:bon.fr}</div>
+      ${sens?'<button class="voice-btn" style="margin-top:12px" onclick="voiceListenExercise()">🔊 Écouter</button>':''}</div>
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="exRepond(${ib},${i},exRetVocab())">${
       sens?w.fr:`<span class="al">${w.aln8ba}</span>`}</button>`).join('')}</div>`);
+}
+function voiceListenExercise(){
+  const w=window._ex; if(!w||!w.aln8ba) return;
+  if(w.audio) new Audio(w.audio).play(); else voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
 }
 function exRetVocab(){ const b=window._ex;
   return `<b>${b.aln8ba} — ${b.fr}</b>${b.grammar?`<em>${b.grammar}</em>`:''}
@@ -4979,22 +5307,25 @@ function exRetSuf(){ const q=window._ex;
 function exFam(){
   const B=documentedRootFamilies();
   if(!B.length) return exVocab();
-  const famille=jPick(B), fid=famille.root, mem=famille.members;
+  const famille=jPick(B), fid=famille.root, relation=famille.relation, mem=famille.members;
   const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
   const nomsFamille=new Set(mem.map(w=>w.aln8ba));
-  const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+  const plurielsDocumentes=new Set(Object.values(DOCUMENTED_PLURALS).map(x=>x.toLowerCase()));
+  const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)
+    && !plurielsDocumentes.has(w.aln8ba.toLowerCase())),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
   if(distracteurs.length<3) return exVocab();
   const tous=jShuf([cous,...distracteurs]);
-  const ib=tous.indexOf(cous); window._ex={fid,mem,cous,base};
+  const ib=tous.indexOf(cous); window._ex={fid,relation,mem,cous,base};
   exCadre(`
-    <div class="jprompt"><div class="q">Quel mot partage la même racine?</div>
+    <div class="jprompt"><div class="q">Quelle forme appartient à la même famille morphologique?</div>
       <div class="w">${base.aln8ba}</div><div class="h">${base.fr}</div></div>
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="exRepond(${ib},${i},exRetFam())">
       <span class="al">${w.aln8ba}</span><span style="font-size:.75rem;color:var(--text2)">${w.fr}</span></button>`).join('')}</div>`);
 }
-function exRetFam(){ const {fid,mem,cous}=window._ex;
+function exRetFam(){ const {fid,relation,mem,cous}=window._ex;
   return `<b>Racine « ${fid} »</b><em>${mem.slice(0,7).map(w=>w.aln8ba).join(' · ')}</em>
-    <div style="margin-top:6px">${cous.aln8ba} — ${cous.fr}</div>`; }
+    <div style="margin-top:6px">${cous.aln8ba} — ${cous.fr}</div>
+    <span class="aprsrc">Relation documentée : ${relation}. Les pluriels restent dans leur exercice dédié.</span>`; }
 
 /* — cégep : traduire — */
 const EXTRAD=[
