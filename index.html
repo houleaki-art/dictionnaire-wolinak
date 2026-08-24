@@ -3350,6 +3350,10 @@ function traduire(){
   const pool = WORDS.filter(w => isExerciseSafe(w) && w[srcField] && w[dstField]
     && !w.aln8ba.startsWith('-')
     && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
+  // Locutions documentées mais non actives : reconnues exactement, jamais générées ni corrigées.
+  const consultativePool = WORDS.filter(w => !isExerciseSafe(w) && w[srcField] && w[dstField]
+    && /\s/.test((w.aln8ba||'').trim()) && !w.aln8ba.startsWith('-')
+    && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
   const byId = id => pool.find(w=>w.id===id);
 
   // Une graphie historique exacte ne doit jamais être corrigée silencieusement
@@ -3362,13 +3366,22 @@ function traduire(){
       'Piaddagos','Temaskikos','Kamoji','Notkikad','Kikawinno','Wajona','Lagosa',
       "N'wawaldamen","Nd'elaldamen",'Phanem','Sibo','Nebes'
     ].map(x=>norm(x).replace(/[^a-z0-9'8]+/g,' ').trim()));
-    const excludedExact=!safeExact && (historiquesConnues.has(inputKey)
-      || WORDS.some(w=>w.aln8ba && w.aln8ba!=='__version__' && !isExerciseSafe(w)
-        && norm(w.aln8ba).replace(/[^a-z0-9'8]+/g,' ').trim()===inputKey));
+    const excludedEntry=WORDS.find(w=>w.aln8ba && w.aln8ba!=='__version__' && !isExerciseSafe(w)
+      && norm(w.aln8ba).replace(/[^a-z0-9'8]+/g,' ').trim()===inputKey);
+    const excludedExact=!safeExact && (historiquesConnues.has(inputKey)||excludedEntry);
     if(excludedExact){
-      document.getElementById('tradOutput').innerHTML =
-        '<div class="aprnote w"><b>Graphie consultative</b> Cette forme est historique, non confirmée ou réservée aux archives. Le traducteur actif ne la convertit pas et ne la corrige pas automatiquement. Consulte la fiche dans Archives pour son contexte.</div>';
-      document.getElementById('tradMeta').textContent = 'Le traducteur actif utilise uniquement les entrées vertes actuelles.';
+      const isExpression=excludedEntry&&/\s/.test(excludedEntry.aln8ba.trim());
+      document.getElementById('tradOutput').innerHTML = isExpression
+        ? `<div style="background:var(--surface2);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-bottom:12px">
+            <div style="font-size:1.15rem;font-weight:700;color:var(--accent)">${escH(excludedEntry.fr)}</div>
+            <div style="font-size:.75rem;color:var(--gold);font-weight:700;margin-top:7px">📜 Expression documentée consultative</div></div>
+           <div class="aprnote w"><b>${escH(excludedEntry.aln8ba)} — ${escH(excludedEntry.fr)}</b>
+             ${escH(excludedEntry.notes||'Cette locution est documentée dans une source ancienne ou consultative.')}
+             <span class="aprsrc">${escH(excludedEntry.source||'Source consultative')}</span></div>`
+        : '<div class="aprnote w"><b>Graphie consultative</b> Cette forme est historique, non confirmée ou réservée aux archives. Le traducteur actif ne la convertit pas et ne la corrige pas automatiquement. Consulte la fiche dans Archives pour son contexte.</div>';
+      document.getElementById('tradMeta').textContent = isExpression
+        ? 'Le sens documenté est affiché, mais cette locution consultative n’est pas copiée comme traduction active validée.'
+        : 'Le traducteur actif utilise uniquement les entrées vertes actuelles.';
       document.getElementById('tradBtnTxt').textContent = 'Traduire →';
       TRAD_LAST_OUTPUT='';
       return;
@@ -3377,7 +3390,7 @@ function traduire(){
 
   // Index 1 : premier token du sens → expressions (correspondance de phrases, la plus longue gagne)
   // Index 2 : chaque token de contenu → expressions (repli pour un mot seul, ex : « appeler » dans « Appeler · nommer »)
-  const idx = new Map(), tokIdx = new Map();
+  const idx = new Map(), tokIdx = new Map(), consultIdx = new Map();
   const pushIdx=(map,key,ent)=>{ if(!key) return; if(!map.has(key)) map.set(key,[]); map.get(key).push(ent); };
   pool.forEach(w => {
     const sensList = FR ? (w.fr||'').split(/[·;]/) : [w.aln8ba];
@@ -3393,6 +3406,17 @@ function traduire(){
     });
   });
   idx.forEach(lst => lst.sort((a,b)=>b.toks.length-a.toks.length));
+  consultativePool.forEach(w=>{
+    const sensList=FR?(w.fr||'').split(/[·;]/):[w.aln8ba];
+    sensList.forEach(sens0=>{
+      let s=norm(sens0.replace(/\([^)]*\)/g,' ')).replace(/[^a-z0-9\s'8]/g,' ').replace(/\s+/g,' ').trim();
+      if(FR) s=elargirFr(s);
+      const toks=s.split(' ').filter(Boolean);
+      if(toks.length<2||toks.length>10) return;
+      pushIdx(consultIdx,toks[0],{toks,w,sens:sens0.trim(),consultative:true});
+    });
+  });
+  consultIdx.forEach(lst=>lst.sort((a,b)=>b.toks.length-a.toks.length));
 
   // Lemmes : ramener un verbe conjugué à l'infinitif — accepté seulement si l'infinitif existe dans le dictionnaire
   const IRREG = {suis:'etre',es:'etre',est:'etre',sommes:'etre',etes:'etre',sont:'etre',etais:'etre',etait:'etre',
@@ -3475,7 +3499,10 @@ function traduire(){
   (input.match(/[A-Za-zÀ-ÿ0-9'8]+/g)||[]).forEach(w=>{
     const lw = norm(w);
     if(!lw) return;
-    if(FR && CONTR[lw]){ CONTR[lw].forEach(p=>TOKS.push({n:p,o:w})); return; }
+    if(FR && CONTR[lw]){
+      CONTR[lw].forEach((p,k)=>TOKS.push({n:p,o:k===0?w:' '}));
+      return;
+    }
     if(FR){
       const m = lw.match(/^([a-z]+)'(.+)$/);
       if(m && ELI[m[1]] && m[2]){
@@ -3557,18 +3584,27 @@ function traduire(){
   while(i<TOKS.length){
     const T=TOKS[i], t=T.n;
     // 1) expression (la plus longue gagne ; tolère les fautes de frappe)
-    let best=null, bestCorr=null;
+    let best=null, bestCorr=null, bestConsultative=false;
     const matches=[];
     const lst = idx.get(t) || idx.get(t.replace(/s$/,'')) || [];
     for(const c of lst){
       const corr = seqMatch(i,c);
       if(corr!==null){ matches.push({c,corr}); if(!best){ best=c; bestCorr=corr; } }
     }
+    // Une locution consultative doit correspondre exactement et ne gagne que si elle est plus longue.
+    for(const c of (consultIdx.get(t)||[])){
+      const exact=i+c.toks.length<=TOKS.length&&c.toks.every((v,k)=>tokEq(TOKS[i+k].n,v));
+      if(exact&&(!best||c.toks.length>best.toks.length)){
+        best=c; bestCorr=null; bestConsultative=true;
+      }
+    }
     if(best){
       const vu=new Set([best.w[dstField]]); const alts=[];
-      matches.forEach(m=>{ if(m.c!==best && m.c.toks.length===best.toks.length && !vu.has(m.c.w[dstField])){ vu.add(m.c.w[dstField]); alts.push(m.c); } });
+      if(!bestConsultative) matches.forEach(m=>{ if(m.c!==best && m.c.toks.length===best.toks.length && !vu.has(m.c.w[dstField])){ vu.add(m.c.w[dstField]); alts.push(m.c); } });
       chunks.push({type:'hit', toks:TOKS.slice(i,i+best.toks.length), w:best.w, sens:best.sens,
-        alts:alts.slice(0,2), corrige:bestCorr&&bestCorr.length?bestCorr.join(' · '):null, expr:best.toks.length>1});
+        alts:alts.slice(0,2), corrige:bestCorr&&bestCorr.length?bestCorr.join(' · '):null,
+        expr:best.toks.length>1,consultative:bestConsultative,
+        note:bestConsultative?'Locution documentée dans une source consultative; son sens est reconnu sans la promouvoir comme forme active.':null});
       i+=best.toks.length; continue;
     }
     // 1b) sujet + verbe — on cherche la VRAIE forme conjuguée dans le dictionnaire
@@ -3729,13 +3765,14 @@ function traduire(){
   }).filter(x=>x!==null);
   patChunks.forEach(p=>morceaux.push(p.out));
   const sortie = morceaux.join(' ');
-  TRAD_LAST_OUTPUT = chunks.some(c=>c.type==='miss') ? '' : sortie;
+  const hasConsultative=chunks.some(c=>c.consultative);
+  TRAD_LAST_OUTPUT = chunks.some(c=>c.type==='miss')||hasConsultative ? '' : sortie;
 
   const denomToks = chunks.filter(c=>c.type==='hit'||c.type==='miss').reduce((n,c)=>n+c.toks.length,0);
   const couverts = hits.reduce((n,c)=>n+c.toks.length,0);
   const pct = denomToks ? Math.round(100*couverts/denomToks) : (patChunks.length?100:0);
-  const pcCol = pct>=80 ? '#2e7d32' : pct>=50 ? '#b8860b' : '#c0392b';
-  const pcTxt = pct>=80 ? 'Bonne couverture' : pct>=50 ? 'Couverture partielle' : 'Couverture faible';
+  const pcCol = hasConsultative ? '#b8860b' : pct>=80 ? '#2e7d32' : pct>=50 ? '#b8860b' : '#c0392b';
+  const pcTxt = hasConsultative ? 'Couverture consultative' : pct>=80 ? 'Bonne couverture' : pct>=50 ? 'Couverture partielle' : 'Couverture faible';
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
 
@@ -3762,7 +3799,9 @@ function traduire(){
   chunks.forEach(c => {
     const gaucheBase = escH(c.toks.map(x=>x.o||x.n).join(' '));
     if(c.type==='hit'){
-      let badge = ' <span style="color:#2e7d32;font-size:.75rem">'+(c.expr?'🧩 expression':'✅')+'</span>';
+      let badge = c.consultative
+        ? ' <span style="color:#b8860b;font-size:.75rem">📜 expression consultative</span>'
+        : ' <span style="color:#2e7d32;font-size:.75rem">'+(c.expr?'🧩 expression':'✅')+'</span>';
       if(c.badge) badge = ' <span style="font-size:.75rem;color:'+(/🧪|🟡/.test(c.badge)?'#b8860b':'#2e7d32')+'">'+escH(c.badge)+'</span>';
       let notes = '';
       if(c.viaSyn)  notes += ' <span style="font-size:.7rem;color:var(--text3)">(= '+escH(c.viaSyn)+')</span>';
@@ -3799,7 +3838,9 @@ function traduire(){
 
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = TRAD_LAST_OUTPUT ? 'block' : 'none';
-  document.getElementById('tradMeta').textContent = '⚠️ Outil de repérage fondé uniquement sur les entrées vertes actuelles. Il ne construit aucune forme manquante et ne garantit pas l\'ordre grammatical d\'une phrase. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
+  document.getElementById('tradMeta').textContent = hasConsultative
+    ? '📜 Une locution documentée consultative a été reconnue exactement. Son sens est affiché avec prudence et la copie est désactivée; les autres morceaux utilisent les entrées vertes actuelles.'
+    : '⚠️ Outil de repérage fondé uniquement sur les entrées vertes actuelles. Il ne construit aucune forme manquante et ne garantit pas l\'ordre grammatical d\'une phrase. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
 
