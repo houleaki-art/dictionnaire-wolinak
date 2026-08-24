@@ -1742,7 +1742,8 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-function setView(v){
+function setView(v,keepGameContext=false){
+  if(v==='jeux'&&!keepGameContext){ jCtx=null; jCat='toutes'; }
   S.view=v; S.cat=''; S.letter='';
   const gv=['flashcard','jeux'].includes(v)?'apprendre':v;
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===gv));
@@ -1810,8 +1811,13 @@ function initFC(list,ctx){
   showFC();
 }
 /* Lance les cartes mémoire sur le vocabulaire d'un module du parcours */
+function aprModulePool(cat){
+  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
+  if(m&&Array.isArray(m.items)) return m.items.map(x=>({...x}));
+  return aprSur().filter(w=>w.cat===cat);
+}
 function aprFC(cat,titre){
-  const pool=aprPool().filter(w=>w.cat===cat);
+  const pool=aprModulePool(cat);
   if(pool.length<2){ toast('Pas assez de mots dans ce module pour les cartes.'); return; }
   setView('flashcard'); initFC(pool,{label:titre});
 }
@@ -2946,6 +2952,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 // ===== TRADUCTEUR IA =====
 let TRAD_DIR = 'fr-aln'; // 'fr-aln' ou 'aln-fr'
 let TRAD_LOADING = false;
+let TRAD_LAST_OUTPUT = '';
 
 function setTradDir(dir){
   TRAD_DIR = dir;
@@ -2967,12 +2974,13 @@ function clearTrad(){
   document.getElementById('tradOutput').innerHTML = '<span class="trad-placeholder">La traduction apparaîtra ici…</span>';
   document.getElementById('tradMeta').textContent = '';
   document.getElementById('tradCopyBtn').style.display = 'none';
-  document.getElementById('tradBtn').disabled = false;
+  document.getElementById('tradBtn').disabled = true;
+  TRAD_LAST_OUTPUT = '';
 }
 
 function copyTrad(){
-  const txt = document.getElementById('tradOutput').innerText;
-  navigator.clipboard.writeText(txt).then(()=>toast('📋 Copié !'));
+  if(!TRAD_LAST_OUTPUT) return;
+  navigator.clipboard.writeText(TRAD_LAST_OUTPUT).then(()=>toast('📋 Traduction copiée !'));
 }
 
 function traduire(){
@@ -2994,8 +3002,7 @@ function traduire(){
     for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
       d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
     return d[m][n];};
-  const tokEq = (a,b) => a===b || (a.length>3&&a+'s'===b) || (b.length>3&&b+'s'===a)
-                       || (a.length>=6&&b.startsWith(a)) || (b.length>=6&&a.startsWith(b));
+  const tokEq = (a,b) => a===b || (a.length>3&&a+'s'===b) || (b.length>3&&b+'s'===a);
   const tokFuzzy = (a,b) => tokEq(a,b) || (a.length>=4 && b.length>=4 && levDist(a,b)<=(a.length>=7?2:1));
 
   // Élisions et contractions françaises — appliquées aux entrées du dictionnaire ET à la phrase
@@ -3035,8 +3042,33 @@ function traduire(){
   const ARTICLES = new Set(["le","la","les","un","une","des","du","de","au","aux","a"]);
 
   // ── Le dictionnaire de travail ──
-  const pool = WORDS.filter(w => !enAttente(w) && isConfirmed(w) && w[srcField] && w[dstField] && !w.aln8ba.startsWith('-') && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
+  const pool = WORDS.filter(w => isExerciseSafe(w) && w[srcField] && w[dstField]
+    && !w.aln8ba.startsWith('-')
+    && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
   const byId = id => pool.find(w=>w.id===id);
+
+  // Une graphie historique exacte ne doit jamais être corrigée silencieusement
+  // vers une forme actuelle par la tolérance aux fautes du traducteur.
+  if(!FR){
+    const inputKey=norm(input).replace(/[^a-z0-9'8]+/g,' ').trim();
+    const safeExact=pool.some(w=>norm(w.aln8ba).replace(/[^a-z0-9'8]+/g,' ').trim()===inputKey);
+    const historiquesConnues=new Set([
+      'A8añsis','Awossis','Awôssis','Aw8ssis','8da','8nda',"O'hoo",'Chegual',
+      'Piaddagos','Temaskikos','Kamoji','Notkikad','Kikawinno','Wajona','Lagosa',
+      "N'wawaldamen","Nd'elaldamen",'Phanem','Sibo','Nebes'
+    ].map(x=>norm(x).replace(/[^a-z0-9'8]+/g,' ').trim()));
+    const excludedExact=!safeExact && (historiquesConnues.has(inputKey)
+      || WORDS.some(w=>w.aln8ba && w.aln8ba!=='__version__' && !isExerciseSafe(w)
+        && norm(w.aln8ba).replace(/[^a-z0-9'8]+/g,' ').trim()===inputKey));
+    if(excludedExact){
+      document.getElementById('tradOutput').innerHTML =
+        '<div class="aprnote w"><b>Graphie consultative</b> Cette forme est historique, non confirmée ou réservée aux archives. Le traducteur actif ne la convertit pas et ne la corrige pas automatiquement. Consulte la fiche dans Archives pour son contexte.</div>';
+      document.getElementById('tradMeta').textContent = 'Le traducteur actif utilise uniquement les entrées vertes actuelles.';
+      document.getElementById('tradBtnTxt').textContent = 'Traduire →';
+      TRAD_LAST_OUTPUT='';
+      return;
+    }
+  }
 
   // Index 1 : premier token du sens → expressions (correspondance de phrases, la plus longue gagne)
   // Index 2 : chaque token de contenu → expressions (repli pour un mot seul, ex : « appeler » dans « Appeler · nommer »)
@@ -3129,8 +3161,7 @@ function traduire(){
     addObj(['lui'],"lui",null,"« lui » objet se porte sur le verbe.");
     addObj(['leur'],"leur",null,"« leur » se porte sur le verbe ou par le préfixe w'- … -w8.");
   }
-  const wNeg   = FR ? byId('gram_neg')      : null;   // Nda … -wi
-  const wNegEx = FR ? byId('lau_negwawald') : null;   // Nda n'wawaldamowen — Je ne sais pas
+  const wNeg = FR ? pool.find(w=>/^Nda\b/i.test(w.aln8ba||'') && /négation/i.test(w.grammar||'')) : null;
 
   // ── Tokenisation — la casse d'origine est gardée pour repérer les noms propres ──
   const ELI = {j:'je',m:'me',t:'te',s:'se',l:'le',d:'de',n:'ne',qu:'que',c:'ce',jusqu:'jusque',lorsqu:'lorsque',puisqu:'puisque'};
@@ -3172,7 +3203,7 @@ function traduire(){
           const nom = nomToks.map(t=>t.o).join(' ');
           patChunks.push({type:'pat', label:"je m'appelle"+(nom?' '+nom:''), w:pNom,
             out: pNom[dstField] + (nom? ' ' + nom : ' …'),
-            note:"« Nd'alewizi » = je me nomme — le prénom reste tel quel."});
+            note:"La forme documentée « "+pNom[dstField]+" » porte le verbe; le prénom reste tel quel."});
           break;
         }
       }
@@ -3197,7 +3228,7 @@ function traduire(){
     for(let k=0;k<cand.toks.length;k++){
       const a=TOKS[pos+k].n, b=cand.toks[k];
       if(tokEq(a,b)) continue;
-      if(tokFuzzy(a,b)){ corr.push(a+' → '+b); continue; }
+      if(FR&&tokFuzzy(a,b)){ corr.push(a+' → '+b); continue; }
       return null;
     }
     return corr;
@@ -3265,9 +3296,9 @@ function traduire(){
             note = "Le dictionnaire connaît « "+ent.sens+" » — ta forme exacte n'est pas attestée. À valider.";
           }
           if(neg && hasPas && !isNeg){
-            out = 'Nda ' + out + ' …(-wi)';
-            badge = '🧪 construction — à valider';
-            note = "Négation construite : nda + verbe conjugué + fin négative (-wi / -owen, selon le verbe). Aucune source ne confirme cette forme exacte — à faire valider par un aîné ou une aînée.";
+            chunks.push({type:'miss', toks:TOKS.slice(i,end),
+              note:"La forme négative exacte n'est pas documentée dans les entrées actuelles; le traducteur refuse de la construire."});
+            negVu=true; lastPron=null; i=end; continue;
           }
           if(obj && !ent.toks.slice(1,-1).some(x=>OBJPRO.has(x))){
             note = (note?note+' ':'') + "« "+obj+" » se porterait sur le verbe (ex : K'kezalmi = tu m'aimes).";
@@ -3290,7 +3321,8 @@ function traduire(){
     // 5) négation « ne … pas »
     if(FR && t==='ne' && wNeg && TOKS.slice(i+1).some(x=>x.n==='pas'||x.n==='plus')){
       negVu=true;
-      chunks.push({type:'gram', toks:[T], titre:wNeg[dstField], inSentence:true, note:"La négation aln8ba encadre le verbe : nda + verbe + -wi."+(wNegEx?" Ex : "+wNegEx[dstField]+" — "+wNegEx[srcField]:"")});
+      chunks.push({type:'gram', toks:[T], titre:wNeg[dstField], inSentence:false,
+        note:"La négation exige une forme verbale documentée complète; aucun suffixe n'est ajouté automatiquement."});
       i++; continue;
     }
     if(FR && (t==='pas'||t==='plus') && negVu){ chunks.push({type:'skip', toks:[T], note:'fait partie de la négation'}); i++; continue; }
@@ -3354,7 +3386,7 @@ function traduire(){
   const outEl = document.getElementById('tradOutput');
   const hits = chunks.filter(c=>c.type==='hit');
   const essais = FR ? ["Je m'appelle…","Comment vas-tu ?","Je t'aime","Merci beaucoup","Je ne sais pas","Bonne nuit"]
-                    : ["Kwai","Wliwni","Nda n'wawaldamowen","T8ni kd'al8wzin"];
+                    : ["Kwaï","Wliwni","Nda n'mikwaldamowen","T8ni kd'al8wzin"];
   const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
@@ -3362,6 +3394,7 @@ function traduire(){
   if(!hits.length && !patChunks.length){
     outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples, ou propose le mot manquant avec le bouton ＋ en bas à droite.</span>' + essaisHtml;
     document.getElementById('tradBtnTxt').textContent = 'Traduire →';
+    TRAD_LAST_OUTPUT = '';
     return;
   }
 
@@ -3375,6 +3408,7 @@ function traduire(){
   }).filter(x=>x!==null);
   patChunks.forEach(p=>morceaux.push(p.out));
   const sortie = morceaux.join(' ');
+  TRAD_LAST_OUTPUT = chunks.some(c=>c.type==='miss') ? '' : sortie;
 
   const denomToks = chunks.filter(c=>c.type==='hit'||c.type==='miss').reduce((n,c)=>n+c.toks.length,0);
   const couverts = hits.reduce((n,c)=>n+c.toks.length,0);
@@ -3436,15 +3470,15 @@ function traduire(){
         + '<span style="color:var(--text3);font-size:.75rem;font-style:italic">' + escH(c.note||"pas d'article en aln8ba — on l'enlève") + '</span></div>';
     } else {
       html += ligne(gaucheBase,
-        '<span style="color:#c0392b;font-size:.82rem">❓ pas encore dans le dictionnaire</span>'
+        '<span style="color:#c0392b;font-size:.82rem">❓ '+escH(c.note||'pas encore dans le dictionnaire')+'</span>'
         + ' <button class="btn btn-secondary" style="padding:1px 8px;font-size:.68rem" onclick="tradProposer(\''+escQ(c.toks.map(x=>x.o||x.n).join(' '))+'\')">＋ Proposer</button>');
     }
   });
   if(chunks.some(c=>c.type==='miss')) html += essaisHtml;
 
   outEl.innerHTML = html;
-  document.getElementById('tradCopyBtn').style.display = 'block';
-  document.getElementById('tradMeta').textContent = '⚠️ Traduction composée morceau par morceau à partir du dictionnaire — l\'ordre des mots aln8ba peut différer du français. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
+  document.getElementById('tradCopyBtn').style.display = TRAD_LAST_OUTPUT ? 'block' : 'none';
+  document.getElementById('tradMeta').textContent = '⚠️ Outil de repérage fondé uniquement sur les entrées vertes actuelles. Il ne construit aucune forme manquante et ne garantit pas l\'ordre grammatical d\'une phrase. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
 
@@ -3526,7 +3560,7 @@ function aprInit(){
 const NIVEAUX=[
 {id:'p',t:'Primaire',d:"La fondation complète : vingt modules, des sons jusqu'à ta première conversation. Aucun mécanisme de grammaire — on nomme, on répète, on retient, on utilise.",
  c:'var(--green)',mods:[
- {t:"Les sons d'abord",d:"Une seule lettre nouvelle à apprendre : le 8. Tout le reste se lit presque comme en français.",cat:'salut',ex:'vocab',lec:`
+ {t:"Les sons d'abord",d:"Cinq repères de prononciation : CH, J, 8, W et I.",ex:'sons',lec:`
   <p>L'aln8ba s'écrit presque comme il se prononce. Avant le premier mot, deux minutes pour l'alphabet.</p>
   <div class="aprnote"><b>Le 8 se dit comme un « an » nasal</b>
    Entre le <i>an</i> et le <i>on</i>. Alors <span class="al8">8h8</span> (oui) sonne à peu près « anhan »,
@@ -3534,17 +3568,19 @@ const NIVEAUX=[
   <table class="aprtab"><tr><th>Lettre</th><th>Comment la dire (Manuel de l'étudiant 1, pages 9 à 13)</th></tr>
   <tr><td class="k">CH</td><td>se prononce <b>TS</b>, jamais comme dans « chien »</td></tr>
   <tr><td class="k">J</td><td>se prononce <b>DZ</b>, jamais comme en français</td></tr>
-  <tr><td class="k">8</td><td>le « an » nasal — le son signature de la langue</td></tr>
+  <tr><td class="k">8</td><td>une voyelle nasale entre « an » et « on »</td></tr>
   <tr><td class="k">W</td><td>au début d'un mot devant une consonne, il sonne <b>Ô</b> — <span class="al8">Wli</span> se dit « ôli ». Devant une voyelle, il sonne <b>WA</b> — <span class="al8">W8linak</span> se dit « wanlinak ». À la fin d'un mot, il est <b>presque muet</b> — <span class="al8">Kizokw</span> se dit « kizok(w) »</td></tr>
   <tr><td class="k">I</td><td>sonne souvent <b>É</b>, surtout en fin de mot — <span class="al8">Mziwi</span> se dit « mziwé »</td></tr></table>
-  <div class="aprnote"><b>Quatre lettres ne commencent jamais un mot</b>
-   <b>B, D, G et Z</b> ne se trouvent jamais en première position d'un mot aln8ba.
-   Si tu vois un D au début, c'est qu'un préfixe s'est soudé — comme dans
-   <span class="al8">Nd'aliwizi</span> (N' + aliwizi).</div>
   <div class="aprnote w"><b>Dis tout à voix haute, toujours</b>
    Une langue ne s'apprend pas des yeux. Chaque mot de ce parcours doit sortir de ta bouche,
    même seul dans ton char.</div>`},
- {t:"Kwaï — saluer",d:"Les premiers mots qu'on dit en arrivant.",cat:'salut',ex:'vocab',lec:`
+ {t:"Kwaï — saluer",d:"Six formes essentielles pour saluer et répondre.",cat:'salut',ex:'vocab',items:[
+  {id:'mod-salut-1',aln8ba:'Kwaï',fr:'Bonjour',cat:'salut'},
+  {id:'mod-salut-2',aln8ba:'Kwaï mziwi',fr:'Bonjour tout le monde',cat:'salut'},
+  {id:'mod-salut-3',aln8ba:'8h8',fr:'Oui',cat:'salut'},
+  {id:'mod-salut-4',aln8ba:'Nda',fr:'Non',cat:'salut'},
+  {id:'mod-salut-5',aln8ba:'Wliwni',fr:'Merci',cat:'salut'},
+  {id:'mod-salut-6',aln8ba:'Adio',fr:'Au revoir',cat:'salut'}],lec:`
   <p>On commence par les mots qui servent tous les jours.</p>
   <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>
   <tr><td class="k">Kwaï</td><td>Bonjour</td></tr>
@@ -3737,9 +3773,9 @@ const NIVEAUX=[
   <div class="aprnote"><b>La différence que le français ne fait pas</b>
    Si tu dis <span class="al8">Niona W8banakiak</span>, tu dis « nous les Abénakis, pas toi ».<br>
    Si tu dis <span class="al8">Kiona W8banakiak</span>, la personne à qui tu parles est incluse.</div>`,
-  coach:`Pour Niona et Kiona, imagine un cercle autour d'un feu : est-ce que la personne à qui tu
-   parles fait partie du « nous »? Cette distinction n'existe pas en français — elle dit quelque chose
-   de précieux sur la façon dont ta langue voit la communauté. Ne la traduis jamais, vis-la.`},
+  coach:`Pour Niona et Kiona, pose une seule question : est-ce que la personne à qui tu parles
+   fait partie du « nous »? Kiona l'inclut; Niona ne l'inclut pas. Vérifie cette distinction
+   grammaticale dans chaque exemple.`},
  {t:"Mon, ton, son",d:"Des mots qui ne peuvent jamais rester seuls.",ex:'poss',lec:`
   <p>Certains mots doivent <b>toujours</b> porter un possesseur. On ne peut pas dire « ami »
   tout court, ni « tête ».</p>
@@ -3891,24 +3927,21 @@ const NIVEAUX=[
   <table class="aprtab"><tr><th>Ordre</th><th>Quand</th><th>Exemple</th></tr>
   <tr><td class="k">Indépendant</td><td>phrase ordinaire</td><td class="k">N'michi</td></tr>
   <tr><td class="k">Impératif</td><td>un ordre</td><td class="k">Michi!</td></tr>
-  <tr><td class="k">Conjonctif</td><td>une question</td><td class="k">Kagwi k'michi?</td></tr></table>
+  <tr><td class="k">Conjonctif</td><td>employé ici dans une question</td><td class="k">Kagwi k'michi?</td></tr></table>
   <h3>L'impératif collectif</h3>
   <p>Le suffixe <code>-oda</code> dit ce qu'on se propose de faire ensemble.
   <span class="al8">Wig8damoda!</span> réjouissons-nous · <span class="al8">Losada</span> allons.</p>`,
-  coach:`Trois ordres, trois intentions : on constate, on ordonne, on questionne. Quand tu entends
-   une phrase, repère d'abord l'<b>intention</b> — la forme suit l'intention, jamais l'inverse.
-   Et note la beauté du <span class='al8'>-oda</span> : la langue a un mode pour ce qu'on fait
-   <i>ensemble</i>.`},
+  coach:`Dans ces exemples, distingue la phrase indépendante, l'impératif et la forme
+   conjonctive employée dans une question. Le suffixe <span class='al8'>-oda</span> marque ici
+   une action proposée collectivement.`},
  {t:"La négation complète",d:"Trois suffixes selon la voyelle du radical.",ex:'neg',lec:`
   <table class="aprtab"><tr><th>Le radical finit par</th><th>Suffixe</th><th>Exemple</th></tr>
   <tr><td class="k">-i</td><td class="k">-w</td><td class="k">Nda nd'aliwiziw</td></tr>
-  <tr><td class="k">-a</td><td class="k">-wi</td><td class="k">Nda nd'aln8ba8dwawi</td></tr>
-  <tr><td class="k">-aldam-</td><td class="k">-owen</td><td class="k">Nda n'wawaldamowen</td></tr></table>
-  <div class="aprnote"><b>La preuve du -wi</b>
-   Masta écrit en 1932 <span class="al8">8nda tabi mhz8dwawi</span> — la négation d'un verbe
-   bâti sur la même racine <i>-8dwa-</i> que <i>nd'aln8ba8dwa</i>.</div>
-  <div class="aprnote w"><b>Les graphies anciennes</b>
-   Laurent écrit <i>8da</i> en 1884, Masta écrit <i>8nda</i> en 1932. La forme actuelle est <b>Nda</b>.</div>`,
+  <tr><td class="k">-a</td><td class="k">-wi</td><td class="k">Nda nd'alokawi</td></tr>
+  <tr><td class="k">-aldam-</td><td class="k">-owen</td><td class="k">Nda n'mikwaldamowen</td></tr></table>
+  <div class="aprnote w"><b>Formes exactes seulement</b>
+   Les exercices utilisent les exemples actuels documentés du parcours. Le traducteur ne fabrique
+   pas une négation absente du dictionnaire et les graphies anciennes restent dans Archives.</div>`,
   coach:`Les trois suffixes suivent la voyelle du radical — c'est elle qui décide. Entraîne ton
    oreille à entendre cette voyelle finale avant ta mémoire : dis le verbe, allonge la dernière
    voyelle, et le bon suffixe se pose tout seul.`},
@@ -3937,9 +3970,9 @@ const NIVEAUX=[
   <i>ab8n</i> le pain, <i>-kat</i> qui produit. Le boulanger.</p>
   <div class="aprnote"><b>Sers-toi du Décortiqueur</b>
    L'onglet à côté démonte n'importe quel mot et te montre toute sa famille.</div>`,
-  coach:`Un mot par jour dans le Décortiqueur. La famille qui apparaît en bas est ta vraie leçon :
-   elle te montre comment la langue <i>pense</i>. Trente mots décortiqués en un mois valent
-   mieux que trois cents mots mémorisés.`},
+  coach:`Un mot par jour dans le Décortiqueur. La famille affichée en bas montre comment les
+   formes documentées partagent une racine et se combinent avec des affixes. Compare les morceaux
+   avant de mémoriser le mot complet.`},
  {t:"Les sources et les graphies",d:"Un même mot écrit de neuf façons en trois siècles.",ex:null,lec:`
   <p>Le mot « enfant » à travers les auteurs :</p>
   <table class="aprtab">
@@ -3962,7 +3995,7 @@ const NIVEAUX=[
   <table class="aprtab"><tr><th>Phrase</th><th>Analyse</th></tr>
   <tr><td class="k">Nd'aliwizi Mali</td><td>Nd'- (je) + aliwizi (s'appeler) + le nom</td></tr>
   <tr><td class="k">T8ni tali wigian?</td><td>T8ni (où) + tali (l'endroit) + wigian (tu habites)</td></tr>
-  <tr><td class="k">Nda n'wawaldamowen</td><td>Nda (ne pas) + n'- (je) + wawaldam (savoir) + -owen</td></tr>
+  <tr><td class="k">Nda n'mikwaldamowen</td><td>Nda (ne pas) + n'- (je) + mikwaldam (se souvenir) + -owen</td></tr>
   <tr><td class="k">Kiona W8banakiak</td><td>Kiona (nous, toi inclus) + W8banakiak (les Abénakis)</td></tr></table>`,
   coach:`Lis lentement, trois passes : 1) trouve le verbe, 2) trouve son préfixe, 3) assemble le reste.
    La vitesse viendra d'elle-même — la méthode, elle, se choisit maintenant.`},
@@ -4056,7 +4089,7 @@ function aprParcours(){
          <div style="height:100%;width:${Math.round(maitrises/n.mods.length*100)}%;background:${n.c};border-radius:2px;transition:.3s"></div>
        </div>
        <div style="margin-top:12px"><button class="aprbtn" onclick="aprJeux('${n.id}')">🎯 Jeux du niveau ${n.t}</button>
-       <span style="font-size:.75rem;color:var(--text3);margin-left:8px">Les questions pigent seulement dans les mots de ce niveau.</span></div></div>
+       <span style="font-size:.75rem;color:var(--text3);margin-left:8px">Une sélection adaptée aux notions de ce niveau.</span></div></div>
      <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[n.id+'.'+i];
        const done=s&&s.retenir>=75&&(!m.cat||s.utiliser>=75);
        const badge=done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
@@ -4067,9 +4100,10 @@ function aprParcours(){
 /* Lance les jeux limités aux catégories de mots d'un niveau du parcours */
 function aprJeux(nivId){
   const n=NIVEAUX.find(x=>x.id===nivId);
-  jCtx={label:n.t,cats:[...new Set(n.mods.map(m=>m.cat).filter(Boolean))]};
+  const games={p:['sens','caches'],s:['genre','sens','negat','plur','caches'],c:['negat','fam']};
+  jCtx={label:n.t,cats:[...new Set(n.mods.map(m=>m.cat).filter(Boolean))],games:games[nivId]||[]};
   jCat='toutes';
-  setView('jeux');
+  setView('jeux',true);
 }
 function aprLecon(i){
   aprMod=i;
@@ -4082,9 +4116,9 @@ function aprLecon(i){
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
-      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en trois temps</b>
+      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${m.cat?'trois':'deux'} temps</b>
         1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
-        3. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. Puis reviens demain
+        ${m.cat?'3. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. ':''}Puis reviens demain
         dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>`:
         `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
         Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
@@ -4171,7 +4205,7 @@ const APR_VERBES=[
  {r:"alosa",f:"aller",v:"a",ex:"Nd'alosa"},{r:"aloka",f:"travailler",v:"a",ex:"Nd'aloka"},
  {r:"aln8ba8dwa",f:"parler abénakis",v:"a",ex:"Nd'aln8ba8dwa"},{r:"pemeg8",f:"danser",v:"a",ex:"N'pemeg8"},
  {r:"kika",f:"semer",v:"a",ex:"N'kika"},{r:"mikwaldam",f:"se souvenir",v:"m",ex:"N'mikwaldam"},
- {r:"wanaldam",f:"oublier",v:"m",ex:"N'wanaldamen"},{r:"sagezo",f:"aimer",v:"m",ex:"N'sagezo"}];
+ {r:"sagezo",f:"aimer",v:"m",ex:"N'sagezo"}];
 function aprConjView(){
   document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Conjugueur</h3>
     <p class="aprlead">Choisis un verbe. L'outil applique les préfixes, les marques de nombre,
@@ -4187,7 +4221,7 @@ function aprConj(i){
   const S=["","","o","bena","bena","ba","oak"];
   const NOM=["je","tu","il · elle","nous (exclusif)","nous (inclusif)","vous","ils · elles"];
   const neg=v.v==='m'?'owen':v.v==='a'?'wi':'w';
-  const why=v.v==='m'?"le radical est en -aldam-, la famille de l'esprit"
+  const why=v.v==='m'?"le radical appartient au groupe documenté en -aldam-"
     :v.v==='a'?"le radical finit par -a":"le radical finit par -i";
   const F=k=>P[k]+v.r+S[k];
   document.getElementById('cOut').innerHTML=`
@@ -4276,7 +4310,11 @@ function aprGramView(){
 let jCur=null, jSc={ok:0,no:0}, jCat='toutes', jInv=false, jWS='animal';
 /* Contexte niveau : rempli par aprJeux() quand on vient du parcours */
 let jCtx=null;
-function jPoolSur(){ let p=aprSur(); if(jCtx&&jCtx.cats&&jCtx.cats.length) p=p.filter(w=>jCtx.cats.includes(w.cat)); return p; }
+function jPoolSur(){
+  let p=aprSur();
+  if(jCtx&&Array.isArray(jCtx.cats)) p=p.filter(w=>jCtx.cats.includes(w.cat));
+  return p;
+}
 const jPick=a=>a[Math.floor(Math.random()*a.length)];
 const jShuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
 function jUniqueBy(pool,key,n,used=[]){
@@ -4294,15 +4332,17 @@ const JEUX_L=[
  {id:'sens',t:'Devinette',d:"Un mot, quatre sens. Ou l'inverse. Filtrable par catégorie.",n:'Vocabulaire'},
  {id:'negat',t:'La négation',d:"Nda plus quel suffixe? Trois règles selon la voyelle du radical.",n:'Grammaire'},
  {id:'plur',t:'Le bon pluriel',d:"Choisis une forme complète parmi des paires documentées.",n:'Grammaire'},
- {id:'fam',t:'Familles de mots',d:"Quel mot partage la même racine? Cent familles au dictionnaire.",n:'Racines'},
+ {id:'fam',t:'Familles de mots',d:"Quel mot partage la même racine parmi les familles documentées.",n:'Racines'},
  {id:'caches',t:'Mots cachés',d:"Une grille, huit mots à trouver. Choisis un thème.",n:'Jeu'}];
 function jeuInit(){
-  const nSur=jPoolSur().length, nTot=(jCtx&&jCtx.cats.length?aprPool().filter(w=>jCtx.cats.includes(w.cat)):aprPool()).length;
+  const nSur=jPoolSur().length;
+  const nTot=(jCtx?aprPool().filter(w=>jCtx.cats.includes(w.cat)):aprPool()).length;
+  const jeux=jCtx?JEUX_L.filter(j=>jCtx.games.includes(j.id)):JEUX_L;
   const cb=document.getElementById('jCtxBar');
   if(cb) cb.innerHTML=jCtx?`<div class="aprnote" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
     <button class="btn btn-secondary" style="font-size:.78rem" onclick="setView('apprendre')">← Retour au parcours</button>
-    <span style="font-size:.85rem"><b>🎯 Jeux du niveau ${jCtx.label}</b> — les questions pigent seulement dans les mots de ce niveau.</span></div>`:'';
-  document.getElementById('jMenu').innerHTML=JEUX_L.map(j=>
+    <span style="font-size:.85rem"><b>🎯 Jeux du niveau ${jCtx.label}</b> — sélection adaptée aux notions de ce niveau.</span></div>`:'';
+  document.getElementById('jMenu').innerHTML=jeux.map(j=>
     `<button class="gcard" data-j="${j.id}"><b>${j.t}</b><span>${j.d}</span><i>${j.n}</i></button>`).join('');
   document.querySelectorAll('#jMenu .gcard').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('#jMenu .gcard').forEach(x=>x.classList.remove('on'));
@@ -4310,13 +4350,17 @@ function jeuInit(){
     ({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam,caches:jCaches})[jCur]();
   });
   const st=document.getElementById('jStage');
-  if(!document.getElementById('jNoteSur')) st.insertAdjacentHTML('beforebegin',
+  jCur=null; jSc={ok:0,no:0};
+  st.innerHTML='<div class="aprcard" style="text-align:center;color:var(--text2)">Choisis un jeu pour commencer.</div>';
+  const ancienneNote=document.getElementById('jNoteSur');
+  if(ancienneNote) ancienneNote.remove();
+  st.insertAdjacentHTML('beforebegin',
     `<div class="aprnote" id="jNoteSur" style="margin-bottom:14px;font-size:.78rem">
-       <b>Les jeux ne posent que des mots pleinement attestés</b>
-       ${nSur} mots sur ${nTot} servent aux questions. Les ${nTot-nSur} formes qui portent une
-       réserve — « à valider », « à confirmer », « forme construite » — sont écartées, pour ne
-       jamais enseigner comme certain ce qui ne l'est pas. Elles restent consultables au
-       dictionnaire et au décortiqueur.</div>`);
+       <b>Les jeux utilisent uniquement les entrées vertes actuelles</b>
+       ${nTot?`${nSur} mots sur ${nTot} servent aux questions${jCtx?' de vocabulaire de ce niveau':''}.`:
+       `Les jeux de ce niveau reposent sur les exemples grammaticaux et les familles actuelles documentées.`}
+       Les formes historiques, à valider, non confirmées ou construites sont écartées. Elles restent
+       consultables au dictionnaire, dans Archives ou au décortiqueur.</div>`);
 }
 function jFrame(t,body,ctrl){
   document.getElementById('jStage').innerHTML=`<div class="jbar"><h3>${t}</h3>
@@ -4337,7 +4381,7 @@ function jAns(bon,i,retour){
        <button class="aprbtn" onclick="({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})['${jCur}']()">Suivant →</button></div>`);
 }
 function jGenre(){
-  const pool=jPoolSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||''));
+  const pool=jPoolSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
   if(pool.length<2) return jFrame('Animé ou inanimé?','<p style="text-align:center;color:var(--text2)">Pas assez de mots marqués.</p>');
   const w=jPick(pool), an=/nom animé/i.test(w.grammar);
   jFrame('Animé ou inanimé?',`
@@ -4384,11 +4428,9 @@ const JNEG=[
  {v:"Nd'aliwizi",f:"je m'appelle",r:0,n:"Nda nd'aliwiziw",w:"Le radical finit par -i, donc le suffixe est -W."},
  {v:"N'wal8wzi",f:"je vais bien",r:0,n:"Nda n'wal8wziw",w:"Le radical finit par -i, donc le suffixe est -W."},
  {v:"Nd'agakimzi",f:"j'étudie",r:0,n:"Nda nd'agakimziw",w:"Le radical finit par -i, donc le suffixe est -W."},
- {v:"Nd'aln8ba8dwa",f:"je parle abénakis",r:1,n:"Nda nd'aln8ba8dwawi",w:"Le radical finit par -a, donc -WI. Masta 1932 écrit mhz8dwawi sur la même racine."},
  {v:"Nd'aloka",f:"je travaille",r:1,n:"Nda nd'alokawi",w:"Le radical finit par -a, donc le suffixe est -WI."},
  {v:"N'saosa",f:"je sors",r:1,n:"Nda n'saosawi",w:"Le radical finit par -a, donc le suffixe est -WI."},
- {v:"N'mikwaldam",f:"je me souviens",r:2,n:"Nda n'mikwaldamowen",w:"Verbe en -aldam- : le suffixe est -OWEN."},
- {v:"N'wanaldamen",f:"j'oublie",r:2,n:"Nda n'wanaldamowen",w:"Verbe en -aldam- : le suffixe est -OWEN."}];
+ {v:"N'mikwaldam",f:"je me souviens",r:2,n:"Nda n'mikwaldamowen",w:"Verbe du groupe documenté en -aldam- : le suffixe est -OWEN."}];
 function jNegat(){
   const q=jPick(JNEG); window._jq=q;
   jFrame('La négation',`
@@ -4396,12 +4438,12 @@ function jNegat(){
       <div class="w">${q.v}</div><div class="h">${q.f}</div></div>
     <div class="jopts">${['Nda … -w','Nda … -wi','Nda … -owen'].map((o,i)=>
       `<button class="jopt" onclick="jAns(${q.r},${i},jRetNeg())" style="text-align:center"><span class="al">${o}</span></button>`).join('')}</div>
-    <div class="jhint">Regarde la voyelle qui termine le radical. Et vérifie si le verbe
-      appartient à la famille -aldam-, celle de l'esprit.</div>`);
+    <div class="jhint">Regarde la voyelle qui termine le radical. Vérifie aussi si le radical
+      appartient au groupe documenté en -aldam-.</div>`);
 }
 function jRetNeg(){ const q=window._jq;
   return `<b>${q.n}</b><em>${q.w}</em>
-    <span class="aprsrc">Règle établie par recoupement de Laurent 1884, Masta 1932 et du Manuel de l'étudiant 1</span>`; }
+    <span class="aprsrc">Exemple actuel documenté dans le parcours d'apprentissage.</span>`; }
 const JPLUR=[
  {s:'Alakws',p:'Alakwsak',f:'étoile',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
  {s:'Awassos',p:'Awassosak',f:'ours',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
@@ -4424,15 +4466,35 @@ function jPlur(){
 function jRetPlur(){ const q=window._jp;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
     <span class="aprsrc">Manuel de l'étudiant 1 — Native Montreal, pages 16 à 18</span>`; }
+const DOCUMENTED_ROOT_FAMILIES=[
+ {root:'alakws-',words:['Alakws','Alakwsak']},
+ {root:'awassos-',words:['Awassos','Awassosak','Awassosis','Awassosisak']},
+ {root:'koa-',words:['Koa','Koak']},
+ {root:'mskikwimen-',words:['Mskikwimen','Mskikwimenak']},
+ {root:'namasis-',words:['Namasis','Namasisak']},
+ {root:'sata-',words:['Sata','Satal']},
+ {root:'agakimzo-',words:['Agakimzo','Agakimzowinno']},
+ {root:'-nam- · voir',words:["N'namih8","N'namito"]},
+ {root:'-mil- · donner',words:["N'mil8","N'mildo"]},
+ {root:'-waj8n- · posséder',words:["N'waj8n8","N'waj8nem"]},
+ {root:'-wdn- · prendre',words:["N'wdn8","N'wdnem"]},
+ {root:'-pon- · placer',words:["N'pon8","N'ponem"]},
+ {root:'-n8zn- · toucher',words:["N'n8zn8","N'n8znem"]}
+];
+function documentedRootFamilies(){
+  const byName=new Map(aprSur().map(w=>[w.aln8ba.toLowerCase(),w]));
+  return DOCUMENTED_ROOT_FAMILIES.map(f=>({root:f.root,
+    members:f.words.map(n=>byName.get(n.toLowerCase())).filter(Boolean)}))
+    .filter(f=>new Set(f.members.map(w=>w.aln8ba)).size>=2);
+}
 function jFam(){
- const F={}; aprSur().filter(w=>(w.familyId||'').trim()).forEach(w=>(F[w.familyId]=F[w.familyId]||[]).push(w));
-  const EX=['temps_manuel','chiffres','corps_manuel','corps','suffixes','couleurs_manuel','topo_manuel',
-    'conversation','questions','pronoms','graphies','histoire','grammaire_manuel','pluriel_manuel',
-    'corpus_masta','famille_manuel','mois_etym','negation','phonetique'];
-  const B=Object.entries(F).filter(([k,v])=>v.length>=3&&!EX.includes(k));
+  const B=documentedRootFamilies();
   if(!B.length) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de familles.</p>');
-  const [fid,mem]=jPick(B), base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
- const distracteurs=jUniqueBy(aprSur().filter(w=>w.familyId!==fid),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+  const famille=jPick(B), fid=famille.root, mem=famille.members;
+  const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
+ const nomsFamille=new Set(mem.map(w=>w.aln8ba));
+ const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+ if(distracteurs.length<3) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de réponses distinctes pour cette famille.</p>');
  const tous=jShuf([cous,...distracteurs]);
   const ib=tous.indexOf(cous); window._jf={fid,mem,cous};
   jFrame('Familles de mots',`
@@ -4447,10 +4509,12 @@ function jRetFam(){ const {fid,mem,cous}=window._jf;
     <span class="aprsrc">Une racine se combine à des préfixes et des suffixes pour former toute une famille.</span>`; }
 function jCaches(){
   const ALLCATS=['animal','plante','nature','territoire','famille','corps','temps','couleur','salut','nombre'];
-  const cats=(jCtx&&jCtx.cats.length)?ALLCATS.filter(c=>jCtx.cats.includes(c)):ALLCATS;
-  if(!cats.includes(jWS)) jWS=cats[0]||'animal';
-  let pool=jShuf(jPoolSur().filter(w=>w.cat===jWS&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba))).slice(0,8);
-  if(pool.length<5){ jWS=cats[0]||'animal'; pool=jShuf(jPoolSur().filter(w=>w.cat===jWS&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba))).slice(0,8); }
+  const poolSur=jPoolSur();
+  const catsContexte=(jCtx&&jCtx.cats.length)?ALLCATS.filter(c=>jCtx.cats.includes(c)):ALLCATS;
+  const cats=catsContexte.filter(cat=>poolSur.filter(w=>w.cat===cat&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba)).length>=5);
+  if(!cats.length) return jFrame('Mots cachés','<p style="text-align:center;color:var(--text2)">Pas assez de mots actuels dans ce niveau pour construire une grille fiable.</p>');
+  if(!cats.includes(jWS)) jWS=cats[0];
+  const pool=jShuf(poolSur.filter(w=>w.cat===jWS&&/^[A-Za-z8']{4,11}$/.test(w.aln8ba))).slice(0,8);
   const N=13, G=Array.from({length:N},()=>Array(N).fill('')), DIR=[[0,1],[1,0],[1,1],[-1,1]], PL=[];
   pool.forEach(w=>{ const L=w.aln8ba.toUpperCase().replace(/[^A-Z8]/g,'');
     for(let t=0;t<250;t++){ const [dy,dx]=jPick(DIR);
@@ -4460,7 +4524,9 @@ function jCaches(){
       let ok=true; for(let i=0;i<L.length;i++){ const c=G[y0+dy*i][x0+dx*i]; if(c&&c!==L[i]){ok=false;break;} }
       if(!ok) continue;
       const cs=[]; for(let i=0;i<L.length;i++){ G[y0+dy*i][x0+dx*i]=L[i]; cs.push((y0+dy*i)+','+(x0+dx*i)); }
-      PL.push({mot:w,lettres:L,cells:cs}); break; } });
+      PL.push({mot:w,lettres:L,cells:cs,found:false}); break; } });
+  if(PL.length<5) return jFrame('Mots cachés','<p style="text-align:center;color:var(--text2)">La grille n\'a pas pu placer assez de mots. Relance le jeu.</p>',
+    '<button class="chip" onclick="jCaches()">Nouvelle grille</button>');
   const AB='ABCDEGHIJKLMNOPSTWZ8';
   for(let y=0;y<N;y++) for(let x=0;x<N;x++) if(!G[y][x]) G[y][x]=AB[Math.floor(Math.random()*AB.length)];
   jFrame('Mots cachés',`
@@ -4468,39 +4534,63 @@ function jCaches(){
       ${G.map((r,y)=>r.map((c,x)=>`<div class="cel" data-p="${y},${x}">${c}</div>`).join('')).join('')}</div>
       <div class="wsList"><h4>${PL.length} mots à trouver</h4>
         ${PL.map((p,i)=>`<div id="wm${i}"><b>${p.mot.aln8ba}</b><span>${p.mot.fr}</span></div>`).join('')}</div></div>
-    <div class="jhint">Glisse ou clique du premier au dernier caractère. Les mots se lisent
+    <div class="jhint">Glisse du premier au dernier caractère. Les mots se lisent
       horizontalement, verticalement ou en diagonale.</div>`,
     `<select onchange="jWS=this.value;jCaches()" style="font-family:inherit;font-size:.78rem;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text)">
-      ${cats.map(c=>`<option ${c===jWS?'selected':''}>${c}</option>`).join('')}</select>`);
+      ${cats.map(c=>`<option value="${c}" ${c===jWS?'selected':''}>${catLabel(c)}</option>`).join('')}</select>`);
   let sel=[], down=false;
   const cl=()=>{ sel.forEach(p=>{const c=document.querySelector('#jBody [data-p="'+p+'"]');
     if(c&&!c.classList.contains('found')) c.classList.remove('sel');}); sel=[]; };
   const add=el=>{ const p=el.dataset.p; if(sel.includes(p))return; sel.push(p); el.classList.add('sel'); };
-  const test=()=>{ const s=sel.map(p=>document.querySelector('#jBody [data-p="'+p+'"]').textContent).join('');
-    PL.forEach((pl,i)=>{ if(pl.lettres===s||pl.lettres===[...s].reverse().join('')){
+  const test=()=>{
+    const trace=sel.join('|');
+    const i=PL.findIndex(pl=>!pl.found&&(pl.cells.join('|')===trace||[...pl.cells].reverse().join('|')===trace));
+    if(i>=0){ const pl=PL[i]; pl.found=true;
       pl.cells.forEach(p=>{const c=document.querySelector('#jBody [data-p="'+p+'"]');
         c.classList.add('found'); c.classList.remove('sel');});
       const e=document.getElementById('wm'+i); if(e) e.classList.add('got');
       jSc.ok++; document.querySelector('.jscore').innerHTML=`✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s>`;
-      sel=[]; } }); cl(); };
+      if(PL.every(p=>p.found)) document.getElementById('jBody').insertAdjacentHTML('beforeend',
+        '<div class="jafter"><b>Grille terminée.</b> Tous les mots ont été trouvés.</div>');
+    }else if(sel.length>1){
+      jSc.no++; document.querySelector('.jscore').innerHTML=`✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s>`;
+    }
+    cl();
+  };
   document.querySelectorAll('#jBody .cel').forEach(c=>{
     c.onmousedown=e=>{e.preventDefault();down=true;cl();add(c);};
     c.onmouseenter=()=>down&&add(c);
     c.ontouchstart=e=>{e.preventDefault();down=true;cl();add(c);};
   });
-  document.getElementById('jBody').ontouchmove=e=>{ if(!down)return;
+  const body=document.getElementById('jBody');
+  body.ontouchmove=e=>{ if(!down)return;
     const t=e.touches[0], el=document.elementFromPoint(t.clientX,t.clientY);
     if(el&&el.classList.contains('cel')) add(el); };
-  document.addEventListener('mouseup',()=>{if(down){down=false;test();}},{once:true});
-  document.addEventListener('touchend',()=>{if(down){down=false;test();}},{once:true});
+  const termine=()=>{if(down){down=false;test();}};
+  body.onmouseup=termine;
+  body.onmouseleave=termine;
+  body.ontouchend=termine;
+  body.ontouchcancel=termine;
 }
 
 /* ═══════ MOTEUR D'EXERCICES — gradué par niveau ═══════ */
+const EXSONS=[
+ {m:'CH',q:'Quel son représente CH?',o:['TS','Comme le CH français','Une voyelle nasale','Presque muet'],r:0,e:'CH se prononce TS.'},
+ {m:'J',q:'Quel son représente J?',o:['DZ','Comme le J français','Une voyelle nasale','Presque muet'],r:0,e:'J se prononce DZ.'},
+ {m:'8',q:'Comment prononcer 8?',o:['Une voyelle nasale entre AN et ON','Comme le chiffre huit','Comme OU','Comme É'],r:0,e:'8 note une voyelle nasale entre AN et ON.'},
+ {m:'W',q:'Quel résumé décrit W?',o:['Ô devant une consonne, WA devant une voyelle, presque muet à la fin','Toujours comme V','Toujours muet','Toujours comme OU'],r:0,e:'La prononciation de W dépend de sa position dans le mot.'},
+ {m:'I',q:'Comment sonne souvent I, surtout en fin de mot?',o:['É','A','OU','AN'],r:0,e:'I sonne souvent É, surtout en fin de mot.'}
+];
 let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exPoolOverride=null;
+let exAsked=[], exSonsQueue=[];
 
 function aprEx(type,cat,titre,mode){
   exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
-  exQ=0; exOk=0; exTot=8; exPoolOverride=null;
+  exQ=0; exOk=0; exTot=8; exAsked=[]; exSonsQueue=[];
+  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
+  exPoolOverride=m&&Array.isArray(m.items)?aprModulePool(cat):null;
+  if(exPoolOverride&&exPoolOverride.length) exTot=Math.min(8,exPoolOverride.length);
+  if(type==='sons'){ exSonsQueue=jShuf(EXSONS); exTot=exSonsQueue.length; }
   exSuivant();
 }
 function exCadre(corps){
@@ -4554,17 +4644,30 @@ function exFin(){
 }
 function exSuivant(){
   if(exQ>=exTot) return exFin();
-  ({vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
+  const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
     negs:exNegs, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
-    src:exSrc, trad:exTrad})[exType]();
+    trad:exTrad})[exType];
+  handler();
 }
+
+function exSons(){
+  const q=exSonsQueue[exQ]; window._ex=q;
+  const idx=q.o.map((_,i)=>i), ordre=jShuf(idx), opts=ordre.map(i=>q.o[i]), bonne=ordre.indexOf(q.r);
+  exCadre(`
+    <div class="jprompt"><div class="q">${q.q}</div><div class="w">${q.m}</div></div>
+    <div class="jopts two">${opts.map((o,i)=>`<button class="jopt" style="text-align:center"
+      onclick="exRepond(${bonne},${i},exRetSons())">${o}</button>`).join('')}</div>`);
+}
+function exRetSons(){ return `<b>${window._ex.m}</b><em>${window._ex.e}</em>`; }
 
 /* — primaire : reconnaissance de vocabulaire — */
 function exVocab(){
   let pool=(exPoolOverride&&exPoolOverride.length>=4)?exPoolOverride
     :aprSur().filter(w=>w.cat===exCat && w.aln8ba.length<=18);
   if(pool.length<4) pool=aprSur();
-  const bon=jPick(pool);
+  let choix=pool.filter(w=>!exAsked.includes(w.id||w.aln8ba));
+  if(!choix.length){ exAsked=[]; choix=pool; }
+  const bon=jPick(choix); exAsked.push(bon.id||bon.aln8ba);
   const sens = exQ%2===0;
   const key=w=>sens?w.fr:w.aln8ba;
   const autres=jUniqueBy(pool.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
@@ -4620,7 +4723,9 @@ function exEcris(){
   let pool=(exPoolOverride&&exPoolOverride.length>=4)?exPoolOverride
     :aprSur().filter(w=>w.cat===exCat&&w.aln8ba.length<=18);
   if(pool.length<4) pool=aprSur().filter(w=>w.aln8ba.length<=18);
-  const bon=jPick(pool); window._ex=bon;
+  let choix=pool.filter(w=>!exAsked.includes(w.id||w.aln8ba));
+  if(!choix.length){ exAsked=[]; choix=pool; }
+  const bon=jPick(choix); exAsked.push(bon.id||bon.aln8ba); window._ex=bon;
   exCadre(`
     <div class="jprompt"><div class="q">Écris ce mot en aln8ba</div>
       <div class="w" style="font-size:clamp(1.2rem,4vw,1.7rem)">${bon.fr}</div></div>
@@ -4679,14 +4784,14 @@ function aprRevStart(){
   if(choix.length<8) choix=pool.filter(w=>['salut','nombre','couleur','famille'].includes(w.cat)).slice(0,30);
   exPoolOverride=choix;
   exType='rev'; exMode='rev'; exCat=''; exTitre='Révision';
-  exQ=0; exOk=0; exTot=10;
+  exQ=0; exOk=0; exTot=10; exAsked=[]; exSonsQueue=[];
   exSuivant();
 }
 function exRev(){ (exQ%2===0?exVocab:exEcris)(); }
 
 /* — secondaire : animé ou inanimé — */
 function exGenre(){
-  const pool=aprSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||''));
+  const pool=aprSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
   const w=jPick(pool), an=/nom animé/i.test(w.grammar); window._ex=w; window._exa=an;
   exCadre(`
     <div class="jprompt"><div class="q">De quel genre est ce mot?</div>
@@ -4770,10 +4875,7 @@ function exRetConjp(){ const {v,pers,bonne}=window._ex;
 const EXNEGS=[
  {v:"Nd'aliwizi",f:"je m'appelle",n:"Nda nd'aliwiziw"},
  {v:"N'wal8wzi",f:"je vais bien",n:"Nda n'wal8wziw"},
- {v:"Nd'agakimzi",f:"j'étudie",n:"Nda nd'agakimziw"},
- {v:"N'michi",f:"je mange",n:"Nda n'michiw"},
- {v:"N'wigi",f:"j'habite",n:"Nda n'wigiw"},
- {v:"N'kawi",f:"je dors",n:"Nda n'kawiw"}];
+ {v:"Nd'agakimzi",f:"j'étudie",n:"Nda nd'agakimziw"}];
 function exNegs(){
   const q=jPick(EXNEGS); window._ex=q;
   const opts=jShuf([q.n, q.v.replace(/i$/,'iwi'), 'Nda '+q.v, q.v+'owen']);
@@ -4829,13 +4931,13 @@ function exOrdre(){
     <div class="jprompt"><div class="q">Quel ordre de conjugaison?</div>
       <div class="w">${q.p}</div><div class="h">${q.f}</div></div>
     <div class="jopts">${['Indépendant — une phrase ordinaire','Impératif — un ordre',
-      'Conjonctif — une question'].map((o,i)=>
+      'Conjonctif — employé ici dans une question'].map((o,i)=>
       `<button class="jopt" onclick="exRepond(${q.r},${i},exRetOrdre())">${o}</button>`).join('')}</div>`);
 }
 function exRetOrdre(){ const q=window._ex;
   return `<b>${q.p} — ${q.f}</b><em>${['Ordre indépendant : la forme de tous les jours.',
     "Ordre impératif : on demande à quelqu'un de faire quelque chose.",
-    'Ordre conjonctif : la phrase pose une question.'][q.r]}</em>
+    'Forme conjonctive : elle est employée ici dans un exemple interrogatif.'][q.r]}</em>
     <span class="aprsrc">Manuel de l'étudiant 1, page 29</span>`; }
 
 /* — cégep : négation complète — */
@@ -4847,12 +4949,12 @@ function exNeg(){
     <div class="jopts">${['Nda … -w','Nda … -wi','Nda … -owen'].map((o,i)=>
       `<button class="jopt" style="text-align:center" onclick="exRepond(${q.r},${i},exRetNeg())">
         <span class="al">${o}</span></button>`).join('')}</div>
-    <div class="jhint">Regarde la voyelle qui termine le radical. Et vérifie si le verbe
-      appartient à la famille -aldam-.</div>`);
+    <div class="jhint">Regarde la voyelle qui termine le radical. Vérifie aussi si le radical
+      appartient au groupe documenté en -aldam-.</div>`);
 }
 function exRetNeg(){ const q=window._ex;
   return `<b>${q.n}</b><em>${q.w}</em>
-    <span class="aprsrc">Règle établie par recoupement de Laurent 1884, Masta 1932 et du Manuel 2018</span>`; }
+    <span class="aprsrc">Exemple actuel documenté dans le parcours d'apprentissage.</span>`; }
 
 /* — cégep : les suffixes — */
 const EXSUF=[
@@ -4875,14 +4977,13 @@ function exRetSuf(){ const q=window._ex;
 
 /* — cégep : familles de racines — */
 function exFam(){
-  const F={}; aprSur().filter(w=>(w.familyId||'').trim()).forEach(w=>(F[w.familyId]=F[w.familyId]||[]).push(w));
-  const EXCL=['temps_manuel','chiffres','corps_manuel','corps','suffixes','couleurs_manuel','topo_manuel',
-    'conversation','questions','pronoms','graphies','histoire','grammaire_manuel','pluriel_manuel',
-    'corpus_masta','famille_manuel','mois_etym','negation','phonetique'];
-  const B=Object.entries(F).filter(([k,v])=>v.length>=3&&!EXCL.includes(k));
+  const B=documentedRootFamilies();
   if(!B.length) return exVocab();
-  const [fid,mem]=jPick(B), base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
-  const distracteurs=jUniqueBy(aprSur().filter(w=>w.familyId!==fid),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+  const famille=jPick(B), fid=famille.root, mem=famille.members;
+  const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
+  const nomsFamille=new Set(mem.map(w=>w.aln8ba));
+  const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+  if(distracteurs.length<3) return exVocab();
   const tous=jShuf([cous,...distracteurs]);
   const ib=tous.indexOf(cous); window._ex={fid,mem,cous,base};
   exCadre(`
@@ -4895,33 +4996,11 @@ function exRetFam(){ const {fid,mem,cous}=window._ex;
   return `<b>Racine « ${fid} »</b><em>${mem.slice(0,7).map(w=>w.aln8ba).join(' · ')}</em>
     <div style="margin-top:6px">${cous.aln8ba} — ${cous.fr}</div>`; }
 
-/* — cégep : les sources — */
-const EXSRC=[
- {m:'Awôssis',r:1,f:'enfant'},{m:'Aw8ssis',r:2,f:'enfant'},{m:'Aw8sis',r:3,f:'enfant'},
- {m:'8da',r:1,f:'ne … pas'},{m:'8nda',r:2,f:'ne … pas'},{m:'Nda',r:3,f:'ne … pas'},
- {m:'Awossis',r:0,f:'enfant'}];
-function exSrc(){
-  const q=jPick(EXSRC); window._ex=q;
-  exCadre(`
-    <div class="jprompt"><div class="q">De quelle époque est cette graphie?</div>
-      <div class="w">${q.m}</div><div class="h">${q.f}</div></div>
-    <div class="jopts">${['Wzokhilain, 1830','Jos. Laurent, 1884','Henry Lorne Masta, 1932',
-      'Charland et Terraza, 2018 — norme actuelle'].map((o,i)=>
-      `<button class="jopt" onclick="exRepond(${q.r},${i},exRetSrc())">${o}</button>`).join('')}</div>
-    <div class="jhint">Le 8 apparaît chez Masta. Le ô est la marque de Laurent.
-      La forme la plus courte est souvent la plus récente.</div>`);
-}
-function exRetSrc(){ const q=window._ex;
-  return `<b>${q.m} — ${q.f}</b><em>${['Wzokhilain écrit en 1830, avant l\'usage du 8.',
-    "Laurent écrit en 1884, avec le ô.","Masta écrit en 1932, avec le 8.",
-    "Charland et Terraza, 2018 — c'est la forme à employer aujourd'hui."][q.r]}</em>
-    <span class="aprsrc">Manuel de l'étudiant 1, page 3</span>`; }
-
 /* — cégep : traduire — */
 const EXTRAD=[
  {p:"Nd'aliwizi Mali",r:0,o:["Je m'appelle Marie","Tu t'appelles Marie","Elle s'appelle Marie","Nous nous appelons Marie"]},
  {p:"T8ni kd'al8wzin?",r:1,o:["Où habites-tu?","Comment vas-tu?","Quel âge as-tu?","Qui es-tu?"]},
- {p:"Nda n'wawaldamowen",r:2,o:["Je sais","Tu ne sais pas","Je ne sais pas","Il ne sait pas"]},
+ {p:"Nda n'mikwaldamowen",r:2,o:["Je me souviens","Tu ne te souviens pas","Je ne me souviens pas","Il ne se souvient pas"]},
  {p:"Kiona W8banakiak",r:0,o:["Nous sommes des Abénakis, toi inclus","Nous sommes des Abénakis, pas toi","Vous êtes des Abénakis","Ils sont des Abénakis"]},
  {p:"N'wigi W8linak",r:1,o:["Je viens de Wôlinak","J'habite Wôlinak","Je vais à Wôlinak","Je suis né à Wôlinak"]},
  {p:"Wliwni wji k'olidahaw8gan",r:3,o:["Merci beaucoup","Merci mon ami","Prends soin de toi","Merci pour ta bonté"]},
