@@ -1562,6 +1562,11 @@ function isConfirmed(w){
 function enAttente(w){
   return w && (w.cat === 'corpus' || w.cat === 'archive' || (w.fr || '').includes('⚠'));
 }
+const EXERCISE_DOUTE=/FORME CONSTRUITE|à confirmer|Sens à confirmer|reconstruite|à faire valider|non attestée|par analogie|HYPOTHÈSE|à valider|non glosée|Forme construite/i;
+function isExerciseSafe(w){
+  return !!w && w.aln8ba!=='__version__' && w.cat!=='system' && !enAttente(w)
+    && getWordLevel(w)==='vert' && !EXERCISE_DOUTE.test(w.notes||'');
+}
 function filtered(){
   // Les formes en attente ne figurent jamais dans le dictionnaire, même pour l'admin
   let r = WORDS.filter(w => !enAttente(w));
@@ -1841,13 +1846,12 @@ function selectLevel(n){
 
 function buildQueue(){
   // Base : mots confirmés uniquement, pas de notation spéciale
-  const confirmed = [...WORDS].filter(w =>
+  const confirmed = WORDS.filter(w =>
+    isExerciseSafe(w) &&
     w.aln8ba && w.aln8ba.length > 1 && w.fr &&
     !/[()[\]{}'"]/.test(w.aln8ba) &&
     !w.aln8ba.startsWith('-') &&
-    !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba) &&
-    !enAttente(w) &&
-    isConfirmed(w)
+    !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba)
   );
   let pool;
   if(PS.level === 1 || PS.level === 2){
@@ -1857,8 +1861,9 @@ function buildQueue(){
     // Niveau 3 : mots simples (pas composés d'espaces multiples)
     pool = confirmed.filter(w => w.fr && !w.aln8ba.includes(' '));
   } else {
-    // Chaque troisième question demande un pluriel : garder uniquement les paires documentées.
-    pool = confirmed.filter(w => DOCUMENTED_PLURALS[w.aln8ba] && !w.aln8ba.includes(' '));
+    // Ces sept paires ont été approuvées explicitement pour l'apprentissage actif.
+    pool = WORDS.filter(w => w.aln8ba && w.fr && DOCUMENTED_PLURALS[w.aln8ba]
+      && !enAttente(w) && !w.aln8ba.includes(' '));
   }
   if(pool.length < 2){ toast('Pas assez de mots confirmés pour ce niveau. Confirme d\'abord des mots en admin.'); return; }
   PS.queue = shuffle([...pool]).slice(0, Math.min(pool.length, 20));
@@ -1869,7 +1874,9 @@ function buildQueue(){
 
 // Meilleurs distracteurs : même catégorie en priorité, sinon autres
 function getBestDistractors(w, n, field){
-  const base = WORDS.filter(x => x.id !== w.id && x.aln8ba && x.fr && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(x.aln8ba) && !enAttente(x) && isConfirmed(x) && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
+  const base = WORDS.filter(x => x.id !== w.id && isExerciseSafe(x) && x.aln8ba && x.fr
+    && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(x.aln8ba)
+    && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
   const samecat = shuffle(base.filter(x => x.cat === w.cat));
   const others  = shuffle(base.filter(x => x.cat !== w.cat));
   const seen=new Set([(w[field]||'').trim().toLowerCase()]), out=[];
@@ -3464,12 +3471,12 @@ function tradGoto(mot,lang){
    APPRENDRE  ·  Parcours · Décortiqueur · Conjugueur · Chiffres · Grammaire
    ═══════════════════════════════════════════════════════ */
 const APR_META=/^(RÈGLE|SUFFIXE|RACINE|DIVERGENCE|CORPUS|PRONONCIATION|HISTOIRE)/;
-const APR_DOUTE=/FORME CONSTRUITE|à confirmer|Sens à confirmer|reconstruite|à faire valider|non attestée|par analogie|HYPOTHÈSE|à valider|non glosée|Forme construite/i;
+const APR_DOUTE=EXERCISE_DOUTE;
 /* pool large — pour le décortiqueur et la consultation */
 function aprPool(){ return WORDS.filter(w=>w.aln8ba&&!APR_META.test(w.aln8ba)&&w.fr
   &&!w.fr.includes('⚠')&&w.cat!=='corpus'&&w.cat!=='archive'&&w.aln8ba!=='__version__'); }
 /* pool sûr — pour les jeux : uniquement ce qui est attesté sans réserve */
-function aprSur(){ return aprPool().filter(w=>!APR_DOUTE.test(w.notes||'')); }
+function aprSur(){ return aprPool().filter(isExerciseSafe); }
 /* un mot porte-t-il une réserve ? */
 function aprReserve(w){ return APR_DOUTE.test((w&&w.notes)||''); }
 function aprNorm(s){ return (s||'').toLowerCase().replace(/['’\-\s]/g,'').replace(/8/g,'o')
@@ -3933,7 +3940,7 @@ const NIVEAUX=[
   coach:`Un mot par jour dans le Décortiqueur. La famille qui apparaît en bas est ta vraie leçon :
    elle te montre comment la langue <i>pense</i>. Trente mots décortiqués en un mois valent
    mieux que trois cents mots mémorisés.`},
- {t:"Les sources et les graphies",d:"Un même mot écrit de neuf façons en trois siècles.",ex:'src',lec:`
+ {t:"Les sources et les graphies",d:"Un même mot écrit de neuf façons en trois siècles.",ex:null,lec:`
   <p>Le mot « enfant » à travers les auteurs :</p>
   <table class="aprtab">
   <tr><td class="k">A8añsis</td><td>Rasles, 1691</td></tr>
@@ -3973,7 +3980,7 @@ const NIVEAUX=[
   coach:`Ouvre le Décortiqueur avec <span class="al8">Agakimzowinno</span> puis avec
    <span class="al8">Nodab8nkat</span>. L'objectif est de repérer les morceaux du mot, pas d'inventer
    des familles qui ne sont pas documentées.`},
- {t:"Lire les anciens",d:"Laurent 1884, Masta 1932 : lire les vieilles graphies sans se perdre.",ex:'src',lec:`
+ {t:"Lire les anciens",d:"Laurent 1884, Masta 1932 : lire les vieilles graphies sans se perdre.",ex:null,lec:`
   <p>Les anciens écrivaient ce qu'ils entendaient, avec l'alphabet de leur époque. Un même mot
   voyage à travers les siècles :</p>
   <table class="aprtab"><tr><th>Aujourd'hui</th><th>Avant</th><th>Source</th></tr>
@@ -3987,7 +3994,7 @@ const NIVEAUX=[
   coach:`Le dictionnaire garde les anciennes formes dans les notes de chaque mot : c'est ta machine
    à voyager dans le temps. Chaque note « ⚠️ graphies anciennes » prouve que le mot a vécu
    trois siècles. Ces témoins certifient ton savoir — cite-les quand tu enseignes.`},
- {t:"Les niveaux de certitude",d:"Lire les marques du dictionnaire : ce qui est sûr, ce qui attend validation.",ex:'src',lec:`
+ {t:"Les niveaux de certitude",d:"Lire les marques du dictionnaire : ce qui est sûr, ce qui attend validation.",ex:null,lec:`
   <p>Un dictionnaire vivant dit la vérité sur ses propres limites. Chaque entrée porte des marques :</p>
   <table class="aprtab"><tr><th>Marque</th><th>Ce qu'elle veut dire</th></tr>
   <tr><td class="k">✓ Orthographe confirmée</td><td>le mot apparaît dans deux sources ou plus</td></tr>
@@ -4075,10 +4082,13 @@ function aprLecon(i){
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
-      <div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en trois temps</b>
+      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en trois temps</b>
         1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
         3. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. Puis reviens demain
-        dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>
+        dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>`:
+        `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
+        Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
+        comme réponses dans les exercices actifs et ne remplacent pas les graphies actuelles.</div>`}
       ${lecHtml}
       ${st?`<div class="aprnote"><b>Ta progression dans ce module</b>
         🧠 Retenir : ${st.retenir!=null?st.retenir+'%':'pas encore fait'} ·
@@ -4088,8 +4098,8 @@ function aprLecon(i){
       <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         ${m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
           onclick="aprFC('${m.cat}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
-        <button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${tt}','retenir')">
-          🧠 Retenir — le quiz</button>
+        ${m.ex?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${tt}','retenir')">
+          🧠 Retenir — le quiz</button>`:''}
         ${m.cat?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
           onclick="aprEx('ecris','${m.cat}','${tt}','utiliser')">
           ✍️ Utiliser — écris le mot</button>`:''}
