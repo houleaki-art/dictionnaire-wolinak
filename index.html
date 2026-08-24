@@ -810,7 +810,7 @@ textarea{resize:vertical;min-height:68px}
     <div class="trad-wrap">
       <div class="trad-header">
         <h2>🪶 Traducteur de phrases</h2>
-        <p class="trad-sub">Le traducteur reconnaît d'abord les phrases documentées, puis analyse les autres entrées morceau par morceau</p>
+        <p class="trad-sub">Les phrases complètes documentées sont traduites. Sinon, l'outil montre seulement les fragments connus, sans les assembler.</p>
       </div>
       <div class="trad-direction-bar">
         <button class="trad-dir-btn on" id="btnFrToAln" onclick="setTradDir('fr-aln')">
@@ -3292,7 +3292,6 @@ const DOCUMENTED_SENTENCES=[
   {fr:['Je ne me souviens pas'],aln8ba:"Nda n'mikwaldamowen"},
   {fr:["J'habite Wôlinak","J'habite Wolinak"],aln8ba:"N'wigi W8linak"},
   {fr:['Où habites-tu?'],aln8ba:'T8ni tali wigian?'},
-  {fr:['Merci pour ta bonté'],aln8ba:"Wliwni wji k'olidahaw8gan"},
   {fr:['Nous sommes encore ici'],aln8ba:"Askwa yudali nd'aibena"},
   {fr:['Nous sommes des Abénakis, toi inclus'],aln8ba:'Kiona W8banakiak'}
 ];
@@ -3764,36 +3763,41 @@ function traduire(){
     return;
   }
 
-  // Phrase composée : traductions + noms propres ; les pronoms/grammaire s'expliquent dans le détail
-  const morceaux = chunks.map(c => {
-    if(c.type==='hit') return c.forceOut || c.w[dstField];
-    if(c.type==='gram' && c.inSentence) return 'Nda';   // la négation doit paraître — sinon le sens s'inverse
-    if(c.type==='nom') return c.toks[0].o;
-    if(c.type==='miss') return '«'+c.toks.map(x=>x.o||x.n).join(' ')+'»';
-    return null;
-  }).filter(x=>x!==null);
-  patChunks.forEach(p=>morceaux.push(p.out));
-  const sortie = morceaux.join(' ');
+  // Une sortie principale n'est permise que si toute l'entrée correspond à une
+  // seule forme exacte ou à un patron documenté. Des fragments ne deviennent
+  // jamais une phrase par simple concaténation.
+  const contentChunks = chunks.filter(c=>c.type!=='skip');
+  const completePattern = patChunks.length===1 && contentChunks.length===0;
+  const wholeHit = patChunks.length===0 && contentChunks.length===1
+    && contentChunks[0].type==='hit'
+    && contentChunks[0].toks.length===TOKS.length
+    && !contentChunks[0].consultative
+    && !contentChunks[0].corrige
+    && !contentChunks[0].viaSyn
+    && !contentChunks[0].lemme
+    && !contentChunks[0].dansSens
+    && !contentChunks[0].prefixe
+    && !contentChunks[0].note
+    && !(contentChunks[0].alts||[]).length;
+  const completeTranslation = completePattern || wholeHit;
+  const sortie = completePattern ? patChunks[0].out
+    : wholeHit ? (contentChunks[0].forceOut || contentChunks[0].w[dstField])
+    : '';
   const hasConsultative=chunks.some(c=>c.consultative);
-  TRAD_LAST_OUTPUT = chunks.some(c=>c.type==='miss')||hasConsultative ? '' : sortie;
-
-  const denomToks = chunks.filter(c=>c.type==='hit'||c.type==='miss').reduce((n,c)=>n+c.toks.length,0);
-  const couverts = hits.reduce((n,c)=>n+c.toks.length,0);
-  const pct = denomToks ? Math.round(100*couverts/denomToks) : (patChunks.length?100:0);
-  const pcCol = hasConsultative ? '#b8860b' : pct>=80 ? '#2e7d32' : pct>=50 ? '#b8860b' : '#c0392b';
-  const pcTxt = hasConsultative ? 'Couverture consultative' : pct>=80 ? 'Bonne couverture' : pct>=50 ? 'Couverture partielle' : 'Couverture faible';
+  TRAD_LAST_OUTPUT = completeTranslation && !hasConsultative ? sortie : '';
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
 
-  let html = '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
-    + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5">' + escH(sortie) + '</div>'
-    + '<div style="margin-top:8px;display:flex;align-items:center;gap:8px">'
-    +   '<div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+pcCol+';border-radius:3px"></div></div>'
-    +   '<span style="font-size:.75rem;font-weight:700;color:'+pcCol+'">'+pct+'% · '+pcTxt+'</span>'
-    + '</div></div>';
+  let html = completeTranslation
+    ? '<div style="background:var(--surface2);border:1px solid var(--green);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+      + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5">' + escH(sortie) + '</div>'
+      + '<div style="margin-top:8px;color:var(--green);font-size:.75rem;font-weight:700">✓ Correspondance complète documentée</div></div>'
+    : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
+      + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
 
   // Détail morceau par morceau
-  html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">🧩 Comment la phrase est composée :</div>';
+  html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">'
+    + (completeTranslation ? '🧩 Détail de la correspondance :' : '🔎 Analyse lexicale seulement — fragments indépendants :') + '</div>';
   const ligne = (gauche, droite, extra) =>
     '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
     + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + gauche + '</span>'
@@ -3843,13 +3847,15 @@ function traduire(){
         + ' <button class="btn btn-secondary" style="padding:1px 8px;font-size:.68rem" onclick="tradProposer(\''+escQ(c.toks.map(x=>x.o||x.n).join(' '))+'\')">＋ Proposer</button>');
     }
   });
-  if(chunks.some(c=>c.type==='miss')) html += essaisHtml;
+  if(!completeTranslation) html += essaisHtml;
 
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = TRAD_LAST_OUTPUT ? 'block' : 'none';
   document.getElementById('tradMeta').textContent = hasConsultative
     ? '📜 Une locution documentée consultative a été reconnue exactement. Son sens est affiché avec prudence et la copie est désactivée; les autres morceaux utilisent les entrées vertes actuelles.'
-    : '⚠️ Outil de repérage fondé uniquement sur les entrées vertes actuelles. Il ne construit aucune forme manquante et ne garantit pas l\'ordre grammatical d\'une phrase. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
+    : completeTranslation
+      ? '✓ Traduction fondée sur une correspondance complète documentée dans les entrées vertes actuelles.'
+      : '⚠️ Analyse de fragments seulement. Aucun ordre grammatical ni aucune phrase n\'est construit; la copie reste désactivée. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
 
