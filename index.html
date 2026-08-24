@@ -2069,6 +2069,10 @@ const DOCUMENTED_PLURALS={
   Alakws:'Alakwsak', Awassos:'Awassosak', Awassosis:'Awassosisak',
   Koa:'Koak', Mskikwimen:'Mskikwimenak', Namasis:'Namasisak', Sata:'Satal'
 };
+const DOCUMENTED_PLURAL_FORMS=new Set(
+  [...Object.keys(DOCUMENTED_PLURALS),...Object.values(DOCUMENTED_PLURALS)]
+    .map(form=>form.toLowerCase())
+);
 function resolvePlural(w){
   const form=DOCUMENTED_PLURALS[w.aln8ba];
   if(!form) return {form:'non documenté',type:'aucune forme inventée'};
@@ -4855,9 +4859,8 @@ function jFam(){
  const famille=jPick(B), fid=famille.root, relation=famille.relation, mem=famille.members;
  const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
  const nomsFamille=new Set(mem.map(w=>w.aln8ba));
- const plurielsDocumentes=new Set(Object.values(DOCUMENTED_PLURALS).map(x=>x.toLowerCase()));
  const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)
-   && !plurielsDocumentes.has(w.aln8ba.toLowerCase())),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+   && !DOCUMENTED_PLURAL_FORMS.has(w.aln8ba.toLowerCase())),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
  if(distracteurs.length<3) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de réponses distinctes pour cette famille.</p>');
  const tous=jShuf([cous,...distracteurs]);
   const ib=tous.indexOf(cous); window._jf={fid,relation,mem,cous};
@@ -5351,9 +5354,8 @@ function exFam(){
   const famille=jPick(B), fid=famille.root, relation=famille.relation, mem=famille.members;
   const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
   const nomsFamille=new Set(mem.map(w=>w.aln8ba));
-  const plurielsDocumentes=new Set(Object.values(DOCUMENTED_PLURALS).map(x=>x.toLowerCase()));
   const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)
-    && !plurielsDocumentes.has(w.aln8ba.toLowerCase())),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
+    && !DOCUMENTED_PLURAL_FORMS.has(w.aln8ba.toLowerCase())),w=>w.aln8ba,3,[base.aln8ba,cous.aln8ba]);
   if(distracteurs.length<3) return exVocab();
   const tous=jShuf([cous,...distracteurs]);
   const ib=tous.indexOf(cous); window._ex={fid,relation,mem,cous,base};
