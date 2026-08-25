@@ -25,6 +25,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 
 ## Parcours d'apprentissage
 
+- Révision des formulations trop absolues dans le parcours : les graphies historiques et les badges internes sont présentés comme des indices documentaires, jamais comme une certification de la prononciation, du sens ou de l'usage actuel.
 - Création des modules du primaire avec Retenir, Utiliser, écriture et révision espacée.
 - Développement des parcours du secondaire et du cégep.
 - Ajout d'un accompagnement pédagogique dans les leçons.
