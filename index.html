@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -22,8 +22,8 @@
   --accent:#e07840;--gold:#f0c060;--shadow:0 2px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 32px rgba(0,0,0,.55);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;transition:var(--tr)}
+html{scroll-behavior:smooth;max-width:100%;overflow-x:hidden}
+body{font-family:Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:100%;overflow-x:hidden;transition:var(--tr)}
 /* ── HEADER ── */
 header{background:linear-gradient(135deg,#1e1008,#4a2808,#7a3a18);color:#f8f0e0;position:sticky;top:0;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,.4)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid rgba(255,255,255,.1)}
@@ -275,6 +275,7 @@ textarea{resize:vertical;min-height:68px}
 .drawer-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px)}
 .drawer-panel{position:absolute;top:0;left:0;width:min(300px,85vw);height:100%;background:var(--surface);box-shadow:4px 0 24px rgba(0,0,0,.3);overflow-y:auto;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .mobile-drawer.open .drawer-panel{transform:translateX(0)}
+.menu-open{overflow:hidden}
 .drawer-header{background:linear-gradient(135deg,#1e1008,#4a2808);padding:20px 18px;display:flex;align-items:center;justify-content:space-between}
 .drawer-header h3{color:#f8e8c0;font-size:1rem;font-weight:700}
 .drawer-close{background:rgba(255,255,255,.1);border:none;color:#f0e0c0;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px}
@@ -385,6 +386,40 @@ textarea{resize:vertical;min-height:68px}
   .word{font-size:1.1rem}
   .hdr-title h1{max-width:130px}
 }
+/* Certains navigateurs integres (Messenger, Facebook) exposent une largeur de bureau
+   malgre un ecran tactile. La classe mobile-ui est ajoutee par JavaScript dans ce cas. */
+.mobile-ui #burgerBtn{display:flex !important}
+.mobile-ui aside{display:none}
+.mobile-ui .layout{display:block;width:100%;max-width:100%;min-height:auto}
+.mobile-ui main{width:100%;max-width:100%;min-width:0;padding:12px 14px}
+.mobile-ui .hdr-top{padding:10px 12px;gap:8px}
+.mobile-ui .hdr-search{padding:8px 12px;flex-wrap:wrap}
+.mobile-ui .hdr-brand{min-width:0;gap:8px}
+.mobile-ui .hdr-title{min-width:0}
+.mobile-ui .hdr-title h1{font-size:1rem;max-width:145px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-ui .hdr-title p,.mobile-ui .badge{display:none}
+.mobile-ui .hdr-controls{gap:4px;flex-shrink:0}
+.mobile-ui .ibtn{width:30px;height:30px;font-size:12px}
+.mobile-ui .sw{max-width:none;min-width:100%}
+.mobile-ui .ltog{max-width:100%;margin-left:auto}
+.mobile-ui .ltog button{padding:6px 8px;font-size:.68rem}
+.mobile-ui .wgrid,.mobile-ui .acards,.mobile-ui .lzgrid,.mobile-ui .jmenu,
+.mobile-ui .prat-levels,.mobile-ui .trad-panels,.mobile-ui .wsWrap,
+.mobile-ui .jopts.two,.mobile-ui .atl-form{grid-template-columns:minmax(0,1fr)}
+.mobile-ui .card,.mobile-ui .aprcard,.mobile-ui .gcard,.mobile-ui .trad-panel,
+.mobile-ui .jstage,.mobile-ui .aprnote{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.mobile-ui .aprcard{padding:16px;overflow:hidden}
+.mobile-ui .aprtab{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mobile-ui .aprtab td.k{white-space:normal}
+.mobile-ui .aprnav{flex-wrap:nowrap;max-width:100%;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.mobile-ui .aprnav button{flex:0 0 auto}
+.mobile-ui .jstage{padding:16px 12px}
+.mobile-ui .wsgrid{width:100%;max-width:100%;min-width:0}
+.mobile-ui .cel{font-size:clamp(8px,2.7vw,14px)}
+.mobile-ui .family-forms{grid-template-columns:1fr;gap:4px}
+.load-more-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:7px;padding:18px 8px 28px}
+.load-more-wrap button{border:0;border-radius:10px;background:var(--accent);color:#fff;padding:11px 20px;font:700 .86rem Georgia,serif;cursor:pointer}
+.load-more-wrap span{font-size:.72rem;color:var(--text3)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,69,69,.4)}50%{box-shadow:0 0 0 6px rgba(232,69,69,0)}}
 @media print{header,.fab,aside,.toolbar,.cacts,.pending-banner{display:none!important}.layout{display:block}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:10px;box-shadow:none}.cdet{display:block!important}}
 /* ── FAMILLE DE MOTS ── */
@@ -1205,6 +1240,14 @@ textarea{resize:vertical;min-height:68px}
 </div>
 
 <script>
+function isMobileUi(){
+  return window.innerWidth<=860 || window.matchMedia('(pointer: coarse)').matches
+    || /Android|iPhone|iPad|iPod|Mobile|FBAN|FBAV|Messenger/i.test(navigator.userAgent);
+}
+function syncMobileUi(){ document.documentElement.classList.toggle('mobile-ui',isMobileUi()); }
+syncMobileUi();
+window.addEventListener('resize',syncMobileUi,{passive:true});
+
 // ══════════════════════════════════════════════════════════
 //  STORAGE KEYS
 // ══════════════════════════════════════════════════════════
@@ -1590,6 +1633,14 @@ const S = {
 let WORDS = SEED.map(w=>{const f=FAMILY_MAP[w.id];return f?{...w,...f}:w;});
 let FAVS  = loadFavs();
 let mediaRecorder = null, audioChunks = [], audioBlob = null;
+let WORD_RENDER_LIMIT = 0;
+let WORD_RENDER_KEY = '';
+
+function wordBatchSize(){ return isMobileUi()?30:160; }
+function showMoreWords(){
+  WORD_RENDER_LIMIT += wordBatchSize();
+  renderWords();
+}
 
 // ══════════════════════════════════════════════════════════
 //  FILTER + RENDER
@@ -1768,17 +1819,28 @@ function makeSingleCard(w){
 function renderWords(){
   const c=document.getElementById('wordsContainer');
   const r=filtered();
+  const sv=document.getElementById('sortSel').value;
+  const renderKey=[S.view,S.cat,S.letter,S.q,S.lang,S.layout,sv].join('\u0001');
+  if(renderKey!==WORD_RENDER_KEY){
+    WORD_RENDER_KEY=renderKey;
+    WORD_RENDER_LIMIT=wordBatchSize();
+  }
   document.getElementById('resCount').textContent=r.length+' résultat'+(r.length!==1?'s':'');
   if(!r.length){c.innerHTML=`<div class="nores"><div class="ni">🔍</div><h3>Aucun mot trouvé</h3><p>Essayez un autre terme ou effacez les filtres.</p></div>`;return;}
   c.className=S.layout==='grid'?'wgrid':'wlist';
-  const sv=document.getElementById('sortSel').value;
   const items=buildDisplayItems(r);
+  const visibleItems=items.slice(0,WORD_RENDER_LIMIT);
   let html='',lastCat=null;
-  items.forEach(item=>{
+  visibleItems.forEach(item=>{
     const cat=item.type==='family'?(item.members.find(m=>m.formType==='singulier')||item.members[0]).cat:item.word.cat;
     if(sv==='cat'&&cat!==lastCat){lastCat=cat;html+=`<div class="ldiv" style="grid-column:1/-1"><span>${catLabel(cat)}</span></div>`;}
     html+=item.type==='family'?makeFamilyCard(item.members):makeSingleCard(item.word);
   });
+  if(visibleItems.length<items.length){
+    const remaining=items.length-visibleItems.length;
+    const next=Math.min(wordBatchSize(),remaining);
+    html+=`<div class="load-more-wrap"><button type="button" onclick="showMoreWords()">Afficher ${next} fiche${next>1?'s':''} de plus</button><span>${visibleItems.length} sur ${items.length} fiches chargées</span></div>`;
+  }
   c.innerHTML=html;
 }
 
@@ -1802,11 +1864,24 @@ function toggleFav(id){
   i===-1?(FAVS.push(id),toast('⭐ Ajouté aux favoris')):(FAVS.splice(i,1),toast('Retiré des favoris'));
   saveFavs(FAVS); updateCounts(); renderWords();
 }
-function playAudio(id){
+function audioPlaybackBlocked(message){
+  const detail=isMobileUi()
+    ? 'Le navigateur intégré bloque le son. Ouvre la page dans Chrome, puis touche de nouveau Écouter.'
+    : 'La lecture audio a été bloquée par le navigateur. Touche de nouveau Écouter.';
+  voiceSetStatus(message||detail);
+  toast('🔇 '+(message||detail));
+}
+async function playAudio(id){
   const w=WORDS.find(x=>x.id===id);
   const a=document.getElementById('aud'+id);
-  if(a){a.play();return;}
-  if(w&&w.audio){new Audio(w.audio).play();return;}
+  if(a){
+    try{await a.play();}catch(e){audioPlaybackBlocked();}
+    return;
+  }
+  if(w&&w.audio){
+    try{await new Audio(w.audio).play();}catch(e){audioPlaybackBlocked();}
+    return;
+  }
   if(w) voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
 }
 function removeAudio(id){
@@ -1863,6 +1938,9 @@ function filterCat(cat){
   document.getElementById('adminView').className='admin-panel';
   document.getElementById('aboutView').className='about-open';
   document.getElementById('pratiqueView').className='pratique-view';
+  document.getElementById('traducteurView').style.display='none';
+  document.getElementById('apprendreView').className='apr';
+  document.getElementById('jeuxView').className='jeu';
   document.getElementById('archivesView').style.display='none';
   document.getElementById('viewTitle').textContent=cat?catLabel(cat):'Tous les mots';
   renderWords();
@@ -2408,17 +2486,21 @@ function sanitizePlain(s){ return String(s==null?'':s).replace(/<[^>]*>/g,'').re
 
 // Sur mobile — scroll vers le bouton Vérifier quand le clavier apparaît
 // ── NAVIGATION MOBILE ──
-function toggleMobileMenu(){
+function toggleMobileMenu(force){
   const d = document.getElementById('mobileDrawer');
-  d.classList.toggle('open');
+  const open=typeof force==='boolean'?force:!d.classList.contains('open');
+  d.classList.toggle('open',open);
+  document.body.classList.toggle('menu-open',open);
 }
 function mobileNav(view){
-  toggleMobileMenu();
-  setTimeout(()=>setView(view), 50);
+  toggleMobileMenu(false);
+  setView(view);
+  window.scrollTo({top:0,behavior:'auto'});
 }
 function mobileFilterCat(cat){
-  toggleMobileMenu();
-  setTimeout(()=>{ filterCat(cat); setView('all'); }, 50);
+  toggleMobileMenu(false);
+  filterCat(cat);
+  window.scrollTo({top:0,behavior:'auto'});
 }
 function mobileScrollToNav(){
   if(window.innerWidth > 860) return;
@@ -3206,34 +3288,44 @@ function voiceAdvice(item,result){
 }
 function voiceSpeak(label,cue,announce=true,slow=false){
   if(!('speechSynthesis' in window)){
-    if(announce) voiceSetStatus('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
+    audioPlaybackBlocked('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
     return;
   }
   const displayCue=phoneticToVoiceCue(cue||alnToVoiceCue(label));
   const spokenCue=voiceCueToSpeech(displayCue,label);
   if(!spokenCue) return;
   if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
-  const wasSpeaking=speechSynthesis.speaking||speechSynthesis.pending;
-  if(wasSpeaking) speechSynthesis.cancel();
-  // Leading punctuation gives the audio output time to open before the first phoneme.
-  const u=new SpeechSynthesisUtterance(`… ${spokenCue}`);
+  if(speechSynthesis.speaking||speechSynthesis.pending) speechSynthesis.cancel();
+  // La lecture doit commencer dans le geste utilisateur: les WebView mobiles
+  // peuvent bloquer speechSynthesis si on le differe avec setTimeout.
+  const u=new SpeechSynthesisUtterance(spokenCue);
   const voices=speechSynthesis.getVoices();
   u.voice=voices.find(v=>/^fr-CA$/i.test(v.lang))||voices.find(v=>/^fr/i.test(v.lang))||null;
   u.lang=u.voice?u.voice.lang:'fr-CA';
   u.rate=slow?.6:.74; u.pitch=1; u.volume=1;
+  let started=false;
+  u.onstart=()=>{started=true;};
+  u.onerror=()=>audioPlaybackBlocked('Ce navigateur n’a pas réussi à démarrer le guide vocal. Ouvre la page dans Chrome et réessaie.');
+  speechSynthesis.resume();
+  speechSynthesis.speak(u);
   voiceSpeakTimer=setTimeout(()=>{
-    voiceSpeakTimer=null; speechSynthesis.resume(); speechSynthesis.speak(u);
-  },wasSpeaking?320:180);
+    voiceSpeakTimer=null;
+    if(!started&&!speechSynthesis.speaking&&!speechSynthesis.pending)
+      audioPlaybackBlocked('Le navigateur intégré n’a pas lancé la voix. Ouvre la page dans Chrome et réessaie.');
+  },1400);
   if(announce) voiceSetStatus(`Guide synthétique approximatif${slow?' lent':''} : « ${displayCue} ». Écoute, puis utilise le micro.`);
 }
 function voiceSetStatus(message){
   const el=document.getElementById('voiceStatus'); if(el) el.textContent=message;
 }
-function voiceListenCurrent(slow=false){
+async function voiceListenCurrent(slow=false){
   const item=VOICE_ITEMS[VOICE_INDEX]; if(!item) return;
   if(item.audio){
-    const audio=new Audio(item.audio); audio.playbackRate=slow?.75:1; audio.play();
-    voiceSetStatus('Enregistrement natif du dictionnaire. Écoute, puis répète.');
+    const audio=new Audio(item.audio); audio.playbackRate=slow?.75:1;
+    try{
+      await audio.play();
+      voiceSetStatus('Enregistrement natif du dictionnaire. Écoute, puis répète.');
+    }catch(e){audioPlaybackBlocked();}
   }else voiceSpeak(item.text,item.cue,true,slow);
 }
 function voiceResetMic(){
