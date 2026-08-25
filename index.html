@@ -1253,6 +1253,25 @@ window.addEventListener('resize',syncMobileUi,{passive:true});
 // ══════════════════════════════════════════════════════════
 const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
+// À changer uniquement lors d'une mise à jour importante de l'application.
+// Cette version est indépendante des données linguistiques et de __version__.
+const APP_RESET_VERSION = '2026-08-25-mobile-001';
+const APP_RESET_KEY = 'aln8ba_app_reset';
+const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
+
+// Réinitialisation forte du client: enlève les anciennes données et préférences,
+// mais protège la progression pédagogique acquise par le visiteur.
+(function checkAppReset(){
+  if(localStorage.getItem(APP_RESET_KEY)===APP_RESET_VERSION) return;
+  const keep={};
+  PERSISTENT_PROGRESS_KEYS.forEach(k=>{
+    const value=localStorage.getItem(k); if(value!==null) keep[k]=value;
+  });
+  Object.keys(localStorage).filter(k=>k.startsWith('aln8ba')).forEach(k=>localStorage.removeItem(k));
+  Object.keys(sessionStorage).filter(k=>k.startsWith('aln8ba')).forEach(k=>sessionStorage.removeItem(k));
+  Object.entries(keep).forEach(([k,value])=>localStorage.setItem(k,value));
+  localStorage.setItem(APP_RESET_KEY,APP_RESET_VERSION);
+})();
 // ── SUPABASE ──
 const SB_URL = 'https://exjfbddebsmkgbehhfod.supabase.co';
 const SB_KEY = 'sb_publishable_BT4lsOg6E0k6NANAQqN9Wg_15qPRM6r';
@@ -1271,7 +1290,7 @@ function sbUseAuth(token){ SB_AUTH=token; SB_HEADERS['Authorization']='Bearer '+
     localStorage.removeItem(SK.words);
     localStorage.removeItem(SK.pending);
     // Vider toutes les clés aln8ba_ pour être sûr — SAUF la progression d'apprentissage
-    const KEEP=['aln8ba_prog','aln8ba_rev'];
+    const KEEP=[...PERSISTENT_PROGRESS_KEYS,APP_RESET_KEY];
     Object.keys(localStorage).filter(k=>k.startsWith('aln8ba')&&!KEEP.includes(k)).forEach(k=>localStorage.removeItem(k));
     localStorage.setItem(SK.version, DATA_VERSION);
   }
@@ -3184,11 +3203,11 @@ function voiceAffirmativeToFrenchSpeech(value,label){
 function voiceDocumentedWordToFrenchSpeech(value,label){
   // Technical French spelling: keep Almos as one word with audible A, closed O and final S.
   if((label||'').trim().toLowerCase()==='almos') return 'almôsse';
-  // Meliki begins with an audible E; the accent is only a command for French TTS.
-  if((label||'').trim().toLowerCase()==='meliki') return value.replace(/^me/,'mé');
   // French AU elicits the documented O while preserving one continuous word and final A.
   if((label||'').trim().toLowerCase()==='kiona') return 'kiauna';
-  return value;
+  // Reinforce only a documented ME syllable. Closed groups such as MEL, MEN,
+  // MEK and MES keep their own cue instead of being guessed as an accented E.
+  return value.replace(/(^|[-\s])me(?=$|[-\s])/gi,'$1mé');
 }
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
