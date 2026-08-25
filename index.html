@@ -791,19 +791,19 @@ textarea{resize:vertical;min-height:68px}
       <div class="plvl lvl-1 on" data-lvl="1" onclick="selectLevel(1)">
         <div class="plvl-icon">🌱</div>
         <div class="plvl-name">Débutant — Reconnaissance</div>
-        <div class="plvl-desc">Tu vois le mot abenakis → choisis la bonne traduction parmi 4.</div>
+        <div class="plvl-desc">Mots courts du quotidien : salutations, nombres, couleurs, famille et corps.</div>
         <span class="plvl-badge">Niveau 1</span>
       </div>
       <div class="plvl lvl-2" data-lvl="2" onclick="selectLevel(2)">
         <div class="plvl-icon">🌿</div>
         <div class="plvl-name">Intermédiaire — Identification</div>
-        <div class="plvl-desc">Tu vois la traduction → choisis le bon mot abenakis parmi 4.</div>
+        <div class="plvl-desc">Animaux, plantes, nature et descriptions : retrouve le mot abenakis.</div>
         <span class="plvl-badge">Niveau 2</span>
       </div>
       <div class="plvl lvl-3" data-lvl="3" onclick="selectLevel(3)">
         <div class="plvl-icon">🦌</div>
         <div class="plvl-name">Avancé — Production</div>
-        <div class="plvl-desc">Tu vois la traduction + un indice grammatical → écris le mot.</div>
+        <div class="plvl-desc">Actions, temps, territoire et grammaire : écris le mot de mémoire.</div>
         <span class="plvl-badge">Niveau 3</span>
       </div>
       <div class="plvl lvl-4" data-lvl="4" onclick="selectLevel(4)">
@@ -1966,6 +1966,19 @@ function fcNext(){ S.fcIdx++; if(S.fcIdx>=S.fcWords.length){S.fcWords.sort(()=>M
 //  PRATIQUE GRAMMAIRE
 // ══════════════════════════════════════════════════════════
 const PS = { level:1, queue:[], idx:0, ok:0, ko:0, streak:0, bestStreak:0, answered:false };
+const PRACTICE_LEVELS={
+  1:{cats:new Set(['salut','nombre','couleur','famille','corps']),maxLetters:10,maxFrench:28},
+  2:{cats:new Set(['animal','plante','nature','description']),maxLetters:14,maxFrench:38},
+  3:{cats:new Set(['action','temps','territoire','toponymie','grammaire']),maxLetters:20,maxFrench:50}
+};
+
+function practiceFrenchLabel(w){
+  return ((w&&w.fr)||'').split(/\s*(?:[·;]|[—–])\s*|\s*\(/)[0].trim();
+}
+function practiceLetterCount(w){
+  return ((w&&w.aln8ba)||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z8]/gi,'').length;
+}
 
 function initPratique(){
   updatePratScoreDisplay();
@@ -1989,12 +2002,14 @@ function buildQueue(){
     !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba)
   );
   let pool;
-  if(PS.level === 1 || PS.level === 2){
-    // Niveaux 1 & 2 : tous les mots confirmés avec traduction claire
-    pool = confirmed.filter(w => w.fr && w.fr.length > 1);
-  } else if(PS.level === 3){
-    // Niveau 3 : mots simples (pas composés d'espaces multiples)
-    pool = confirmed.filter(w => w.fr && !w.aln8ba.includes(' '));
+  if(PS.level >= 1 && PS.level <= 3){
+    const spec=PRACTICE_LEVELS[PS.level];
+    const singleWords=confirmed.filter(w=>!w.aln8ba.includes(' '));
+    pool=singleWords.filter(w=>spec.cats.has(w.cat) && practiceLetterCount(w)<=spec.maxLetters
+      && practiceFrenchLabel(w).length>1 && practiceFrenchLabel(w).length<=spec.maxFrench);
+    // A small fallback keeps the level usable if a category is temporarily under review.
+    if(pool.length<4) pool=singleWords.filter(w=>practiceLetterCount(w)<=spec.maxLetters
+      && practiceFrenchLabel(w).length>1 && practiceFrenchLabel(w).length<=spec.maxFrench);
   } else {
     // Ces sept paires ont été approuvées explicitement pour l'apprentissage actif.
     pool = WORDS.filter(w => w.aln8ba && w.fr && DOCUMENTED_PLURALS[w.aln8ba]
@@ -2009,14 +2024,15 @@ function buildQueue(){
 
 // Meilleurs distracteurs : même catégorie en priorité, sinon autres
 function getBestDistractors(w, n, field){
-  const base = WORDS.filter(x => x.id !== w.id && isExerciseSafe(x) && x.aln8ba && x.fr
-    && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(x.aln8ba)
+  const base=(PS.queue.length>=n+1?PS.queue:WORDS).filter(x=>x.id!==w.id && isExerciseSafe(x)
+    && x.aln8ba && x.fr && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(x.aln8ba)
     && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
   const samecat = shuffle(base.filter(x => x.cat === w.cat));
   const others  = shuffle(base.filter(x => x.cat !== w.cat));
-  const seen=new Set([(w[field]||'').trim().toLowerCase()]), out=[];
+  const fieldValue=x=>field==='fr'?practiceFrenchLabel(x):(x[field]||'').trim();
+  const seen=new Set([fieldValue(w).toLowerCase()]), out=[];
   for(const x of [...samecat,...others]){
-    const key=(x[field]||'').trim().toLowerCase();
+    const key=fieldValue(x).toLowerCase();
     if(!key||seen.has(key)) continue;
     seen.add(key); out.push(x);
     if(out.length===n) break;
@@ -2093,7 +2109,7 @@ function renderLvl1(arena, w, idx, total, pct){
   const others = getBestDistractors(w, 3, 'fr');
   const choices = shuffle([w, ...others]);
   const choiceHTML = choices.map(c=>`
-    <button class="prat-choice" onclick="checkLvl1QCM('${escQ(c.id)}','${escQ(w.id)}')" id="pch-${c.id}">${c.fr}</button>
+    <button class="prat-choice" onclick="checkLvl1QCM('${escQ(c.id)}','${escQ(w.id)}')" id="pch-${c.id}">${practiceFrenchLabel(c)}</button>
   `).join('');
   arena.innerHTML = `
     ${progressBar(pct)}
@@ -2133,7 +2149,7 @@ function renderLvl2(arena, w, idx, total, pct){
   arena.innerHTML = `
     ${progressBar(pct)}
     <div class="prat-question-lbl">Question ${idx+1} / ${total} · Quel est ce mot en abenakis ?</div>
-    <div class="prat-word">${w.fr}${w.en?` <span style="font-size:.8rem;color:var(--text3)">· ${w.en}</span>`:''}</div>
+    <div class="prat-word">${practiceFrenchLabel(w)}${w.en?` <span style="font-size:.8rem;color:var(--text3)">· ${w.en}</span>`:''}</div>
     ${w.grammar?`<div class="prat-hint">${w.grammar}</div>`:''}
     <div class="prat-choices">${choiceHTML}</div>
     <div class="prat-feedback" id="pratFb"></div>
@@ -2163,7 +2179,7 @@ function renderLvl3(arena, w, idx, total, pct){
   arena.innerHTML = `
     ${progressBar(pct)}
     <div class="prat-question-lbl">Question ${idx+1} / ${total} · Écris le mot en abenakis</div>
-    <div class="prat-word">${w.fr}${w.en?` <span style="font-size:.8rem;color:var(--text3)">· ${w.en}</span>`:''}</div>
+    <div class="prat-word">${practiceFrenchLabel(w)}${w.en?` <span style="font-size:.8rem;color:var(--text3)">· ${w.en}</span>`:''}</div>
     ${w.grammar?`<div class="prat-hint">📌 ${w.grammar}</div>`:''}
     ${w.cat?`<div style="font-size:.72rem;color:var(--text3);margin-top:4px">Catégorie : ${catLabel(w.cat)}</div>`:''}
     <div class="prat-input-wrap">
@@ -3013,8 +3029,12 @@ function stopRec(){
 let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
 let voiceRecognition=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceSpeakTimer=null;
 
+function joinVoicePersonalPrefix(value){
+  // N'/Nd', K'/Kd' and W'/Wd' stay attached to the stem; the apostrophe is not a pause.
+  return (value||'').replace(/\b([nkw]d?)[’']\s*-?\s*(?=[a-zà-ÿ8])/gi,'$1');
+}
 function alnToVoiceCue(value){
-  return (value||'').toLowerCase()
+  return joinVoicePersonalPrefix((value||'').toLowerCase())
     .replace(/\b8h8\b/g,'zznasalzz')
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
     .replace(/o(?!u)/g,'ou').replace(/i\b/g,'é')
@@ -3027,8 +3047,8 @@ function alnToVoiceCue(value){
     .replace(/\s+/g,' ').trim();
 }
 function phoneticToVoiceCue(value){
-  return (value||'').toLowerCase()
-    .replace(/[☼·]/g,' ').replace(/\b8h8\b/g,'hon-hon')
+  return joinVoicePersonalPrefix((value||'').toLowerCase().replace(/[☼·]/g,' '))
+    .replace(/\b8h8\b/g,'hon-hon')
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
     // A visual syllable break does not change the sound that follows W.
     .replace(/w(?=-+[aeiouyàâäéèêëîïôöùûü])/g,'ou')

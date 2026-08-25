@@ -65,6 +65,8 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 
 ## Jeux et exercices
 
+- Les niveaux de Pratique utilisent désormais des banques distinctes : vocabulaire court du quotidien au Débutant, monde proche à l'Intermédiaire, puis actions, temps, territoire et grammaire en production avancée; les mots très longs ne peuvent plus tomber au niveau 1.
+- Les choix de reconnaissance affichent le sens principal documenté sans y mêler une longue note explicative, et les distracteurs restent dans la banque de difficulté courante.
 - Les réponses françaises écrites ne valident plus un fragment arbitraire de trois lettres : elles acceptent le sens documenté complet ou une variante explicitement séparée, avec tolérance aux accents et aux articles.
 - Après chaque réponse, la page amène automatiquement le bouton Suivant dans la zone visible s'il se trouve sous l'écran; le comportement couvre les quiz des modules, les jeux et les niveaux de pratique, tout en respectant la préférence de mouvement réduit.
 - À la fin de Retenir, chaque module disposant d'une banque de mots propose directement l'étape Utiliser pour écrire les mots de mémoire; le passage au module suivant n'est suggéré qu'après ce parcours.
@@ -78,6 +80,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 
 ## Pratique vocale
 
+- Les préfixes personnels `N'/Nd'`, `K'/Kd'` et `W'/Wd'` restent liés au mot dans le guide vocal : l'apostrophe ne provoque plus une pause ni l'épellation de lettres séparées, notamment dans `Nd'aliwizi`.
 - Correction générale du W devant consonne dans le guide synthétique : un O simple et continu est maintenant envoyé à la voix française afin qu'il reste perceptible dans Akwbi et les groupes comparables; les cartes rappellent la règle « W = O doux ».
 - Priorité donnée aux enregistrements natifs lorsqu'ils existent.
 - Ajout d'un guide synthétique explicitement présenté comme approximatif.
