@@ -2923,7 +2923,7 @@ function voiceAdvice(item,score){
   if(item.focus) return `Isole d'abord le son : ${item.focus}. Dis-le seul, puis reprends le mot complet.`;
   return `Réécoute le guide « ${item.cue} » et prononce une syllabe à la fois.`;
 }
-function voiceSpeak(label,cue,announce=true){
+function voiceSpeak(label,cue,announce=true,slow=false){
   if(!('speechSynthesis' in window)){
     if(announce) voiceSetStatus('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
     return;
@@ -2931,25 +2931,27 @@ function voiceSpeak(label,cue,announce=true){
   const spokenCue=voiceCueToSpeech(cue||alnToVoiceCue(label));
   if(!spokenCue) return;
   if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(spokenCue);
+  const wasSpeaking=speechSynthesis.speaking||speechSynthesis.pending;
+  if(wasSpeaking) speechSynthesis.cancel();
+  // Leading punctuation gives the audio output time to open before the first phoneme.
+  const u=new SpeechSynthesisUtterance(`… ${spokenCue}`);
   const voices=speechSynthesis.getVoices();
   u.voice=voices.find(v=>/^fr-CA$/i.test(v.lang))||voices.find(v=>/^fr/i.test(v.lang))||null;
-  u.lang=u.voice?u.voice.lang:'fr-CA'; u.rate=.78; u.pitch=1;
+  u.lang=u.voice?u.voice.lang:'fr-CA'; u.rate=slow?.6:.74; u.pitch=1; u.volume=1;
   voiceSpeakTimer=setTimeout(()=>{
     voiceSpeakTimer=null; speechSynthesis.resume(); speechSynthesis.speak(u);
-  },80);
-  if(announce) voiceSetStatus(`Guide synthétique approximatif : « ${spokenCue} ». Écoute, puis utilise le micro.`);
+  },wasSpeaking?320:180);
+  if(announce) voiceSetStatus(`Guide synthétique approximatif${slow?' lent':''} : « ${spokenCue} ». Écoute, puis utilise le micro.`);
 }
 function voiceSetStatus(message){
   const el=document.getElementById('voiceStatus'); if(el) el.textContent=message;
 }
-function voiceListenCurrent(){
+function voiceListenCurrent(slow=false){
   const item=VOICE_ITEMS[VOICE_INDEX]; if(!item) return;
   if(item.audio){
-    new Audio(item.audio).play();
+    const audio=new Audio(item.audio); audio.playbackRate=slow?.75:1; audio.play();
     voiceSetStatus('Enregistrement natif du dictionnaire. Écoute, puis répète.');
-  }else voiceSpeak(item.text,item.cue,true);
+  }else voiceSpeak(item.text,item.cue,true,slow);
 }
 function voiceResetMic(){
   const btn=document.getElementById('voiceMic');
@@ -3098,7 +3100,8 @@ function aprVoiceRender(){
         <div class="voice-meaning">${escH(item.meaning||'')}</div>
       </div>
       <div class="voice-actions">
-        <button class="voice-btn" onclick="voiceListenCurrent()">🔊 Écouter</button>
+        <button class="voice-btn" onclick="voiceListenCurrent(false)">🔊 Écouter</button>
+        <button class="voice-btn" onclick="voiceListenCurrent(true)">🐢 Lentement</button>
         <button class="voice-btn mic" id="voiceMic" onclick="voiceStartListening()">🎙️ Prononcer maintenant</button>
       </div>
       <div class="voice-status" id="voiceStatus" aria-live="polite">Écoute le modèle, puis prononce le mot naturellement.</div>
