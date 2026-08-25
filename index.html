@@ -4839,15 +4839,14 @@ const DOCUMENTED_SENTENCES=[
   {fr:['Je ne me souviens pas'],aln8ba:"Nda n'mikwaldamowen"},
   {fr:["J'habite Wôlinak","J'habite Wolinak"],aln8ba:"N'wigi W8linak"},
   {fr:['Où habites-tu?'],aln8ba:'T8ni tali wigian?'},
-  {fr:['Nous sommes encore ici'],aln8ba:"Askwa yudali nd'aibena"},
+  {fr:['Je suis dans la maison'],aln8ba:"Nd'ai wigwomek",
+    source:"Manuel de l'étudiant 1 (2018)",
+    note:"Phrase locative documentée. Nd'ai exprime ici la présence dans un lieu; ce n'est pas un auxiliaire ajouté à tous les emplois français de « être »."},
   {fr:['Nous sommes des Abénakis, toi inclus'],aln8ba:'Kiona W8banakiak'},
   {fr:['Je vois un oiseau'],aln8ba:"N'namih8 sips"},
   {fr:['Je vois un livre'],aln8ba:"N'namito awikhigan"},
   {fr:['Je mange une pomme'],aln8ba:"N'mow8 aples"},
-  {fr:['Je mange une orange'],aln8ba:"N'miji wasawas"},
-  {fr:['Le village est tout près'],aln8ba:'Odana pasodawiwi ao',consultative:true,
-    source:'Jos. Laurent, 1884',
-    note:'Phrase historique documentée chez Laurent. Elle montre ce contexte précis de « ao »; elle ne fait pas de « ao » une traduction automatique de tous les emplois français de « est ».'}
+  {fr:['Je mange une orange'],aln8ba:"N'miji wasawas"}
 ];
 
 // Paires VTA/VTI et objets dont la classe est documentée dans le Manuel de
@@ -5603,8 +5602,8 @@ function traduire(){
   const classChunks = chunks.filter(c=>c.type==='classrule');
   const connectorChunks = chunks.filter(c=>c.type==='connector');
   const consultativeChunks = chunks.filter(c=>c.type==='consultative');
-  const essais = FR ? ["Je m'appelle Mali","Comment vas-tu ?","J'habite Wôlinak","Nous sommes encore ici","Bonjour tout le monde"]
-                    : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Askwa yudali nd'aibena"];
+  const essais = FR ? ["Je m'appelle Mali","Comment vas-tu ?","J'habite Wôlinak","Je suis dans la maison","Bonjour tout le monde"]
+                    : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Nd'ai wigwomek"];
   const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
@@ -6333,12 +6332,14 @@ const NIVEAUX=[
   <table class="aprtab"><tr><th>Forme</th><th>Sens documenté</th><th>Statut dans l'outil</th></tr>
    <tr><td class="k">Kizilla</td><td>peut-être</td><td>Manuel de l'étudiant 1</td></tr>
    <tr><td class="k">Yudali</td><td>ici</td><td>Masta 1932 — consultatif</td></tr>
-   <tr><td class="k">Odana pasodawiwi ao</td><td>le village est tout près</td><td>Laurent 1884 — phrase historique complète</td></tr></table>
-  <div class="aprnote w"><b>Ce que montre — et ne montre pas — la phrase de Laurent</b>
-   Elle documente <span class="al8">ao</span> dans <i>cette phrase précise</i>. Elle ne prouve pas que
-   <span class="al8">ao</span> remplace tous les « est » français. De même, connaître
-   <span class="al8">Odana</span> et <span class="al8">Yudali</span> ne suffit pas à inventer automatiquement
-   « le village est ici ». Tant que le lien grammatical manque, le traducteur doit montrer le trou.</div>
+   <tr><td class="k">Nd'ai wigwomek</td><td>je suis dans la maison</td><td>Manuel de l'étudiant 1 — phrase actuelle documentée</td></tr>
+   <tr><td class="k">N'-d-ai wigwômek</td><td>I am in the house</td><td>Laurent 1884 — graphie historique consultative</td></tr></table>
+  <div class="aprnote w"><b>Correction de source importante</b>
+   Laurent atteste séparément <span class="al8">Odana</span> « village », <span class="al8">pasodawiwi</span>
+   « près » et les formes de <span class="al8">Aimuk</span>, mais son ouvrage ne donne pas la phrase assemblée
+   « Odana pasodawiwi ao ». Elle ne doit donc pas être présentée comme une citation ni servir de modèle.
+   Connaître <span class="al8">Odana</span> et <span class="al8">Yudali</span> ne suffit pas non plus à fabriquer
+   « le village est ici » : le sujet est inanimé et la construction actuelle doit encore être confirmée.</div>
   <span class="aprsrc">Manuel de l'étudiant 1 · Henry Lorne Masta, 1932 · Jos. Laurent, 1884</span>`,
   coach:`Lis d'abord la phrase française comme une idée entière. Cherche ensuite une phrase aln8ba
    documentée qui porte cette idée. S'il n'en existe pas, conserve les mots reconnus, montre ce qui manque
@@ -6387,6 +6388,63 @@ const NIVEAUX=[
   coach:`Ne mémorise pas quatre sigles isolés. Fais l'arbre de décision : objet ou pas d'objet;
    puis classe du sujet ou classe de l'objet. L'exercice commence par identifier la classe et te fait
    ensuite choisir la forme verbale, avec une explication complète après chaque réponse.`},
+ {t:"Aimuk : être présent ou demeurer",d:"Distinguer les formes de présence des autres sens français de « être ».",ex:'aimuk',lec:`
+  <div class="aprnote w"><b>Apprentissage historique, sujet à révision</b>
+   Cette leçon est tirée de documents historiques et de matériel pédagogique cité. Elle ne constitue pas
+   une validation linguistique professionnelle actuelle. Elle peut être corrigée ou mise à jour à tout
+   moment dès qu'une personne compétente ou une autorité linguistique d'Odanak apporte une précision.
+   Les graphies historiques restent identifiées comme telles.</div>
+  <div class="aprnote"><b>Une famille verbale, pas un auxiliaire universel</b>
+   Joseph Laurent présente <span class="al8">Aimuk</span> « to be » comme un <b>verbe principal</b> qui exprime
+   la présence ou la résidence. L'analyse morphologique moderne le classe comme verbe intransitif animé.
+   Il ne faut donc pas coller une forme de <span class="al8">Aimuk</span> devant chaque adjectif, nom ou lieu
+   qui suit « être » en français.</div>
+  <h3>Trois idées françaises, trois analyses</h3>
+  <table class="aprtab"><tr><th>Idée</th><th>Exemple documenté</th><th>Ce que fait le verbe</th></tr>
+   <tr><td>présence dans un lieu</td><td class="k">Nd'ai wigwomek</td><td>« je suis dans la maison » — Manuel 2018</td></tr>
+   <tr><td>état du sujet</td><td class="k">Nd'akwamalsi</td><td>« je suis malade » — le verbe d'état porte déjà l'idée entière</td></tr>
+   <tr><td>présence, 3e personne animée</td><td class="k">Ao</td><td>forme historique de Laurent; elle ne convient pas automatiquement à un sujet inanimé</td></tr></table>
+  <div class="aprnote w"><b>Animé et inanimé changent la construction</b>
+   <span class="al8">Aimuk</span> est documenté comme verbe intransitif <b>animé</b>. On ne peut donc pas
+   transférer automatiquement <span class="al8">Ao</span> à <span class="al8">Odana</span> « village », qui est
+   inanimé. Une source lexicographique décrit une autre forme pour la présence inanimée, mais elle n'est
+   pas activée ici tant qu'une source actuelle d'Odanak n'en confirme pas l'emploi et la graphie.</div>
+  <h3>Indicatif historique de Laurent (1884)</h3>
+  <p>Les formes ci-dessous conservent exactement la graphie historique. Elles servent à comprendre le
+  système; le traducteur ne les modernise pas et ne s'en sert pas pour construire de nouvelles phrases.</p>
+  <table class="aprtab"><tr><th>Personne</th><th>Présent</th><th>Imparfait</th><th>Futur</th></tr>
+   <tr><td>je</td><td class="k">N'-d-ai</td><td class="k">N'-d-aib</td><td class="k">N'-d-aiji</td></tr>
+   <tr><td>tu</td><td class="k">K'-d-ai</td><td class="k">K'-d-aib</td><td class="k">K'-d-aiji</td></tr>
+   <tr><td>il/elle animé</td><td class="k">Ao</td><td class="k">'Aob</td><td class="k">'Aoji</td></tr>
+   <tr><td>nous</td><td class="k">N'-d-aibena</td><td class="k">N'-d-aibenob</td><td class="k">N'-d-aibenaji</td></tr>
+   <tr><td>vous</td><td class="k">K'-d-aiba</td><td class="k">K'-d-aibob</td><td class="k">K'-d-aibaji</td></tr>
+   <tr><td>ils/elles animés</td><td class="k">Aaok</td><td class="k">'Aobanik</td><td class="k">'Aoakji</td></tr></table>
+  <h3>Négation, conditionnel et impératif historiques</h3>
+  <table class="aprtab"><tr><th>Fonction</th><th>Formes attestées</th><th>Lecture</th></tr>
+   <tr><td>négation</td><td class="k">ôda n'-d-aiw · ôda aiwi</td><td>je ne suis pas · il/elle n'est pas</td></tr>
+   <tr><td>futur second</td><td class="k">N'-d-aiji kizi wigiak</td><td>« I shall be at home already » chez Laurent</td></tr>
+   <tr><td>conditionnel présent</td><td class="k">N'daiba · K'-d-aiba · 'Aoba</td><td>je serais · tu serais · il/elle serait</td></tr>
+   <tr><td>conditionnel passé</td><td class="k">N'-d-aibba odanak</td><td>« I should have been in town » chez Laurent</td></tr>
+   <tr><td>impératif</td><td class="k">Ai · Aij · Aïda · Aïgw · Aïdij</td><td>sois/reste · qu'il reste · restons · restez · qu'ils restent</td></tr></table>
+  <h3>Ordre subordonné historique</h3>
+  <table class="aprtab"><tr><th>Personne</th><th>Présent</th><th>Imparfait donné par Laurent</th></tr>
+   <tr><td>je</td><td class="k">N'-d-ain</td><td class="k">N'-d-ainaza</td></tr>
+   <tr><td>tu</td><td class="k">K'-d-ain</td><td>forme laissée vide dans le tableau source</td></tr>
+   <tr><td>il/elle animé</td><td class="k">W'-d-ain</td><td class="k">W'-d-ainaza</td></tr>
+   <tr><td>nous</td><td class="k">N'-d-ainana</td><td class="k">N'-d-ainanossa</td></tr>
+   <tr><td>vous</td><td class="k">K'-d-ainô</td><td class="k">K'-d-ainôssa</td></tr>
+   <tr><td>ils/elles animés</td><td class="k">W'-d-ainô</td><td class="k">W'-d-ainôssa</td></tr></table>
+  <table class="aprtab"><tr><th>Temps composé</th><th>Forme historique donnée</th><th>Valeur chez Laurent</th></tr>
+   <tr><td>passé subordonné</td><td class="k">Kizi n'-d-ain</td><td>que j'aie été ou demeuré</td></tr>
+   <tr><td>plus-que-parfait subordonné</td><td class="k">Kizi n'-d-ainaza</td><td>que j'eusse été ou demeuré</td></tr></table>
+  <div class="aprnote w"><b>Limite assumée</b>
+   Le tableau de 1884 laisse lui-même une forme vide. Le dictionnaire conserve ce manque au lieu de le
+   compléter par analogie. Pour une phrase actuelle, il faut confirmer la personne, le nombre, l'ordre,
+   le temps, la polarité et surtout la classe grammaticale du sujet.</div>
+  <span class="aprsrc">Manuel de l'étudiant 1 (2018) · Joseph Laurent, 1884, pages 162 à 164 · Pilaskw d'Odanak, mai 2019 · analyse de Jesse R. Beach, 2004</span>`,
+  coach:`Commence par demander ce que « être » signifie dans la phrase : présence dans un lieu, état,
+   identité ou description. Ensuite seulement, vérifie la classe du sujet et la forme documentée. Le
+   tableau historique explique le système; il n'autorise jamais à inventer une forme actuelle.`},
  {t:"Les trois ordres",d:"La conjugaison change selon le type de phrase.",ex:'ordre',lec:`
   <table class="aprtab"><tr><th>Ordre</th><th>Quand</th><th>Exemple</th></tr>
   <tr><td class="k">Indépendant</td><td>phrase ordinaire</td><td class="k">N'michi</td></tr>
@@ -7135,7 +7193,7 @@ function aprEx(type,cat,titre,mode){
   if(exPoolOverride&&exPoolOverride.length) exTot=Math.min(8,exPoolOverride.length);
   const fixedCapacity={
     plur:()=>JPLUR.length, poss:()=>EXPOSS.length, conjp:()=>EXCONJ.length*2,
-    negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length,
+    negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length, aimuk:()=>EXAIMUK.length,
     vta:()=>EXVTA.length*2, ordre:()=>EXORDRE.length,
     neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
     trad:()=>EXTRAD.length
@@ -7211,7 +7269,7 @@ function exFin(){
 function exSuivant(){
   if(exQ>=exTot) return exFin();
   const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
-    negs:exNegs, classfx:exClassFx, structure:exStructure, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
+    negs:exNegs, classfx:exClassFx, structure:exStructure, aimuk:exAimuk, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
     trad:exTrad})[exType];
   handler();
 }
@@ -7561,9 +7619,12 @@ const EXSTRUCT=[
   e:'Le français et l’aln8ba ne découpent pas toujours l’idée de la même façon. Il faut une construction complète documentée.'},
  {q:'Quel exemple documenté exprime « Je suis malade »?',o:["Nd'akwamalsi","Kizilla akwamalsi","Nia ao akwamalsi","Yudali akwamalsi"],r:0,
   e:"Nd'akwamalsi porte toute l’idée « je suis malade »; aucun mot séparé n’est ajouté pour « suis »."},
- {q:'Quelle phrase historique complète est documentée chez Laurent?',
-  o:['Odana pasodawiwi ao','Odana Kizilla Yudali','Odana ao Yudali','Pasodawiwi Kizilla'],r:0,
-  e:'Odana pasodawiwi ao signifie « Le village est tout près ». Ao n’est enseigné ici que dans ce modèle précis.'},
+ {q:'Quelle phrase locative complète est documentée dans le Manuel de l’étudiant 1?',
+  o:["Nd'ai wigwomek","Odana yudali ao","Kizilla wigwomek","Yudali akwamalsi"],r:0,
+  e:"Nd'ai wigwomek signifie « Je suis dans la maison ». Nd'ai exprime ici la présence dans un lieu."},
+ {q:'Pourquoi « Odana pasodawiwi ao » ne doit-il pas être présenté comme une citation de Laurent?',
+  o:['Les mots sont attestés séparément, mais pas cette phrase assemblée','Laurent interdit le mot Odana','Ao est un article','Pasodawiwi signifie maison'],r:0,
+  e:'La vérification du texte original retrouve les éléments séparés, pas cette phrase. Une reconstruction ne doit jamais devenir une citation.'},
  {q:'Que doit montrer le traducteur si des mots sont connus mais que leur lien grammatical ne l’est pas?',
   o:['Une proposition avec un trou clairement marqué','Une phrase inventée sans avertissement','Seulement le premier mot','La forme la plus fréquente'],r:0,
   e:'Le trou protège contre une fausse phrase : les éléments connus restent visibles, mais le lien manquant n’est pas fabriqué.'}
@@ -7580,6 +7641,46 @@ function exStructure(){
 function exRetStructure(){ const q=window._ex;
   return `<b>${q.displayOptions[q.displayAnswer]}</b><em>${q.e}</em>
     <span class="aprsrc">Sources indiquées dans la leçon</span>`; }
+
+/* — cégep : paradigme documenté de Aimuk — */
+const EXAIMUK=[
+ {q:'Quel sens central Laurent donne-t-il à Aimuk?',o:['Être présent ou demeurer quelque part','Être malade','Posséder un objet','Transformer un nom en pluriel'],r:0,
+  e:'Laurent le décrit comme un verbe principal de présence ou de résidence, pas comme un auxiliaire universel.'},
+ {q:"Que signifie la phrase actuelle documentée Nd'ai wigwomek?",o:['Je suis dans la maison','Je suis malade','Nous sommes dans la maison','La maison est ici'],r:0,
+  e:"Le Manuel de l'étudiant 1 documente Nd'ai wigwomek pour « Je suis dans la maison »."},
+ {q:'Quelle est la 3e personne animée du présent chez Laurent?',o:['Ao','Aaok','Aoji','Aob'],r:0,
+  e:'Ao est la 3e personne animée singulière du présent dans le tableau historique.'},
+ {q:'Quelle est la 3e personne animée plurielle du présent chez Laurent?',o:['Aaok','Ao','Aobanik','Aidij'],r:0,
+  e:'Aaok est la forme plurielle historique du présent. Sa graphie est conservée telle quelle.'},
+ {q:"Quelle forme historique signifie « je ne suis pas »?",o:["ôda n'-d-aiw","Nda n'-d-aiji","ôda aiwi","N'-d-ainaza"],r:0,
+  e:"Laurent donne ôda n'-d-aiw pour la négation de la 1re personne; ôda aiwi est la 3e personne."},
+ {q:'Quelle forme historique est le futur de la 1re personne?',o:["N'-d-aiji","N'-d-aib","N'-d-ai","N'-d-aiba"],r:0,
+  e:"N'-d-aiji est le futur historique; les finales distinguent ici le temps grammatical."},
+ {q:'Quelle forme impérative historique signifie « sois, reste »?',o:['Ai','Aij','Aïda','Aïgw'],r:0,
+  e:'Ai s’adresse à une personne. Laurent donne aussi Aij, Aïda, Aïgw et Aïdij pour les autres valeurs impératives.'},
+ {q:'Quelle forme appartient à l’ordre subordonné historique, 1re personne?',o:["N'-d-ain","N'-d-ai","N'-d-aib","N'-d-aiji"],r:0,
+  e:"N'-d-ain appartient à l’ordre subordonné; N'-d-ai est la forme indépendante présente."},
+ {q:"Pourquoi Nd'akwamalsi n'a-t-il pas besoin d'une forme séparée de Aimuk?",o:["Le verbe d'état exprime déjà « je suis malade »","Akwamalsi est un nom de lieu","Aimuk est toujours interdit","Le français n'a pas de verbe"],r:0,
+  e:"Akwamalsimek est documenté comme verbe d'état. La forme personnelle porte déjà l'état du sujet."},
+ {q:'Peut-on employer automatiquement Ao avec Odana « village »?',o:['Non, Aimuk est animé et Odana est inanimé','Oui, Ao traduit toujours « est »','Oui, tous les lieux sont animés','Non, parce que Odana est un verbe'],r:0,
+  e:'Non. Le contraste animé/inanimé change la construction; la forme actuelle inanimée doit être confirmée par une source compétente.'},
+ {q:'Que fait-on lorsqu’une case manque dans le tableau de Laurent?',o:['On conserve le manque','On complète par analogie','On prend la forme plurielle','On traduit mot à mot du français'],r:0,
+  e:'La source laisse elle-même une forme vide. Le dictionnaire ne l’invente pas.'},
+ {q:'Quelle différence faut-il préserver entre Nd\'ai et N\'-d-ai?',o:['La première est la graphie actuelle du Manuel; la seconde est historique','Elles désignent deux personnes différentes','La seconde est une traduction française','Aucune, on peut toujours les remplacer'],r:0,
+  e:"Nd'ai est montré selon le Manuel 2018; N'-d-ai conserve la graphie de Laurent 1884. Le site ne les corrige pas silencieusement."}
+];
+function exAimuk(){
+  const q=exPickUnique(EXAIMUK,x=>x.q); window._ex=q;
+  const order=jShuf(q.o.map((_,i)=>i)), opts=order.map(i=>q.o[i]), good=order.indexOf(q.r);
+  window._ex={...q,displayOptions:opts,displayAnswer:good};
+  exCadre(`<div class="jprompt"><div class="q">Aimuk : choisir la forme et le contexte</div>
+    <div class="w" style="font-size:clamp(1.05rem,3.2vw,1.55rem)">${q.q}</div></div>
+    <div class="jopts">${opts.map((o,i)=>`<button class="jopt" onclick="exRepond(${good},${i},exRetAimuk())">${o}</button>`).join('')}</div>
+    <div class="jhint">Vérifie le sens de « être », la classe du sujet, la personne, le nombre, le temps et l'ordre.</div>`);
+}
+function exRetAimuk(){ const q=window._ex;
+  return `<b>${q.displayOptions[q.displayAnswer]}</b><em>${q.e}</em>
+    <span class="aprsrc">Manuel 2018 · Laurent 1884, pages 162 à 164 · Pilaskw d'Odanak, mai 2019</span>`; }
 
 /* — cégep : VTA ou VTI — */
 const EXVTA=DOCUMENTED_OBJECT_CLASS_PAIRS;
@@ -7725,7 +7826,7 @@ const EXTRAD=[
  {p:"Kiona W8banakiak",r:0,o:["Nous sommes des Abénakis, toi inclus","Nous sommes des Abénakis, pas toi","Vous êtes des Abénakis","Ils sont des Abénakis"]},
  {p:"N'wigi W8linak",r:1,o:["Je viens de Wôlinak","J'habite Wôlinak","Je vais à Wôlinak","Je suis né à Wôlinak"]},
  {p:"Nikw8bi n'klozi",r:2,o:["Je parlais","Je parlerai","Maintenant je parle","Je ne parle pas"]},
- {p:"Askwa yudali nd'aibena",r:1,o:["Je suis encore ici","Nous sommes encore ici","Tu es encore ici","Ils sont encore ici"]}];
+ {p:"Nd'ai wigwomek",r:1,o:["Je suis malade","Je suis dans la maison","Nous sommes dans la maison","La maison est ici"]}];
 function exTrad(){
   let choix=EXTRAD.filter(q=>!exAsked.includes(q.p));
   if(!choix.length){
