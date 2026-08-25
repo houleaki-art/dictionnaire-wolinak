@@ -35,6 +35,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Exclusion des formes historiques des exercices actifs.
 - Ajout de la pratique vocale, du suivi de progression et d'un repli sans score.
 - Amélioration de l'accessibilité des scores et des retours de réponse.
+- Séparation des banques de chaque leçon afin que quiz, cartes et pratique vocale portent sur son contenu propre; les modules d'approfondissement excluent les mots déjà enseignés plus tôt dans la même catégorie.
 
 ## Archives et prudence linguistique
 
