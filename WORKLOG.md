@@ -83,6 +83,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Ajout d'une écoute lente.
 - Correction de 8h8 afin de le guider comme un « hon-hon » murmuré.
 - Stabilisation du groupe 8K dans le guide synthétique : le repère visible « an-k » reste inchangé, tandis que l'orthographe technique envoyée à la voix française préserve la voyelle nasale suivie du son K.
+- Protection des 61 finales en -ak contre la coupure du K par la synthèse française; les cartes rappellent aussi que 8 est une voyelle nasale entre « an » et « on », et non un simple « an » français.
 
 ## Avertissement public
 
