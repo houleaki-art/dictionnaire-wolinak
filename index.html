@@ -4840,7 +4840,47 @@ const DOCUMENTED_SENTENCES=[
   {fr:["J'habite Wôlinak","J'habite Wolinak"],aln8ba:"N'wigi W8linak"},
   {fr:['Où habites-tu?'],aln8ba:'T8ni tali wigian?'},
   {fr:['Nous sommes encore ici'],aln8ba:"Askwa yudali nd'aibena"},
-  {fr:['Nous sommes des Abénakis, toi inclus'],aln8ba:'Kiona W8banakiak'}
+  {fr:['Nous sommes des Abénakis, toi inclus'],aln8ba:'Kiona W8banakiak'},
+  {fr:['Je vois un oiseau'],aln8ba:"N'namih8 sips"},
+  {fr:['Je vois un livre'],aln8ba:"N'namito awikhigan"},
+  {fr:['Je mange une pomme'],aln8ba:"N'mow8 aples"},
+  {fr:['Je mange une orange'],aln8ba:"N'miji wasawas"},
+  {fr:['Le village est tout près'],aln8ba:'Odana pasodawiwi ao',consultative:true,
+    source:'Jos. Laurent, 1884',
+    note:'Phrase historique documentée chez Laurent. Elle montre ce contexte précis de « ao »; elle ne fait pas de « ao » une traduction automatique de tous les emplois français de « est ».'}
+];
+
+// Paires VTA/VTI et objets dont la classe est documentée dans le Manuel de
+// l'étudiant 1. Les combinaisons non marquées exactes servent à expliquer
+// l'accord; elles ne sont jamais présentées comme des phrases attestées.
+const DOCUMENTED_OBJECT_CLASS_PAIRS=[
+  {s:'je vois',verb:'vois',a:"N'namih8",i:"N'namito",
+    oa:{aln8ba:'Sips',fr:'un oiseau',exact:true},oi:{aln8ba:'Awikhigan',fr:'un livre',exact:true}},
+  {s:'je possède',verb:'possède',a:"N'waj8n8",i:"N'waj8nem",
+    oa:{aln8ba:'Almos',fr:'un chien'},oi:{aln8ba:'Awikhigan',fr:'un livre'}},
+  {s:'je prends',verb:'prends',a:"N'wdn8",i:"N'wdnem",
+    oa:{aln8ba:'Sips',fr:'un oiseau'},oi:{aln8ba:'Nbizon',fr:'un médicament'}},
+  {s:'je donne',verb:'donne',a:"N'mil8",i:"N'mildo",
+    oa:{aln8ba:'Aw8sis',fr:'un enfant'},oi:{aln8ba:'Awikhigan',fr:'un livre'}},
+  {s:'je place',verb:'place',a:"N'pon8",i:"N'ponem",
+    oa:{aln8ba:'Almos',fr:'un chien'},oi:{aln8ba:'Awikhigan',fr:'un livre'}},
+  {s:'je touche',verb:'touche',a:"N'n8zn8",i:"N'n8znem",
+    oa:{aln8ba:'Almos',fr:'un chien'},oi:{aln8ba:'Awikhigan',fr:'un livre'}},
+  {s:'je mange',verb:'mange',a:"N'mow8",i:"N'miji",
+    oa:{aln8ba:'Aples',fr:'une pomme',exact:true},oi:{aln8ba:'Wasawas',fr:'une orange',exact:true}}
+];
+
+// Connecteurs attestés mais non promus comme formes actuelles vertes. Ils
+// peuvent compléter une proposition si leur statut consultatif reste visible.
+const DOCUMENTED_CONNECTORS=[
+  {fr:'et',aln8ba:'Ta',source:'Henry Lorne Masta, 1932 — liste des conjonctions; forme de 1932 à valider dans l’usage actuel.'}
+];
+
+const DOCUMENTED_CONSULTATIVE_FRAGMENTS=[
+  {fr:'et',aln8ba:'Ta',source:'Henry Lorne Masta, 1932 — conjonction documentée, à valider dans l’usage actuel.'},
+  {fr:'cela',aln8ba:'Ni',source:'Fichier de référence du projet — « Ni = cela; Ta = et. Ne pas confondre ».'},
+  {fr:'depuis',frOut:'de / depuis',aln8ba:'Oji',source:'Henry Lorne Masta, 1932 — forme documentée, à valider dans l’usage actuel.'},
+  {fr:'ici',aln8ba:'Yudali',source:'Henry Lorne Masta, 1932 — forme documentée, à valider dans l’usage actuel.'}
 ];
 
 // Paradigmes fermés déjà enseignés dans les exercices. Ces sorties sont des
@@ -4926,6 +4966,23 @@ function traduire(){
   // vers une forme actuelle par la tolérance aux fautes du traducteur.
   if(!FR){
     const inputKey=norm(input).replace(/[^a-z0-9'8]+/g,' ').trim();
+    const approvedFragment=DOCUMENTED_CONSULTATIVE_FRAGMENTS.find(item=>
+      norm(item.aln8ba).replace(/[^a-z0-9'8]+/g,' ').trim()===inputKey);
+    if(approvedFragment){
+      const meaning=approvedFragment.frOut||approvedFragment.fr;
+      document.getElementById('tradOutput').innerHTML =
+        `<div style="background:var(--surface2);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-bottom:12px">
+          <div style="font-size:1.15rem;font-weight:700;color:var(--accent)">${escH(meaning)}</div>
+          <div style="font-size:.75rem;color:var(--gold);font-weight:700;margin-top:7px">📜 Forme documentée consultative</div></div>
+         <div class="aprnote w"><b>${escH(approvedFragment.aln8ba)} — ${escH(meaning)}</b>
+          ${escH(approvedFragment.source)}</div>`;
+      document.getElementById('tradMeta').textContent =
+        'Le sens documenté est affiché, mais la copie reste désactivée jusqu’à validation dans l’usage actuel.';
+      document.getElementById('tradBtnTxt').textContent = 'Traduire →';
+      document.getElementById('tradCopyBtn').style.display = 'none';
+      TRAD_LAST_OUTPUT='';
+      return;
+    }
     const safeExact=pool.some(w=>norm(w.aln8ba).replace(/[^a-z0-9'8]+/g,' ').trim()===inputKey);
     const historiquesConnues=new Set([
       'A8añsis','Awossis','Awôssis','Aw8ssis','8da','8nda',"O'hoo",'Chegual',
@@ -4996,6 +5053,10 @@ function traduire(){
     mets:'mettre',met:'mettre',dors:'dormir',sors:'sortir',pars:'partir',
     appelle:'appeler',appelles:'appeler',appellent:'appeler',comprends:'comprendre',comprend:'comprendre',
     entends:'entendre',entend:'entendre',rejoins:'rejoindre',rejoint:'rejoindre'};
+  const NON_LEXICAL_AUXILIARIES=new Set([
+    'suis','es','est','sommes','etes','sont','etais','etait',
+    'ai','as','a','avons','avez','ont','avais','avait'
+  ]);
   const lemmes = t => {
     const c=[];
     if(IRREG[t]) c.push(IRREG[t]);
@@ -5130,6 +5191,7 @@ function traduire(){
       .filter(token=>/^[A-ZÀ-Þ]/.test(token)).map(token=>norm(token)));
     const byPhrase=new Map();
     DOCUMENTED_SENTENCES.forEach(phrase=>phrase.fr.forEach(form=>{
+      if(phrase.consultative) return;
       const expected=phraseTokens(form,true);
       if(expected.length!==entered.length) return;
       let changed=0,score=0;
@@ -5163,9 +5225,50 @@ function traduire(){
       remainder:key===match.key?'':key.slice(match.key.length).trim()
     };
   };
+  const findEmbeddedPassages=value=>{
+    const key=phraseKey(value,FR);
+    if(!key) return null;
+    const padded=' '+key+' ', candidates=[];
+    const addOccurrences=(needle,data)=>{
+      if(!needle) return;
+      const target=' '+needle+' ';
+      let from=0, pos;
+      while((pos=padded.indexOf(target,from))!==-1){
+        candidates.push({...data,start:pos,end:pos+needle.length});
+        from=pos+1;
+      }
+    };
+    DOCUMENTED_SENTENCES.forEach(phrase=>(FR?phrase.fr:[phrase.aln8ba]).forEach(form=>{
+      addOccurrences(phraseKey(form,FR),{kind:'phrase',
+        match:{phrase,source:form,corrected:null}});
+    }));
+    DOCUMENTED_NEGATION_PARADIGMS.forEach(rule=>{
+      const form=FR?rule.negativeFr:rule.negative;
+      addOccurrences(phraseKey(form,FR),{kind:'rule',
+        match:{rule,source:form,remainder:''}});
+    });
+    const selected=[];
+    candidates.sort((a,b)=>(b.end-b.start)-(a.end-a.start)||a.start-b.start);
+    candidates.forEach(candidate=>{
+      if(!selected.some(item=>candidate.start<item.end&&candidate.end>item.start)) selected.push(candidate);
+    });
+    selected.sort((a,b)=>a.start-b.start);
+    if(!selected.length) return null;
+    const remainders=[];
+    let cursor=0;
+    selected.forEach(item=>{
+      const before=key.slice(cursor,item.start).trim();
+      if(before) remainders.push(before);
+      cursor=item.end;
+    });
+    const after=key.slice(cursor).trim();
+    if(after) remainders.push(after);
+    return {items:selected,remainders};
+  };
   const wholePhraseMatch=findDocumentedPhrase(input,true);
   let phraseMatches=wholePhraseMatch?[wholePhraseMatch]:[];
   let ruleMatches=[];
+  const orderedRecognized=wholePhraseMatch?[{kind:'phrase',match:wholePhraseMatch}]:[];
   let unmatchedPhraseSegments=[];
   let hasUnmatchedSegments=false;
   if(!wholePhraseMatch){
@@ -5173,11 +5276,25 @@ function traduire(){
       .map(s=>s.trim()).filter(s=>phraseKey(s,FR));
     segments.forEach(segment=>{
       const phraseMatch=findDocumentedPhrase(segment,true);
-      if(phraseMatch){ phraseMatches.push(phraseMatch); return; }
+      if(phraseMatch){
+        phraseMatches.push(phraseMatch);
+        orderedRecognized.push({kind:'phrase',match:phraseMatch});
+        return;
+      }
       const ruleMatch=findRuleBasedClause(segment);
       if(ruleMatch){
         ruleMatches.push(ruleMatch);
+        orderedRecognized.push({kind:'rule',match:ruleMatch});
         if(ruleMatch.remainder) unmatchedPhraseSegments.push(ruleMatch.remainder);
+        return;
+      }
+      const embedded=findEmbeddedPassages(segment);
+      if(embedded){
+        embedded.items.forEach(item=>{
+          orderedRecognized.push({kind:item.kind,match:item.match});
+          (item.kind==='phrase'?phraseMatches:ruleMatches).push(item.match);
+        });
+        unmatchedPhraseSegments.push(...embedded.remainders);
         return;
       }
       unmatchedPhraseSegments.push(segment);
@@ -5188,19 +5305,25 @@ function traduire(){
 
   // ── Phrases attestées et patrons à trous bâtis sur les données actuelles ──
   const patChunks=[];
-  if(phraseMatches.length){
-    phraseMatches.forEach(match=>patChunks.push({type:'pat',label:match.source,
-      out:FR?match.phrase.aln8ba:match.phrase.fr[0],corrected:match.corrected,
-      note:match.corrected
-        ? 'Saisie rapprochée de « '+match.corrected+' ». Vérifie la correction avant de réutiliser la traduction.'
-        : 'Phrase complète actuelle documentée dans le parcours.'}));
-  }
-  const ruleChunks=ruleMatches.map(match=>({
-    type:'rule',label:match.source,
-    out:FR?match.rule.negative:match.rule.negativeFr.charAt(0).toUpperCase()+match.rule.negativeFr.slice(1),
-    base:match.rule.positive+' — '+match.rule.positiveFr,
-    rule:match.rule.rule,source:match.rule.source
-  }));
+  const ruleChunks=[];
+  const recognizedChunks=[];
+  orderedRecognized.forEach(item=>{
+    if(item.kind==='phrase'){
+      const match=item.match, chunk={type:'pat',label:match.source,
+        out:FR?match.phrase.aln8ba:match.phrase.fr[0],corrected:match.corrected,
+        consultative:Boolean(match.phrase.consultative),source:match.phrase.source||'',
+        note:match.phrase.note||(match.corrected
+          ? 'Saisie rapprochée de « '+match.corrected+' ». Vérifie la correction avant de réutiliser la traduction.'
+          : 'Phrase complète actuelle documentée dans le parcours.')};
+      patChunks.push(chunk); recognizedChunks.push(chunk);
+    }else{
+      const match=item.match, chunk={type:'rule',label:match.source,
+        out:FR?match.rule.negative:match.rule.negativeFr.charAt(0).toUpperCase()+match.rule.negativeFr.slice(1),
+        base:match.rule.positive+' — '+match.rule.positiveFr,
+        rule:match.rule.rule,source:match.rule.source};
+      ruleChunks.push(chunk); recognizedChunks.push(chunk);
+    }
+  });
   if(phraseMatches.length||ruleMatches.length){
     TOKS=hasUnmatchedSegments?applyEquivalences(tokenizeInput(unmatchedPhraseSegments.join(' '))):[];
   }
@@ -5218,11 +5341,42 @@ function traduire(){
           if(!nomValide) break;
           TOKS.splice(0,TOKS.length);
           const nom=nomToks.map(t=>t.o).join(' ');
-          patChunks.push({type:'pat',label:"je m'appelle "+nom,
+          const nameChunk={type:'pat',label:"je m'appelle "+nom,
             out:pNomBase+' '+nom,
-            note:"La forme documentée « "+pNomBase+" » porte le verbe; le prénom reste tel quel."});
+            note:"La forme documentée « "+pNomBase+" » porte le verbe; le prénom reste tel quel."};
+          patChunks.push(nameChunk); recognizedChunks.push(nameChunk);
           break;
         }
+      }
+    }
+  }
+
+  // Un verbe transitif documenté ne peut pas être choisi sans la classe de
+  // son objet. La classe vient uniquement de la fiche verte actuelle du nom.
+  const classNouns=FR?pool.filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''))
+    .flatMap(w=>(w.fr||'').split(/[·;]/).map(sens=>{
+      let toks=phraseTokens(sens.replace(/\([^)]*\)/g,' '),true);
+      while(toks.length&&ARTICLES.has(toks[0])) toks.shift();
+      return toks.length?{w,toks,animate:/nom animé/i.test(w.grammar||'')}:null;
+    }).filter(Boolean)):[];
+  const classContextByStart=new Map();
+  if(FR&&TOKS.length){
+    for(let pos=0;pos<TOKS.length;pos++){
+      for(const pair of DOCUMENTED_OBJECT_CLASS_PAIRS){
+        if(TOKS[pos]?.n!=='je'||TOKS[pos+1]?.n!==norm(pair.verb)) continue;
+        const animateEntry=pool.find(w=>norm(w.aln8ba)===norm(pair.a));
+        const inanimateEntry=pool.find(w=>norm(w.aln8ba)===norm(pair.i));
+        if(!animateEntry||!inanimateEntry) continue;
+        let objectStart=pos+2;
+        while(TOKS[objectStart]&&ARTICLES.has(TOKS[objectStart].n)) objectStart++;
+        const noun=classNouns
+          .filter(item=>item.toks.every((tok,k)=>TOKS[objectStart+k]?.n===tok))
+          .sort((a,b)=>b.toks.length-a.toks.length)[0]||null;
+        const end=noun?objectStart+noun.toks.length:pos+2;
+        classContextByStart.set(pos,{pair,noun,end,
+          form:noun?(noun.animate?pair.a:pair.i):'',
+          formClass:noun?(noun.animate?'VTA':'VTI'):''});
+        break;
       }
     }
   }
@@ -5242,6 +5396,30 @@ function traduire(){
   };
   while(i<TOKS.length){
     const T=TOKS[i], t=T.n;
+    const classContext=classContextByStart.get(i);
+    if(classContext){
+      chunks.push({type:'classrule',toks:TOKS.slice(i,classContext.end),...classContext});
+      i=classContext.end;
+      continue;
+    }
+    if(FR){
+      const connector=DOCUMENTED_CONNECTORS.find(item=>norm(item.fr)===t);
+      if(connector){
+        chunks.push({type:'connector',toks:[T],out:connector.aln8ba.toLowerCase(),
+          consultative:true,note:connector.source});
+        i++;
+        continue;
+      }
+    }
+    const consultativeFragment=DOCUMENTED_CONSULTATIVE_FRAGMENTS.find(item=>
+      norm(FR?item.fr:item.aln8ba)===t);
+    if(consultativeFragment){
+      chunks.push({type:'consultative',toks:[T],
+        out:FR?consultativeFragment.aln8ba:(consultativeFragment.frOut||consultativeFragment.fr),
+        consultative:true,note:consultativeFragment.source});
+      i++;
+      continue;
+    }
     // 1) expression (la plus longue gagne ; tolère les fautes de frappe)
     let best=null, bestCorr=null, bestConsultative=false;
     const matches=[];
@@ -5342,10 +5520,18 @@ function traduire(){
       i++; continue;
     }
     if(FR && (t==='pas'||t==='plus') && negVu){ chunks.push({type:'skip', toks:[T], note:'fait partie de la négation'}); i++; continue; }
+    if(FR && NON_LEXICAL_AUXILIARIES.has(t)){
+      chunks.push({type:'miss',toks:[T],note:'Auxiliaire français sans équivalent autonome : une construction complète documentée est requise.'});
+      i++;
+      continue;
+    }
     // 6) lemme — verbe conjugué ramené à l'infinitif du dictionnaire
     if(FR){
       let lemHit=null;
       for(const lem of lemmes(t)){
+        // « être » et « avoir » ne possèdent pas un équivalent lexical unique
+        // que l'on peut substituer sans connaître la construction complète.
+        if(lem==='etre'||lem==='avoir') continue;
         const cands = idx.get(lem) || tokIdx.get(lem) || [];
         if(cands.length){ lemHit={lem, ent:cands[0]}; break; }
       }
@@ -5414,13 +5600,16 @@ function traduire(){
 
   const outEl = document.getElementById('tradOutput');
   const hits = chunks.filter(c=>c.type==='hit');
+  const classChunks = chunks.filter(c=>c.type==='classrule');
+  const connectorChunks = chunks.filter(c=>c.type==='connector');
+  const consultativeChunks = chunks.filter(c=>c.type==='consultative');
   const essais = FR ? ["Je m'appelle Mali","Comment vas-tu ?","J'habite Wôlinak","Nous sommes encore ici","Bonjour tout le monde"]
                     : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Askwa yudali nd'aibena"];
   const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
 
-  if(!hits.length && !patChunks.length && !ruleChunks.length){
+  if(!hits.length && !patChunks.length && !ruleChunks.length && !classChunks.length && !connectorChunks.length && !consultativeChunks.length){
     outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples, ou propose le mot manquant avec le bouton ＋ en bas à droite.</span>' + essaisHtml;
     document.getElementById('tradBtnTxt').textContent = 'Traduire →';
     TRAD_LAST_OUTPUT = '';
@@ -5449,22 +5638,19 @@ function traduire(){
   const sortie = completePattern ? patChunks.map(p=>p.out).join('\n')
     : wholeHit ? (contentChunks[0].forceOut || contentChunks[0].w[dstField])
     : '';
-  const hasConsultative=chunks.some(c=>c.consultative);
+  const hasPatternConsultative=patChunks.some(p=>p.consultative);
+  const hasConsultative=hasPatternConsultative||chunks.some(c=>c.consultative);
   const hasPhraseCorrection=patChunks.some(p=>p.corrected);
+  const completeIsCaution=hasPhraseCorrection||hasPatternConsultative;
   const documentedPassages=[];
   const passageKeys=new Set();
-  if(!completePattern) patChunks.forEach(p=>{
+  recognizedChunks.forEach(p=>{
+    if((p.type==='pat'&&completePattern)||(p.type==='rule'&&completeRule)) return;
     const key=p.label+'\u0000'+p.out;
     if(!passageKeys.has(key)){
       passageKeys.add(key);
-      documentedPassages.push({source:p.label,output:p.out,correction:p.corrected});
-    }
-  });
-  if(!completeRule) ruleChunks.forEach(p=>{
-    const key=p.label+'\u0000'+p.out;
-    if(!passageKeys.has(key)){
-      passageKeys.add(key);
-      documentedPassages.push({source:p.label,output:p.out,constructed:true});
+      documentedPassages.push({source:p.label,output:p.out,correction:p.corrected,
+        constructed:p.type==='rule',consultative:Boolean(p.consultative)});
     }
   });
   chunks.forEach(c=>{
@@ -5482,17 +5668,57 @@ function traduire(){
     passageKeys.add(key);
     documentedPassages.push({source,output,correction:c.corrige});
   });
+  classChunks.forEach(c=>{
+    if(!c.form||!c.noun) return;
+    const source=c.toks.map(t=>t.o||t.n).join(' ');
+    const output=c.form+' '+c.noun.w.aln8ba.toLowerCase();
+    const key=source+'\u0000'+output;
+    if(passageKeys.has(key)) return;
+    passageKeys.add(key);
+    documentedPassages.push({source,output,constructed:true,classBuilt:true});
+  });
+  const inputOrderKey=phraseKey(input,FR);
+  documentedPassages.sort((a,b)=>{
+    const ai=inputOrderKey.indexOf(phraseKey(a.source,FR));
+    const bi=inputOrderKey.indexOf(phraseKey(b.source,FR));
+    return (ai<0?Number.MAX_SAFE_INTEGER:ai)-(bi<0?Number.MAX_SAFE_INTEGER:bi);
+  });
   const passageHasCorrection=documentedPassages.some(p=>p.correction);
   const passageHasConstruction=documentedPassages.some(p=>p.constructed);
+  const passageHasConsultative=documentedPassages.some(p=>p.consultative);
+  const passageIsCaution=passageHasConstruction||passageHasConsultative;
+  const hasClassConstruction=classChunks.some(c=>c.form&&c.noun);
+  const passagesCoverAll=hasClassConstruction&&chunks.every(c=>c.type==='skip'||c.type==='connector'||(c.type==='classrule'&&c.form&&c.noun));
+  const previewCandidates=documentedPassages.map(p=>({source:p.source,out:p.output,gap:false,consultative:Boolean(p.consultative)}));
+  chunks.forEach(c=>{
+    const source=c.toks.map(t=>t.o||t.n).join(' ');
+    if(c.type==='skip'||(c.type==='classrule'&&c.form&&c.noun)) return;
+    if(c.type==='connector') previewCandidates.push({source,out:c.out,gap:false,consultative:true});
+    else if(c.type==='consultative') previewCandidates.push({source,out:c.out,gap:false,consultative:true});
+    else if(c.type==='hit') previewCandidates.push({source,out:c.forceOut||c.w[dstField],gap:false,consultative:Boolean(c.consultative)});
+    else if(c.type==='nom') previewCandidates.push({source,out:c.toks[0].o,gap:false,consultative:false});
+    else if(c.type==='classrule') previewCandidates.push({source,out:'⟦'+source+' — objet requis⟧',gap:true,consultative:false});
+    else previewCandidates.push({source,out:'⟦'+source+' — non traduit⟧',gap:true,consultative:false});
+  });
+  previewCandidates.forEach((item,index)=>{
+    const key=phraseKey(item.source,FR);
+    item.order=inputOrderKey.indexOf(key);
+    if(item.order<0) item.order=Number.MAX_SAFE_INTEGER-index;
+  });
+  previewCandidates.sort((a,b)=>a.order-b.order);
+  const continuousProposal=previewCandidates.map(item=>item.out).join(' ').trim();
+  const previewHasGaps=previewCandidates.some(item=>item.gap);
+  const previewHasConsultative=previewCandidates.some(item=>item.consultative);
   TRAD_LAST_OUTPUT = completeTranslation && !hasConsultative && !hasPhraseCorrection ? sortie : '';
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
 
   let html = completeTranslation
-    ? '<div style="background:var(--surface2);border:1px solid '+(hasPhraseCorrection?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+    ? '<div style="background:var(--surface2);border:1px solid '+(completeIsCaution?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
       + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5;white-space:pre-line">' + escH(sortie) + '</div>'
-      + '<div style="margin-top:8px;color:'+(hasPhraseCorrection?'var(--gold)':'var(--green)')+';font-size:.75rem;font-weight:700">'
-      + (hasPhraseCorrection?'✏️ Phrase documentée reconnue après correction'
+      + '<div style="margin-top:8px;color:'+(completeIsCaution?'var(--gold)':'var(--green)')+';font-size:.75rem;font-weight:700">'
+      + (hasPatternConsultative?'📜 Phrase historique documentée — usage actuel à valider'
+        :hasPhraseCorrection?'✏️ Phrase documentée reconnue après correction'
         : patChunks.length>1?'✓ '+patChunks.length+' phrases complètes documentées, traitées séparément'
         :'✓ Correspondance complète documentée')+'</div></div>'
     : completeRule
@@ -5502,19 +5728,37 @@ function traduire(){
         + '<div class="aprnote w" style="margin-bottom:12px"><b>Proposition à faire valider</b>'
         + ' La forme ci-dessus applique une règle documentée à une base actuelle du dictionnaire. La phrase complète n’a pas été retrouvée mot pour mot dans les sources du projet et ne constitue pas une attestation de l’Office de la langue abénakise.</div>'
     : documentedPassages.length
-      ? '<div style="background:var(--surface2);border:1px solid '+(passageHasConstruction?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
-        + '<div style="color:'+(passageHasConstruction?'var(--gold)':'var(--green)')+';font-size:.78rem;font-weight:700;margin-bottom:9px">'
+      ? '<div style="background:var(--surface2);border:1px solid '+(passageIsCaution?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+        + '<div style="color:'+(passageIsCaution?'var(--gold)':'var(--green)')+';font-size:.78rem;font-weight:700;margin-bottom:9px">'
         + documentedPassages.length+' passage'+(documentedPassages.length>1?'s':'')+' reconnu'+(documentedPassages.length>1?'s':'')
-        + (passageHasConstruction?' — les formes ⚙ sont construites par une règle documentée':' — correspondance documentée')+'</div>'
+        + (passageHasConstruction?' — les formes ⚙ sont construites par une règle documentée'
+          :passageHasConsultative?' — source historique consultative':' — correspondance documentée')+'</div>'
         + documentedPassages.map(p=>'<div style="padding:7px 0;border-top:1px solid var(--border);line-height:1.45">'
           + '<span style="color:var(--text2)">'+escH(p.source)+'</span> '
           + (p.correction?'<span style="font-size:.72rem;color:var(--gold)">('+escH(p.correction)+')</span> ':'')
           + '<span aria-hidden="true">→</span> <b style="color:var(--accent)">'+escH(p.output)+'</b>'
-          + (p.constructed?' <span style="font-size:.72rem;color:var(--gold)">⚙ construction à valider</span>':'')+'</div>').join('')
-        + '</div><div class="aprnote w" style="margin-bottom:12px"><b>Le texte complet reste partiel</b>'
-        + ' Les passages attestés et les constructions signalées sont conservés séparément. Les autres éléments sont analysés sans fabriquer les liens grammaticaux manquants.</div>'
+          + (p.constructed?' <span style="font-size:.72rem;color:var(--gold)">⚙ construction à valider</span>'
+            :p.consultative?' <span style="font-size:.72rem;color:var(--gold)">📜 usage actuel à valider</span>':'')+'</div>').join('')
+        + '</div><div class="aprnote w" style="margin-bottom:12px"><b>'+(passagesCoverAll?'Proposition complète construite':'Le texte complet reste partiel')+'</b>'
+        + (passagesCoverAll
+          ? ' Toute la saisie a été couverte par une construction grammaticale affichée. Elle suit les paires et les classes documentées, mais doit encore être validée comme phrase complète.'
+          : ' Les passages attestés et les constructions signalées sont conservés séparément. Les autres éléments sont analysés sans fabriquer les liens grammaticaux manquants.')+'</div>'
       : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
         + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
+
+  if(!completeTranslation&&!completeRule&&continuousProposal){
+    html='<div style="background:var(--surface2);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px">'
+      + '<div style="color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">'
+      + (previewHasGaps?'Proposition continue — passages non traduits conservés':'Texte traduit — proposition construite à valider')+'</div>'
+      + '<div style="font-size:1.25rem;font-weight:700;color:var(--accent);line-height:1.55;overflow-wrap:anywhere">'+escH(continuousProposal)+'</div>'
+      + '<div style="font-size:.75rem;color:var(--text2);margin-top:9px">Le texte est affiché en un seul bloc et dans l’ordre de la saisie. '
+      + (previewHasGaps?'Les éléments entre ⟦crochets⟧ restent visibles parce qu’aucune traduction sûre ne leur a été attribuée. ':'')
+      + (previewHasConsultative
+        ? (connectorChunks.length?'Le connecteur « ta » est attesté chez Masta (1932) et demeure signalé comme forme consultative à valider. '
+          :'Une forme historique consultative est reconnue et demeure à valider dans l’usage actuel. ')
+        :'')
+      + 'Les sources et l’analyse grammaticale suivent ci-dessous.</div></div>'+html;
+  }
 
   // Détail morceau par morceau
   html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">'
@@ -5526,19 +5770,22 @@ function traduire(){
     + '<span>' + gauche + '</span>'
     + '<span style="font-size:.9rem">' + droite + '</span>' + (extra||'') + '</div>';
 
-  patChunks.forEach(p=>{
-    const label=p.corrected?escH(p.label)+' <span style="font-size:.7rem;color:#b8860b">→ '+escH(p.corrected)+'</span>':escH(p.label);
-    html += ligne(label,
-      '<b style="color:var(--accent)">'+lnk(p.out, dstField==='aln8ba'?'aln8ba':'fr')+'</b>',
-      ' <span style="color:#2e7d32;font-size:.75rem">🌟 phrase documentée</span>')
-      + (p.note? '<div class="trad-analysis-note" style="font-style:italic">'+escH(p.note)+'</div>':'');
-  });
-  ruleChunks.forEach(p=>{
-    html += ligne(escH(p.label),
-      '<b style="color:var(--accent)">'+escH(p.out)+'</b>',
-      ' <span style="color:var(--gold);font-size:.75rem">⚙ construction documentée, à valider</span>')
-      + '<div class="trad-analysis-note"><b>Base :</b> '+escH(p.base)
-      + '<br><b>Règle :</b> '+escH(p.rule)+'<br><b>Traçabilité :</b> '+escH(p.source)+'</div>';
+  recognizedChunks.forEach(p=>{
+    if(p.type==='pat'){
+      const label=p.corrected?escH(p.label)+' <span style="font-size:.7rem;color:#b8860b">→ '+escH(p.corrected)+'</span>':escH(p.label);
+      html += ligne(label,
+        '<b style="color:var(--accent)">'+lnk(p.out, dstField==='aln8ba'?'aln8ba':'fr')+'</b>',
+        p.consultative
+          ? ' <span style="color:var(--gold);font-size:.75rem">📜 phrase historique consultative</span>'
+          : ' <span style="color:#2e7d32;font-size:.75rem">🌟 phrase documentée</span>')
+        + (p.note? '<div class="trad-analysis-note" style="font-style:italic">'+escH(p.note)+'</div>':'');
+    }else{
+      html += ligne(escH(p.label),
+        '<b style="color:var(--accent)">'+escH(p.out)+'</b>',
+        ' <span style="color:var(--gold);font-size:.75rem">⚙ construction documentée, à valider</span>')
+        + '<div class="trad-analysis-note"><b>Base :</b> '+escH(p.base)
+        + '<br><b>Règle :</b> '+escH(p.rule)+'<br><b>Traçabilité :</b> '+escH(p.source)+'</div>';
+    }
   });
   chunks.forEach(c => {
     const gaucheBase = escH(c.toks.map(x=>x.o||x.n).join(' '));
@@ -5561,6 +5808,32 @@ function traduire(){
       if(c.w.example_a && c.w.example_f){
         html += '<div class="trad-analysis-note" style="font-style:italic">Ex : ' + escH(c.w.example_a) + ' — ' + escH(c.w.example_f) + '</div>';
       }
+    } else if(c.type==='classrule'){
+      const objet=c.noun?c.noun.w.aln8ba+' — '+c.noun.w.fr:'objet non identifié';
+      const classe=c.noun?(c.noun.animate?'animée':'inanimée'):'';
+      const proposition=c.form&&c.noun?c.form+' '+c.noun.w.aln8ba.toLowerCase():'';
+      html += ligne(gaucheBase,
+        proposition?'<b style="color:var(--accent)">'+escH(proposition)+'</b>'
+          :'<b style="color:var(--gold)">forme non choisie</b>',
+        proposition?' <span style="color:var(--gold);font-size:.75rem">⚙ proposition construite · '+escH(c.formClass)+'</span>'
+          :' <span style="color:var(--gold);font-size:.75rem">⚠ objet requis</span>')
+        + '<div class="trad-analysis-note"><b>Action :</b> '+escH(c.pair.s)
+        + '<br><b>Objet :</b> '+escH(objet)
+        + (c.noun?'<br><b>Classe vérifiée sur la fiche :</b> '+escH(classe)
+          + '<br><b>Paire documentée :</b> '+escH(c.pair.a)+' (objet animé) · '+escH(c.pair.i)+' (objet inanimé)'
+          + '<br><b>Résultat :</b> la classe '+escH(classe)+' exige ici la forme '+escH(c.form)+'.'
+          + '<br><b>Proposition complète :</b> '+escH(proposition)
+          + '<br><span style="color:var(--gold)">La forme verbale, la classe du nom et l’ordre verbe–objet suivent les exemples du Manuel. Cette combinaison précise n’a pas été retrouvée mot pour mot : elle reste une construction à faire valider.</span>'
+          :'<br><span style="color:var(--gold)">Les deux formes existent. Sans objet dont la classe est documentée, le traducteur refuse d’en choisir une.</span>')
+        + '<br><b>Source :</b> Manuel de l’étudiant 1, page 33.</div>';
+    } else if(c.type==='connector'){
+      html += ligne(gaucheBase,'<b style="color:var(--gold)">'+escH(c.out)+'</b>',
+        ' <span style="color:var(--gold);font-size:.75rem">📜 connecteur consultatif</span>')
+        + '<div class="trad-analysis-note" style="color:var(--gold)">'+escH(c.note)+'</div>';
+    } else if(c.type==='consultative'){
+      html += ligne(gaucheBase,'<b style="color:var(--gold)">'+escH(c.out)+'</b>',
+        ' <span style="color:var(--gold);font-size:.75rem">📜 forme historique consultative</span>')
+        + '<div class="trad-analysis-note" style="color:var(--gold)">'+escH(c.note)+'</div>';
     } else if(c.type==='nom'){
       html += ligne(gaucheBase, '<b style="color:var(--accent)">'+escH(c.toks[0].o)+'</b>',
         ' <span style="color:#7b5ea7;font-size:.75rem">🔤 nom propre — il reste tel quel en aln8ba</span>');
@@ -5583,13 +5856,17 @@ function traduire(){
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = TRAD_LAST_OUTPUT ? 'block' : 'none';
   document.getElementById('tradMeta').textContent = hasConsultative
-    ? '📜 Une locution documentée consultative a été reconnue exactement. Son sens est affiché avec prudence et la copie est désactivée; les autres morceaux utilisent les entrées vertes actuelles.'
+    ? '📜 La proposition emploie au moins une forme consultative clairement signalée. Le texte complet est affiché, mais la copie reste désactivée jusqu’à validation dans l’usage actuel.'
     : hasPhraseCorrection&&completeTranslation
       ? '✏️ Une faute probable a été rapprochée d’une seule phrase française documentée. La correction est affichée et la copie reste désactivée pour éviter toute réutilisation accidentelle.'
     : completeTranslation
       ? '✓ Traduction fondée uniquement sur '+(patChunks.length>1?'des phrases complètes documentées, conservées séparément':'une correspondance complète documentée')+' dans les entrées vertes actuelles.'
       : completeRule
         ? '⚙ Proposition construite à partir d’un paradigme documenté. Elle n’a pas été retrouvée mot pour mot et doit être validée avant un usage officiel; la copie reste désactivée.'
+      : classChunks.length
+        ? hasClassConstruction
+          ? '⚙ Proposition complète construite et affichée : le traducteur choisit VTA ou VTI seulement lorsque la fiche active de l’objet indique sa classe, puis explique chaque choix. La construction est signalée, doit être validée et ne peut pas être copiée automatiquement.'
+          : '⚠ Le verbe exige un objet dont la classe grammaticale est connue. Aucune forme VTA ou VTI n’a été choisie; ajoute un objet documenté pour obtenir une proposition complète.'
       : documentedPassages.length
         ? documentedPassages.length+' passage'+(documentedPassages.length>1?'s ont':' a')+' été reconnu'+(documentedPassages.length>1?'s':'')+(passageHasCorrection?' après une correction affichée':'')+(passageHasConstruction?'; les formes construites sont signalées et restent à valider':'')+'. Le texte entier n’est pas traduit et la copie reste désactivée.'
       : '⚠️ Analyse de fragments seulement. Aucun ordre grammatical ni aucune phrase n\'est construit; la copie reste désactivée. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
@@ -5664,9 +5941,10 @@ const APR_SUF=[["w8ganal","noms abstraits, pluriel"],["w8gan","le fait de… (no
 
 function aprInit(){
   document.querySelectorAll('#aprNav button').forEach(b=>b.onclick=()=>{
-    document.querySelectorAll('#aprNav button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    ({parcours:aprParcours,rev:aprRevView,decor:aprDecorView,conj:aprConjView,nomb:aprNombView,gram:aprGramView})[b.dataset.p]();
+    const section=b.dataset.p;
+    aprActivateNav(section);
+    if(section==='rev') aprRevScope=null;
+    ({parcours:aprParcours,rev:aprRevView,decor:aprDecorView,conj:aprConjView,nomb:aprNombView,gram:aprGramView})[section]();
   });
   const box=document.getElementById('aprBody');
   if(box && !box.innerHTML.trim()) aprParcours();
@@ -5847,19 +6125,34 @@ const NIVEAUX=[
 
 {id:'s',t:'Secondaire',d:"Comprendre comment les mots changent. Le genre, le pluriel, les verbes.",
  c:'var(--gold)',mods:[
- {t:"Animé ou inanimé",d:"Deux classes grammaticales à vérifier mot par mot.",ex:'genre',lec:`
-  <p>En aln8ba, <b>animé</b> et <b>inanimé</b> sont des classes grammaticales. Ce n'est ni du masculin
-  ni du féminin, ni une explication philosophique du monde.</p>
-  <div class="aprnote"><b>À apprendre mot par mot</b>
-   Le genre grammatical se vérifie avec chaque nom. On l'apprend avec la fiche du dictionnaire,
-   puis on l'emploie dans les accords et dans les pluriels.</div>
-  <p>Quelques repères sûrs : <span class="al8">Alakws</span> et <span class="al8">Awassos</span> sont animés;
-  <span class="al8">Awikhigan</span> et <span class="al8">Sata</span> sont inanimés.</p>
-  <div class="aprnote w"><b>Le pluriel vient après</b>
-   On n'invente pas le genre à partir d'une idée générale. On apprend d'abord la classe grammaticale,
-   puis on vérifie s'il existe un pluriel actuel et documenté.</div>`,
-  coach:`Traite animé et inanimé comme deux étiquettes grammaticales à mémoriser. Le bon réflexe est :
-   regarder la fiche, retenir la classe, puis vérifier séparément si un pluriel documenté existe.`},
+ {t:"Animé ou inanimé",d:"Comprendre une distinction qui agit sur toute la phrase.",ex:'genre',lec:`
+  <p>En aln8ba, chaque nom appartient à une de deux <b>classes grammaticales</b> : animée ou inanimée.
+  Ce n'est ni le masculin et le féminin du français, ni une interprétation philosophique. C'est une
+  information de grammaire attachée au mot.</p>
+  <div class="aprnote"><b>Pourquoi cette classe est essentielle</b>
+   Elle peut changer le pluriel, les nombres de un à cinq, la forme d'un verbe transitif et d'autres
+   accords dans la phrase. Il faut donc apprendre <i>le mot et sa classe ensemble</i>.</div>
+  <h3>Commence par des cas clairs</h3>
+  <table class="aprtab"><tr><th>Nom</th><th>Sens</th><th>Classe documentée</th></tr>
+   <tr><td class="k">Almos</td><td>un chien</td><td><b>animée</b></td></tr>
+   <tr><td class="k">Sips</td><td>un oiseau</td><td><b>animée</b></td></tr>
+   <tr><td class="k">Awikhigan</td><td>un livre</td><td><b>inanimée</b></td></tr>
+   <tr><td class="k">Nbizon</td><td>un médicament</td><td><b>inanimée</b></td></tr></table>
+  <h3>Le sens français ne suffit pas</h3>
+  <p>Le Manuel donne un contraste important : <span class="al8">Aples</span> (une pomme) est de classe
+  <b>animée</b>, tandis que <span class="al8">Wasawas</span> (une orange) est de classe <b>inanimée</b>.
+  Deux fruits peuvent donc commander deux formes différentes du verbe « manger ».</p>
+  <table class="aprtab"><tr><th>Objet</th><th>Classe</th><th>Phrase documentée</th></tr>
+   <tr><td class="k">Aples</td><td>animée</td><td class="k">N'mow8 aples</td></tr>
+   <tr><td class="k">Wasawas</td><td>inanimée</td><td class="k">N'miji wasawas</td></tr></table>
+  <div class="aprnote w"><b>Le réflexe sûr en quatre étapes</b>
+   1. Repère le nom. 2. Ouvre ou consulte sa fiche. 3. Lis sa classe grammaticale.
+   4. Cherche ensuite la forme documentée exigée par cette classe. Ne déduis jamais une classe
+   uniquement parce qu'une chose semble vivante ou non.</div>
+  <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 33 · W8banaki Pilaskw, chronique linguistique d'Odanak, 2018</span>`,
+  coach:`Répète toujours le mot avec sa classe : « Aples, animé », « Wasawas, inanimé ».
+   Ensuite seulement, observe ce que la classe fait changer. Ce petit réflexe évite une erreur qui
+   peut se propager au pluriel, au nombre et au verbe.`},
  {t:"Le pluriel",d:"Des paires documentées à retenir sans rien inventer.",ex:'plur',lec:`
   <h3>Si le mot est animé</h3>
   <table class="aprtab">
@@ -5960,9 +6253,23 @@ const NIVEAUX=[
   coach:`La négation est un sandwich : <span class="al8">Nda</span> devant, le petit suffixe derrière.
    Dis les paires à voix haute, affirmative puis négative, comme un refrain — l'oreille apprend
    le rythme avant que la tête apprenne la règle.`},
- {t:"Vérifier la classe grammaticale",d:"Observer des noms actuels et retenir leur classe grammaticale.",ex:'genre',lec:aprGenreReviewLec,
-  coach:`Quand tu apprends un nom, vérifie sa classe grammaticale dans le dictionnaire et répète-la à voix haute.
-   L'objectif est d'associer le mot à sa classe, pas d'improviser une règle cachée.`},
+ {t:"La classe change la phrase",d:"Relier la classe au pluriel, au nombre et au choix du verbe.",ex:'classfx',lec:`
+  <p>Tu sais maintenant reconnaître la classe d'un nom. Cette fois, observe <b>ce qu'elle commande</b>
+  dans une phrase.</p>
+  <table class="aprtab"><tr><th>Élément touché</th><th>Objet animé</th><th>Objet inanimé</th></tr>
+   <tr><td>Verbe « voir »</td><td class="k">N'namih8</td><td class="k">N'namito</td></tr>
+   <tr><td>Verbe « manger »</td><td class="k">N'mow8</td><td class="k">N'miji</td></tr>
+   <tr><td>Pluriel documenté</td><td>famille finale en K</td><td>famille finale en L</td></tr>
+   <tr><td>Nombres 1 à 5</td><td class="k">Pazgo · Niswak…</td><td class="k">Pazgwen · Nisnol…</td></tr></table>
+  <div class="aprnote"><b>Deux phrases à comparer mot par mot</b>
+   <span class="al8">N'namih8 sips</span> — je vois un oiseau : <span class="al8">Sips</span> est animé.<br>
+   <span class="al8">N'namito awikhigan</span> — je vois un livre : <span class="al8">Awikhigan</span> est inanimé.</div>
+  <div class="aprnote w"><b>Ce que le système ne doit jamais faire</b>
+   Il ne doit ni inventer un pluriel, ni choisir une forme verbale sans objet, ni deviner la classe
+   d'après le français. La fiche actuelle du nom reste la source de vérité.</div>
+  <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 33</span>`,
+  coach:`Pose toujours ces questions dans cet ordre : quel est l'objet? quelle classe sa fiche indique-t-elle?
+   quelle forme documentée correspond à cette classe? L'exercice te fait pratiquer cette chaîne complète.`},
  {t:"Les mois qui racontent l'année",d:"Douze mois qui décrivent ce qui se passe dehors.",cat:'temps',ex:'vocab',lec:`
   <p>En aln8ba, les mois ne sont pas des noms — ce sont des <b>observations du territoire</b> :</p>
   <table class="aprtab"><tr><th>Mois</th><th>Aln8ba</th><th>Ce que ça raconte</th></tr>
@@ -6009,42 +6316,77 @@ const NIVEAUX=[
    Demain, recommence — puis essaie la négation du module « Dire non » sur une des phrases.</div>`,
   coach:`Une journée racontée chaque soir : c'est l'exercice le plus puissant qui existe.
    Cinq phrases suffisent. Le jour où tu te surprends à <i>penser</i> ta journée en aln8ba
-   avant de la dire, le secondaire est derrière toi.`}]},
+   avant de la dire, le secondaire est derrière toi.`},
+ {t:"Traduire sans découper le français",d:"Comprendre pourquoi un mot français n'appelle pas toujours un mot aln8ba.",ex:'structure',lec:`
+  <p>Une traduction fidèle transporte le <b>sens et la structure</b>; elle ne remplace pas chaque mot
+  français par un mot aln8ba. Les deux langues ne découpent pas toujours la même idée de la même façon.</p>
+  <h3>Trois réflexes qui empêchent les fausses phrases</h3>
+  <table class="aprtab"><tr><th>Élément français</th><th>Réflexe sûr</th><th>Exemple</th></tr>
+   <tr><td>le, la, les</td><td>ne pas chercher automatiquement un article séparé</td><td><span class="al8">Odana</span> — village</td></tr>
+   <tr><td>être, avoir</td><td>chercher la construction ou le verbe complet</td><td><span class="al8">Nd'akwamalsi</span> — je suis malade</td></tr>
+   <tr><td>un mot isolé</td><td>vérifier son sens et son statut avant de l'assembler</td><td><span class="al8">Kizilla</span> — peut-être</td></tr></table>
+  <div class="aprnote"><b>Pourquoi « est » ne se traduit pas tout seul</b>
+   Le français dit « je + suis + malade ». L'exemple documenté aln8ba exprime toute cette idée avec
+   <span class="al8">Nd'akwamalsi</span>. Le mot français « est » n'autorise donc jamais à choisir au hasard
+   une entrée qui contient « est » dans sa définition.</div>
+  <h3>Sources actuelles et sources consultatives</h3>
+  <table class="aprtab"><tr><th>Forme</th><th>Sens documenté</th><th>Statut dans l'outil</th></tr>
+   <tr><td class="k">Kizilla</td><td>peut-être</td><td>Manuel de l'étudiant 1</td></tr>
+   <tr><td class="k">Yudali</td><td>ici</td><td>Masta 1932 — consultatif</td></tr>
+   <tr><td class="k">Odana pasodawiwi ao</td><td>le village est tout près</td><td>Laurent 1884 — phrase historique complète</td></tr></table>
+  <div class="aprnote w"><b>Ce que montre — et ne montre pas — la phrase de Laurent</b>
+   Elle documente <span class="al8">ao</span> dans <i>cette phrase précise</i>. Elle ne prouve pas que
+   <span class="al8">ao</span> remplace tous les « est » français. De même, connaître
+   <span class="al8">Odana</span> et <span class="al8">Yudali</span> ne suffit pas à inventer automatiquement
+   « le village est ici ». Tant que le lien grammatical manque, le traducteur doit montrer le trou.</div>
+  <span class="aprsrc">Manuel de l'étudiant 1 · Henry Lorne Masta, 1932 · Jos. Laurent, 1884</span>`,
+  coach:`Lis d'abord la phrase française comme une idée entière. Cherche ensuite une phrase aln8ba
+   documentée qui porte cette idée. S'il n'en existe pas, conserve les mots reconnus, montre ce qui manque
+   et refuse l'assemblage automatique. C'est plus lent, mais c'est ainsi qu'on protège la langue.`}]},
 
 {id:'c',t:'Cégep',d:"Analyser. Les classes de verbes, la morphologie, les sources.",
  c:'var(--accent)',mods:[
- {t:"Les quatre classes de verbes",d:"Le verbe change selon son objet.",ex:'vta',lec:`
-  <table class="aprtab"><tr><th>Classe</th><th>Ce que c'est</th><th>Exemple</th></tr>
-  <tr><td class="k">VAI</td><td>intransitif animé</td><td class="k">N'michi</td></tr>
- <tr><td class="k">VII</td><td>intransitif inanimé</td><td class="k">Tasakwabon pnilha</td></tr>
- <tr><td class="k">VTA</td><td>transitif, objet <b>animé</b></td><td class="k">N'namih8 sips</td></tr>
- <tr><td class="k">VTI</td><td>transitif, objet <b>inanimé</b></td><td class="k">N'namito awikhigan</td></tr></table>
-  <h3>Sujet, action, objet : qui fait quoi à quoi?</h3>
-  <p>Dans <span class="al8">N'namih8 sips</span> et <span class="al8">N'namito awikhigan</span>,
-  le sujet reste <b>« je »</b> et l'action reste <b>« voir »</b>. C'est l'objet qui change :
-  <span class="al8">sips</span> (un oiseau) appartient à la classe grammaticale animée,
-  tandis que <span class="al8">awikhigan</span> (un livre) appartient à la classe grammaticale inanimée.</p>
-  <table class="aprtab"><tr><th>Sujet</th><th>Forme du verbe</th><th>Objet</th><th>Classe de l'objet</th></tr>
-  <tr><td>je</td><td class="k">N'namih8</td><td class="k">sips</td><td>animée</td></tr>
-  <tr><td>je</td><td class="k">N'namito</td><td class="k">awikhigan</td><td>inanimée</td></tr></table>
-  <div class="aprnote"><b>Ce qui change et ce qui reste</b>
-  Le sujet et l'action ne changent pas. La forme exacte du verbe change parce que l'objet
-  n'appartient pas à la même classe grammaticale. <b>Animé</b> et <b>inanimé</b> sont ici des
-  catégories de grammaire : il faut apprendre la classe avec le nom et la vérifier sur sa fiche,
-  plutôt que la deviner seulement d'après ce qui semble vivant ou non.</div>
-  <div class="aprnote w"><b>La méthode en quatre étapes</b>
-  1. Trouve l'action. 2. Repère l'objet qui reçoit cette action. 3. Vérifie la classe grammaticale
-  de cet objet. 4. Choisis dans la paire la forme exacte documentée pour cette classe.</div>
-  <div class="aprnote"><b>Les paires à connaître</b>
-  <table class="aprtab"><tr><th>Sens</th><th>Objet animé</th><th>Objet inanimé</th></tr>
-  <tr><td>je vois</td><td class="k">N'namih8</td><td class="k">N'namito</td></tr>
-  <tr><td>je possède</td><td class="k">N'waj8n8</td><td class="k">N'waj8nem</td></tr>
-  <tr><td>je prends</td><td class="k">N'wdn8</td><td class="k">N'wdnem</td></tr>
-  <tr><td>je donne</td><td class="k">N'mil8</td><td class="k">N'mildo</td></tr>
-  <tr><td>je mange</td><td class="k">N'mow8</td><td class="k">N'miji</td></tr></table></div>`,
-  coach:`Tu ne traduis plus, tu analyses. Avant chaque verbe transitif, une seule question :
-   « mon objet est-il animé? » C'est elle qui choisit la forme, pas toi. Pose-la à voix haute
-   dans les exercices — l'automatisme vient de la répétition de la question, pas de la réponse.`},
+ {t:"Les quatre classes de verbes",d:"Décider avec le sujet, l'objet et leur classe grammaticale.",ex:'vta',lec:`
+  <h3>Avant les sigles : trouve les rôles</h3>
+  <p>Une phrase présente une <b>action</b>. Le <b>sujet</b> fait cette action. Un <b>objet</b>, lorsqu'il
+  y en a un, reçoit directement l'action.</p>
+  <table class="aprtab"><tr><th>Phrase française</th><th>Sujet</th><th>Action</th><th>Objet direct</th></tr>
+   <tr><td>Je mange.</td><td>je</td><td>manger</td><td>aucun objet nommé</td></tr>
+   <tr><td>Je mange une pomme.</td><td>je</td><td>manger</td><td>une pomme</td></tr>
+   <tr><td>La chaise tombe.</td><td>la chaise</td><td>tomber</td><td>aucun objet</td></tr></table>
+  <div class="aprnote"><b>Première décision : y a-t-il un objet?</b>
+   Sans objet direct, le verbe est <b>intransitif</b>. Avec un objet direct, il est <b>transitif</b>.
+   C'est seulement après cette décision qu'on regarde la classe animée ou inanimée.</div>
+  <h3>Les quatre classes, en langage simple</h3>
+  <table class="aprtab"><tr><th>Classe</th><th>Question à poser</th><th>Exemple documenté</th><th>Sens</th></tr>
+   <tr><td class="k">VAI</td><td>Pas d'objet; sujet animé?</td><td class="k">N'michi</td><td>je mange</td></tr>
+   <tr><td class="k">VII</td><td>Pas d'objet; sujet inanimé?</td><td class="k">Tasakwabon pnilha</td><td>la chaise tombe</td></tr>
+   <tr><td class="k">VTA</td><td>Objet direct animé?</td><td class="k">N'namih8 sips</td><td>je vois un oiseau</td></tr>
+   <tr><td class="k">VTI</td><td>Objet direct inanimé?</td><td class="k">N'namito awikhigan</td><td>je vois un livre</td></tr></table>
+  <div class="aprnote w"><b>Le A et le I ne regardent pas toujours la même chose</b>
+   Dans <b>VAI/VII</b>, la classe pertinente est celle du <b>sujet</b>, puisqu'il n'y a pas d'objet.
+   Dans <b>VTA/VTI</b>, la classe pertinente est celle de <b>l'objet direct</b>. Confondre ces deux
+   questions mène au mauvais verbe.</div>
+  <h3>Une action, deux formes</h3>
+  <table class="aprtab"><tr><th>Ce qui reste</th><th>Objet animé</th><th>Objet inanimé</th></tr>
+   <tr><td>Sujet</td><td>je</td><td>je</td></tr>
+   <tr><td>Action</td><td>voir</td><td>voir</td></tr>
+   <tr><td>Objet</td><td class="k">Sips — oiseau</td><td class="k">Awikhigan — livre</td></tr>
+   <tr><td>Forme exigée</td><td class="k">N'namih8</td><td class="k">N'namito</td></tr></table>
+  <p>Le même contraste apparaît avec les fruits : <span class="al8">N'mow8 aples</span> (pomme animée)
+  et <span class="al8">N'miji wasawas</span> (orange inanimée). Le sens français « fruit » ne décide donc
+  pas de la classe : la fiche de chaque nom décide.</p>
+  <div class="aprnote"><b>Sept paires documentées à reconnaître</b>
+   <table class="aprtab"><tr><th>Action</th><th>Objet animé — VTA</th><th>Objet inanimé — VTI</th></tr>
+    ${DOCUMENTED_OBJECT_CLASS_PAIRS.map(p=>`<tr><td>${p.s}</td><td class="k">${p.a}</td><td class="k">${p.i}</td></tr>`).join('')}</table></div>
+  <div class="aprnote w"><b>Procédure complète</b>
+   1. Trouve le sujet. 2. Trouve l'action. 3. Demande s'il existe un objet direct.
+   4. Sans objet, vérifie la classe du sujet pour VAI ou VII. 5. Avec un objet, vérifie la classe
+   de cet objet sur sa fiche pour VTA ou VTI. 6. Utilise seulement la forme documentée correspondante.</div>
+  <span class="aprsrc">Manuel de l'étudiant 1, page 33</span>`,
+  coach:`Ne mémorise pas quatre sigles isolés. Fais l'arbre de décision : objet ou pas d'objet;
+   puis classe du sujet ou classe de l'objet. L'exercice commence par identifier la classe et te fait
+   ensuite choisir la forme verbale, avec une explication complète après chaque réponse.`},
  {t:"Les trois ordres",d:"La conjugaison change selon le type de phrase.",ex:'ordre',lec:`
   <table class="aprtab"><tr><th>Ordre</th><th>Quand</th><th>Exemple</th></tr>
   <tr><td class="k">Indépendant</td><td>phrase ordinaire</td><td class="k">N'michi</td></tr>
@@ -6172,7 +6514,27 @@ const NIVEAUX=[
    à quelqu'un sans hésiter, il t'appartient pour de bon — et tu es devenu à ton tour
    quelqu'un qui transmet.`}]}];
 
-let aprNiv='p', aprMod=null;
+let aprNiv='p', aprMod=null, aprRevScope=null;
+
+function aprActivateNav(section){
+  document.querySelectorAll('#aprNav button').forEach(b=>b.classList.toggle('on',b.dataset.p===section));
+}
+function aprModulePerfect(m,state){
+  return Boolean(m&&m.ex&&state&&state.retenir>=100&&(!m.cat||state.utiliser>=100));
+}
+function aprOpenModule(i){
+  aprMod=i;
+  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[i], state=progGet(aprNiv+'.'+i);
+  if(aprModulePerfect(m,state)){
+    aprRevScope={nivId:aprNiv,modIndex:i,title:m.t};
+    aprActivateNav('rev');
+    aprRevView();
+    toast('🔁 Module à 100 % — révision ciblée ouverte');
+    return;
+  }
+  aprRevScope=null;
+  aprLecon(i);
+}
 
 const COACH_TIPS=[
  "Un mot dit à voix haute vaut dix lectures silencieuses. Toujours, toujours à voix haute.",
@@ -6183,6 +6545,8 @@ const COACH_TIPS=[
  "N'apprends pas des listes, apprends des images : colle chaque mot à un objet, un visage, un endroit de Wôlinak."];
 
 function aprParcours(){
+  aprRevScope=null;
+  aprActivateNav('parcours');
   const prog=progAll();
   document.getElementById('aprBody').innerHTML=`
    <div class="aprcard"><h3>Parcours</h3>
@@ -6206,12 +6570,13 @@ function aprParcours(){
        </div>
        <div style="margin-top:12px"><button class="aprbtn" onclick="aprJeux('${n.id}')">🎯 Jeux du niveau ${n.t}</button>
        <span style="font-size:.75rem;color:var(--text3);margin-left:8px">Une sélection adaptée aux notions de ce niveau.</span></div></div>
-     <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[n.id+'.'+i];
-       const done=s&&s.retenir>=75&&(!m.cat||s.utiliser>=75);
-       const badge=done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
-       return `<button class="lz" onclick="aprMod=${i};aprLecon(${i})">
-       <div class="n" style="color:${n.c}">${badge}</div>
-       <b>${m.t}</b><span>${m.d}</span></button>`;}).join('')}</div>`;}).join('')}`;
+      <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[n.id+'.'+i];
+        const done=s&&s.retenir>=75&&(!m.cat||s.utiliser>=75);
+        const perfect=aprModulePerfect(m,s);
+        const badge=perfect?'↻':done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
+        return `<button class="lz" onclick="aprOpenModule(${i})" aria-label="${escH(m.t)}${perfect?' — terminé à 100 %, ouvrir la révision':''}">
+        <div class="n" style="color:${n.c}">${badge}</div>
+        <b>${m.t}</b><span>${m.d}${perfect?`<br><strong style="color:${n.c}">↻ 100 % — réviser ce module</strong>`:''}</span></button>`;}).join('')}</div>`;}).join('')}`;
 }
 /* Lance les jeux limités aux catégories de mots d'un niveau du parcours */
 function aprJeux(nivId){
@@ -6223,6 +6588,8 @@ function aprJeux(nivId){
 }
 function aprLecon(i){
   aprMod=i;
+  aprRevScope=null;
+  aprActivateNav('parcours');
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n.mods[i];
   const lecHtml = typeof m.lec==='function' ? m.lec() : m.lec;
   APR_VOICE_READY=aprVoiceTargets(m,lecHtml);
@@ -6768,7 +7135,8 @@ function aprEx(type,cat,titre,mode){
   if(exPoolOverride&&exPoolOverride.length) exTot=Math.min(8,exPoolOverride.length);
   const fixedCapacity={
     plur:()=>JPLUR.length, poss:()=>EXPOSS.length, conjp:()=>EXCONJ.length*2,
-    negs:()=>EXNEGS.length, vta:()=>EXVTA.length*2, ordre:()=>EXORDRE.length,
+    negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length,
+    vta:()=>EXVTA.length*2, ordre:()=>EXORDRE.length,
     neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
     trad:()=>EXTRAD.length
   }[type];
@@ -6831,9 +7199,9 @@ function exFin(){
         ${canUse?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
           onclick="aprEx('ecris',exCat,exTitre,'utiliser')">✍️ Utiliser — écrire les mots</button>`:''}
         <button class="aprbtn" style="${canUse?'background:var(--surface2);color:var(--text)':''}"
-          onclick="aprEx(exType,exCat,exTitre,exMode)">Refaire</button>
+          onclick="${exMode==='rev'?'aprRevStart()':'aprEx(exType,exCat,exTitre,exMode)'}">Refaire</button>
         <button class="aprbtn" style="background:var(--surface2);color:var(--text)"
-          onclick="aprLecon(aprMod)">Relire la leçon</button>
+          onclick="${exMode==='rev'?(aprRevScope?'aprLecon(aprRevScope.modIndex)':'aprRevView()'):'aprLecon(aprMod)'}">${exMode==='rev'?(aprRevScope?'Relire la leçon':'Retour à la révision'):'Relire la leçon'}</button>
         <button class="aprbtn" style="background:var(--surface2);color:var(--text)"
           onclick="aprParcours()">Retour au parcours</button>
       </div>
@@ -6843,7 +7211,7 @@ function exFin(){
 function exSuivant(){
   if(exQ>=exTot) return exFin();
   const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
-    negs:exNegs, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
+    negs:exNegs, classfx:exClassFx, structure:exStructure, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
     trad:exTrad})[exType];
   handler();
 }
@@ -6992,37 +7360,58 @@ function exVerif(){
 }
 /* — révision espacée : les mots ratés et les mots qui datent passent en premier — */
 function aprRevView(){
+  aprActivateNav('rev');
   const stats=revLoad(), now=Date.now();
-  const pool=aprSur().filter(w=>w.aln8ba&&w.aln8ba.length<=18&&w.fr);
+  const scope=aprRevScope;
+  const scopedModule=scope&&NIVEAUX.find(n=>n.id===scope.nivId)?.mods[scope.modIndex];
+  const guided=Boolean(scope&&scopedModule&&scopedModule.ex
+    &&!['vocab','ecris','genre'].includes(scopedModule.ex));
+  const basePool=guided?[]:(scope&&scopedModule?aprModulePool(scopedModule.cat):aprSur());
+  const pool=basePool.filter(w=>w.aln8ba&&w.aln8ba.length<=18&&w.fr);
   const vus=pool.filter(w=>stats[w.aln8ba]);
   const aRevoir=pool.filter(w=>{ const s=stats[w.aln8ba];
     return s && (s.no>0 || (now-s.t)>2*86400000); }).length;
   document.getElementById('aprBody').innerHTML=`
-   <div class="aprcard"><h3>🔁 Révision</h3>
-    <p class="aprlead">On retient un mot en le revoyant juste avant de l'oublier.
+   <div class="aprcard"><h3>🔁 Révision${scope?' · '+escH(scope.title):''}</h3>
+    <p class="aprlead">${guided?`Cette révision reprend directement l'exercice guidé du module terminé à 100 %, sans t'envoyer vers des mots sans rapport.`:scope?`Cette révision reste concentrée sur les ${pool.length} éléments du module terminé à 100 %.`:`On retient un mot en le revoyant juste avant de l'oublier.
     Cet onglet surveille toutes tes réponses, dans tous les exercices, et te ressert
-    en premier les mots qui t'ont échappé et ceux qui commencent à dater.</p>
-    <table class="aprtab"><tr><th>Ta mémoire en ce moment</th><th></th></tr>
+    en premier les mots qui t'ont échappé et ceux qui commencent à dater.`}</p>
+    ${guided?'':`<table class="aprtab"><tr><th>Ta mémoire en ce moment</th><th></th></tr>
     <tr><td>Mots déjà rencontrés dans tes exercices</td><td class="k">${vus.length}</td></tr>
-    <tr><td>Mots à retravailler aujourd'hui</td><td class="k">${aRevoir}</td></tr></table>
+    <tr><td>Mots à retravailler aujourd'hui</td><td class="k">${aRevoir}</td></tr></table>`}
     <div class="aprnote"><b>⏱ Le rythme qui marche</b>
      Cinq à dix minutes par jour, tous les jours. La mémoire se consolide pendant le sommeil —
      celui qui révise le soir et revient le lendemain retient deux fois mieux.</div>
     <div style="text-align:center;margin-top:18px">
-      <button class="aprbtn" onclick="aprRevStart()">Commencer la révision — 10 questions</button></div>
+      <button class="aprbtn" onclick="aprRevStart()">${guided?'Reprendre l’exercice du module':`Commencer la révision — ${Math.min(10,pool.length)} question${Math.min(10,pool.length)>1?'s':''}`}</button>
+      ${scope?`<button class="aprbtn" style="margin-left:8px;background:var(--surface2);color:var(--text)" onclick="aprLecon(${scope.modIndex})">Relire la leçon</button>`:''}</div>
    </div>`;
 }
 function aprRevStart(){
   const stats=revLoad(), now=Date.now();
-  const pool=aprSur().filter(w=>w.aln8ba&&w.aln8ba.length<=18&&w.fr);
+  const scope=aprRevScope;
+  const scopedModule=scope&&NIVEAUX.find(n=>n.id===scope.nivId)?.mods[scope.modIndex];
+  const guided=Boolean(scope&&scopedModule&&scopedModule.ex
+    &&!['vocab','ecris','genre'].includes(scopedModule.ex));
+  const basePool=guided?[]:(scope&&scopedModule?aprModulePool(scopedModule.cat):aprSur());
+  const pool=basePool.filter(w=>w.aln8ba&&w.aln8ba.length<=18&&w.fr);
+  if(guided){
+    aprEx(scopedModule.ex,scopedModule.cat||'',scopedModule.t,'rev');
+    return;
+  }
+  if(!pool.length){ toast('Aucun mot révisable dans ce module.'); return; }
   let choix=pool.map(w=>{ const s=stats[w.aln8ba];
     const poids=s ? (s.no*4 - s.ok + (now-(s.t||0))/86400000) : -1;
     return {w,poids}; }).filter(x=>x.poids>0)
     .sort((a,b)=>b.poids-a.poids).slice(0,60).map(x=>x.w);
-  if(choix.length<8) choix=pool.filter(w=>['salut','nombre','couleur','famille'].includes(w.cat)).slice(0,30);
+  if(scope){
+    const selected=new Set(choix.map(w=>w.aln8ba));
+    choix.push(...pool.filter(w=>!selected.has(w.aln8ba)));
+    choix=choix.slice(0,30);
+  }else if(choix.length<8) choix=pool.filter(w=>['salut','nombre','couleur','famille'].includes(w.cat)).slice(0,30);
   exPoolOverride=choix;
   exType='rev'; exMode='rev'; exCat=''; exTitre='Révision';
-  exQ=0; exOk=0; exTot=10; exAsked=[]; exSonsQueue=[];
+  exQ=0; exOk=0; exTot=Math.min(10,choix.length); exAsked=[]; exSonsQueue=[];
   exSuivant();
 }
 function exRev(){ (exQ%2===0?exVocab:exEcris)(); }
@@ -7131,42 +7520,119 @@ function exRetNegs(){ const q=window._ex;
   return `<b>${q.n}</b><em>Nda devant le verbe, et le suffixe -W à la fin —
     parce que le radical finit par -i.</em>`; }
 
+/* — secondaire : effets concrets de la classe grammaticale — */
+const EXCLASSFX=[
+ {q:'Quelle est la classe documentée de Aples (une pomme)?',o:['Animée','Inanimée'],r:0,
+  e:'Aples est animé. Le sens français « fruit » ne permet pas de deviner cette classe.'},
+ {q:'Quelle est la classe documentée de Wasawas (une orange)?',o:['Animée','Inanimée'],r:1,
+  e:'Wasawas est inanimé. Une pomme et une orange ne commandent donc pas la même forme de « manger ».'},
+ {q:'Avant de choisir entre VTA et VTI, que faut-il faire?',o:["Vérifier la classe de l'objet sur sa fiche",'Regarder seulement si la chose est vivante','Ajouter un pluriel','Choisir la forme la plus courte'],r:0,
+  e:"La fiche actuelle de l'objet est la source de vérité. La classe ne se devine pas seulement par le sens."},
+ {q:'Comment dit-on la phrase documentée « Je mange une pomme »?',o:["N'mow8 aples","N'miji aples"],r:0,
+  e:"Aples est animé : la phrase documentée emploie la forme VTA N'mow8."},
+ {q:'Comment dit-on la phrase documentée « Je mange une orange »?',o:["N'mow8 wasawas","N'miji wasawas"],r:1,
+  e:"Wasawas est inanimé : la phrase documentée emploie la forme VTI N'miji."},
+ {q:'Comment dit-on la phrase documentée « Je vois un oiseau »?',o:["N'namih8 sips","N'namito sips"],r:0,
+  e:"Sips est animé : la phrase documentée emploie la forme VTA N'namih8."},
+ {q:'Comment dit-on la phrase documentée « Je vois un livre »?',o:["N'namih8 awikhigan","N'namito awikhigan"],r:1,
+  e:"Awikhigan est inanimé : la phrase documentée emploie la forme VTI N'namito."},
+ {q:"Si le pluriel d'un nom n'est pas documenté, que fait-on?",o:['On indique « non documenté »','On ajoute toujours -ak','On ajoute toujours -al','On choisit au hasard'],r:0,
+  e:"La classe guide la grammaire, mais elle ne permet pas d'inventer une forme absente. Seules les paires documentées sont utilisées."}
+];
+function exClassFx(){
+  const q=exPickUnique(EXCLASSFX,x=>x.q); window._ex=q;
+  exCadre(`<div class="jprompt"><div class="q">La classe dans la phrase</div>
+    <div class="w" style="font-size:clamp(1.15rem,3.5vw,1.7rem)">${q.q}</div></div>
+    <div class="jopts">${q.o.map((o,i)=>`<button class="jopt" onclick="exRepond(${q.r},${i},exRetClassFx())">${o}</button>`).join('')}</div>
+    <div class="jhint">Suis la chaîne : nom → classe documentée → forme grammaticale.</div>`);
+}
+function exRetClassFx(){ const q=window._ex;
+  return `<b>${q.o[q.r]}</b><em>${q.e}</em>
+    <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 33</span>`; }
+
+/* — secondaire : traduire la structure plutôt que les mots isolés — */
+const EXSTRUCT=[
+ {q:'Que signifie Kizilla?',o:['Peut-être','Il est','Ici','Village'],r:0,
+  e:'Kizilla signifie « peut-être » dans le Manuel. Il ne traduit jamais l’auxiliaire français « est ».'},
+ {q:'Quelle forme documentée signifie « ici »?',o:['Yudali','Kizilla','Aasazit','Odana'],r:0,
+  e:'Yudali signifie « ici » chez Masta (1932). Dans le dictionnaire, son statut consultatif doit rester visible.'},
+ {q:'Pourquoi ne traduit-on pas « est » par un mot isolé choisi dans le dictionnaire?',
+  o:['Parce que la construction complète porte le sens','Parce que le mot français est trop court','Parce que tous les verbes sont inanimés','Parce que les articles sont interdits'],r:0,
+  e:'Le français et l’aln8ba ne découpent pas toujours l’idée de la même façon. Il faut une construction complète documentée.'},
+ {q:'Quel exemple documenté exprime « Je suis malade »?',o:["Nd'akwamalsi","Kizilla akwamalsi","Nia ao akwamalsi","Yudali akwamalsi"],r:0,
+  e:"Nd'akwamalsi porte toute l’idée « je suis malade »; aucun mot séparé n’est ajouté pour « suis »."},
+ {q:'Quelle phrase historique complète est documentée chez Laurent?',
+  o:['Odana pasodawiwi ao','Odana Kizilla Yudali','Odana ao Yudali','Pasodawiwi Kizilla'],r:0,
+  e:'Odana pasodawiwi ao signifie « Le village est tout près ». Ao n’est enseigné ici que dans ce modèle précis.'},
+ {q:'Que doit montrer le traducteur si des mots sont connus mais que leur lien grammatical ne l’est pas?',
+  o:['Une proposition avec un trou clairement marqué','Une phrase inventée sans avertissement','Seulement le premier mot','La forme la plus fréquente'],r:0,
+  e:'Le trou protège contre une fausse phrase : les éléments connus restent visibles, mais le lien manquant n’est pas fabriqué.'}
+];
+function exStructure(){
+  const q=exPickUnique(EXSTRUCT,x=>x.q); window._ex=q;
+  const order=jShuf(q.o.map((_,i)=>i)), opts=order.map(i=>q.o[i]), good=order.indexOf(q.r);
+  window._ex={...q,displayOptions:opts,displayAnswer:good};
+  exCadre(`<div class="jprompt"><div class="q">Traduire le sens, pas les morceaux</div>
+    <div class="w" style="font-size:clamp(1.05rem,3.2vw,1.55rem)">${q.q}</div></div>
+    <div class="jopts">${opts.map((o,i)=>`<button class="jopt" onclick="exRepond(${good},${i},exRetStructure())">${o}</button>`).join('')}</div>
+    <div class="jhint">Demande-toi si la réponse traduit l’idée entière ou si elle colle seulement des mots français.</div>`);
+}
+function exRetStructure(){ const q=window._ex;
+  return `<b>${q.displayOptions[q.displayAnswer]}</b><em>${q.e}</em>
+    <span class="aprsrc">Sources indiquées dans la leçon</span>`; }
+
 /* — cégep : VTA ou VTI — */
-const EXVTA=[
- {s:'je vois',a:"N'namih8",i:"N'namito",oa:'sips (un oiseau)',oi:'awikhigan (un livre)'},
- {s:'je possède',a:"N'waj8n8",i:"N'waj8nem",oa:'almos (un chien)',oi:'wigw8m (une maison)'},
- {s:'je prends',a:"N'wdn8",i:"N'wdnem",oa:'sips (un oiseau)',oi:'nbizon (un médicament)'},
- {s:'je donne',a:"N'mil8",i:"N'mildo",oa:'aw8sis (un enfant)',oi:'awikhigan (un livre)'},
- {s:'je mange',a:"N'mow8",i:"N'miji",oa:'aples (une pomme)',oi:'wasawas (une orange)'}];
+const EXVTA=DOCUMENTED_OBJECT_CLASS_PAIRS;
 function exVta(){
-  const combo=exPickUnique(EXVTA.flatMap(q=>[true,false].map(anim=>({q,anim}))),x=>x.q.s+'|'+x.anim);
+  if(exQ<2){
+    const item=exPickUnique(EXVTA.flatMap(q=>[
+      {object:q.oa,anim:true},{object:q.oi,anim:false}
+    ]),x=>'classe|'+x.object.aln8ba);
+    const opts=['Animée','Inanimée'], ib=item.anim?0:1;
+    window._ex={phase:'class',item};
+    exCadre(`<div class="jprompt"><div class="q">Étape 1 — classe de l'objet</div>
+      <div class="w">${item.object.aln8ba}</div><div class="h">${item.object.fr}</div></div>
+      <div class="jopts two">${opts.map((o,i)=>`<button class="jopt" style="text-align:center" onclick="exRepond(${ib},${i},exRetVta())"><span class="al">${o}</span></button>`).join('')}</div>
+      <div class="jhint">Cette information vient de la fiche du nom; elle ne se devine pas seulement par le sens.</div>`);
+    return;
+  }
+  const combo=exPickUnique(EXVTA.flatMap(q=>[true,false].map(anim=>({q,anim}))),x=>'forme|'+x.q.s+'|'+x.anim);
   const {q,anim}=combo;
-  const obj=anim?q.oa:q.oi, bonne=anim?q.a:q.i, autre=anim?q.i:q.a;
+  const object=anim?q.oa:q.oi, bonne=anim?q.a:q.i, autre=anim?q.i:q.a;
   const opts=jShuf([bonne,autre]); const ib=opts.indexOf(bonne);
-  window._ex={q,anim,bonne,obj};
+  window._ex={phase:'form',q,anim,bonne,object};
   exCadre(`
-    <div class="jprompt"><div class="q">Quelle forme du verbe?</div>
-      <div class="w" style="font-size:clamp(1.2rem,4vw,1.8rem)">… ${obj}</div>
-      <div class="h">${q.s} ${obj.replace(/\s*\(.*/,'')}</div></div>
+    <div class="jprompt"><div class="q">Étape 2 — quelle forme du verbe?</div>
+      <div class="w" style="font-size:clamp(1.2rem,4vw,1.8rem)">… ${object.aln8ba}</div>
+      <div class="h">${q.s} ${object.fr} · objet ${anim?'animé':'inanimé'}</div></div>
     <div class="jopts two">${opts.map((o,i)=>
       `<button class="jopt" style="text-align:center" onclick="exRepond(${ib},${i},exRetVta())">
         <span class="al">${o}</span></button>`).join('')}</div>
-    <div class="jhint">L'objet est-il animé ou inanimé? C'est lui qui décide.</div>`);
+    <div class="jhint">Sujet : je → action : ${q.verb} → objet : ${object.aln8ba} → classe : ${anim?'animée':'inanimée'}.</div>`);
 }
-function exRetVta(){ const {q,anim,bonne,obj}=window._ex;
-  const nom=obj.replace(/\s*\(.*/,''), autreObjet=(anim?q.oi:q.oa).replace(/\s*\(.*/,''), autre=anim?q.i:q.a;
-  return `<b>${bonne} ${nom}</b>
-    <em>${nom} appartient à la classe grammaticale ${anim?'ANIMÉE':'INANIMÉE'} :
+function exRetVta(){
+  if(window._ex.phase==='class'){
+    const {item}=window._ex;
+    return `<b>${item.object.aln8ba} — classe ${item.anim?'animée':'inanimée'}</b>
+      <em>On mémorise le nom et sa classe ensemble. Cette classe servira ensuite à choisir la forme du verbe.</em>
+      <span class="aprsrc">Fiche actuelle confirmée du dictionnaire</span>`;
+  }
+  const {q,anim,bonne,object}=window._ex;
+  const autreObjet=anim?q.oi:q.oa, autre=anim?q.i:q.a;
+  const proposition=bonne+' '+object.aln8ba.toLowerCase();
+  return `<b>${proposition}</b>
+    <em>${object.aln8ba} appartient à la classe grammaticale ${anim?'ANIMÉE':'INANIMÉE'} :
       on choisit donc la forme ${anim?'VTA':'VTI'} documentée <span class="al8">${bonne}</span>.</em>
     <div class="aprnote" style="margin-top:12px"><b>Analyse de la phrase</b>
       <table class="aprtab"><tr><th>Rôle</th><th>Élément</th><th>Ce qu'il indique</th></tr>
         <tr><td>Sujet</td><td>je</td><td>la personne qui fait l'action</td></tr>
         <tr><td>Action</td><td>${q.s.replace(/^je\s+/, '')}</td><td>le sens du verbe</td></tr>
-        <tr><td>Objet</td><td class="k">${nom}</td><td>classe grammaticale ${anim?'animée':'inanimée'}</td></tr>
+        <tr><td>Objet</td><td class="k">${object.aln8ba}</td><td>classe grammaticale ${anim?'animée':'inanimée'}</td></tr>
         <tr><td>Forme choisie</td><td class="k">${bonne}</td><td>forme documentée pour cet objet</td></tr></table>
       <p><b>Le sujet et l'action restent les mêmes.</b> C'est la classe grammaticale de l'objet qui fait choisir l'autre forme du verbe.</p>
-      <p>Compare : <span class="al8">${autre} ${autreObjet}</span> emploie l'autre forme documentée,
-        parce que <span class="al8">${autreObjet}</span> appartient à la classe ${anim?'inanimée':'animée'}.</p>
+      <p>Compare : <span class="al8">${autre} ${autreObjet.aln8ba.toLowerCase()}</span> emploie l'autre forme,
+        parce que <span class="al8">${autreObjet.aln8ba}</span> appartient à la classe ${anim?'inanimée':'animée'}.</p>
+      <p><b>Statut :</b> ${object.exact?'cette phrase complète est documentée dans le Manuel.':'la paire verbale et la classe du nom sont documentées séparément; la phrase affichée est une construction pédagogique à faire valider.'}</p>
       <p><b>Méthode :</b> trouve l'objet, vérifie sa classe sur sa fiche, puis choisis la forme exacte de la paire.</p></div>
     <span class="aprsrc">Manuel de l'étudiant 1, page 33</span>`; }
 
