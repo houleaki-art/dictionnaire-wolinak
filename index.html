@@ -3027,7 +3027,7 @@ function stopRec(){
 //  PRATIQUE VOCALE — écoute, micro et comparaison phonétique
 // ══════════════════════════════════════════════════════════
 let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
-let voiceRecognition=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceSpeakTimer=null;
+let voiceRecognition=null, voiceRecognitionTimer=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceFallbackUrl=null, voiceFallbackDiscard=false, voiceSpeakTimer=null;
 
 function joinVoicePersonalPrefix(value){
   // N'/Nd', K'/Kd' and W'/Wd' stay attached to the stem; the apostrophe is not a pause.
@@ -3084,6 +3084,12 @@ function voiceFinalTToFrenchSpeech(value){
   // A final E is only a TTS command: it prevents French voices from muting T.
   return value.replace(/t$/,'tte');
 }
+function voiceSoundDrillToFrenchSpeech(value,label){
+  // A final silent H makes these short cues behave like one syllable instead of initials.
+  if((label||'').trim().toUpperCase()==='CH') return 'tsah';
+  if((label||'').trim().toUpperCase()==='J') return 'dzah';
+  return value;
+}
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
   if(/8w8/i.test(label)) speechCue=voice8W8ToFrenchSpeech(speechCue);
@@ -3091,6 +3097,7 @@ function voiceCueToSpeech(value,label=''){
   if(/ak[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalAkToFrenchSpeech(speechCue);
   if(/k(?:w|u)at[.!?]*$/i.test((label||'').trim())) speechCue=voiceKwatToFrenchSpeech(speechCue);
   if(/t[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalTToFrenchSpeech(speechCue);
+  speechCue=voiceSoundDrillToFrenchSpeech(speechCue,label);
   return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
@@ -3100,11 +3107,18 @@ function voiceCueForWord(w){
   if(ph&&ph.length<80) return phoneticToVoiceCue(ph);
   return word?alnToVoiceCue(word):'';
 }
-function voiceKey(value){
-  return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
+function voiceKey(value,mode='expected'){
+  let key=(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/tch/g,'ts').replace(/dj/g,'dz');
+  if(mode==='heard'){
+    // A French CH or J transcription does not prove the documented TS or DZ sound.
+    key=key.replace(/\bca\b/g,'sa').replace(/ch/g,'x');
+  }else key=key.replace(/ch/g,'ts').replace(/j/g,'dz');
+  return key.replace(/8/g,'an').replace(/h/g,'')
     .replace(/eau|au/g,'o').replace(/ou/g,'u').replace(/qu/g,'k').replace(/c/g,'k')
-    .replace(/an|en|on/g,'an').replace(/h/g,'').replace(/[^a-z0-9]/g,'');
+    .replace(/an|en|on/g,'an')
+    .replace(/[^a-z0-9]/g,'').replace(/([bdgkptsz])\1+/g,'$1')
+    .replace(/([bdgkptsz])e$/,'$1');
 }
 function voiceEditDistance(a,b){
   const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>Array(n+1).fill(0));
@@ -3114,24 +3128,61 @@ function voiceEditDistance(a,b){
     d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
   return d[m][n];
 }
+function voiceSimilarity(expected,heard){
+  if(!expected||!heard) return 0;
+  if(expected===heard) return 100;
+  const distance=voiceEditDistance(heard,expected);
+  let score=Math.max(0,Math.round(100*(1-distance/Math.max(heard.length,expected.length))));
+  if(Math.min(heard.length,expected.length)>=4&&(heard.includes(expected)||expected.includes(heard)))
+    score=Math.max(score,84);
+  return score;
+}
+function voiceCriticalIssue(expected,heard){
+  for(const sound of ['ts','dz']){
+    if(expected.includes(sound)&&!heard.includes(sound)) return `Le groupe ${sound.toUpperCase()} n'est pas confirmé par la transcription`;
+  }
+  const final=(expected.match(/(ts|dz|[bdgkptsz])$/)||[])[1];
+  if(final&&!heard.endsWith(final)) return `Le son final ${final.toUpperCase()} n'apparaît pas dans la transcription`;
+  return '';
+}
+function voiceExpectedCandidates(item){
+  const candidates=[];
+  const add=(raw,mode='expected',cap=100,ambiguous=false)=>{
+    const key=voiceKey(raw,mode); if(!key) return;
+    const old=candidates.find(c=>c.key===key);
+    if(!old) candidates.push({key,cap,ambiguous});
+    else if(cap>old.cap){old.cap=cap;old.ambiguous=ambiguous;}
+  };
+  add(item.text); add(item.cue);
+  (item.accepted||[]).forEach(v=>add(v,'heard'));
+  (item.uncertain||[]).forEach(v=>add(v,'heard',78,true));
+  return candidates;
+}
 function voiceScore(item,alternatives){
-  const expected=[item.text,item.cue,...(item.accepted||[])].map(voiceKey).filter(Boolean);
-  let best=0,heard='';
-  alternatives.forEach(raw=>{
-    const got=voiceKey(raw);
+  const expected=voiceExpectedCandidates(item), unique=[], seen=new Set();
+  const required=voiceKey(item.cue||item.text);
+  (alternatives||[]).forEach(raw=>{
+    const clean=(raw||'').trim(), key=voiceKey(clean,'heard');
+    if(clean&&key&&!seen.has(key)){seen.add(key);unique.push({raw:clean,key});}
+  });
+  let best={score:0,heard:'',issue:'',ambiguous:false};
+  unique.forEach(got=>{
     expected.forEach(exp=>{
-      let score=0;
-      if(got&&got===exp) score=100;
-      else if(got&&exp&&Math.min(got.length,exp.length)>=3&&(got.includes(exp)||exp.includes(got))) score=88;
-      else if(got&&exp) score=Math.max(0,Math.round(100*(1-voiceEditDistance(got,exp)/Math.max(got.length,exp.length))));
-      if(score>best){best=score;heard=raw;}
+      // Required sounds always come from the displayed guide, never from a looser spelling variant.
+      const issue=voiceCriticalIssue(required,got.key);
+      let score=Math.min(exp.cap,voiceSimilarity(exp.key,got.key));
+      if(issue) score=Math.min(score,58);
+      if(score>best.score||(score===best.score&&best.issue&&!issue))
+        best={score,heard:got.raw,issue,ambiguous:exp.ambiguous};
     });
   });
-  return {score:best,heard:heard||alternatives[0]||''};
+  return {...best,heard:best.heard||(alternatives&&alternatives[0])||'',alternativesChecked:unique.length};
 }
-function voiceAdvice(item,score){
-  if(score>=82) return item.focus?`Bon travail. Repère confirmé : ${item.focus}.`:'Le rythme général et les sons ont été bien reconnus.';
-  if(score>=62) return `C'est très proche. Réécoute « ${item.cue} », ralentis légèrement, puis recommence.`;
+function voiceAdvice(item,result){
+  if(result.issue) return `${result.issue}. Réécoute la fin ou le groupe ciblé, puis refais un essai sans exagérer les syllabes.`;
+  if(result.ambiguous) return `La transcription de Chrome est compatible, mais trop ambiguë pour confirmer le son exact. Réécoute « ${item.cue} », puis réessaie.`;
+  if(result.score>=82) return item.focus?`Bon travail. Repère confirmé : ${item.focus}.`:'Le rythme général et les sons documentés ont été bien repérés.';
+  if(result.score>=62) return `C'est très proche. Réécoute « ${item.cue} », ralentis légèrement, puis recommence.`;
   if(item.focus) return `Isole d'abord le son : ${item.focus}. Dis-le seul, puis reprends le mot complet.`;
   return `Réécoute le guide « ${item.cue} » et prononce une syllabe à la fois.`;
 }
@@ -3174,17 +3225,30 @@ function voiceResetMic(){
   const btn=document.getElementById('voiceMic');
   if(btn){btn.classList.remove('listening');btn.textContent='🎙️ Prononcer maintenant';}
 }
+function voiceClearFallbackAudio(){
+  if(voiceFallbackUrl){URL.revokeObjectURL(voiceFallbackUrl);voiceFallbackUrl=null;}
+  voiceFallbackChunks=[];
+  const player=document.getElementById('voicePlayback');
+  if(player){player.removeAttribute('src');player.style.display='none';}
+}
 function voiceStopActive(){
-  if(voiceRecognition){try{voiceRecognition.abort();}catch(e){} voiceRecognition=null;}
+  if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
+  if(voiceRecognition){voiceRecognition._userCancelled=true;try{voiceRecognition.abort();}catch(e){} voiceRecognition=null;}
   if(voiceFallbackTimer){clearTimeout(voiceFallbackTimer);voiceFallbackTimer=null;}
   if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
   if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
+    voiceFallbackDiscard=true;
     try{voiceFallbackRecorder.stop();}catch(e){}
+  }else{
+    if(voiceFallbackStream) voiceFallbackStream.getTracks().forEach(t=>t.stop());
+    voiceFallbackStream=null; voiceFallbackRecorder=null; voiceFallbackDiscard=false;
+    voiceClearFallbackAudio();
   }
   if('speechSynthesis' in window) speechSynthesis.cancel();
   voiceResetMic();
 }
 function voiceRecognitionError(code){
+  if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
   const messages={
     'not-allowed':'Autorise le microphone dans Chrome, puis réessaie.',
     'service-not-allowed':'La reconnaissance vocale est désactivée dans Chrome.',
@@ -3198,27 +3262,39 @@ function voiceRecognitionError(code){
 function voiceStartListening(){
   const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!Recognition) return voiceStartFallback();
-  if(voiceRecognition){try{voiceRecognition.abort();}catch(e){}}
+  if(voiceRecognition){
+    if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
+    voiceRecognition._userCancelled=true; try{voiceRecognition.abort();}catch(e){}
+    voiceRecognition=null; voiceResetMic();
+    voiceSetStatus('Écoute arrêtée. Aucun enregistrement n’a été sauvegardé.'); return;
+  }
   const item=VOICE_ITEMS[VOICE_INDEX]; if(!item) return;
   const rec=new Recognition(); voiceRecognition=rec;
-  let gotResult=false;
-  rec.lang='fr-CA'; rec.continuous=false; rec.interimResults=false; rec.maxAlternatives=6;
+  let gotResult=false, applied=false;
+  rec.lang='fr-CA'; rec.continuous=false; rec.interimResults=false; rec.maxAlternatives=10;
   rec.onstart=()=>{
     const btn=document.getElementById('voiceMic');
-    if(btn){btn.classList.add('listening');btn.textContent='🔴 J’écoute…';}
-    voiceSetStatus('Parle maintenant. Le micro s’arrête automatiquement après ta prononciation.');
+    if(btn){btn.classList.add('listening');btn.textContent='⏹ Arrêter l’écoute';}
+    const limit=Math.min(12000,Math.max(7000,5000+(item.text||'').replace(/\s/g,'').length*220));
+    voiceRecognitionTimer=setTimeout(()=>{
+      voiceRecognitionTimer=null;
+      if(voiceRecognition===rec){try{rec.stop();}catch(e){}}
+    },limit);
+    voiceSetStatus('Parle naturellement. Chrome compare plusieurs transcriptions; le micro s’arrête automatiquement et aucun son n’est sauvegardé.');
   };
   rec.onresult=e=>{
-    gotResult=true;
+    gotResult=true; if(applied) return;
     const alternatives=[];
     for(let i=0;i<e.results.length;i++) for(let j=0;j<e.results[i].length;j++)
       if(e.results[i][j].transcript) alternatives.push(e.results[i][j].transcript.trim());
-    voiceApplyResult(item,alternatives);
+    if(alternatives.length){applied=true;voiceApplyResult(item,alternatives);}
   };
-  rec.onerror=e=>{gotResult=true;voiceRecognitionError(e.error);};
+  rec.onnomatch=()=>{gotResult=true;voiceSetStatus('Chrome n’a pas trouvé de transcription assez claire. Réécoute le modèle, puis réessaie.');};
+  rec.onerror=e=>{gotResult=true;if(e.error!=='aborted') voiceRecognitionError(e.error);};
   rec.onend=()=>{
+    if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
     voiceRecognition=null; voiceResetMic();
-    if(!gotResult) voiceSetStatus('Aucune parole reconnue cette fois. Rapproche-toi du micro et réessaie.');
+    if(!gotResult&&!rec._userCancelled) voiceSetStatus('Aucune parole reconnue cette fois. Rapproche-toi du micro et réessaie.');
   };
   try{rec.start();}catch(e){voiceRecognitionError('audio-capture');}
 }
@@ -3232,18 +3308,20 @@ function voiceApplyResult(item,alternatives){
     localStorage.setItem('aln_voice_progress',JSON.stringify(saved));
   }catch(e){}
   voiceRenderResult(item,result);
+  voiceSetStatus(`Écoute terminée. ${result.alternativesChecked||1} transcription${result.alternativesChecked>1?'s ont':' a'} été comparée${result.alternativesChecked>1?'s':''}; aucun son n’a été sauvegardé.`);
   aprVoiceDots();
 }
 function voiceRenderResult(item,result){
   const box=document.getElementById('voiceResult'); if(!box) return;
   const level=result.score>=82?'good':result.score>=62?'close':'retry';
-  const title=result.score>=82?'Bien reconnu':result.score>=62?'Très proche':'À reprendre tranquillement';
+  const title=result.issue?'Son essentiel à vérifier':result.ambiguous?'Transcription ambiguë':result.score>=82?'Bien reconnu':result.score>=62?'Très proche':'À reprendre tranquillement';
   const color=result.score>=82?'var(--green)':result.score>=62?'var(--gold)':'var(--red)';
   box.className='voice-result '+level;
   box.innerHTML=`<b>${title} · ${result.score}%</b>
-    <div style="font-size:.8rem;color:var(--text2);margin-top:5px">Chrome a entendu : « ${escH(result.heard||'—')} »</div>
-    <div class="voice-meter"><span style="width:${result.score}%;background:${color}"></span></div>
-    <div style="font-size:.8rem;line-height:1.5">${escH(voiceAdvice(item,result.score))}</div>`;
+    <div style="font-size:.8rem;color:var(--text2);margin-top:5px">Meilleure transcription proposée par Chrome : « ${escH(result.heard||'—')} »</div>
+    <div style="font-size:.7rem;color:var(--text3);margin-top:3px">${result.alternativesChecked||1} hypothèse${result.alternativesChecked>1?'s':''} distincte${result.alternativesChecked>1?'s':''} comparée${result.alternativesChecked>1?'s':''}</div>
+    <div class="voice-meter" role="progressbar" aria-label="Correspondance phonétique" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${result.score}"><span style="width:${result.score}%;background:${color}"></span></div>
+    <div style="font-size:.8rem;line-height:1.5">${escH(voiceAdvice(item,result))}</div>`;
 }
 async function voiceStartFallback(){
   if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
@@ -3253,15 +3331,18 @@ async function voiceStartFallback(){
     voiceSetStatus('Ce navigateur ne permet ni reconnaissance ni enregistrement vocal. Utilise Chrome récent sur HTTPS.'); return;
   }
   try{
+    voiceFallbackDiscard=false; voiceClearFallbackAudio();
     voiceFallbackStream=await navigator.mediaDevices.getUserMedia({audio:true});
     voiceFallbackChunks=[]; voiceFallbackRecorder=new MediaRecorder(voiceFallbackStream);
     voiceFallbackRecorder.ondataavailable=e=>voiceFallbackChunks.push(e.data);
     voiceFallbackRecorder.onstop=()=>{
       if(voiceFallbackTimer){clearTimeout(voiceFallbackTimer);voiceFallbackTimer=null;}
-      const url=URL.createObjectURL(new Blob(voiceFallbackChunks,{type:'audio/webm'}));
+      if(voiceFallbackStream) voiceFallbackStream.getTracks().forEach(t=>t.stop());
+      voiceFallbackStream=null; voiceFallbackRecorder=null;
+      if(voiceFallbackDiscard){voiceFallbackDiscard=false;voiceClearFallbackAudio();return;}
+      voiceFallbackUrl=URL.createObjectURL(new Blob(voiceFallbackChunks,{type:'audio/webm'}));
       const player=document.getElementById('voicePlayback');
-      if(player){player.src=url;player.style.display='block';}
-      voiceFallbackStream.getTracks().forEach(t=>t.stop());
+      if(player){player.src=voiceFallbackUrl;player.style.display='block';}
       voiceSetStatus('Réécoute-toi et compare avec le guide. Le navigateur ne peut pas attribuer de score ici.');
       voiceResetMic();
     };
@@ -3276,8 +3357,8 @@ async function voiceStartFallback(){
 }
 function aprVoiceTargets(m,lecHtml){
   if(m.ex==='sons') return [
-    {text:'CH',display:'CH → TS',cue:'tsa',meaning:'Le son de CH',accepted:['tsa','sa','ça'],focus:'CH se prononce TS'},
-    {text:'J',display:'J → DZ',cue:'dza',meaning:'Le son de J',accepted:['dza','za'],focus:'J se prononce DZ'},
+    {text:'CH',display:'CH → TS',cue:'tsa',meaning:'Le son de CH',accepted:['tsa'],uncertain:['sa','ça'],focus:'CH se prononce TS'},
+    {text:'J',display:'J → DZ',cue:'dza',meaning:'Le son de J',accepted:['dza'],uncertain:['za'],focus:'J se prononce DZ'},
     {text:'8h8',cue:'hon-hon',meaning:'Oui',accepted:['hon hon','on on','hum hum'],focus:'8h8 se prononce comme un « hon-hon » murmuré'},
     {text:'Wli',cue:'ô-li',meaning:'Bon · bien',accepted:['oli','au lit','wli'],focus:'W devant une consonne sonne Ô'},
     {text:'Mziwi',cue:'mzi-wé',meaning:'Tout le monde',accepted:['mziwé','mes oui','mziwi'],focus:'I final sonne souvent É'}
@@ -3329,7 +3410,7 @@ function aprVoiceRender(){
         <div class="voice-dots" id="voiceDots"></div>
         <button class="voice-btn" onclick="aprVoiceMove(1)">${VOICE_INDEX===VOICE_ITEMS.length-1?'Terminer':'Suivant →'}</button>
       </div>
-      <div class="voice-privacy">Le site ne sauvegarde aucun enregistrement. Chrome peut utiliser son service de reconnaissance vocale pour produire la transcription. Le score est une aide phonétique tolérante, pas une validation linguistique officielle.</div>
+      <div class="voice-privacy">Le site ne sauvegarde aucun enregistrement et ne crée aucun profil de voix. Chrome peut utiliser son service de reconnaissance vocale pour proposer plusieurs transcriptions; le site compare seulement leur texte aux sons documentés. Le score est une aide phonétique, pas une validation linguistique officielle.</div>
     </div>`;
   const old=VOICE_RESULTS[VOICE_INDEX]; if(old) voiceRenderResult(item,old);
   aprVoiceDots(); window.scrollTo({top:0,behavior:'smooth'});

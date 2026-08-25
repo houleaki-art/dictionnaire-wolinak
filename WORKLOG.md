@@ -102,6 +102,12 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Protection des 61 finales en -ak contre la coupure du K par la synthèse française; les cartes rappellent aussi que 8 est une voyelle nasale entre « an » et « on », et non un simple « an » français.
 - Protection de la suite 8w8 dans le repli synthétique : les deux voyelles nasales restent audibles et le W forme une liaison continue, sans pause ni syllabe « ou » autonome; le guide visible est explicitement qualifié d'approximatif lorsqu'aucune prononciation documentée n'est fournie.
 - Protection des finales en `t` contre leur disparition dans la synthèse française; le cas historique `Ali-paskuat` reçoit en plus une commande vocale ciblée qui conserve le groupe `kw` continu et le `t` audible, sans modifier sa graphie de 1884 ni présenter son guide approximatif comme une attestation.
+- Comparaison de dix hypothèses distinctes de reconnaissance afin de mieux couvrir les variations de voix et de transcription sans établir de profil vocal.
+- Séparation des tolérances d'écriture et des sons obligatoires : une transcription ambiguë de `CH` ou `J` ne confirme plus automatiquement `TS` ou `DZ`, et l'absence d'une consonne finale documentée empêche un résultat vert.
+- Les sons critiques proviennent toujours du guide affiché; une graphie secondaire plus permissive ne peut plus contourner cette exigence.
+- Arrêt manuel ou automatique fiabilisé, durée d'écoute adaptée à la longueur du mot et libération des enregistrements temporaires dès qu'ils ne servent plus à la réécoute locale.
+- Reformulation du résultat comme « transcription proposée par Chrome », avec nombre d'hypothèses comparées, diagnostic du son manquant et rappel qu'il ne s'agit pas d'une validation linguistique officielle.
+- Les exercices isolés `CH → TS` et `J → DZ` envoient désormais une syllabe technique continue à la voix française, afin d'éviter l'épellation lettre par lettre de `tsa` et `dza`; le guide visible demeure inchangé.
 
 ## Avertissement public
 
