@@ -75,6 +75,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 
 ## Pratique vocale
 
+- Correction générale du W devant consonne dans le guide synthétique : un O simple et continu est maintenant envoyé à la voix française afin qu'il reste perceptible dans Akwbi et les groupes comparables; les cartes rappellent la règle « W = O doux ».
 - Priorité donnée aux enregistrements natifs lorsqu'ils existent.
 - Ajout d'un guide synthétique explicitement présenté comme approximatif.
 - Ajout de la reconnaissance tolérante, de la transcription et d'un score pédagogique.
