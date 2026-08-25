@@ -4410,9 +4410,25 @@ const NIVEAUX=[
  {t:"Les quatre classes de verbes",d:"Le verbe change selon son objet.",ex:'vta',lec:`
   <table class="aprtab"><tr><th>Classe</th><th>Ce que c'est</th><th>Exemple</th></tr>
   <tr><td class="k">VAI</td><td>intransitif animé</td><td class="k">N'michi</td></tr>
-  <tr><td class="k">VII</td><td>intransitif inanimé</td><td class="k">Tasakwabon pnilha</td></tr>
-  <tr><td class="k">VTA</td><td>transitif, objet <b>animé</b></td><td class="k">N'namih8 sips</td></tr>
-  <tr><td class="k">VTI</td><td>transitif, objet <b>inanimé</b></td><td class="k">N'namito awikhigan</td></tr></table>
+ <tr><td class="k">VII</td><td>intransitif inanimé</td><td class="k">Tasakwabon pnilha</td></tr>
+ <tr><td class="k">VTA</td><td>transitif, objet <b>animé</b></td><td class="k">N'namih8 sips</td></tr>
+ <tr><td class="k">VTI</td><td>transitif, objet <b>inanimé</b></td><td class="k">N'namito awikhigan</td></tr></table>
+  <h3>Sujet, action, objet : qui fait quoi à quoi?</h3>
+  <p>Dans <span class="al8">N'namih8 sips</span> et <span class="al8">N'namito awikhigan</span>,
+  le sujet reste <b>« je »</b> et l'action reste <b>« voir »</b>. C'est l'objet qui change :
+  <span class="al8">sips</span> (un oiseau) appartient à la classe grammaticale animée,
+  tandis que <span class="al8">awikhigan</span> (un livre) appartient à la classe grammaticale inanimée.</p>
+  <table class="aprtab"><tr><th>Sujet</th><th>Forme du verbe</th><th>Objet</th><th>Classe de l'objet</th></tr>
+  <tr><td>je</td><td class="k">N'namih8</td><td class="k">sips</td><td>animée</td></tr>
+  <tr><td>je</td><td class="k">N'namito</td><td class="k">awikhigan</td><td>inanimée</td></tr></table>
+  <div class="aprnote"><b>Ce qui change et ce qui reste</b>
+  Le sujet et l'action ne changent pas. La forme exacte du verbe change parce que l'objet
+  n'appartient pas à la même classe grammaticale. <b>Animé</b> et <b>inanimé</b> sont ici des
+  catégories de grammaire : il faut apprendre la classe avec le nom et la vérifier sur sa fiche,
+  plutôt que la deviner seulement d'après ce qui semble vivant ou non.</div>
+  <div class="aprnote w"><b>La méthode en quatre étapes</b>
+  1. Trouve l'action. 2. Repère l'objet qui reçoit cette action. 3. Vérifie la classe grammaticale
+  de cet objet. 4. Choisis dans la paire la forme exacte documentée pour cette classe.</div>
   <div class="aprnote"><b>Les paires à connaître</b>
   <table class="aprtab"><tr><th>Sens</th><th>Objet animé</th><th>Objet inanimé</th></tr>
   <tr><td>je vois</td><td class="k">N'namih8</td><td class="k">N'namito</td></tr>
@@ -5013,7 +5029,29 @@ function aprFamilyAlternationLec(){
     construire de mot absent du dictionnaire.</p>
     <table class="aprtab"><tr><th>Base</th><th>Formes documentées</th><th>Relation</th></tr>${rows}</table>
     <div class="aprnote"><b>Pourquoi c'est utile</b>
-      Reconnaître la base commune permet de relier les formes attestées sans les confondre avec un simple pluriel.</div>`;
+      Reconnaître la base commune permet de relier les formes attestées sans les confondre avec un simple pluriel.</div>
+    <h3>Exemple complet : voir</h3>
+    <table class="aprtab"><tr><th>Sujet</th><th>Action et forme</th><th>Objet</th><th>Classe grammaticale</th></tr>
+      <tr><td>je</td><td class="k">N'namih8</td><td class="k">sips · un oiseau</td><td>animée</td></tr>
+      <tr><td>je</td><td class="k">N'namito</td><td class="k">awikhigan · un livre</td><td>inanimée</td></tr></table>
+    <div class="aprnote w"><b>Comment raisonner</b>
+      Le sujet reste « je » et l'action reste « voir ». Repère l'objet, vérifie sa classe grammaticale,
+      puis choisis la forme documentée correspondante. Les mots <b>animé</b> et <b>inanimé</b>
+      désignent ici des classes grammaticales, pas une interprétation de la nature de l'objet.</div>`;
+}
+function objectClassFamilyNote(mem){
+  const names=new Set(mem.map(w=>w.aln8ba));
+  const q=EXVTA.find(x=>names.has(x.a)&&names.has(x.i));
+  if(!q) return '';
+  const oa=q.oa.replace(/\s*\(.*/,''), oi=q.oi.replace(/\s*\(.*/,'');
+  const oaFr=(q.oa.match(/\(([^)]+)\)/)||[])[1]||q.oa, oiFr=(q.oi.match(/\(([^)]+)\)/)||[])[1]||q.oi;
+  return `<div class="aprnote" style="margin-top:12px"><b>Même action, objet de classe différente</b>
+    <table class="aprtab"><tr><th>Forme documentée</th><th>Contexte</th><th>Classe de l'objet</th></tr>
+      <tr><td class="k">${escH(q.a)}</td><td>${escH(q.a)} ${escH(oa)} · ${escH(oaFr)}</td><td>animée</td></tr>
+      <tr><td class="k">${escH(q.i)}</td><td>${escH(q.i)} ${escH(oi)} · ${escH(oiFr)}</td><td>inanimée</td></tr></table>
+    <p><b>Ce qui reste :</b> le sujet est « je » et le sens du verbe reste « ${escH(q.s)} ».</p>
+    <p><b>Ce qui change :</b> la classe grammaticale de l'objet commande le choix entre les deux formes documentées.</p>
+    <p><b>Réflexe :</b> repère l'objet, vérifie sa classe sur sa fiche, puis choisis la forme correspondante.</p></div>`;
 }
 function jFam(){
   const B=documentedRootFamilies();
@@ -5030,11 +5068,13 @@ function jFam(){
     <div class="jprompt"><div class="q">Quelle forme appartient à la même famille morphologique?</div>
       <div class="w">${base.aln8ba}</div><div class="h">${base.fr}</div></div>
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="jAns(${ib},${i},jRetFam())">
-      <span class="al">${w.aln8ba}</span><span style="font-size:.75rem;color:var(--text2)">${w.fr}</span></button>`).join('')}</div>`);
+      <span class="al">${w.aln8ba}</span><span style="font-size:.75rem;color:var(--text2)">${w.fr}</span></button>`).join('')}</div>
+    ${relation.includes('base verbale')?'<div class="jhint">Ne cherche pas un pluriel : retrouve la même action et compare les formes liées à la classe grammaticale de l’objet.</div>':''}`);
 }
 function jRetFam(){ const {fid,relation,mem,cous}=window._jf;
   return `<b>Racine « ${fid} »</b><em>${mem.slice(0,6).map(w=>w.aln8ba).join(' · ')}</em>
     <div style="margin-top:7px">${cous.aln8ba} — ${cous.fr}</div>
+    ${objectClassFamilyNote(mem)}
     <span class="aprsrc">Relation documentée : ${relation}. Les simples pluriels sont étudiés dans le jeu du pluriel.</span>`; }
 function jCaches(){
   const ALLCATS=['animal','plante','nature','territoire','famille','corps','temps','couleur','salut','nombre'];
@@ -5501,9 +5541,20 @@ function exVta(){
     <div class="jhint">L'objet est-il animé ou inanimé? C'est lui qui décide.</div>`);
 }
 function exRetVta(){ const {q,anim,bonne,obj}=window._ex;
-  return `<b>${bonne} ${obj.replace(/\s*\(.*/,'')}</b>
-    <em>${obj.replace(/\s*\(.*/,'')} est ${anim?'ANIMÉ, donc la forme VTA en -8'
-    :'INANIMÉ, donc la forme VTI'}.</em>
+  const nom=obj.replace(/\s*\(.*/,''), autreObjet=(anim?q.oi:q.oa).replace(/\s*\(.*/,''), autre=anim?q.i:q.a;
+  return `<b>${bonne} ${nom}</b>
+    <em>${nom} appartient à la classe grammaticale ${anim?'ANIMÉE':'INANIMÉE'} :
+      on choisit donc la forme ${anim?'VTA':'VTI'} documentée <span class="al8">${bonne}</span>.</em>
+    <div class="aprnote" style="margin-top:12px"><b>Analyse de la phrase</b>
+      <table class="aprtab"><tr><th>Rôle</th><th>Élément</th><th>Ce qu'il indique</th></tr>
+        <tr><td>Sujet</td><td>je</td><td>la personne qui fait l'action</td></tr>
+        <tr><td>Action</td><td>${q.s.replace(/^je\s+/, '')}</td><td>le sens du verbe</td></tr>
+        <tr><td>Objet</td><td class="k">${nom}</td><td>classe grammaticale ${anim?'animée':'inanimée'}</td></tr>
+        <tr><td>Forme choisie</td><td class="k">${bonne}</td><td>forme documentée pour cet objet</td></tr></table>
+      <p><b>Le sujet et l'action restent les mêmes.</b> C'est la classe grammaticale de l'objet qui fait choisir l'autre forme du verbe.</p>
+      <p>Compare : <span class="al8">${autre} ${autreObjet}</span> emploie l'autre forme documentée,
+        parce que <span class="al8">${autreObjet}</span> appartient à la classe ${anim?'inanimée':'animée'}.</p>
+      <p><b>Méthode :</b> trouve l'objet, vérifie sa classe sur sa fiche, puis choisis la forme exacte de la paire.</p></div>
     <span class="aprsrc">Manuel de l'étudiant 1, page 33</span>`; }
 
 /* — cégep : les trois ordres — */
@@ -5578,11 +5629,13 @@ function exFam(){
     <div class="jprompt"><div class="q">Quelle forme appartient à la même famille morphologique?</div>
       <div class="w">${base.aln8ba}</div><div class="h">${base.fr}</div></div>
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="exRepond(${ib},${i},exRetFam())">
-      <span class="al">${w.aln8ba}</span><span style="font-size:.75rem;color:var(--text2)">${w.fr}</span></button>`).join('')}</div>`);
+      <span class="al">${w.aln8ba}</span><span style="font-size:.75rem;color:var(--text2)">${w.fr}</span></button>`).join('')}</div>
+    ${relation.includes('base verbale')?'<div class="jhint">Ne cherche pas un pluriel : retrouve la même action et compare les formes liées à la classe grammaticale de l’objet.</div>':''}`);
 }
 function exRetFam(){ const {fid,relation,mem,cous}=window._ex;
   return `<b>Racine « ${fid} »</b><em>${mem.slice(0,7).map(w=>w.aln8ba).join(' · ')}</em>
     <div style="margin-top:6px">${cous.aln8ba} — ${cous.fr}</div>
+    ${objectClassFamilyNote(mem)}
     <span class="aprsrc">Relation documentée : ${relation}. Les pluriels restent dans leur exercice dédié.</span>`; }
 
 /* — cégep : traduire — */
