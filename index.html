@@ -258,20 +258,57 @@ textarea{resize:vertical;min-height:68px}
 /* music */
 .music-view{display:none}
 .music-view.show{display:block}
+.music-shortcut{border:1px solid rgba(240,192,96,.5);border-radius:18px;padding:7px 12px;background:rgba(240,192,96,.12);color:#f8e8c0;font:700 .75rem Georgia,serif;cursor:pointer;white-space:nowrap;transition:var(--tr)}
+.music-shortcut:hover{background:rgba(240,192,96,.24);transform:translateY(-1px)}
+.music-promo{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;padding:14px 17px;border:1px solid rgba(184,92,42,.28);border-radius:12px;background:linear-gradient(115deg,rgba(184,92,42,.12),rgba(212,160,48,.08));color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:var(--tr)}
+.music-promo:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-1px)}
+.music-promo strong{display:block;color:var(--accent);font-size:.93rem;margin-bottom:2px}
+.music-promo small{color:var(--text2);font-size:.74rem}
+.music-promo-go{color:var(--accent);font-size:.78rem;font-weight:700;white-space:nowrap}
 .music-hero{background:linear-gradient(135deg,#1e1008,#4a2808 58%,#743616);border-radius:var(--r);padding:clamp(24px,4vw,40px);color:#f8f0e0;margin-bottom:18px;position:relative;overflow:hidden}
 .music-hero::after{content:'♪';position:absolute;right:26px;top:50%;transform:translateY(-50%);font-size:112px;opacity:.07}
 .music-kicker{font-size:.67rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#f0c060;margin-bottom:8px}
 .music-hero h2{font-size:clamp(1.55rem,4vw,2.2rem);line-height:1.1;margin-bottom:10px}
 .music-hero p{max-width:720px;font-size:.9rem;line-height:1.65;color:rgba(255,255,255,.78)}
+.music-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.music-nav button{min-height:48px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font:700 .86rem Georgia,serif;cursor:pointer;transition:var(--tr)}
+.music-nav button:hover{border-color:var(--accent);color:var(--accent);box-shadow:var(--shadow)}
 .music-warning{background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:15px 18px;margin-bottom:18px;color:var(--text2);font-size:.84rem;line-height:1.6}
 .music-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px}
-.music-card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.music-card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);overflow:hidden}
+.music-cover{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:9px;margin-bottom:14px;background:var(--surface2)}
 .music-card h3{color:var(--accent);font-size:1.12rem;margin-bottom:5px}
 .music-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(212,160,48,.35);border-radius:12px;background:rgba(212,160,48,.1);color:#9a6e12;font-size:.63rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:13px}
 [data-theme=dark] .music-badge{color:#f0c060}
-.music-card audio{display:block;width:100%;height:40px;accent-color:var(--accent);margin-bottom:13px}
+.music-card audio{display:block;width:100%;height:40px;accent-color:var(--accent);margin:0 0 10px}
+.music-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px}
+.music-controls button,.music-practice-link{min-height:40px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);font:700 .72rem Georgia,serif;cursor:pointer;transition:var(--tr)}
+.music-controls button:first-child{background:var(--accent);border-color:var(--accent);color:#fff}
+.music-controls button:hover,.music-practice-link:hover{border-color:var(--accent);color:var(--accent)}
+.music-controls button:first-child:hover{background:var(--accent-h);color:#fff}
+.music-status{min-height:18px;margin-bottom:9px;color:var(--text3);font-size:.69rem}
+.music-practice-link{display:block;width:100%;margin:12px 0 13px;color:var(--accent)}
 .music-credit{font-size:.76rem;line-height:1.55;color:var(--text3)}
 .music-credit strong{color:var(--text2)}
+.music-practice-section{margin-top:28px;scroll-margin-top:170px}
+.music-practice-head{margin-bottom:14px}
+.music-practice-head h3{font-size:1.35rem;color:var(--accent);margin-bottom:6px}
+.music-practice-head p{color:var(--text2);font-size:.84rem;line-height:1.6}
+.song-lyrics{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;scroll-margin-top:170px}
+.song-lyrics summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;color:var(--text);font-weight:700;cursor:pointer;list-style:none;background:var(--surface2)}
+.song-lyrics summary::-webkit-details-marker{display:none}
+.song-lyrics summary::after{content:'Afficher les paroles +';color:var(--accent);font-size:.72rem;font-weight:700;white-space:nowrap}
+.song-lyrics[open] summary::after{content:'Masquer les paroles −'}
+.lyrics-body{padding:18px 20px}
+.lyrics-note{border-left:3px solid var(--gold);padding:9px 12px;margin-bottom:16px;background:var(--surface2);color:var(--text2);font-size:.76rem;line-height:1.55}
+.lyrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:13px}
+.lyrics-part{padding:13px 15px;border:1px solid var(--border);border-radius:9px;background:var(--bg)}
+.lyrics-part h4{color:var(--accent);font-size:.73rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.lyrics-part p{white-space:pre-line;color:var(--text);font-size:.84rem;line-height:1.75}
+.lyrics-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 0;border-bottom:1px dashed var(--border)}
+.lyrics-pair:last-child{border-bottom:0}
+.lyrics-pair span{font-size:.79rem;line-height:1.45}
+.lyrics-pair span:last-child{color:var(--text2);font-style:italic}
 /* toast */
 .toast{position:fixed;bottom:100px;right:28px;background:var(--text);color:var(--bg);padding:11px 18px;border-radius:9px;font-size:.85rem;box-shadow:var(--shadow-lg);transform:translateY(60px);opacity:0;transition:all .3s;z-index:400;max-width:300px}
 .toast.show{transform:translateY(0);opacity:1}
@@ -343,6 +380,8 @@ textarea{resize:vertical;min-height:68px}
   .music-hero{padding:24px 20px}
   .music-hero::after{font-size:78px;right:12px}
   .music-card{padding:16px}
+  .music-nav{grid-template-columns:1fr}
+  .lyrics-pair{grid-template-columns:1fr;gap:2px}
   /* Cartes */
   .card{padding:14px}
   .word{font-size:1.35rem}
@@ -372,6 +411,8 @@ textarea{resize:vertical;min-height:68px}
   .prat-question-lbl{font-size:.65rem}
   /* Header très compact */
   .hdr-controls{gap:5px}
+  .music-shortcut span{display:none}
+  .music-shortcut{width:30px;height:30px;padding:0;border-radius:50%}
   .ibtn{width:30px;height:30px;font-size:12px}
   .hdr-title h1{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
   .ltog button{padding:6px 8px;font-size:.68rem}
@@ -395,6 +436,8 @@ textarea{resize:vertical;min-height:68px}
   .pfr{font-size:.78rem}
   /* Langue toggle */
   .ltog{font-size:.7rem}
+  .music-promo{align-items:flex-start}
+  .music-promo-go{white-space:normal;text-align:right;max-width:90px}
   /* Pratique grammaire */
   .prat-choices{grid-template-columns:1fr}
   /* Flashcard */
@@ -729,6 +772,7 @@ textarea{resize:vertical;min-height:68px}
     </div>
     <div class="hdr-controls">
       <div class="badge"><strong id="hTot">0</strong> mots</div>
+      <button class="music-shortcut" onclick="setView('musique')" title="Chansons et pratique avec les paroles">🎵 <span>Chansons</span></button>
       <button class="ibtn pending-dot" id="adminBtn" title="Administration" onclick="openAdmin()">⚙️</button>
       <button class="ibtn" id="themeBtn" title="Mode sombre/clair">🌙</button>
       <button class="ibtn" onclick="openAbout()" title="À propos">ℹ️</button>
@@ -796,6 +840,10 @@ textarea{resize:vertical;min-height:68px}
     <div class="pending-banner" id="pendingBanner" onclick="openAdmin()">
       <span>📬</span><span id="pendingMsg"></span><span style="margin-left:auto;font-weight:700">Voir →</span>
     </div>
+    <button class="music-promo" type="button" onclick="setView('musique')">
+      <span><strong>🎵 Chansons du projet</strong><small>Écouter les maquettes, voir les crédits et pratiquer avec les paroles.</small></span>
+      <span class="music-promo-go">Écouter et pratiquer →</span>
+    </button>
     <div class="toolbar">
       <div class="tb-l">
         <span class="vt" id="viewTitle">Tous les mots</span>
@@ -946,38 +994,192 @@ textarea{resize:vertical;min-height:68px}
       <h2 id="musicTitle">🎵 Chansons du projet</h2>
       <p>Paroles et conception de <strong>Guillaum Labrecque-Houle</strong>. Les voix et les arrangements sont reproduits avec une intelligence artificielle afin de servir de maquettes au dictionnaire, en attendant de possibles enregistrements en studio.</p>
     </section>
+    <nav class="music-nav" aria-label="Sections des chansons">
+      <button type="button" onclick="musicGoTo('musicListen')">🎧 Écouter les chansons</button>
+      <button type="button" onclick="musicGoTo('musicPractice')">📝 Pratiquer avec les paroles</button>
+    </nav>
     <div class="music-warning" role="note">
       <strong>À écouter comme des œuvres artistiques en évolution.</strong> Ces maquettes ne constituent ni une attestation linguistique, ni l'enregistrement d'une locutrice ou d'un locuteur, ni un modèle officiel de prononciation. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
     </div>
-    <div class="music-grid">
+    <div class="music-grid" id="musicListen">
       <article class="music-card">
+        <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la maquette Askwa yudali">
         <h3>Askwa yudali</h3>
         <span class="music-badge">Maquette IA · non studio</span>
-        <audio controls preload="none" aria-label="Écouter la maquette Askwa yudali">
+        <audio id="musicAskwa" controls preload="none" aria-label="Écouter la maquette Askwa yudali" onended="musicStopped('musicAskwa','Lecture terminée')">
           <source src="audio/askwa-yudali.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
+        <div class="music-controls" aria-label="Commandes pour Askwa yudali">
+          <button type="button" onclick="musicStart('musicAskwa')">▶ Démarrer</button>
+          <button type="button" onclick="musicPause('musicAskwa')">Ⅱ Pause</button>
+          <button type="button" onclick="musicStop('musicAskwa')">■ Arrêter</button>
+        </div>
+        <div class="music-status" id="musicAskwaStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceAskwa')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
       <article class="music-card">
+        <img class="music-cover" src="audio/paia-aw8sis.jpg" loading="lazy" alt="Pochette de la maquette Païa Aw8sis">
         <h3>Païa Aw8sis</h3>
         <span class="music-badge">Maquette IA · non studio</span>
-        <audio controls preload="none" aria-label="Écouter la maquette Païa Aw8sis">
+        <audio id="musicPaia" controls preload="none" aria-label="Écouter la maquette Païa Aw8sis" onended="musicStopped('musicPaia','Lecture terminée')">
           <source src="audio/paia-aw8sis.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
+        <div class="music-controls" aria-label="Commandes pour Païa Aw8sis">
+          <button type="button" onclick="musicStart('musicPaia')">▶ Démarrer</button>
+          <button type="button" onclick="musicPause('musicPaia')">Ⅱ Pause</button>
+          <button type="button" onclick="musicStop('musicPaia')">■ Arrêter</button>
+        </div>
+        <div class="music-status" id="musicPaiaStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practicePaia')">📝 Pratiquer avec les paroles bilingues</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
       <article class="music-card">
+        <img class="music-cover" src="audio/nijia-gabriel.jpg" loading="lazy" alt="Pochette de la maquette Nijia Gabriel">
         <h3>Nijia Gabriel</h3>
         <span class="music-badge">Maquette IA · non studio</span>
-        <audio controls preload="none" aria-label="Écouter la maquette Nijia Gabriel">
+        <audio id="musicNijia" controls preload="none" aria-label="Écouter la maquette Nijia Gabriel" onended="musicStopped('musicNijia','Lecture terminée')">
           <source src="audio/nijia-gabriel.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
+        <div class="music-controls" aria-label="Commandes pour Nijia Gabriel">
+          <button type="button" onclick="musicStart('musicNijia')">▶ Démarrer</button>
+          <button type="button" onclick="musicPause('musicNijia')">Ⅱ Pause</button>
+          <button type="button" onclick="musicStop('musicNijia')">■ Arrêter</button>
+        </div>
+        <div class="music-status" id="musicNijiaStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNijia')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
     </div>
+    <section class="music-practice-section" id="musicPractice" aria-labelledby="musicPracticeTitle">
+      <div class="music-practice-head">
+        <h3 id="musicPracticeTitle">📝 Pratique avec les chansons</h3>
+        <p>Choisis une chanson, démarre-la, puis suis les paroles à voix haute. Les textes ci-dessous conservent la graphie de travail de l'auteur; ils ne transforment pas les astuces phonétiques données au synthétiseur en graphie officielle.</p>
+      </div>
+
+      <details class="song-lyrics" id="practiceAskwa">
+        <summary>Askwa yudali · paroles en aln8ba</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-note"><strong>Graphie de travail de l'auteur.</strong> La maquette corrigée emploie parfois une écriture phonétique différente uniquement pour guider la voix artificielle.</div>
+          <div class="lyrics-grid">
+            <div class="lyrics-part"><h4>Couplet 1</h4><p>N'wawaldamen talé kd-aï, awonsis.
+Askwa yudali kd-aï, wigwonmek.
+Nopaiwé n'alosa, kanwa n'mikwaldam.
+Nda n'wanaldamowen. Kalaata.</p></div>
+            <div class="lyrics-part"><h4>Refrain</h4><p>Païa, awonsis, païa.
+K'wlipaïon, k'wlipaïon.
+Kiona nikwonbi, kiona mina.
+Askwa yudali. Kalaata.</p></div>
+            <div class="lyrics-part"><h4>Couplet 2</h4><p>Kd'askawiho pita akwonbi, awonsis.
+Awani nda kd'aliwiziw, awani nda k'kloziw.
+Kanwa nikwonbi n'wadzonem kdakinna.
+Ta nikwonbi nd'alnonba-odwa.</p></div>
+            <div class="lyrics-part"><h4>Couplet 3</h4><p>Yudali skweda, yudali pakholigan.
+Yudali nidonbak, yudali kdakinna.
+Kd'aliwizé nikwonbi. Kd'alnonba.
+K'kezalmel, awonsis. K'kezalmel.</p></div>
+            <div class="lyrics-part"><h4>Pont</h4><p>Nda kd'alosaw mina, awonsis.
+Nda n'wanalmu madzimiwé.
+Wli nanawalmezé. N'nanawalmel.
+Askwa yudali nd-aïbena.</p></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="song-lyrics" id="practicePaia">
+        <summary>Païa Aw8sis · paroles bilingues</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-note">Dans cette maquette, chaque ligne en aln8ba est suivie de sa réponse chantée en français. Les deux colonnes reprennent cet ordre d'écoute.</div>
+          <div class="lyrics-grid">
+            <div class="lyrics-part"><h4>Couplet 1</h4>
+              <div class="lyrics-pair"><span>N'wawaldamen talé kd-aï, awonsis.</span><span>Je sais où tu es, petit.</span></div>
+              <div class="lyrics-pair"><span>Askwa yudali kd-aï, wigwonmek.</span><span>Tu es encore là, dans la maison.</span></div>
+              <div class="lyrics-pair"><span>Nopaiwé n'alosa, kanwa n'mikwaldam.</span><span>Je suis parti loin, mais je me souviens.</span></div>
+              <div class="lyrics-pair"><span>Nda n'wanaldamowen. Kalaata.</span><span>Je ne t'ai jamais oublié. En vérité.</span></div>
+            </div>
+            <div class="lyrics-part"><h4>Refrain</h4>
+              <div class="lyrics-pair"><span>Païa, awonsis, païa.</span><span>Viens, petit, viens.</span></div>
+              <div class="lyrics-pair"><span>K'wlipaïon, k'wlipaïon.</span><span>Sois le bienvenu, sois le bienvenu.</span></div>
+              <div class="lyrics-pair"><span>Kiona nikwonbi, kiona mina.</span><span>Nous sommes ensemble maintenant, ensemble encore.</span></div>
+              <div class="lyrics-pair"><span>Askwa yudali. Kalaata.</span><span>Nous sommes encore là. En vérité.</span></div>
+            </div>
+            <div class="lyrics-part"><h4>Couplet 2</h4>
+              <div class="lyrics-pair"><span>Kd'askawiho pita akwonbi, awonsis.</span><span>Tu as attendu bien longtemps, petit.</span></div>
+              <div class="lyrics-pair"><span>Awani nda kd'aliwiziw, awani nda k'kloziw.</span><span>Personne ne t'a dit ton nom, personne ne t'a parlé.</span></div>
+              <div class="lyrics-pair"><span>Kanwa nikwonbi n'wadzonem kdakinna.</span><span>Mais aujourd'hui j'ai notre terre.</span></div>
+              <div class="lyrics-pair"><span>Ta nikwonbi nd'alnonba-odwa.</span><span>Et aujourd'hui je parle notre langue.</span></div>
+            </div>
+            <div class="lyrics-part"><h4>Couplet 3</h4>
+              <div class="lyrics-pair"><span>Yudali skweda, yudali pakholigan.</span><span>Il y a le feu ici, il y a le tambour.</span></div>
+              <div class="lyrics-pair"><span>Yudali nidonbak, yudali kdakinna.</span><span>Il y a des amis ici, il y a notre terre.</span></div>
+              <div class="lyrics-pair"><span>Kd'aliwizé nikwonbi. Kd'alnonba.</span><span>Tu sais ton nom maintenant. Tu es Alnonba.</span></div>
+              <div class="lyrics-pair"><span>K'kezalmel, awonsis. K'kezalmel.</span><span>Je t'aime, petit. Je t'aime.</span></div>
+            </div>
+            <div class="lyrics-part"><h4>Pont</h4>
+              <div class="lyrics-pair"><span>Nda kd'alosaw mina, awonsis.</span><span>Tu ne repartiras plus, petit.</span></div>
+              <div class="lyrics-pair"><span>Nda n'wanalmu madzimiwé.</span><span>Je ne t'oublierai jamais.</span></div>
+              <div class="lyrics-pair"><span>Wli nanawalmezé. N'nanawalmel.</span><span>Prends soin de toi. Je prends soin de toi.</span></div>
+              <div class="lyrics-pair"><span>Askwa yudali nd-aïbena. Kalaata.</span><span>Nous sommes encore là, tous les deux. En vérité.</span></div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="song-lyrics" id="practiceNijia">
+        <summary>Nijia Gabriel · paroles en aln8ba</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-note"><strong>Graphie de travail affichée :</strong> « Nijia » et « W8banaki » sont conservés ici; la maquette Suno avait reçu « Nidzia » et « Wonbanaki » comme indications phonétiques pour la voix artificielle.</div>
+          <div class="lyrics-grid">
+            <div class="lyrics-part"><h4>Ouverture</h4><p>Nijia... Nijia...</p></div>
+            <div class="lyrics-part"><h4>Couplet 1</h4><p>Nijia! Nijia!
+Nokmes, Nmahom, Nmitongwes
+Alnonbak akwonbi
+Kd'alnonba-odwa, Nijia
+Kalaata</p></div>
+            <div class="lyrics-part"><h4>Couplet 2</h4><p>Nda n'kloziw, nda n'wawaldamowen
+Nda n'mikwaldamowen
+Wanaldamwongan, wanaldamwongan
+Ndakagwi n'wadzonem
+Nda... nda... nda...</p></div>
+            <div class="lyrics-part"><h4>Couplet 3</h4><p>Molian kd'aloka, Nijia
+Awikhiganal, klozwonganal
+Kd'agakimzo tebokw ta kizokw
+Sigwan, Niben, Tagwongo, Pebon
+Kd'aloka pita! Kalaata!</p></div>
+            <div class="lyrics-part"><h4>Couplet 4</h4><p>Kd'aliwizé, kd'alnonba-odwa
+Kmilaloka klozwongan
+Kmilaloka Alnonba-Odwawongan
+Nijia, kmilaloka nhaga
+Kalaata, kalaata</p></div>
+            <div class="lyrics-part"><h4>Refrain</h4><p>Nikwonbi n'klozé!
+Nikwonbi n'mikwaldam!
+Nikwonbi nd'aliwizé!
+Nikwonbi n'W8banaki!
+Meliki! Meliki! Kalaata!</p></div>
+            <div class="lyrics-part"><h4>Couplet 5</h4><p>Wliwné wdzi k'olidahawongan
+Ktsi wliwné, Nijia
+K'kezalmel, Nijia
+Nda n'wanaldamowen
+Kalaata</p></div>
+            <div class="lyrics-part"><h4>Appel et réponse</h4><p>Kiona alnonbak!
+Hon, hon, hon, hon
+Kiona W8banakiak!
+Hon, hon, hon, hon
+Odanak, Wôlinak!
+Hon, hon, hon, hon
+Kdakinna! Kdakinna!
+Hon, hon, hon, hon</p></div>
+            <div class="lyrics-part"><h4>Finale</h4><p>Askwa yudali nd-aïbena
+Wli agakimzowongan, Nijia
+Wli nanawalmezi
+Kalaata.</p></div>
+          </div>
+        </div>
+      </details>
+    </section>
   </div>
   <!-- STATS VIEW -->
   <div id="statsView" style="display:none">
@@ -1318,7 +1520,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-25-mobile-001';
+const APP_RESET_VERSION = '2026-08-25-music-002';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -1982,8 +2184,74 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
+const MUSIC_TRACK_IDS=['musicAskwa','musicPaia','musicNijia'];
+function musicSetStatus(id,message){
+  const status=document.getElementById(id+'Status');
+  if(status) status.textContent=message;
+}
+function musicStopAll(announce=true,exceptId=''){
+  MUSIC_TRACK_IDS.forEach(id=>{
+    if(id===exceptId) return;
+    const audio=document.getElementById(id);
+    if(!audio) return;
+    audio.pause();
+    audio.currentTime=0;
+    if(announce) musicSetStatus(id,'Arrêtée.');
+  });
+}
+async function musicStart(id){
+  const audio=document.getElementById(id);
+  if(!audio) return;
+  musicStopAll(true,id);
+  try{
+    await audio.play();
+    musicSetStatus(id,'Lecture en cours…');
+  }catch(e){
+    audioPlaybackBlocked('La chanson n’a pas pu démarrer. Touche de nouveau Démarrer.');
+    musicSetStatus(id,'Lecture bloquée par le navigateur. Réessaie.');
+  }
+}
+function musicPause(id){
+  const audio=document.getElementById(id);
+  if(!audio) return;
+  audio.pause();
+  musicSetStatus(id,audio.currentTime>0?'En pause.':'Prête à écouter.');
+}
+function musicStop(id){ musicStopped(id,'Arrêtée.'); }
+function musicStopped(id,message){
+  const audio=document.getElementById(id);
+  if(!audio) return;
+  audio.pause();
+  audio.currentTime=0;
+  musicSetStatus(id,message||'Arrêtée.');
+}
+function musicGoTo(id){
+  setView('musique');
+  requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'}));
+}
+function openMusicPractice(id){
+  setView('musique');
+  const details=document.getElementById(id);
+  if(!details) return;
+  details.open=true;
+  requestAnimationFrame(()=>details.scrollIntoView({behavior:'smooth',block:'start'}));
+}
+function initMusicPlayers(){
+  MUSIC_TRACK_IDS.forEach(id=>{
+    const audio=document.getElementById(id);
+    if(!audio) return;
+    audio.addEventListener('play',()=>{
+      musicStopAll(true,id);
+      musicSetStatus(id,'Lecture en cours…');
+    });
+    audio.addEventListener('pause',()=>{
+      if(audio.currentTime>0&&!audio.ended) musicSetStatus(id,'En pause.');
+    });
+  });
+}
 function setView(v,keepGameContext=false){
   if(v==='jeux'&&!keepGameContext){ jCtx=null; jCat='toutes'; }
+  if(v!=='musique') musicStopAll(false);
   S.view=v; S.cat=''; S.letter='';
   const gv=['flashcard','jeux'].includes(v)?'apprendre':v;
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===gv));
@@ -3742,6 +4010,7 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 // ══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async ()=>{
   initEntryWarning();
+  initMusicPlayers();
   // Chargement depuis Supabase (source unique des mots depuis le 2026-08-18)
   (async()=>{
     try{
