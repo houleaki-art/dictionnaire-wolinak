@@ -606,6 +606,15 @@ body.music-dock-open .toast{bottom:116px}
 .trad-btn:hover{opacity:.85}
 .trad-btn:disabled{opacity:.5;cursor:not-allowed}
 .trad-output{min-height:120px;font-size:.95rem;color:var(--text);line-height:1.7;white-space:pre-wrap}
+.trad-analysis-row{display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)}
+.trad-analysis-row>span:first-child{font-size:.85rem;color:var(--text2);min-width:120px}
+.trad-analysis-note{font-size:.73rem;color:var(--text2);padding:0 0 5px 130px}
+@media(max-width:600px){
+  .trad-output{overflow-wrap:anywhere}
+  .trad-analysis-row{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;align-items:start}
+  .trad-analysis-row>span:first-child{min-width:0}
+  .trad-analysis-note{padding-left:0}
+}
 .trad-placeholder{color:var(--text2);font-style:italic;font-size:.88rem}
 .trad-meta{font-size:.72rem;color:var(--text2);line-height:1.5;border-top:1px solid var(--border);padding-top:8px}
 .trad-copy-btn{background:none;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;align-self:flex-start}
@@ -906,6 +915,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <p>Son contenu, sa compilation, ses traductions, ses prononciations et ses outils pédagogiques n'ont pas été attestés, révisés ni approuvés dans leur ensemble par un professionnel.</p>
       <p><strong>Ne prenez rien pour acquis.</strong> Toute graphie, définition, règle, phrase, prononciation ou réponse produite automatiquement doit être vérifiée auprès de sources fiables et de personnes compétentes.</p>
       <p>Ce site ne constitue pas une référence officielle et ne représente aucune validation officielle des Premières Nations Abénakises d'Odanak ou de Wôlinak.</p>
+      <p><strong>Déclaration de financement de l'auteur.</strong> Ce dictionnaire a été monté et financé entièrement avec l'argent personnel de Guillaum Labrecque-Houle. Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Il ne s'agit ni d'une subvention, ni d'une commandite, ni d'une approbation institutionnelle du dictionnaire.</p>
     </div>
     <button class="warning-accept" id="entryWarningAccept" type="button" onclick="acceptEntryWarning()">
       J'ai compris — consulter avec prudence
@@ -1104,7 +1114,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="trad-wrap">
       <div class="trad-header">
         <h2>🪶 Traducteur de phrases</h2>
-        <p class="trad-sub">Les phrases complètes documentées sont traduites. Sinon, l'outil montre seulement les fragments connus, sans les assembler.</p>
+        <p class="trad-sub">Les phrases complètes documentées sont prioritaires. L'outil peut aussi proposer certaines constructions prévues par une règle documentée : elles sont signalées en jaune, expliquées étape par étape et restent à faire valider. Tout le reste est montré comme fragments séparés, sans assemblage automatique.</p>
       </div>
       <div class="trad-direction-bar">
         <button class="trad-dir-btn on" id="btnFrToAln" onclick="setTradDir('fr-aln')">
@@ -1845,6 +1855,7 @@ Merci... merci de m'avoir entendu</pre>
         <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; un <b>k final</b> ne doit pas disparaître</td></tr><tr><td>i</td><td>= se prononce é</td></tr><tr><td>o</td><td>= se prononce ou (ex: Awassos = awassouuss)</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>wa</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= voyelle nasale entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
+      <div class="acard"><h3>💰 Financement personnel</h3><p>Ce dictionnaire a été monté et financé entièrement avec l'argent personnel de <strong>Guillaum Labrecque-Houle</strong>. Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Ce financement personnel n'est ni une subvention, ni une commandite, ni une approbation institutionnelle du projet.</p></div>
       <div class="acard"><h3>➕ Contribuer</h3><p>Cliquez le bouton <strong>+</strong> pour proposer un mot.
         Une proposition reste en attente tant qu'elle n'a pas été vérifiée; son envoi ne constitue pas une approbation linguistique.</p></div>
       <div class="acard"><h3>⚕️ Santé et sécurité</h3><p>Les notes historiques ou culturelles du projet ne sont pas des conseils de santé.
@@ -4832,6 +4843,17 @@ const DOCUMENTED_SENTENCES=[
   {fr:['Nous sommes des Abénakis, toi inclus'],aln8ba:'Kiona W8banakiak'}
 ];
 
+// Paradigmes fermés déjà enseignés dans les exercices. Ces sorties sont des
+// constructions grammaticales traçables, jamais des phrases déclarées attestées.
+const DOCUMENTED_NEGATION_PARADIGMS=[
+  {positive:"Nd'aliwizi",positiveFr:"je m'appelle",negativeFr:"je ne m'appelle pas",negative:"Nda nd'aliwiziw",answer:0,rule:"Le radical finit par -i : Nda et le suffixe -w.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée Nd'aliwizi."},
+  {positive:"N'wal8wzi",positiveFr:"je vais bien",negativeFr:"je ne vais pas bien",negative:"Nda n'wal8wziw",answer:0,rule:"Le radical finit par -i : Nda et le suffixe -w.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée N'wal8wzi."},
+  {positive:"Nd'agakimzi",positiveFr:"j'étudie",negativeFr:"je n'étudie pas",negative:"Nda nd'agakimziw",answer:0,rule:"Le radical finit par -i : Nda et le suffixe -w.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée Nd'agakimzi."},
+  {positive:"Nd'aloka",positiveFr:"je travaille",negativeFr:"je ne travaille pas",negative:"Nda nd'alokawi",answer:1,rule:"Le radical finit par -a : Nda et le suffixe -wi.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée Nd'aloka."},
+  {positive:"N'saosa",positiveFr:"je sors",negativeFr:"je ne sors pas",negative:"Nda n'saosawi",answer:1,rule:"Le radical finit par -a : Nda et le suffixe -wi.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée N'saosa."},
+  {positive:"N'mikwaldam",positiveFr:"je me souviens",negativeFr:"je ne me souviens pas",negative:"Nda n'mikwaldamowen",answer:2,rule:"Le radical appartient au groupe documenté en -aldam- : Nda et le suffixe -owen.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée N'mikwaldam."}
+];
+
 function traduire(){
   const input = document.getElementById('tradInput').value.trim();
   if(!input) return;
@@ -5039,31 +5061,46 @@ function traduire(){
   // ── Tokenisation — la casse d'origine est gardée pour repérer les noms propres ──
   const ELI = {j:'je',m:'me',t:'te',s:'se',l:'le',d:'de',n:'ne',qu:'que',c:'ce',jusqu:'jusque',lorsqu:'lorsque',puisqu:'puisque'};
   const CONTR = {du:['de','le'],des:['de','les'],au:['a','le'],aux:['a','les']};
-  let TOKS=[];
-  (input.match(/[A-Za-zÀ-ÿ0-9'8]+/g)||[]).forEach(w=>{
-    const lw = norm(w);
-    if(!lw) return;
-    if(FR && CONTR[lw]){
-      CONTR[lw].forEach((p,k)=>TOKS.push({n:p,o:k===0?w:' '}));
-      return;
-    }
-    if(FR){
-      const m = lw.match(/^([a-z]+)'(.+)$/);
-      if(m && ELI[m[1]] && m[2]){
-        TOKS.push({n:ELI[m[1]], o:m[1]+"'"}, {n:m[2], o:w.slice(m[1].length+1)});
-        return;
+  const tokenizeInput=value=>{
+    const tokens=[];
+    let previousEnd=0;
+    for(const match of value.matchAll(/[A-Za-zÀ-ÿ0-9'8]+/g)){
+      const w=match[0], between=value.slice(previousEnd,match.index);
+      const sentenceStart=tokens.length===0||/(?:[.!?;]|\n)\s*$/.test(between);
+      previousEnd=match.index+w.length;
+      const lw=norm(w);
+      if(!lw) continue;
+      if(FR&&CONTR[lw]){
+        CONTR[lw].forEach((p,k)=>tokens.push({n:p,o:k===0?w:' ',sentenceStart:k===0&&sentenceStart}));
+        continue;
       }
+      if(FR){
+        const m=lw.match(/^([a-z]+)'(.+)$/);
+        if(m&&ELI[m[1]]&&m[2]){
+          tokens.push({n:ELI[m[1]],o:m[1]+"'",sentenceStart},
+            {n:m[2],o:w.slice(m[1].length+1),sentenceStart:false});
+          continue;
+        }
+      }
+      tokens.push({n:lw,o:w,sentenceStart});
     }
-    TOKS.push({n:lw, o:w});
-  });
-  if(FR){
+    return tokens;
+  };
+  const applyEquivalences=tokens=>{
+    if(!FR) return tokens;
     EQUIV.forEach(([de,vers])=>{
       const dt=de.split(' '), vt=vers.split(' ');
-      for(let i=0;i+dt.length<=TOKS.length;i++){
-        if(dt.every((t,k)=>TOKS[i+k]&&TOKS[i+k].n===t)){ TOKS.splice(i,dt.length,...vt.map(v=>({n:v,o:v}))); i--; }
+      for(let i=0;i+dt.length<=tokens.length;i++){
+        if(dt.every((t,k)=>tokens[i+k]&&tokens[i+k].n===t)){
+          const sentenceStart=Boolean(tokens[i].sentenceStart);
+          tokens.splice(i,dt.length,...vt.map((v,k)=>({n:v,o:v,sentenceStart:k===0&&sentenceStart})));
+          i--;
+        }
       }
     });
-  }
+    return tokens;
+  };
+  let TOKS=applyEquivalences(tokenizeInput(input));
 
   // Une phrase attestée gagne toujours sur une composition mot à mot.
   const phraseKey=(s,isFr)=>{
@@ -5113,15 +5150,40 @@ function traduire(){
     if(!candidates.length||(candidates[1]&&candidates[1].score===candidates[0].score)) return null;
     return {phrase:candidates[0].phrase,source:value,corrected:candidates[0].form};
   };
+  const findRuleBasedClause=value=>{
+    const key=phraseKey(value,FR);
+    const candidates=DOCUMENTED_NEGATION_PARADIGMS
+      .map(rule=>({rule,key:phraseKey(FR?rule.negativeFr:rule.negative,FR)}))
+      .sort((a,b)=>b.key.length-a.key.length);
+    const match=candidates.find(item=>key===item.key||key.startsWith(item.key+' '));
+    if(!match) return null;
+    return {
+      rule:match.rule,
+      source:FR?match.rule.negativeFr:match.rule.negative,
+      remainder:key===match.key?'':key.slice(match.key.length).trim()
+    };
+  };
   const wholePhraseMatch=findDocumentedPhrase(input,true);
   let phraseMatches=wholePhraseMatch?[wholePhraseMatch]:[];
+  let ruleMatches=[];
+  let unmatchedPhraseSegments=[];
+  let hasUnmatchedSegments=false;
   if(!wholePhraseMatch){
     const segments=(input.match(/[^.!?;\n]+(?:[.!?;]+|$)/g)||[])
       .map(s=>s.trim()).filter(s=>phraseKey(s,FR));
-    if(segments.length>1){
-      const matches=segments.map(s=>findDocumentedPhrase(s,true));
-      if(matches.every(Boolean)) phraseMatches=matches;
-    }
+    segments.forEach(segment=>{
+      const phraseMatch=findDocumentedPhrase(segment,true);
+      if(phraseMatch){ phraseMatches.push(phraseMatch); return; }
+      const ruleMatch=findRuleBasedClause(segment);
+      if(ruleMatch){
+        ruleMatches.push(ruleMatch);
+        if(ruleMatch.remainder) unmatchedPhraseSegments.push(ruleMatch.remainder);
+        return;
+      }
+      unmatchedPhraseSegments.push(segment);
+    });
+    const recognizedCount=phraseMatches.length+ruleMatches.length;
+    hasUnmatchedSegments=recognizedCount>0&&unmatchedPhraseSegments.length>0;
   }
 
   // ── Phrases attestées et patrons à trous bâtis sur les données actuelles ──
@@ -5132,13 +5194,22 @@ function traduire(){
       note:match.corrected
         ? 'Saisie rapprochée de « '+match.corrected+' ». Vérifie la correction avant de réutiliser la traduction.'
         : 'Phrase complète actuelle documentée dans le parcours.'}));
-    TOKS=[];
   }
-  if(FR && !phraseMatches.length){
+  const ruleChunks=ruleMatches.map(match=>({
+    type:'rule',label:match.source,
+    out:FR?match.rule.negative:match.rule.negativeFr.charAt(0).toUpperCase()+match.rule.negativeFr.slice(1),
+    base:match.rule.positive+' — '+match.rule.positiveFr,
+    rule:match.rule.rule,source:match.rule.source
+  }));
+  if(phraseMatches.length||ruleMatches.length){
+    TOKS=hasUnmatchedSegments?applyEquivalences(tokenizeInput(unmatchedPhraseSegments.join(' '))):[];
+  }
+  if(FR && !phraseMatches.length && !ruleMatches.length){
     const isAppel = t => tokFuzzy(t,'appelle') || t==='appeler';
-    // « je m'appelle X » → Nd'alewizi X (le prénom se garde tel quel)
-    const pNom = byId('s10');
-    if(pNom){
+    // Le modèle à prénom réutilise uniquement la phrase complète approuvée.
+    const pNom=DOCUMENTED_SENTENCES.find(p=>p.fr.includes("Je m'appelle Mali"));
+    const pNomBase=pNom&&pNom.aln8ba.replace(/\s+\S+\s*$/,'');
+    if(pNomBase){
       for(let i=0;i+2<TOKS.length+1 && TOKS[i+2];i++){
         if(TOKS[i].n==='je' && TOKS[i+1].n==='me' && isAppel(TOKS[i+2].n) && !(i>0 && TOKS[i-1].n==='ne')){
           const nomToks=TOKS.slice(i+3);
@@ -5147,9 +5218,9 @@ function traduire(){
           if(!nomValide) break;
           TOKS.splice(0,TOKS.length);
           const nom=nomToks.map(t=>t.o).join(' ');
-          patChunks.push({type:'pat',label:"je m'appelle "+nom,w:pNom,
-            out:pNom[dstField]+' '+nom,
-            note:"La forme documentée « "+pNom[dstField]+" » porte le verbe; le prénom reste tel quel."});
+          patChunks.push({type:'pat',label:"je m'appelle "+nom,
+            out:pNomBase+' '+nom,
+            note:"La forme documentée « "+pNomBase+" » porte le verbe; le prénom reste tel quel."});
           break;
         }
       }
@@ -5296,25 +5367,35 @@ function traduire(){
     // 8) repli : le mot vit dans un sens plus long (« appeler » dans « Appeler · nommer »)
     const tk = tokIdx.get(t);
     if(tk && tk.length){ chunks.push({type:'hit', toks:[T], w:tk[0].w, sens:tk[0].sens, alts:[], dansSens:true}); i++; continue; }
-    // 9) nom propre au milieu d'une phrase — il ne doit jamais être transformé
-    // en mot courant par la tolérance orthographique (ex. « Mali » → « mai »).
-    if(FR && i>0 && /^[A-ZÀ-Þ]/.test(T.o)){ chunks.push({type:'nom', toks:[T]}); i++; continue; }
-    // 10) tolérance aux fautes — le mot du dictionnaire le plus proche
+    // 9) Une majuscule protège des corrections automatiques, mais ne suffit pas à
+    // déclarer un nom propre lorsqu'elle suit un point ou commence la saisie.
+    const capitalized=FR&&/^[A-ZÀ-Þ]/.test(T.o);
+    if(capitalized&&(!T.sentenceStart||TOKS.length===1)){
+      chunks.push({type:'nom',toks:[T]}); i++; continue;
+    }
+    if(capitalized&&T.sentenceStart){
+      chunks.push({type:'miss',toks:[T],note:'mot non reconnu; la majuscule de début de phrase ne permet pas de conclure qu’il s’agit d’un nom propre'});
+      i++; continue;
+    }
+    // 10) Tolérance française très prudente : une seule modification et un seul
+    // candidat. Une graphie aln8ba n'est jamais corrigée automatiquement.
     let cor=null;
-    if(t.length>=4){
-      let bestK=null, bestD=9, bestEnt=null;
+    if(FR&&t.length>=4){
+      let bestD=9;
+      const bestCandidates=new Map();
       const tryKeys=(map)=>{ for(const k of map.keys()){
-        if(Math.abs(k.length-t.length)>2) continue;
+        if(Math.abs(k.length-t.length)>1) continue;
         const d=levDist(t,k);
-        if(d<bestD){ bestD=d; bestK=k; bestEnt=map.get(k)[0]; }
+        if(d<bestD){bestD=d;bestCandidates.clear();}
+        if(d===bestD) bestCandidates.set(k,map.get(k)[0]);
       }};
       tryKeys(idx); tryKeys(tokIdx);
-      const seuil = t.length>=7 ? 2 : 1;
-      if(bestK && bestD<=seuil) cor={key:bestK, ent:bestEnt};
+      if(bestD===1&&bestCandidates.size===1){
+        const [key,ent]=bestCandidates.entries().next().value;
+        cor={key,ent};
+      }
     }
     if(cor){ chunks.push({type:'hit', toks:[T], w:cor.ent.w, sens:cor.ent.sens, alts:[], corrige:t+' → '+cor.key}); i++; continue; }
-    // 11) nom propre en tête de saisie — il se garde tel quel en aln8ba
-    if(FR && /^[A-ZÀ-Þ]/.test(T.o)){ chunks.push({type:'nom', toks:[T]}); i++; continue; }
     // 11bis) aln8ba → français : préfixe de personne détaché (n'- = je…)
     if(!FR){
       const mp = t.match(/^(nd'|kd'|wd'|n'|k'|w'|d')(.+)$/);
@@ -5339,7 +5420,7 @@ function traduire(){
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
 
-  if(!hits.length && !patChunks.length){
+  if(!hits.length && !patChunks.length && !ruleChunks.length){
     outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples, ou propose le mot manquant avec le bouton ＋ en bas à droite.</span>' + essaisHtml;
     document.getElementById('tradBtnTxt').textContent = 'Traduire →';
     TRAD_LAST_OUTPUT = '';
@@ -5350,8 +5431,9 @@ function traduire(){
   // seule forme exacte ou à un patron documenté. Des fragments ne deviennent
   // jamais une phrase par simple concaténation.
   const contentChunks = chunks.filter(c=>c.type!=='skip');
-  const completePattern = patChunks.length>=1 && contentChunks.length===0;
-  const wholeHit = patChunks.length===0 && contentChunks.length===1
+  const completePattern = patChunks.length>=1 && ruleChunks.length===0 && contentChunks.length===0 && !hasUnmatchedSegments;
+  const completeRule = ruleChunks.length>=1 && patChunks.length===0 && contentChunks.length===0 && !hasUnmatchedSegments;
+  const wholeHit = patChunks.length===0 && ruleChunks.length===0 && contentChunks.length===1
     && contentChunks[0].type==='hit'
     && contentChunks[0].toks.length===TOKS.length
     && !contentChunks[0].consultative
@@ -5363,6 +5445,7 @@ function traduire(){
     && !contentChunks[0].note
     && !(contentChunks[0].alts||[]).length;
   const completeTranslation = completePattern || wholeHit;
+  const ruleOutput=completeRule?ruleChunks.map(p=>p.out).join('\n'):'';
   const sortie = completePattern ? patChunks.map(p=>p.out).join('\n')
     : wholeHit ? (contentChunks[0].forceOut || contentChunks[0].w[dstField])
     : '';
@@ -5370,6 +5453,20 @@ function traduire(){
   const hasPhraseCorrection=patChunks.some(p=>p.corrected);
   const documentedPassages=[];
   const passageKeys=new Set();
+  if(!completePattern) patChunks.forEach(p=>{
+    const key=p.label+'\u0000'+p.out;
+    if(!passageKeys.has(key)){
+      passageKeys.add(key);
+      documentedPassages.push({source:p.label,output:p.out,correction:p.corrected});
+    }
+  });
+  if(!completeRule) ruleChunks.forEach(p=>{
+    const key=p.label+'\u0000'+p.out;
+    if(!passageKeys.has(key)){
+      passageKeys.add(key);
+      documentedPassages.push({source:p.label,output:p.out,constructed:true});
+    }
+  });
   chunks.forEach(c=>{
     const reverseVerbPassage=!FR&&c.type==='hit'&&c.toks.length===1
       &&/^(je|j'|tu|il|elle|on|nous|vous|ils|elles)\b/i.test(c.w.fr||'')
@@ -5386,6 +5483,7 @@ function traduire(){
     documentedPassages.push({source,output,correction:c.corrige});
   });
   const passageHasCorrection=documentedPassages.some(p=>p.correction);
+  const passageHasConstruction=documentedPassages.some(p=>p.constructed);
   TRAD_LAST_OUTPUT = completeTranslation && !hasConsultative && !hasPhraseCorrection ? sortie : '';
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
@@ -5397,25 +5495,35 @@ function traduire(){
       + (hasPhraseCorrection?'✏️ Phrase documentée reconnue après correction'
         : patChunks.length>1?'✓ '+patChunks.length+' phrases complètes documentées, traitées séparément'
         :'✓ Correspondance complète documentée')+'</div></div>'
+    : completeRule
+      ? '<div style="background:var(--surface2);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+        + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5;white-space:pre-line">'+escH(ruleOutput)+'</div>'
+        + '<div style="margin-top:8px;color:var(--gold);font-size:.75rem;font-weight:700">⚙ Construction grammaticale documentée — phrase non retrouvée mot pour mot</div></div>'
+        + '<div class="aprnote w" style="margin-bottom:12px"><b>Proposition à faire valider</b>'
+        + ' La forme ci-dessus applique une règle documentée à une base actuelle du dictionnaire. La phrase complète n’a pas été retrouvée mot pour mot dans les sources du projet et ne constitue pas une attestation de l’Office de la langue abénakise.</div>'
     : documentedPassages.length
-      ? '<div style="background:var(--surface2);border:1px solid var(--green);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
-        + '<div style="color:var(--green);font-size:.78rem;font-weight:700;margin-bottom:9px">✓ '
-        + documentedPassages.length+' proposition'+(documentedPassages.length>1?'s':'')+' complète'+(documentedPassages.length>1?'s':'')+' documentée'+(documentedPassages.length>1?'s':'')+' reconnue'+(documentedPassages.length>1?'s':'')+'</div>'
+      ? '<div style="background:var(--surface2);border:1px solid '+(passageHasConstruction?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+        + '<div style="color:'+(passageHasConstruction?'var(--gold)':'var(--green)')+';font-size:.78rem;font-weight:700;margin-bottom:9px">'
+        + documentedPassages.length+' passage'+(documentedPassages.length>1?'s':'')+' reconnu'+(documentedPassages.length>1?'s':'')
+        + (passageHasConstruction?' — les formes ⚙ sont construites par une règle documentée':' — correspondance documentée')+'</div>'
         + documentedPassages.map(p=>'<div style="padding:7px 0;border-top:1px solid var(--border);line-height:1.45">'
           + '<span style="color:var(--text2)">'+escH(p.source)+'</span> '
           + (p.correction?'<span style="font-size:.72rem;color:var(--gold)">('+escH(p.correction)+')</span> ':'')
-          + '<span aria-hidden="true">→</span> <b style="color:var(--accent)">'+escH(p.output)+'</b></div>').join('')
+          + '<span aria-hidden="true">→</span> <b style="color:var(--accent)">'+escH(p.output)+'</b>'
+          + (p.constructed?' <span style="font-size:.72rem;color:var(--gold)">⚙ construction à valider</span>':'')+'</div>').join('')
         + '</div><div class="aprnote w" style="margin-bottom:12px"><b>Le texte complet reste partiel</b>'
-        + ' Les propositions ci-dessus sont complètes et documentées. Les autres éléments sont analysés séparément, sans fabriquer les liens grammaticaux manquants.</div>'
+        + ' Les passages attestés et les constructions signalées sont conservés séparément. Les autres éléments sont analysés sans fabriquer les liens grammaticaux manquants.</div>'
       : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
         + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
 
   // Détail morceau par morceau
   html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">'
-    + (completeTranslation ? '🧩 Détail de la correspondance :' : '🔎 Analyse lexicale seulement — fragments indépendants :') + '</div>';
+    + (completeTranslation ? '🧩 Détail de la correspondance :'
+      : completeRule ? '⚙ Détail de la construction grammaticale :'
+      : '🔎 Analyse des passages et fragments indépendants :') + '</div>';
   const ligne = (gauche, droite, extra) =>
-    '<div style="display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)">'
-    + '<span style="font-size:.85rem;color:var(--text2);min-width:120px">' + gauche + '</span>'
+    '<div class="trad-analysis-row">'
+    + '<span>' + gauche + '</span>'
     + '<span style="font-size:.9rem">' + droite + '</span>' + (extra||'') + '</div>';
 
   patChunks.forEach(p=>{
@@ -5423,7 +5531,14 @@ function traduire(){
     html += ligne(label,
       '<b style="color:var(--accent)">'+lnk(p.out, dstField==='aln8ba'?'aln8ba':'fr')+'</b>',
       ' <span style="color:#2e7d32;font-size:.75rem">🌟 phrase documentée</span>')
-      + (p.note? '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">'+escH(p.note)+'</div>':'');
+      + (p.note? '<div class="trad-analysis-note" style="font-style:italic">'+escH(p.note)+'</div>':'');
+  });
+  ruleChunks.forEach(p=>{
+    html += ligne(escH(p.label),
+      '<b style="color:var(--accent)">'+escH(p.out)+'</b>',
+      ' <span style="color:var(--gold);font-size:.75rem">⚙ construction documentée, à valider</span>')
+      + '<div class="trad-analysis-note"><b>Base :</b> '+escH(p.base)
+      + '<br><b>Règle :</b> '+escH(p.rule)+'<br><b>Traçabilité :</b> '+escH(p.source)+'</div>';
   });
   chunks.forEach(c => {
     const gaucheBase = escH(c.toks.map(x=>x.o||x.n).join(' '));
@@ -5439,12 +5554,12 @@ function traduire(){
       if(c.dansSens) notes += ' <span style="font-size:.7rem;color:var(--text3)">dans « '+escH(c.sens)+' »</span>';
       if(c.prefixe) notes += ' <span style="font-size:.7rem;color:#7b5ea7">🧩 préfixe '+escH(c.prefixe)+'</span>';
       html += ligne(gaucheBase + notes, '<b style="color:var(--accent)">'+lnk(c.forceOut||c.w[dstField], dstField==='aln8ba'?'aln8ba':'fr')+'</b>', badge)
-        + (c.note? '<div style="font-size:.73rem;color:#b8860b;padding:0 0 5px 130px;font-style:italic">'+escH(c.note)+'</div>':'');
+        + (c.note? '<div class="trad-analysis-note" style="color:#b8860b;font-style:italic">'+escH(c.note)+'</div>':'');
       c.alts.forEach(a => {
-        html += '<div style="font-size:.75rem;color:var(--text2);padding:1px 0 3px 130px">ou aussi : <b>' + escH(a.w[dstField]) + '</b></div>';
+        html += '<div class="trad-analysis-note" style="font-size:.75rem;padding-top:1px;padding-bottom:3px">ou aussi : <b>' + escH(a.w[dstField]) + '</b></div>';
       });
       if(c.w.example_a && c.w.example_f){
-        html += '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">Ex : ' + escH(c.w.example_a) + ' — ' + escH(c.w.example_f) + '</div>';
+        html += '<div class="trad-analysis-note" style="font-style:italic">Ex : ' + escH(c.w.example_a) + ' — ' + escH(c.w.example_f) + '</div>';
       }
     } else if(c.type==='nom'){
       html += ligne(gaucheBase, '<b style="color:var(--accent)">'+escH(c.toks[0].o)+'</b>',
@@ -5452,7 +5567,7 @@ function traduire(){
     } else if(c.type==='gram'){
       html += ligne(gaucheBase, '<b style="color:#7b5ea7">'+escH(c.titre)+'</b>',
         ' <span style="color:#7b5ea7;font-size:.75rem">🗣️ grammaire</span>')
-        + '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">'+escH(c.note)+'</div>';
+        + '<div class="trad-analysis-note" style="font-style:italic">'+escH(c.note)+'</div>';
     } else if(c.type==='skip'){
       html += '<div style="display:flex;gap:10px;align-items:baseline;padding:3px 0;border-bottom:1px dashed var(--border)">'
         + '<span style="font-size:.8rem;color:var(--text3);min-width:120px">' + gaucheBase + '</span>'
@@ -5463,18 +5578,20 @@ function traduire(){
         + ' <button class="btn btn-secondary" style="padding:1px 8px;font-size:.68rem" onclick="tradProposer(\''+escQ(c.toks.map(x=>x.o||x.n).join(' '))+'\')">＋ Proposer</button>');
     }
   });
-  if(!completeTranslation) html += essaisHtml;
+  if(!completeTranslation && !completeRule) html += essaisHtml;
 
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = TRAD_LAST_OUTPUT ? 'block' : 'none';
   document.getElementById('tradMeta').textContent = hasConsultative
     ? '📜 Une locution documentée consultative a été reconnue exactement. Son sens est affiché avec prudence et la copie est désactivée; les autres morceaux utilisent les entrées vertes actuelles.'
-    : hasPhraseCorrection
+    : hasPhraseCorrection&&completeTranslation
       ? '✏️ Une faute probable a été rapprochée d’une seule phrase française documentée. La correction est affichée et la copie reste désactivée pour éviter toute réutilisation accidentelle.'
     : completeTranslation
       ? '✓ Traduction fondée uniquement sur '+(patChunks.length>1?'des phrases complètes documentées, conservées séparément':'une correspondance complète documentée')+' dans les entrées vertes actuelles.'
+      : completeRule
+        ? '⚙ Proposition construite à partir d’un paradigme documenté. Elle n’a pas été retrouvée mot pour mot et doit être validée avant un usage officiel; la copie reste désactivée.'
       : documentedPassages.length
-        ? '✓ '+documentedPassages.length+' proposition'+(documentedPassages.length>1?'s complètes documentées ont':' complète documentée a')+' été reconnue'+(documentedPassages.length>1?'s':'')+(passageHasCorrection?' après une correction affichée':'')+'. Le texte entier n’est pas traduit et la copie reste désactivée.'
+        ? documentedPassages.length+' passage'+(documentedPassages.length>1?'s ont':' a')+' été reconnu'+(documentedPassages.length>1?'s':'')+(passageHasCorrection?' après une correction affichée':'')+(passageHasConstruction?'; les formes construites sont signalées et restent à valider':'')+'. Le texte entier n’est pas traduit et la copie reste désactivée.'
       : '⚠️ Analyse de fragments seulement. Aucun ordre grammatical ni aucune phrase n\'est construit; la copie reste désactivée. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
@@ -6444,13 +6561,9 @@ function jRetSens(){ const b=window._jb;
   return `<b>${b.aln8ba} — ${b.fr}</b>${b.grammar?`<em>${b.grammar}</em>`:''}
     ${b.example_a?`<div style="margin-top:7px">${b.example_a} — <em>${b.example_f||''}</em></div>`:''}
     <span class="aprsrc">${aprSrc(b.source)}</span>`; }
-const JNEG=[
- {v:"Nd'aliwizi",f:"je m'appelle",r:0,n:"Nda nd'aliwiziw",w:"Le radical finit par -i, donc le suffixe est -W."},
- {v:"N'wal8wzi",f:"je vais bien",r:0,n:"Nda n'wal8wziw",w:"Le radical finit par -i, donc le suffixe est -W."},
- {v:"Nd'agakimzi",f:"j'étudie",r:0,n:"Nda nd'agakimziw",w:"Le radical finit par -i, donc le suffixe est -W."},
- {v:"Nd'aloka",f:"je travaille",r:1,n:"Nda nd'alokawi",w:"Le radical finit par -a, donc le suffixe est -WI."},
- {v:"N'saosa",f:"je sors",r:1,n:"Nda n'saosawi",w:"Le radical finit par -a, donc le suffixe est -WI."},
- {v:"N'mikwaldam",f:"je me souviens",r:2,n:"Nda n'mikwaldamowen",w:"Verbe du groupe documenté en -aldam- : le suffixe est -OWEN."}];
+const JNEG=DOCUMENTED_NEGATION_PARADIGMS.map(p=>({
+  v:p.positive,f:p.positiveFr,r:p.answer,n:p.negative,w:p.rule
+}));
 function jNegat(){
   const q=jPickFresh('negat',JNEG,x=>x.v); window._jq=q;
   jFrame('La négation',`
