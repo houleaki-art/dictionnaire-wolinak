@@ -145,6 +145,25 @@ main{flex:1;padding:24px 28px;min-width:0}
 .mbody{padding:24px 28px}
 .mclose{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;color:var(--text3);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:var(--tr)}
 .mclose:hover{background:var(--surface2);color:var(--text)}
+/* ── AVERTISSEMENT D'ENTRÉE ── */
+body.warning-open{overflow:hidden}
+.entry-warning{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:radial-gradient(circle at 50% 15%,rgba(125,70,28,.38),rgba(16,9,5,.9) 58%);
+  backdrop-filter:blur(9px)}
+.entry-warning[hidden]{display:none}
+.warning-card{width:min(680px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:var(--surface);
+  border:1px solid color-mix(in srgb,var(--accent) 55%,var(--border));border-top:7px solid var(--accent);
+  border-radius:18px;padding:clamp(24px,5vw,42px);box-shadow:0 24px 80px rgba(0,0,0,.48)}
+.warning-kicker{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:9px}
+.warning-card h2{font-size:clamp(1.55rem,5vw,2.35rem);line-height:1.08;margin-bottom:15px;color:var(--text)}
+.warning-lead{font-size:1rem;line-height:1.55;color:var(--text);margin-bottom:18px}
+.warning-copy{border-left:4px solid var(--gold);background:var(--surface2);border-radius:0 12px 12px 0;padding:16px 18px}
+.warning-copy p{font-size:.88rem;line-height:1.65;color:var(--text2);margin-bottom:10px}
+.warning-copy p:last-child{margin-bottom:0}
+.warning-accept{display:block;width:100%;margin-top:22px;border:0;border-radius:10px;padding:14px 18px;
+  background:var(--accent);color:#fff;font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer;transition:var(--tr)}
+.warning-accept:hover{background:var(--accent-h);transform:translateY(-1px)}
+.warning-accept:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 /* form */
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .frow.full{grid-template-columns:1fr}
@@ -624,6 +643,23 @@ textarea{resize:vertical;min-height:68px}
 </style>
 </head>
 <body>
+
+<div class="entry-warning" id="entryWarning" role="dialog" aria-modal="true"
+     aria-labelledby="entryWarningTitle" aria-describedby="entryWarningText">
+  <section class="warning-card">
+    <div class="warning-kicker">Avant de consulter le dictionnaire</div>
+    <h2 id="entryWarningTitle">Avertissement important</h2>
+    <p class="warning-lead"><strong>Ce dictionnaire est, à ce stade, un projet 100&nbsp;% personnel et en construction.</strong></p>
+    <div class="warning-copy" id="entryWarningText">
+      <p>Son contenu, sa compilation, ses traductions, ses prononciations et ses outils pédagogiques n'ont pas été attestés, révisés ni approuvés dans leur ensemble par un professionnel.</p>
+      <p><strong>Ne prenez rien pour acquis.</strong> Toute graphie, définition, règle, phrase, prononciation ou réponse produite automatiquement doit être vérifiée auprès de sources fiables et de personnes compétentes.</p>
+      <p>Ce site ne constitue pas une référence officielle et ne représente aucune validation officielle des Premières Nations Abénakises d'Odanak ou de Wôlinak.</p>
+    </div>
+    <button class="warning-accept" id="entryWarningAccept" type="button" onclick="acceptEntryWarning()">
+      J'ai compris — consulter avec prudence
+    </button>
+  </section>
+</div>
 
 <!-- HEADER -->
 <header>
@@ -3211,6 +3247,27 @@ function catLabel(c){return{salut:'Salutations',famille:'Famille',territoire:'Te
 function catIcon(c){return{salut:'🤝',famille:'👨‍👩‍👧',territoire:'🌍',nature:'🌿',animal:'🦌',plante:'🌱',action:'💡'}[c]||'📖';}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+function setEntryWarningActive(active){
+  document.body.classList.toggle('warning-open',active);
+  [...document.body.children].forEach(el=>{
+    if(el.id!=='entryWarning'&&el.tagName!=='SCRIPT') el.inert=active;
+  });
+}
+function acceptEntryWarning(){
+  const warning=document.getElementById('entryWarning');
+  if(!warning) return;
+  warning.hidden=true; setEntryWarningActive(false);
+  const search=document.getElementById('searchIn'); if(search) search.focus();
+}
+function initEntryWarning(){
+  const warning=document.getElementById('entryWarning'), accept=document.getElementById('entryWarningAccept');
+  if(!warning||!accept) return;
+  setEntryWarningActive(true);
+  warning.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();accept.focus();}
+  });
+  requestAnimationFrame(()=>accept.focus());
+}
 function openAbout(){
   setView('all');
   document.getElementById('aboutView').className='about-open show';
@@ -3223,6 +3280,7 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 //  INIT
 // ══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async ()=>{
+  initEntryWarning();
   // Chargement depuis Supabase (source unique des mots depuis le 2026-08-18)
   (async()=>{
     try{
