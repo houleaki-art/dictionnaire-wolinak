@@ -2284,13 +2284,27 @@ function checkLvl4A(answer){
   scrollToNextAction('#pratArena');
 }
 
+function normFrenchExerciseAnswer(value){
+  return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[’']/g,' ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+}
+function withoutFrenchArticle(value){
+  return value.replace(/^(?:(?:le|la|les|un|une|des|du|de|d|l)\s+)+/,'');
+}
+function matchesFrenchExerciseAnswer(value,answer){
+  const typed=normFrenchExerciseAnswer(value); if(!typed) return false;
+  const variants=(answer||'').split(/\s*(?:[·;/,]|[—–])\s*/).flatMap(part=>[
+    normFrenchExerciseAnswer(part),
+    normFrenchExerciseAnswer(part.replace(/\s*\([^)]*\)\s*/g,' '))
+  ]).filter(Boolean);
+  return variants.some(variant=>typed===variant ||
+    (withoutFrenchArticle(typed) && withoutFrenchArticle(typed)===withoutFrenchArticle(variant)));
+}
+
 function checkLvl4B(frAnswer, aln8baWord){
   if(PS.answered) return;
   const inp=document.getElementById('pratIn'); if(!inp) return;
-  const val=inp.value.trim().toLowerCase();
-  // Accepter si la valeur est incluse dans la réponse ou vice-versa (traductions longues)
-  const target=frAnswer.toLowerCase();
-  const correct=val===target || target.includes(val) && val.length>2;
+  const correct=matchesFrenchExerciseAnswer(inp.value,frAnswer);
   const w=PS.queue[PS.idx];
   inp.disabled=true; inp.classList.add(correct?'correct':'wrong');
   PS.answered=true; recordAnswer(correct,frAnswer);
