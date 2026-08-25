@@ -745,7 +745,7 @@ textarea{resize:vertical;min-height:68px}
         <h2>🧩 Pratique · Aln8ba8dwaw8gan</h2>
         <p>Complète les mots, retrouve les traductions, maîtrise la grammaire abenakise.</p>
       </div>
-      <div class="prat-score">
+      <div class="prat-score" role="status" aria-live="polite" aria-atomic="true">
         <div class="pscore"><div class="pscore-num" id="pScoreOk">0</div><div class="pscore-lbl">Correct</div></div>
         <div class="pscore"><div class="pscore-num" id="pScoreKo" style="color:#e07878">0</div><div class="pscore-lbl">Raté</div></div>
         <div class="pscore"><div class="pscore-num" id="pScoreStreak" style="color:#f0c060">🔥0</div><div class="pscore-lbl">Série</div></div>
@@ -1954,8 +1954,8 @@ function richFeedback(w, correct){
   const pl = /nom (animé|inanimé)/i.test(w.grammar||'') ? (()=>{ const p=resolvePlural(w);
     return `<div style="margin-top:6px;font-size:.88rem">Pluriel : <b>${p.form}</b> <span style="font-size:.72rem;opacity:.75">(${p.type})</span></div>`; })() : '';
   const ex = w.example_a ? `<div style="margin-top:8px;font-size:.8rem;font-style:italic;opacity:.8">"${w.example_a}" — ${w.example_f||''}</div>` : '';
-  if(correct) return `<div class="prat-feedback ok">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
-  return `<div class="prat-feedback ko">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
+  if(correct) return `<div class="prat-feedback ok" role="status" aria-live="polite" aria-atomic="true">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
+  return `<div class="prat-feedback ko" role="status" aria-live="polite" aria-atomic="true">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
 }
 
 // ── NIVEAU 1 : Tu vois le mot abenakis → reconnais la traduction ──
@@ -4746,7 +4746,7 @@ function jeuInit(){
 function jFrame(t,body,ctrl){
   document.getElementById('jStage').innerHTML=`<div class="jbar"><h3>${t}</h3>
     <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">${ctrl||''}
-    <span class="jscore">✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s></span></div></div>
+    <span class="jscore" role="status" aria-live="polite" aria-atomic="true">✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s></span></div></div>
     <div id="jBody">${body}</div>`;
 }
 function jAns(bon,i,retour){
@@ -4757,7 +4757,7 @@ function jAns(bon,i,retour){
   jSc[i===bon?'ok':'no']++;
   document.querySelector('.jscore').innerHTML=`✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s>`;
   document.getElementById('jBody').insertAdjacentHTML('beforeend',
-    `<div class="jafter">${retour}</div>
+    `<div class="jafter" role="status" aria-live="polite" aria-atomic="true">${retour}</div>
      <div style="text-align:center;margin-top:16px">
        <button class="aprbtn" onclick="({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})['${jCur}']()">Suivant →</button></div>`);
 }
@@ -4977,7 +4977,7 @@ function exCadre(corps){
     <div class="aprback" onclick="aprLecon(aprMod)">← Revenir à la leçon</div>
     <div class="aprcard">
       <div class="jbar"><h3>${exTitre}</h3>
-        <span class="jscore">Question ${Math.min(exQ+1,exTot)} sur ${exTot} &nbsp;·&nbsp;
+        <span class="jscore" role="status" aria-live="polite" aria-atomic="true">Question ${Math.min(exQ+1,exTot)} sur ${exTot} &nbsp;·&nbsp;
           ✓ <b>${exOk}</b></span></div>
       <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:20px">
         <div style="height:100%;width:${(exQ/exTot)*100}%;background:${n.c};border-radius:2px;transition:.3s"></div>
@@ -5001,7 +5001,7 @@ function exRepond(bon,i,retour){
   exQ++;
   exSyncScore();
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
-    `<div class="jafter">${retour}</div>
+    `<div class="jafter" role="status" aria-live="polite" aria-atomic="true">${retour}</div>
      <div style="text-align:center;margin-top:16px">
        <button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
 }
@@ -5136,7 +5136,7 @@ function exVerif(){
   exSyncScore();
   inp.disabled=true;
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
-    `<div class="jafter">${ok?'✓ Exact — de mémoire!':'✗ Pas encore. La bonne orthographe :'}
+    `<div class="jafter" role="status" aria-live="polite" aria-atomic="true">${ok?'✓ Exact — de mémoire!':'✗ Pas encore. La bonne orthographe :'}
        <b><span class="al8">${bon.aln8ba}</span></b> — ${bon.fr}
        <span class="aprsrc">${aprSrc(bon.source)}</span></div>
      <div style="text-align:center;margin-top:16px">
