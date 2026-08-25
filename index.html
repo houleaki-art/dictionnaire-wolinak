@@ -1033,23 +1033,6 @@ textarea{resize:vertical;min-height:68px}
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
       <article class="music-card">
-        <img class="music-cover" src="audio/paia-aw8sis.jpg" loading="lazy" alt="Pochette de la maquette Païa Aw8sis">
-        <h3>Païa Aw8sis</h3>
-        <span class="music-badge">Maquette IA · non studio</span>
-        <audio id="musicPaia" controls preload="none" aria-label="Écouter la maquette Païa Aw8sis" onended="musicStopped('musicPaia','Lecture terminée')">
-          <source src="audio/paia-aw8sis.mp3" type="audio/mpeg">
-          Votre navigateur ne prend pas en charge la lecture audio.
-        </audio>
-        <div class="music-controls" aria-label="Commandes pour Païa Aw8sis">
-          <button type="button" onclick="musicStart('musicPaia')">▶ Démarrer</button>
-          <button type="button" onclick="musicPause('musicPaia')">Ⅱ Pause</button>
-          <button type="button" onclick="musicStop('musicPaia')">■ Arrêter</button>
-        </div>
-        <div class="music-status" id="musicPaiaStatus" role="status" aria-live="polite">Prête à écouter.</div>
-        <button class="music-practice-link" type="button" onclick="openMusicPractice('practicePaia')">📝 Pratiquer avec les paroles bilingues</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
-      </article>
-      <article class="music-card">
         <img class="music-cover" src="audio/nijia-gabriel.jpg" loading="lazy" alt="Pochette de la maquette Nijia Gabriel">
         <h3>Nijia Gabriel</h3>
         <span class="music-badge">Maquette IA · non studio</span>
@@ -1172,55 +1155,6 @@ K'kezalmel, awonsis. K'kezalmel.</p></div>
 Nda n'wanalmu madzimiwé.
 Wli nanawalmezé. N'nanawalmel.
 Askwa yudali nd-aïbena.</p></div>
-          </div>
-        </div>
-      </details>
-
-      <details class="song-lyrics" id="practicePaia">
-        <summary>Païa Aw8sis · paroles bilingues</summary>
-        <div class="lyrics-body">
-          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Païa Aw8sis">
-            <strong>🎧 Païa Aw8sis</strong>
-            <div class="lyrics-player-controls">
-              <button type="button" onclick="musicStart('musicPaia')">▶ Démarrer</button>
-              <button type="button" onclick="musicPause('musicPaia')">Ⅱ Pause</button>
-              <button type="button" onclick="musicStop('musicPaia')">■ Arrêter</button>
-            </div>
-            <div class="music-status" id="musicPaiaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
-          </div>
-          <div class="lyrics-sequence"><strong>Ordre d'écoute :</strong> Couplet 1 → Refrain → Couplet 2 → Refrain → Couplet 3 → Refrain → Pont → Refrain doux → Sortie.</div>
-          <div class="lyrics-note">Dans cette maquette, chaque ligne en aln8ba est suivie de sa réponse chantée en français. Les deux colonnes reprennent cet ordre d'écoute.</div>
-          <div class="lyrics-grid">
-            <div class="lyrics-part"><h4>Couplet 1</h4>
-              <div class="lyrics-pair"><span>N'wawaldamen talé kd-aï, awonsis.</span><span>Je sais où tu es, petit.</span></div>
-              <div class="lyrics-pair"><span>Askwa yudali kd-aï, wigwonmek.</span><span>Tu es encore là, dans la maison.</span></div>
-              <div class="lyrics-pair"><span>Nopaiwé n'alosa, kanwa n'mikwaldam.</span><span>Je suis parti loin, mais je me souviens.</span></div>
-              <div class="lyrics-pair"><span>Nda n'wanaldamowen. Kalaata.</span><span>Je ne t'ai jamais oublié. En vérité.</span></div>
-            </div>
-            <div class="lyrics-part"><h4>Refrain</h4>
-              <div class="lyrics-pair"><span>Païa, awonsis, païa.</span><span>Viens, petit, viens.</span></div>
-              <div class="lyrics-pair"><span>K'wlipaïon, k'wlipaïon.</span><span>Sois le bienvenu, sois le bienvenu.</span></div>
-              <div class="lyrics-pair"><span>Kiona nikwonbi, kiona mina.</span><span>Nous sommes ensemble maintenant, ensemble encore.</span></div>
-              <div class="lyrics-pair"><span>Askwa yudali. Kalaata.</span><span>Nous sommes encore là. En vérité.</span></div>
-            </div>
-            <div class="lyrics-part"><h4>Couplet 2</h4>
-              <div class="lyrics-pair"><span>Kd'askawiho pita akwonbi, awonsis.</span><span>Tu as attendu bien longtemps, petit.</span></div>
-              <div class="lyrics-pair"><span>Awani nda kd'aliwiziw, awani nda k'kloziw.</span><span>Personne ne t'a dit ton nom, personne ne t'a parlé.</span></div>
-              <div class="lyrics-pair"><span>Kanwa nikwonbi n'wadzonem kdakinna.</span><span>Mais aujourd'hui j'ai notre terre.</span></div>
-              <div class="lyrics-pair"><span>Ta nikwonbi nd'alnonba-odwa.</span><span>Et aujourd'hui je parle notre langue.</span></div>
-            </div>
-            <div class="lyrics-part"><h4>Couplet 3</h4>
-              <div class="lyrics-pair"><span>Yudali skweda, yudali pakholigan.</span><span>Il y a le feu ici, il y a le tambour.</span></div>
-              <div class="lyrics-pair"><span>Yudali nidonbak, yudali kdakinna.</span><span>Il y a des amis ici, il y a notre terre.</span></div>
-              <div class="lyrics-pair"><span>Kd'aliwizé nikwonbi. Kd'alnonba.</span><span>Tu sais ton nom maintenant. Tu es Alnonba.</span></div>
-              <div class="lyrics-pair"><span>K'kezalmel, awonsis. K'kezalmel.</span><span>Je t'aime, petit. Je t'aime.</span></div>
-            </div>
-            <div class="lyrics-part"><h4>Pont</h4>
-              <div class="lyrics-pair"><span>Nda kd'alosaw mina, awonsis.</span><span>Tu ne repartiras plus, petit.</span></div>
-              <div class="lyrics-pair"><span>Nda n'wanalmu madzimiwé.</span><span>Je ne t'oublierai jamais.</span></div>
-              <div class="lyrics-pair"><span>Wli nanawalmezé. N'nanawalmel.</span><span>Prends soin de toi. Je prends soin de toi.</span></div>
-              <div class="lyrics-pair"><span>Askwa yudali nd-aïbena. Kalaata.</span><span>Nous sommes encore là, tous les deux. En vérité.</span></div>
-            </div>
           </div>
         </div>
       </details>
@@ -2291,7 +2225,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-const MUSIC_TRACK_IDS=['musicAskwa','musicPaia','musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
+const MUSIC_TRACK_IDS=['musicAskwa','musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{
     const status=document.getElementById(statusId);
