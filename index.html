@@ -2902,10 +2902,11 @@ function alnToVoiceCue(value){
   return (value||'').toLowerCase()
     .replace(/\b8h8\b/g,'zznasalzz')
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
-    .replace(/o/g,'ou').replace(/i\b/g,'é')
-    .replace(/w(?=[aeiouyàâäéèêëîïôöùûü])/g,'ou')
+    .replace(/o(?!u)/g,'ou').replace(/i\b/g,'é')
+    .replace(/w(?=[aeiouyàâäéèêëîïôöùûü])/g,'zzglidezz')
     .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s])/g,'ô')
     .replace(/w\b/g,'')
+    .replace(/ouzzglidezz/g,'ou').replace(/zzglidezz/g,'ou')
     .replace(/zznasalzz/g,'hon-hon')
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
     .replace(/\s+/g,' ').trim();
@@ -2924,9 +2925,11 @@ function voiceCueToSpeech(value){
   return phoneticToVoiceCue(value).replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
-  if((w&&w.aln8ba||'').trim().toLowerCase()==='8h8') return 'hon-hon';
+  const word=(w&&w.aln8ba||'').trim();
+  if(word.toLowerCase()==='8h8') return 'hon-hon';
+  if(word) return alnToVoiceCue(word);
   const ph=(w&&w.phonetic||'').replace(/[☼·]/g,' ').replace(/\s+/g,' ').trim();
-  return ph&&ph.length<80?phoneticToVoiceCue(ph):alnToVoiceCue(w&&w.aln8ba||'');
+  return ph&&ph.length<80?phoneticToVoiceCue(ph):'';
 }
 function voiceKey(value){
   return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
