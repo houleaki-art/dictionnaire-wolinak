@@ -65,6 +65,8 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 
 ## Jeux et exercices
 
+- Après chaque réponse, la page amène automatiquement le bouton Suivant dans la zone visible s'il se trouve sous l'écran; le comportement couvre les quiz des modules, les jeux et les niveaux de pratique, tout en respectant la préférence de mouvement réduit.
+- À la fin de Retenir, chaque module disposant d'une banque de mots propose directement l'étape Utiliser pour écrire les mots de mémoire; le passage au module suivant n'est suggéré qu'après ce parcours.
 - Filtrage des questions selon le niveau et les formes actives.
 - Exclusion des fiches de règle, suffixes et métadonnées des réponses et distracteurs.
 - Correction des distracteurs, répétitions, scores et retours pédagogiques.
