@@ -1874,10 +1874,51 @@ function initFC(list,ctx){
     :'';
   showFC();
 }
-/* Lance les cartes mémoire sur le vocabulaire d'un module du parcours */
+/* Isole les mots réellement enseignés dans la leçon courante. */
+function aprLessonKey(value){
+  return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[’]/g,"'").replace(/[^a-z0-9'8]+/g,' ').trim();
+}
+function aprLessonItems(m,lecHtml){
+  if(!m||!lecHtml) return [];
+  const holder=document.createElement('div'); holder.innerHTML=lecHtml;
+  const byWord=new Map(aprSur().map(w=>[aprLessonKey(w.aln8ba),w]));
+  const byPhrase=new Map(DOCUMENTED_SENTENCES.map((p,i)=>[
+    aprLessonKey(p.aln8ba),
+    {id:'phrase-documentee-'+i,aln8ba:p.aln8ba,fr:p.fr[0],cat:m.cat||'grammaire',source:'Phrase complète documentée'}
+  ]));
+  const out=[], seen=new Set();
+  holder.querySelectorAll('.aprtab td.k').forEach(cell=>{
+    const full=cell.textContent.trim().replace(/^[—–-]\s*/,'');
+    const parts=[full,...full.split(/[.!?]+\s*/)].filter(Boolean);
+    parts.forEach(part=>{
+      const key=aprLessonKey(part), found=byWord.get(key)||byPhrase.get(key);
+      if(found&&!seen.has(found.aln8ba)){
+        seen.add(found.aln8ba); out.push({...found});
+      }
+    });
+  });
+  return out;
+}
+function aprPreviousModuleKeys(cat){
+  const n=NIVEAUX.find(x=>x.id===aprNiv), used=new Set();
+  if(!n||aprMod==null) return used;
+  n.mods.slice(0,aprMod).filter(m=>m.cat===cat).forEach(m=>{
+    const items=Array.isArray(m.items)?m.items:
+      (typeof m.lec==='string'?aprLessonItems(m,m.lec):[]);
+    items.forEach(w=>used.add(aprLessonKey(w.aln8ba)));
+  });
+  return used;
+}
+/* Lance cartes, voix et exercices sur le vocabulaire propre au module. */
 function aprModulePool(cat){
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
   if(m&&Array.isArray(m.items)) return m.items.map(x=>({...x}));
+  if(m){
+    const lecHtml=typeof m.lec==='function'?m.lec():m.lec;
+    const lessonItems=aprLessonItems(m,lecHtml);
+    if(lessonItems.length) return lessonItems;
+  }
   return aprSur().filter(w=>w.cat===cat);
 }
 function aprFC(cat,titre){
@@ -5058,7 +5099,8 @@ function aprEx(type,cat,titre,mode){
   exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
   exQ=0; exOk=0; exTot=8; exAsked=[]; exSonsQueue=[];
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
-  exPoolOverride=m&&Array.isArray(m.items)?aprModulePool(cat):null;
+  const modulePool=m&&cat?aprModulePool(cat):[];
+  exPoolOverride=['vocab','ecris'].includes(type)&&modulePool.length?modulePool:null;
   if(exPoolOverride&&exPoolOverride.length) exTot=Math.min(8,exPoolOverride.length);
   if(type==='sons'){ exSonsQueue=jShuf(EXSONS); exTot=exSonsQueue.length; }
   exSuivant();
@@ -5138,15 +5180,18 @@ function exRetSons(){ return `<b>${window._ex.m}</b><em>${window._ex.e}</em>`; }
 
 /* — primaire : reconnaissance de vocabulaire — */
 function exVocab(){
-  let pool=(exPoolOverride&&exPoolOverride.length>=4)?exPoolOverride
+  let pool=(exPoolOverride&&exPoolOverride.length)?exPoolOverride
     :aprSur().filter(w=>w.cat===exCat && w.aln8ba.length<=18);
-  if(pool.length<4) pool=aprSur();
+  if(!pool.length) pool=aprSur();
   let choix=pool.filter(w=>!exAsked.includes(w.id||w.aln8ba));
   if(!choix.length){ exAsked=[]; choix=pool; }
   const bon=jPick(choix); exAsked.push(bon.id||bon.aln8ba);
   const sens = exQ%2===0;
   const key=w=>sens?w.fr:w.aln8ba;
-  const autres=jUniqueBy(pool.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
+  const catDistractors=pool.length>=4?pool:aprSur().filter(w=>w.cat===exCat&&w.aln8ba.length<=18);
+  const autres=jUniqueBy(catDistractors.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
+  if(autres.length<3) autres.push(...jUniqueBy(aprSur().filter(w=>w.id!==bon.id),key,
+    3-autres.length,[key(bon),...autres.map(key)]));
   if(autres.length<3) return exEcris();
   const tous=jShuf([bon,...autres]);
   const ib=tous.indexOf(bon); window._ex=bon;
@@ -5169,7 +5214,10 @@ function exRetVocab(){ const b=window._ex;
 /* ═══════ OUTILS DU PARCOURS PROFOND ═══════ */
 /* — leçons auto : tableaux tirés en direct du dictionnaire (aucun mot inventé) — */
 function aprAutoWords(cat,n,maxLen){
-  let pool=aprSur().filter(w=>w.cat===cat&&w.fr&&(w.aln8ba||'').length<=(maxLen||20));
+  let pool=aprSur().filter(w=>w.cat===cat&&w.fr&&(w.aln8ba||'').length<=(maxLen||20)
+    &&!/pluriel/i.test(w.grammar||''));
+  const used=aprPreviousModuleKeys(cat);
+  if(used.size) pool=pool.filter(w=>!used.has(aprLessonKey(w.aln8ba)));
   pool.sort((a,b)=>a.aln8ba.length-b.aln8ba.length||a.aln8ba.localeCompare(b.aln8ba));
   return pool.slice(0,n||14);
 }
@@ -5201,9 +5249,9 @@ function revNote(mot,ok){
 }
 /* — phase 3 : écrire le mot soi-même (utiliser, pas juste reconnaître) — */
 function exEcris(){
-  let pool=(exPoolOverride&&exPoolOverride.length>=4)?exPoolOverride
+  let pool=(exPoolOverride&&exPoolOverride.length)?exPoolOverride
     :aprSur().filter(w=>w.cat===exCat&&w.aln8ba.length<=18);
-  if(pool.length<4) pool=aprSur().filter(w=>w.aln8ba.length<=18);
+  if(!pool.length) pool=aprSur().filter(w=>w.aln8ba.length<=18);
   let choix=pool.filter(w=>!exAsked.includes(w.id||w.aln8ba));
   if(!choix.length){ exAsked=[]; choix=pool; }
   const bon=jPick(choix); exAsked.push(bon.id||bon.aln8ba); window._ex=bon;
