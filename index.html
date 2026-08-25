@@ -859,7 +859,8 @@ textarea{resize:vertical;min-height:68px}
       <div class="trad-panels">
         <div class="trad-panel">
           <div class="trad-panel-label" id="tradSrcLabel">Français</div>
-          <textarea id="tradInput" class="trad-textarea" placeholder="Écris ta phrase ici..." oninput="onTradInput()"></textarea>
+          <textarea id="tradInput" class="trad-textarea" placeholder="Écris ta phrase ici..."
+            oninput="onTradInput()" onkeydown="tradKeydown(event)"></textarea>
           <div class="trad-actions">
             <button class="trad-clear-btn" onclick="clearTrad()">✕ Effacer</button>
             <button class="trad-btn" id="tradBtn" onclick="traduire()">
@@ -923,7 +924,9 @@ textarea{resize:vertical;min-height:68px}
   <div class="about-open" id="aboutView">
     <div class="ahero">
       <h2>🪶 Dictionnaire vivant Abenakis</h2>
-      <p>Ce dictionnaire est construit collectivement par et pour les Abenakis d'Odanak et Wôlinak. Chaque mot ajouté est soumis à approbation pour garantir l'exactitude linguistique. Les mots entrent tranquillement — ce sont nos vrais mots.</p>
+      <p>Ce dictionnaire est, à ce stade, un projet personnel en construction. Son contenu n'est pas
+        garanti ni approuvé dans son ensemble par des professionnels ou par les Premières Nations
+        Abénakises d'Odanak et de Wôlinak. Chaque élément doit être vérifié avant d'être réutilisé.</p>
     </div>
     <div class="acards">
       <div class="acard"><h3>✍️ Le chiffre 8</h3><p>Le <strong>8</strong> représente un son qui est « en » et « on » en même temps — une voyelle nasale unique à l'abenakis. Le <strong>o</strong> existe aussi comme son distinct dans la langue. Ex: <em>Aln8ba</em>, <em>j8n</em> (le nez).</p></div>
@@ -931,9 +934,12 @@ textarea{resize:vertical;min-height:68px}
         <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; un <b>k final</b> ne doit pas disparaître</td></tr><tr><td>i</td><td>= se prononce é</td></tr><tr><td>o</td><td>= se prononce ou (ex: Awassos = awassouuss)</td></tr><tr><td>w</td><td>= <b>ô</b> devant une consonne (Wli = ôli) · <b>wa</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= voyelle nasale entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
-      <div class="acard"><h3>➕ Contribuer</h3><p>Cliquez le bouton <strong>+</strong> pour proposer un mot. Votre contribution sera examinée avant d'être publiée dans le dictionnaire.</p></div>
-      <div class="acard"><h3>🩺 Guérison traditionnelle</h3><p>Saignement de nez : enrouler une toile d'araignée (<em>Mamselabika</em>) en petite boule, puis l'insérer dans la narine.</p></div>
-      <div class="acard"><h3>🌱 Un dictionnaire vivant</h3><p>Les mots entrent tranquillement. Ce projet grandit avec la communauté — pour les générations à venir.</p></div>
+      <div class="acard"><h3>➕ Contribuer</h3><p>Cliquez le bouton <strong>+</strong> pour proposer un mot.
+        Une proposition reste en attente tant qu'elle n'a pas été vérifiée; son envoi ne constitue pas une approbation linguistique.</p></div>
+      <div class="acard"><h3>⚕️ Santé et sécurité</h3><p>Les notes historiques ou culturelles du projet ne sont pas des conseils de santé.
+        N'appliquez aucun remède décrit sans l'avis d'une personne professionnelle qualifiée.</p></div>
+      <div class="acard"><h3>🌱 Amélioration continue</h3><p>Les corrections et les notes de travail conservent la trace de l'évolution du projet.
+        Cette transparence ne remplace pas une validation linguistique ou communautaire.</p></div>
     </div>
   </div>
 </main>
@@ -3426,7 +3432,21 @@ function setTradDir(dir){
 
 function onTradInput(){
   const val = document.getElementById('tradInput').value.trim();
+  document.getElementById('tradOutput').innerHTML = val
+    ? '<span class="trad-placeholder">Entrée modifiée — lance une nouvelle traduction.</span>'
+    : '<span class="trad-placeholder">La traduction apparaîtra ici…</span>';
+  document.getElementById('tradMeta').textContent = '';
+  document.getElementById('tradCopyBtn').style.display = 'none';
+  document.getElementById('tradBtnTxt').textContent = 'Traduire →';
+  TRAD_LAST_OUTPUT = '';
   document.getElementById('tradBtn').disabled = !val || TRAD_LOADING;
+}
+
+function tradKeydown(event){
+  if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){
+    event.preventDefault();
+    if(document.getElementById('tradInput').value.trim()) traduire();
+  }
 }
 
 function clearTrad(){

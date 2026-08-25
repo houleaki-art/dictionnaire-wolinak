@@ -60,6 +60,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Suppression des fausses traductions obtenues par assemblage de fragments incomplets.
 - Retrait des exemples consultatifs des banques actives.
 - Amélioration des locutions reconnues dans les phrases longues.
+- Invalidation immédiate d'un ancien résultat dès que la phrase source change, afin qu'aucune nouvelle entrée ne puisse sembler associée à une traduction périmée; ajout du raccourci Ctrl ou Cmd + Entrée.
 
 ## Jeux et exercices
 
@@ -92,6 +93,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Mention claire du caractère personnel, non officiel et non validé professionnellement du projet.
 - Blocage de la consultation jusqu'à la confirmation explicite du visiteur.
 - Rappel que rien ne doit être tenu pour acquis et que chaque élément doit être vérifié auprès de sources fiables et de personnes compétentes.
+- Harmonisation de la page À propos avec le statut personnel, non officiel et non attesté du projet; retrait d'une instruction médicale concrète au profit d'une mise en garde de santé neutre.
 
 ## Principe pour la suite
 
