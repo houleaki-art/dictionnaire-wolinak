@@ -3184,6 +3184,8 @@ function voiceAffirmativeToFrenchSpeech(value,label){
 function voiceDocumentedWordToFrenchSpeech(value,label){
   // Technical French spelling: keep Almos as one word with audible A, closed O and final S.
   if((label||'').trim().toLowerCase()==='almos') return 'almôsse';
+  // Meliki begins with an audible E; the accent is only a command for French TTS.
+  if((label||'').trim().toLowerCase()==='meliki') return value.replace(/^me/,'mé');
   // French AU elicits the documented O while preserving one continuous word and final A.
   if((label||'').trim().toLowerCase()==='kiona') return 'kiauna';
   return value;
