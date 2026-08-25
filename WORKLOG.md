@@ -82,6 +82,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Séparation du découpage visuel et de la parole : le guide documenté détermine les sons, mais la synthèse reçoit un mot continu, sans coupures syllabiques; l'orthographe complète sert de repli lorsqu'aucun guide n'existe.
 - Ajout d'une écoute lente.
 - Correction de 8h8 afin de le guider comme un « hon-hon » murmuré.
+- Stabilisation du groupe 8K dans le guide synthétique : le repère visible « an-k » reste inchangé, tandis que l'orthographe technique envoyée à la voix française préserve la voyelle nasale suivie du son K.
 
 ## Avertissement public
 
