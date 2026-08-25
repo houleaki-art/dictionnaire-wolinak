@@ -74,6 +74,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Arrêt automatique du microphone et absence de sauvegarde des enregistrements vocaux.
 - Application des repères CH vers TS, J vers DZ, 8 nasal, W et I au guide synthétique.
 - Fluidification des mots et protection du premier phonème contre les coupures audio.
+- Séparation du découpage visuel et de la parole : la synthèse reçoit désormais le mot complet, sans coupures syllabiques.
 - Ajout d'une écoute lente.
 - Correction de 8h8 afin de le guider comme un « hon-hon » murmuré.
 
