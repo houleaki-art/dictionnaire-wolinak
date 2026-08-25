@@ -928,7 +928,7 @@ textarea{resize:vertical;min-height:68px}
     <div class="acards">
       <div class="acard"><h3>✍️ Le chiffre 8</h3><p>Le <strong>8</strong> représente un son qui est « en » et « on » en même temps — une voyelle nasale unique à l'abenakis. Le <strong>o</strong> existe aussi comme son distinct dans la langue. Ex: <em>Aln8ba</em>, <em>j8n</em> (le nez).</p></div>
       <div class="acard"><h3>🔊 Règles de prononciation</h3>
-        <table class="ptable"><tr><td>i</td><td>= se prononce é</td></tr><tr><td>o</td><td>= se prononce ou (ex: Awassos = awassouuss)</td></tr><tr><td>w</td><td>= <b>ô</b> devant une consonne (Wli = ôli) · <b>wa</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= « en » + « on » simultanément</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
+        <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; un <b>k final</b> ne doit pas disparaître</td></tr><tr><td>i</td><td>= se prononce é</td></tr><tr><td>o</td><td>= se prononce ou (ex: Awassos = awassouuss)</td></tr><tr><td>w</td><td>= <b>ô</b> devant une consonne (Wli = ôli) · <b>wa</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= voyelle nasale entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
       <div class="acard"><h3>➕ Contribuer</h3><p>Cliquez le bouton <strong>+</strong> pour proposer un mot. Votre contribution sera examinée avant d'être publiée dans le dictionnaire.</p></div>
@@ -1674,6 +1674,13 @@ function buildDisplayItems(words){
   return items;
 }
 
+function cardPhonetic(w){
+  if(!w||!w.phonetic) return '';
+  const nasal=/8/.test(w.aln8ba||'')
+    ? '<span title="Le 8 est une voyelle nasale entre le français AN et ON."> · 8 : nasal entre AN et ON</span>' : '';
+  return `<div class="phonetic">${escH(w.phonetic)}${nasal}</div>`;
+}
+
 // Carte pour une famille de mots
 function makeFamilyCard(members){
   const base=members.find(m=>m.formType==='singulier'||m.formType==='base')||members[0];
@@ -1687,7 +1694,7 @@ function makeFamilyCard(members){
     <span class="form-tr">${hl(m.fr)}</span>`).join('');
   return `<div class="card${isExp?' exp':''}" id="c${id}" onclick="toggleCard('${id}',event)">
     <div class="card-top">
-      <div><div class="word">${hl(base.aln8ba)}</div>${base.phonetic?`<div class="phonetic">${escH(base.phonetic)}</div>`:''}</div>
+      <div><div class="word">${hl(base.aln8ba)}</div>${cardPhonetic(base)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
         <button class="ca audio" onclick="playAudio('${id}')" title="${base.audio?'Écouter l’enregistrement':'Écouter le guide vocal approximatif'}">${base.audio?'▶':'🔊'}</button>
         <button class="ca" onclick="toggleFav('${id}')" title="Favori" id="fav${id}">${isFav?'⭐':'☆'}</button>
@@ -1719,7 +1726,7 @@ function makeSingleCard(w){
   const related=(w.related||[]).filter(Boolean).map(r=>`<span class="rchip" onclick="searchBy('${escH(escQ(r))}');event.stopPropagation()">${escH(r)}</span>`).join('');
   return `<div class="card${isExp?' exp':''}" id="c${w.id}" onclick="toggleCard('${w.id}',event)">
     <div class="card-top">
-      <div><div class="word">${hl(w.aln8ba)}</div>${w.phonetic?`<div class="phonetic">${escH(w.phonetic)}</div>`:''}</div>
+      <div><div class="word">${hl(w.aln8ba)}</div>${cardPhonetic(w)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
         <button class="ca audio" onclick="playAudio('${w.id}')" title="${hasAudio?'Écouter l’enregistrement':'Écouter le guide vocal approximatif'}">${hasAudio?'▶':'🔊'}</button>
         <button class="ca" onclick="toggleFav('${w.id}')" title="Favori" id="fav${w.id}">${isFav?'⭐':'☆'}</button>
@@ -2969,9 +2976,15 @@ function voice8KToFrenchSpeech(value){
   return value.replace(/an-?k(?=[aeiouyàâäéèêëîïôöùûü])/g,'anqu')
     .replace(/an-?k/g,'anque');
 }
+function voiceFinalAkToFrenchSpeech(value){
+  // "-aque" is only a French TTS command spelling. The visible Abenaki form
+  // and its guide keep "-ak", whose final K must be heard.
+  return value.replace(/-?ak$/,'aque');
+}
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
   if(/8k/i.test(label)) speechCue=voice8KToFrenchSpeech(speechCue);
+  if(/ak[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalAkToFrenchSpeech(speechCue);
   return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
