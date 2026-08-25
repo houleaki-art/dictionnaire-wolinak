@@ -22,8 +22,8 @@
   --accent:#e07840;--gold:#f0c060;--shadow:0 2px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 32px rgba(0,0,0,.55);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;max-width:100%;overflow-x:hidden}
-body{font-family:Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:100%;overflow-x:hidden;transition:var(--tr)}
+html{scroll-behavior:smooth;max-width:100%;overflow-x:clip}
+body{font-family:Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:100%;overflow-x:clip;transition:var(--tr)}
 /* ── HEADER ── */
 header{background:linear-gradient(135deg,#1e1008,#4a2808,#7a3a18);color:#f8f0e0;position:sticky;top:0;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,.4)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid rgba(255,255,255,.1)}
@@ -294,12 +294,21 @@ textarea{resize:vertical;min-height:68px}
 .music-practice-head{margin-bottom:14px}
 .music-practice-head h3{font-size:1.35rem;color:var(--accent);margin-bottom:6px}
 .music-practice-head p{color:var(--text2);font-size:.84rem;line-height:1.6}
-.song-lyrics{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;scroll-margin-top:170px}
-.song-lyrics summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;color:var(--text);font-weight:700;cursor:pointer;list-style:none;background:var(--surface2)}
+.song-lyrics{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;scroll-margin-top:170px}
+.song-lyrics summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;color:var(--text);font-weight:700;cursor:pointer;list-style:none;background:var(--surface2);border-radius:var(--r)}
+.song-lyrics[open] summary{border-radius:var(--r) var(--r) 0 0}
 .song-lyrics summary::-webkit-details-marker{display:none}
 .song-lyrics summary::after{content:'Afficher les paroles +';color:var(--accent);font-size:.72rem;font-weight:700;white-space:nowrap}
 .song-lyrics[open] summary::after{content:'Masquer les paroles −'}
 .lyrics-body{padding:18px 20px}
+.lyrics-player{position:sticky;top:160px;z-index:80;display:grid;grid-template-columns:auto auto minmax(120px,1fr);align-items:center;gap:10px;padding:10px 12px;margin:0 0 13px;border:1px solid rgba(184,92,42,.35);border-radius:10px;background:color-mix(in srgb,var(--surface) 94%,var(--accent));box-shadow:var(--shadow-lg)}
+.lyrics-player strong{color:var(--accent);font-size:.8rem;white-space:nowrap}
+.lyrics-player-controls{display:flex;gap:5px}
+.lyrics-player button{min-height:35px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--text);font:700 .68rem Georgia,serif;cursor:pointer}
+.lyrics-player button:first-child{background:var(--accent);border-color:var(--accent);color:#fff}
+.lyrics-player .music-status{min-height:0;margin:0;text-align:right}
+.lyrics-sequence{padding:9px 12px;margin-bottom:13px;border-radius:8px;background:rgba(61,122,80,.08);color:var(--text2);font-size:.75rem;line-height:1.55}
+.lyrics-sequence strong{color:var(--green)}
 .lyrics-note{border-left:3px solid var(--gold);padding:9px 12px;margin-bottom:16px;background:var(--surface2);color:var(--text2);font-size:.76rem;line-height:1.55}
 .lyrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:13px}
 .lyrics-part{padding:13px 15px;border:1px solid var(--border);border-radius:9px;background:var(--bg)}
@@ -382,6 +391,9 @@ textarea{resize:vertical;min-height:68px}
   .music-card{padding:16px}
   .music-nav{grid-template-columns:1fr}
   .lyrics-pair{grid-template-columns:1fr;gap:2px}
+  .lyrics-player{top:126px;grid-template-columns:1fr;gap:7px}
+  .lyrics-player strong{white-space:normal}
+  .lyrics-player .music-status{text-align:left}
   /* Cartes */
   .card{padding:14px}
   .word{font-size:1.35rem}
@@ -438,6 +450,7 @@ textarea{resize:vertical;min-height:68px}
   .ltog{font-size:.7rem}
   .music-promo{align-items:flex-start}
   .music-promo-go{white-space:normal;text-align:right;max-width:90px}
+  .lyrics-player{top:116px}
   /* Pratique grammaire */
   .prat-choices{grid-template-columns:1fr}
   /* Flashcard */
@@ -1063,6 +1076,16 @@ textarea{resize:vertical;min-height:68px}
       <details class="song-lyrics" id="practiceAskwa">
         <summary>Askwa yudali · paroles en aln8ba</summary>
         <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Askwa yudali">
+            <strong>🎧 Askwa yudali</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicAskwa')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicAskwa')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicAskwa')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicAskwaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-sequence"><strong>Ordre d'écoute :</strong> Couplet 1 → Refrain → Couplet 2 → Refrain → Couplet 3 → Refrain → Pont.</div>
           <div class="lyrics-note"><strong>Graphie de travail de l'auteur.</strong> La maquette corrigée emploie parfois une écriture phonétique différente uniquement pour guider la voix artificielle.</div>
           <div class="lyrics-grid">
             <div class="lyrics-part"><h4>Couplet 1</h4><p>N'wawaldamen talé kd-aï, awonsis.
@@ -1092,6 +1115,16 @@ Askwa yudali nd-aïbena.</p></div>
       <details class="song-lyrics" id="practicePaia">
         <summary>Païa Aw8sis · paroles bilingues</summary>
         <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Païa Aw8sis">
+            <strong>🎧 Païa Aw8sis</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicPaia')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicPaia')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicPaia')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicPaiaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-sequence"><strong>Ordre d'écoute :</strong> Couplet 1 → Refrain → Couplet 2 → Refrain → Couplet 3 → Refrain → Pont → Refrain doux → Sortie.</div>
           <div class="lyrics-note">Dans cette maquette, chaque ligne en aln8ba est suivie de sa réponse chantée en français. Les deux colonnes reprennent cet ordre d'écoute.</div>
           <div class="lyrics-grid">
             <div class="lyrics-part"><h4>Couplet 1</h4>
@@ -1131,6 +1164,16 @@ Askwa yudali nd-aïbena.</p></div>
       <details class="song-lyrics" id="practiceNijia">
         <summary>Nijia Gabriel · paroles en aln8ba</summary>
         <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nijia Gabriel">
+            <strong>🎧 Nijia Gabriel</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicNijia')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicNijia')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicNijia')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicNijiaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-sequence"><strong>Ordre d'écoute :</strong> Ouverture → Couplet 1 → Couplet 2 → Couplet 3 → Couplet 4 → Refrain → Couplet 5 → Appel et réponse → Refrain → Finale.</div>
           <div class="lyrics-note"><strong>Graphie de travail affichée :</strong> « Nijia » et « W8banaki » sont conservés ici; la maquette Suno avait reçu « Nidzia » et « Wonbanaki » comme indications phonétiques pour la voix artificielle.</div>
           <div class="lyrics-grid">
             <div class="lyrics-part"><h4>Ouverture</h4><p>Nijia... Nijia...</p></div>
@@ -2186,8 +2229,10 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 const MUSIC_TRACK_IDS=['musicAskwa','musicPaia','musicNijia'];
 function musicSetStatus(id,message){
-  const status=document.getElementById(id+'Status');
-  if(status) status.textContent=message;
+  [id+'Status',id+'PracticeStatus'].forEach(statusId=>{
+    const status=document.getElementById(statusId);
+    if(status) status.textContent=message;
+  });
 }
 function musicStopAll(announce=true,exceptId=''){
   MUSIC_TRACK_IDS.forEach(id=>{
