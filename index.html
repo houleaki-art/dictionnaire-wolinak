@@ -4097,6 +4097,24 @@ function traduire(){
     : '';
   const hasConsultative=chunks.some(c=>c.consultative);
   const hasPhraseCorrection=patChunks.some(p=>p.corrected);
+  const documentedPassages=[];
+  const passageKeys=new Set();
+  chunks.forEach(c=>{
+    const reverseVerbPassage=!FR&&c.type==='hit'&&c.toks.length===1
+      &&/^(je|j'|tu|il|elle|on|nous|vous|ils|elles)\b/i.test(c.w.fr||'')
+      &&/verbe|formule/i.test(c.w.grammar||'');
+    const isCompletePassage=c.type==='hit'&&(c.toks.length>1||reverseVerbPassage)&&!c.consultative
+      &&(c.expr||c.forceOut||reverseVerbPassage)&&!c.note&&!(c.alts||[]).length
+      &&!/plus proche/i.test(c.badge||'');
+    if(!isCompletePassage) return;
+    const source=c.sens||c.toks.map(t=>t.o||t.n).join(' ');
+    const output=c.forceOut||c.w[dstField];
+    const key=source+'\u0000'+output;
+    if(passageKeys.has(key)) return;
+    passageKeys.add(key);
+    documentedPassages.push({source,output,correction:c.corrige});
+  });
+  const passageHasCorrection=documentedPassages.some(p=>p.correction);
   TRAD_LAST_OUTPUT = completeTranslation && !hasConsultative && !hasPhraseCorrection ? sortie : '';
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
@@ -4108,8 +4126,18 @@ function traduire(){
       + (hasPhraseCorrection?'✏️ Phrase documentée reconnue après correction'
         : patChunks.length>1?'✓ '+patChunks.length+' phrases complètes documentées, traitées séparément'
         :'✓ Correspondance complète documentée')+'</div></div>'
-    : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
-      + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
+    : documentedPassages.length
+      ? '<div style="background:var(--surface2);border:1px solid var(--green);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+        + '<div style="color:var(--green);font-size:.78rem;font-weight:700;margin-bottom:9px">✓ '
+        + documentedPassages.length+' proposition'+(documentedPassages.length>1?'s':'')+' complète'+(documentedPassages.length>1?'s':'')+' documentée'+(documentedPassages.length>1?'s':'')+' reconnue'+(documentedPassages.length>1?'s':'')+'</div>'
+        + documentedPassages.map(p=>'<div style="padding:7px 0;border-top:1px solid var(--border);line-height:1.45">'
+          + '<span style="color:var(--text2)">'+escH(p.source)+'</span> '
+          + (p.correction?'<span style="font-size:.72rem;color:var(--gold)">('+escH(p.correction)+')</span> ':'')
+          + '<span aria-hidden="true">→</span> <b style="color:var(--accent)">'+escH(p.output)+'</b></div>').join('')
+        + '</div><div class="aprnote w" style="margin-bottom:12px"><b>Le texte complet reste partiel</b>'
+        + ' Les propositions ci-dessus sont complètes et documentées. Les autres éléments sont analysés séparément, sans fabriquer les liens grammaticaux manquants.</div>'
+      : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
+        + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
 
   // Détail morceau par morceau
   html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">'
@@ -4174,6 +4202,8 @@ function traduire(){
       ? '✏️ Une faute probable a été rapprochée d’une seule phrase française documentée. La correction est affichée et la copie reste désactivée pour éviter toute réutilisation accidentelle.'
     : completeTranslation
       ? '✓ Traduction fondée uniquement sur '+(patChunks.length>1?'des phrases complètes documentées, conservées séparément':'une correspondance complète documentée')+' dans les entrées vertes actuelles.'
+      : documentedPassages.length
+        ? '✓ '+documentedPassages.length+' proposition'+(documentedPassages.length>1?'s complètes documentées ont':' complète documentée a')+' été reconnue'+(documentedPassages.length>1?'s':'')+(passageHasCorrection?' après une correction affichée':'')+'. Le texte entier n’est pas traduit et la copie reste désactivée.'
       : '⚠️ Analyse de fragments seulement. Aucun ordre grammatical ni aucune phrase n\'est construit; la copie reste désactivée. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }

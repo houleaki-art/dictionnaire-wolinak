@@ -67,6 +67,8 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Tolérance prudente aux fautes françaises dans les phrases documentées : même nombre de mots, correction limitée, résultat unique, correction visible et copie désactivée.
 - Protection des noms propres placés dans une phrase afin que la tolérance orthographique ne les transforme plus en mots courants proches.
 - Exclusion explicite des prénoms capitalisés de la correction automatique des phrases documentées.
+- Mise en valeur des propositions complètes actuelles reconnues à l'intérieur d'un texte partiellement inconnu : elles apparaissent comme résultats documentés, tandis que les fragments manquants restent non assemblés et la copie globale demeure désactivée.
+- Même traitement dans le sens aln8ba vers français pour les formes verbales personnelles qui constituent une proposition complète en un seul mot, comme `Nd'aloka`.
 
 ## Jeux et exercices
 
