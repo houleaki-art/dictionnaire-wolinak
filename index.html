@@ -1675,10 +1675,14 @@ function buildDisplayItems(words){
 }
 
 function cardPhonetic(w){
-  if(!w||!w.phonetic) return '';
+  if(!w) return '';
+  const synthetic=/8w8/i.test(w.aln8ba||'')&&!w.phonetic
+    ? `☼ ${alnToVoiceCue(w.aln8ba).replace(/an-?ou-?an/g,'an-ouan')} · guide synthétique approximatif` : '';
+  const guide=w.phonetic||synthetic;
+  if(!guide) return '';
   const nasal=/8/.test(w.aln8ba||'')
     ? '<span title="Le 8 est une voyelle nasale entre le français AN et ON."> · 8 : nasal entre AN et ON</span>' : '';
-  return `<div class="phonetic">${escH(w.phonetic)}${nasal}</div>`;
+  return `<div class="phonetic">${escH(guide)}${nasal}</div>`;
 }
 
 // Carte pour une famille de mots
@@ -2981,8 +2985,14 @@ function voiceFinalAkToFrenchSpeech(value){
   // and its guide keep "-ak", whose final K must be heard.
   return value.replace(/-?ak$/,'aque');
 }
+function voice8W8ToFrenchSpeech(value){
+  // Keep both nasal vowels audible around the W glide. This boundary is only
+  // a command for French TTS; the visible Abenaki word remains unsegmented.
+  return value.replace(/an-?ou-?an/g,'an ouan');
+}
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
+  if(/8w8/i.test(label)) speechCue=voice8W8ToFrenchSpeech(speechCue);
   if(/8k/i.test(label)) speechCue=voice8KToFrenchSpeech(speechCue);
   if(/ak[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalAkToFrenchSpeech(speechCue);
   return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
