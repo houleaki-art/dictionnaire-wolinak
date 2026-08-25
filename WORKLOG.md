@@ -68,6 +68,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Sécurisation de l'ensemble des jeux contre les banques trop petites ou incomplètes.
 - Correction du diminutif Awassosis dans les exercices concernés.
 - Stabilisation du quiz de traduction et synchronisation du score visible.
+- Parcours complet des banques de Jeux avant toute répétition d'un mot, d'une négation, d'un pluriel ou d'une famille.
 
 ## Pratique vocale
 
