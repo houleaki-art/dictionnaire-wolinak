@@ -4986,6 +4986,11 @@ function exCadre(corps){
     </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
 }
+function exSyncScore(){
+  const score=document.querySelector('#aprBody .jscore');
+  if(!score) return;
+  score.innerHTML=`Question ${Math.min(Math.max(exQ,1),exTot)} sur ${exTot} &nbsp;·&nbsp; ✓ <b>${exOk}</b>`;
+}
 function exRepond(bon,i,retour){
   const btns=[...document.querySelectorAll('#exBody .jopt')];
   btns.forEach(b=>b.disabled=true);
@@ -4994,6 +4999,7 @@ function exRepond(bon,i,retour){
   if(i===bon) exOk++;
   if(window._ex && window._ex.aln8ba) revNote(window._ex.aln8ba, i===bon);
   exQ++;
+  exSyncScore();
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
     `<div class="jafter">${retour}</div>
      <div style="text-align:center;margin-top:16px">
@@ -5127,6 +5133,7 @@ function exVerif(){
   if(ok) exOk++;
   revNote(bon.aln8ba,ok);
   exQ++;
+  exSyncScore();
   inp.disabled=true;
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
     `<div class="jafter">${ok?'✓ Exact — de mémoire!':'✗ Pas encore. La bonne orthographe :'}
@@ -5388,11 +5395,16 @@ const EXTRAD=[
  {p:"Nda n'mikwaldamowen",r:2,o:["Je me souviens","Tu ne te souviens pas","Je ne me souviens pas","Il ne se souvient pas"]},
  {p:"Kiona W8banakiak",r:0,o:["Nous sommes des Abénakis, toi inclus","Nous sommes des Abénakis, pas toi","Vous êtes des Abénakis","Ils sont des Abénakis"]},
  {p:"N'wigi W8linak",r:1,o:["Je viens de Wôlinak","J'habite Wôlinak","Je vais à Wôlinak","Je suis né à Wôlinak"]},
- {p:"Wliwni wji k'olidahaw8gan",r:3,o:["Merci beaucoup","Merci mon ami","Prends soin de toi","Merci pour ta bonté"]},
  {p:"Nikw8bi n'klozi",r:2,o:["Je parlais","Je parlerai","Maintenant je parle","Je ne parle pas"]},
  {p:"Askwa yudali nd'aibena",r:1,o:["Je suis encore ici","Nous sommes encore ici","Tu es encore ici","Ils sont encore ici"]}];
 function exTrad(){
-  const q=jPick(EXTRAD); window._ex=q;
+  let choix=EXTRAD.filter(q=>!exAsked.includes(q.p));
+  if(!choix.length){
+    const dernier=exAsked[exAsked.length-1];
+    exAsked=[];
+    choix=EXTRAD.filter(q=>q.p!==dernier);
+  }
+  const q=jPick(choix.length?choix:EXTRAD); exAsked.push(q.p); window._ex=q;
   const idx=q.o.map((_,i)=>i), mel=jShuf(idx);
   const opts=mel.map(i=>q.o[i]), ib=mel.indexOf(q.r);
   exCadre(`
