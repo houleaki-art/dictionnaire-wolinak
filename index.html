@@ -1888,9 +1888,10 @@ function aprLessonItems(m,lecHtml){
     {id:'phrase-documentee-'+i,aln8ba:p.aln8ba,fr:p.fr[0],cat:m.cat||'grammaire',source:'Phrase complète documentée'}
   ]));
   const out=[], seen=new Set();
-  holder.querySelectorAll('.aprtab td.k').forEach(cell=>{
+  const selector=m.cat?'.aprtab td.k':'.aprtab td.k, .al8';
+  holder.querySelectorAll(selector).forEach(cell=>{
     const full=cell.textContent.trim().replace(/^[—–-]\s*/,'');
-    const parts=[full,...full.split(/[.!?]+\s*/)].filter(Boolean);
+    const parts=[full,...full.split(/[.!?]+\s*|\s+[—–·]\s+/)].filter(Boolean);
     parts.forEach(part=>{
       const key=aprLessonKey(part), found=byWord.get(key)||byPhrase.get(key);
       if(found&&!seen.has(found.aln8ba)){
@@ -4353,18 +4354,7 @@ const NIVEAUX=[
   coach:`La négation est un sandwich : <span class="al8">Nda</span> devant, le petit suffixe derrière.
    Dis les paires à voix haute, affirmative puis négative, comme un refrain — l'oreille apprend
    le rythme avant que la tête apprenne la règle.`},
- {t:"Vérifier la classe grammaticale",d:"Observer des noms actuels et retenir leur classe grammaticale.",ex:'genre',lec:`
-  <p>On continue ici le même travail : vérifier pour chaque nom s'il est <b>animé</b> ou <b>inanimé</b>.</p>
-  <p>Le but n'est pas d'inventer une explication générale, mais d'apprendre des exemples actuels et sûrs :</p>
-  <table class="aprtab"><tr><th>Classe animée</th><th>Classe inanimée</th></tr>
-  <tr><td class="k">Kizos — le soleil</td><td class="k">Sen — la pierre</td></tr>
-  <tr><td class="k">Alakws — l'étoile</td><td class="k">Nebi — l'eau</td></tr>
-  <tr><td class="k">Pakholigan — le tambour</td><td class="k">Awikhigan — le livre</td></tr>
-  <tr><td class="k">Mskikwimen — la fraise</td><td class="k">Sata — le bleuet</td></tr>
-  <tr><td class="k">Watzo — la montagne</td><td class="k">Wigw8m — la maison</td></tr></table>
-  <div class="aprnote"><b>Le bon réflexe</b>
-   Regarde la classe grammaticale sur la fiche, puis retiens-la avec le mot. Le pluriel vient ensuite,
-   seulement si une paire actuelle et documentée existe.</div>`,
+ {t:"Vérifier la classe grammaticale",d:"Observer des noms actuels et retenir leur classe grammaticale.",ex:'genre',lec:aprGenreReviewLec,
   coach:`Quand tu apprends un nom, vérifie sa classe grammaticale dans le dictionnaire et répète-la à voix haute.
    L'objectif est d'associer le mot à sa classe, pas d'improviser une règle cachée.`},
  {t:"Les mois qui racontent l'année",d:"Douze mois qui décrivent ce qui se passe dehors.",cat:'temps',ex:'vocab',lec:`
@@ -4400,7 +4390,7 @@ const NIVEAUX=[
   coach:`Le locatif est partout : chaque fois que tu entends un nom de lieu finir en
    <b>-k</b> ou <b>-ok</b>, tu entends « à ». Écoute les anciens parler de leurs déplacements —
    tu vas commencer à les entendre, ces petits suffixes.`},
- {t:"Ma journée en aln8ba",d:"Le test du secondaire : raconter une journée entière au présent.",ex:'conjp',lec:`
+ {t:"Ma journée en aln8ba",d:"Le test du secondaire : raconter une journée entière au présent.",cat:'action',ex:'vocab',lec:`
   <p>Avec les verbes du module « Les verbes au présent », tu peux déjà raconter ta journée :</p>
   <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>
   <tr><td class="k">N'toki</td><td>je me réveille</td></tr>
@@ -4472,12 +4462,16 @@ const NIVEAUX=[
    <span class="al8">-gamikw</span> le lieu, <span class="al8">-winno</span> la personne. Collectionne-les
    comme des outils dans ta boîte de mécanicien — un mot long n'est plus un obstacle,
    c'est un assemblage que tu sais démonter.`},
- {t:"Décomposer un mot",d:"Préfixe, racine, suffixe — et la famille.",ex:'fam',lec:`
+ {t:"Décomposer un mot",d:"Préfixe, racine, suffixe — et la famille.",familyGroup:'derivation',ex:'fam',lec:`
   <p>Chaque mot long est un assemblage. Prends <span class="al8">Agakimzowinno</span> :
   la racine <i>agakimzo-</i> qui parle de l'étude, plus <i>-winno</i>, le suffixe de la personne.
   Le mot désigne <b>la personne qui étudie</b>.</p>
   <p>Même chose pour <span class="al8">Nodab8nkat</span> : <i>nod-</i> celui qui fait habituellement,
   <i>ab8n</i> le pain, <i>-kat</i> qui produit. Le boulanger.</p>
+  <div class="aprnote"><b>Familles documentées de ce quiz</b>
+   <span class="al8">Awassos · Awassosis</span> — diminutif ·
+   <span class="al8">Agakimzo · Agakimzowinno</span> — personne ·
+   <span class="al8">Odana · Odanak</span> — forme locative.</div>
   <div class="aprnote"><b>Sers-toi du Décortiqueur</b>
    L'onglet à côté démonte n'importe quel mot et te montre toute sa famille.</div>`,
   coach:`Un mot par jour dans le Décortiqueur. La famille affichée en bas montre comment les
@@ -4509,17 +4503,7 @@ const NIVEAUX=[
   <tr><td class="k">Kiona W8banakiak</td><td>Kiona (nous, toi inclus) + W8banakiak (les Abénakis)</td></tr></table>`,
   coach:`Lis lentement, trois passes : 1) trouve le verbe, 2) trouve son préfixe, 3) assemble le reste.
    La vitesse viendra d'elle-même — la méthode, elle, se choisit maintenant.`},
- {t:"Lire des mots construits",d:"Repérer une racine et un suffixe dans des formes actuelles.",ex:'fam',lec:`
-  <p>Voici quelques formes actuelles du dictionnaire où l'on peut reconnaître une racine utile
-  et la manière dont le mot a été construit.</p>
-  <table class="aprtab"><tr><th>Début</th><th>Forme attestée</th><th>Sens</th></tr>
-  <tr><td class="k">agakimzo-</td><td class="k">Agakimzowinno</td><td>l'étudiant</td></tr>
-  <tr><td class="k">sagezo-</td><td class="k">Sagezow8gan</td><td>l'amour</td></tr>
-  <tr><td class="k">mosk-</td><td class="k">Moskwaldamw8gan</td><td>la colère</td></tr>
-  <tr><td class="k">wiag-</td><td class="k">Wiagaldamw8gan</td><td>la joie</td></tr></table>
-  <div class="aprnote"><b>Pourquoi c'est utile</b>
-   Quand tu reconnais une racine et un suffixe, tu lis le mot plus vite et tu le relies à d'autres
-   formes actuelles du dictionnaire.</div>`,
+ {t:"Lire des mots construits",d:"Repérer une racine commune dans des formes actuelles.",familyGroup:'alternance',ex:'fam',lec:aprFamilyAlternationLec,
   coach:`Ouvre le Décortiqueur avec <span class="al8">Agakimzowinno</span> puis avec
    <span class="al8">Nodab8nkat</span>. L'objectif est de repérer les morceaux du mot, pas d'inventer
    des familles qui ne sont pas documentées.`},
@@ -4997,6 +4981,24 @@ function documentedRootFamilies(){
     members:f.words.map(n=>byName.get(n.toLowerCase())).filter(Boolean)}))
     .filter(f=>new Set(f.members.map(w=>w.aln8ba)).size>=2);
 }
+function exerciseRootFamilies(){
+  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod], group=m&&m.familyGroup;
+  const derivation=new Set(['awassos-','agakimzo-','odan-']);
+  const all=documentedRootFamilies();
+  if(group==='derivation') return all.filter(f=>derivation.has(f.root));
+  if(group==='alternance') return all.filter(f=>!derivation.has(f.root));
+  return all;
+}
+function aprFamilyAlternationLec(){
+  const rows=exerciseRootFamilies().map(f=>`<tr><td class="k">${escH(f.root)}</td>
+    <td>${f.members.map(w=>`<span class="al8">${escH(w.aln8ba)}</span>`).join(' · ')}</td>
+    <td>${escH(f.relation)}</td></tr>`).join('');
+  return `<p>Ces paires actuelles partagent une base verbale documentée. Compare les formes sans
+    construire de mot absent du dictionnaire.</p>
+    <table class="aprtab"><tr><th>Base</th><th>Formes documentées</th><th>Relation</th></tr>${rows}</table>
+    <div class="aprnote"><b>Pourquoi c'est utile</b>
+      Reconnaître la base commune permet de relier les formes attestées sans les confondre avec un simple pluriel.</div>`;
+}
 function jFam(){
   const B=documentedRootFamilies();
   if(!B.length) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de familles.</p>');
@@ -5099,9 +5101,19 @@ function aprEx(type,cat,titre,mode){
   exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
   exQ=0; exOk=0; exTot=8; exAsked=[]; exSonsQueue=[];
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
-  const modulePool=m&&cat?aprModulePool(cat):[];
-  exPoolOverride=['vocab','ecris'].includes(type)&&modulePool.length?modulePool:null;
+  const modulePool=m?aprModulePool(cat):[];
+  const scopedPool=type==='genre'
+    ?modulePool.filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''))
+    :modulePool;
+  exPoolOverride=['vocab','ecris','genre'].includes(type)&&scopedPool.length?scopedPool:null;
   if(exPoolOverride&&exPoolOverride.length) exTot=Math.min(8,exPoolOverride.length);
+  const fixedCapacity={
+    plur:()=>JPLUR.length, poss:()=>EXPOSS.length, conjp:()=>EXCONJ.length*2,
+    negs:()=>EXNEGS.length, vta:()=>EXVTA.length*2, ordre:()=>EXORDRE.length,
+    neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
+    trad:()=>EXTRAD.length
+  }[type];
+  if(fixedCapacity) exTot=Math.min(exTot,fixedCapacity());
   if(type==='sons'){ exSonsQueue=jShuf(EXSONS); exTot=exSonsQueue.length; }
   exSuivant();
 }
@@ -5167,6 +5179,14 @@ function exSuivant(){
     trad:exTrad})[exType];
   handler();
 }
+function exPickUnique(pool,keyFn){
+  if(!pool.length) return null;
+  const key=keyFn||((x)=>x.id||x.aln8ba||x.m||x.p||x.v||x.r);
+  const available=pool.filter(item=>!exAsked.includes(key(item)));
+  const chosen=jPick(available.length?available:pool);
+  if(chosen&&!exAsked.includes(key(chosen))) exAsked.push(key(chosen));
+  return chosen;
+}
 
 function exSons(){
   const q=exSonsQueue[exQ]; window._ex=q;
@@ -5229,6 +5249,25 @@ function aprAutoLec(intro,cat,n,note){
       : `<p class="aprlead">Les mots de cette famille arrivent bientôt.</p>`;
     return intro+tab+(note||'');
   };
+}
+function aprGenreReviewLec(){
+  const introKeys=new Set(['Alakws','Awassos','Awikhigan','Sata'].map(aprLessonKey));
+  const pool=aprSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')
+    &&!/pluriel/i.test(w.grammar||'')&&!introKeys.has(aprLessonKey(w.aln8ba)));
+  const byLength=(a,b)=>a.aln8ba.length-b.aln8ba.length||a.aln8ba.localeCompare(b.aln8ba);
+  const animated=pool.filter(w=>/nom animé/i.test(w.grammar)).sort(byLength).slice(0,5);
+  const inanimate=pool.filter(w=>/nom inanimé/i.test(w.grammar)).sort(byLength).slice(0,5);
+  const rows=Array.from({length:Math.max(animated.length,inanimate.length)},(_,i)=>{
+    const a=animated[i], b=inanimate[i];
+    return `<tr>${a?`<td class="k">${escH(a.aln8ba)}</td><td>${escH(a.fr)}</td>`:'<td></td><td></td>'}
+      ${b?`<td class="k">${escH(b.aln8ba)}</td><td>${escH(b.fr)}</td>`:'<td></td><td></td>'}</tr>`;
+  }).join('');
+  return `<p>On continue ici le même travail : vérifier pour chaque nom s'il est <b>animé</b> ou <b>inanimé</b>.</p>
+    <p>Cette leçon choisit uniquement des entrées vertes actuelles et différentes des exemples d'introduction.</p>
+    <table class="aprtab"><tr><th colspan="2">Classe animée</th><th colspan="2">Classe inanimée</th></tr>${rows}</table>
+    <div class="aprnote"><b>Le bon réflexe</b>
+      Regarde la classe grammaticale sur la fiche, puis retiens-la avec le mot. Le pluriel vient ensuite,
+      seulement si une paire actuelle et documentée existe.</div>`;
 }
 /* — progression par module (survit aux mises à jour du site) — */
 function progAll(){ try{ return JSON.parse(localStorage.getItem('aln8ba_prog')||'{}'); }catch(e){ return {}; } }
@@ -5321,8 +5360,9 @@ function exRev(){ (exQ%2===0?exVocab:exEcris)(); }
 
 /* — secondaire : animé ou inanimé — */
 function exGenre(){
-  const pool=aprSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
-  const w=jPick(pool), an=/nom animé/i.test(w.grammar); window._ex=w; window._exa=an;
+  const pool=(exPoolOverride&&exPoolOverride.length?exPoolOverride:aprSur())
+    .filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
+  const w=exPickUnique(pool,x=>x.id||x.aln8ba), an=/nom animé/i.test(w.grammar); window._ex=w; window._exa=an;
   exCadre(`
     <div class="jprompt"><div class="q">De quel genre est ce mot?</div>
       <div class="w">${w.aln8ba}</div><div class="h">${w.fr}</div></div>
@@ -5340,7 +5380,7 @@ function exRetGenre(){ const w=window._ex,a=window._exa;
 
 /* — secondaire : le pluriel — */
 function exPlur(){
-  const q=jPick(JPLUR); window._ex=q;
+  const q=exPickUnique(JPLUR,x=>x.s); window._ex=q;
   const autres=jShuf(JPLUR.filter(x=>x.p!==q.p)).slice(0,3).map(x=>x.p);
   const opts=jShuf([q.p,...autres]), ib=opts.indexOf(q.p);
   exCadre(`
@@ -5361,7 +5401,7 @@ const EXPOSS=[
  {m:'Nelji',f:'ma main',r:0},{m:'Nzit',f:'mon pied',r:0},{m:'Kigawes',f:'ta mère',r:1},
  {m:'Nigawes',f:'ma mère',r:0},{m:'Wigawesa',f:'sa mère',r:2},{m:'Nhaga',f:'mon corps',r:0}];
 function exPoss(){
-  const q=jPick(EXPOSS); window._ex=q;
+  const q=exPickUnique(EXPOSS,x=>x.m); window._ex=q;
   exCadre(`
     <div class="jprompt"><div class="q">À qui est-ce?</div>
       <div class="w">${q.m}</div></div>
@@ -5378,8 +5418,8 @@ const EXCONJ=[
  {r:'kawi',f:'dormir'},{r:'toki',f:'se réveiller'},{r:'pidiga',f:'entrer'},
  {r:'saosa',f:'sortir'},{r:'aloka',f:'travailler'}];
 function exConjp(){
-  const v=jPick(EXCONJ), voy=/^[aeiou8]/i.test(v.r);
-  const pers=jPick([0,1]);
+  const combo=exPickUnique(EXCONJ.flatMap(v=>[0,1].map(pers=>({v,pers}))),x=>x.v.r+'|'+x.pers);
+  const {v,pers}=combo, voy=/^[aeiou8]/i.test(v.r);
   const P=voy?["Nd'","Kd'"]:["N'","K'"];
   const bonne=P[pers]+v.r;
   const fausse=P[1-pers]+v.r;
@@ -5407,7 +5447,7 @@ const EXNEGS=[
  {v:"N'wal8wzi",f:"je vais bien",n:"Nda n'wal8wziw"},
  {v:"Nd'agakimzi",f:"j'étudie",n:"Nda nd'agakimziw"}];
 function exNegs(){
-  const q=jPick(EXNEGS); window._ex=q;
+  const q=exPickUnique(EXNEGS,x=>x.v); window._ex=q;
   const opts=jShuf([q.n, q.v.replace(/i$/,'iwi'), 'Nda '+q.v, q.v+'owen']);
   const ib=opts.indexOf(q.n);
   exCadre(`
@@ -5430,7 +5470,8 @@ const EXVTA=[
  {s:'je donne',a:"N'mil8",i:"N'mildo",oa:'aw8sis (un enfant)',oi:'awikhigan (un livre)'},
  {s:'je mange',a:"N'mow8",i:"N'miji",oa:'aples (une pomme)',oi:'wasawas (une orange)'}];
 function exVta(){
-  const q=jPick(EXVTA), anim=Math.random()<.5;
+  const combo=exPickUnique(EXVTA.flatMap(q=>[true,false].map(anim=>({q,anim}))),x=>x.q.s+'|'+x.anim);
+  const {q,anim}=combo;
   const obj=anim?q.oa:q.oi, bonne=anim?q.a:q.i, autre=anim?q.i:q.a;
   const opts=jShuf([bonne,autre]); const ib=opts.indexOf(bonne);
   window._ex={q,anim,bonne,obj};
@@ -5456,7 +5497,7 @@ const EXORDRE=[
  {p:"T8ni wigian?",f:"où habites-tu?",r:2},{p:"Païa!",f:"viens!",r:1},
  {p:"Wig8damoda!",f:"réjouissons-nous!",r:1},{p:"Awani kia?",f:"qui es-tu?",r:2}];
 function exOrdre(){
-  const q=jPick(EXORDRE); window._ex=q;
+  const q=exPickUnique(EXORDRE,x=>x.p); window._ex=q;
   exCadre(`
     <div class="jprompt"><div class="q">Quel ordre de conjugaison?</div>
       <div class="w">${q.p}</div><div class="h">${q.f}</div></div>
@@ -5472,7 +5513,7 @@ function exRetOrdre(){ const q=window._ex;
 
 /* — cégep : négation complète — */
 function exNeg(){
-  const q=jPick(JNEG); window._ex=q;
+  const q=exPickUnique(JNEG,x=>x.v); window._ex=q;
   exCadre(`
     <div class="jprompt"><div class="q">Quel suffixe négatif?</div>
       <div class="w">${q.v}</div><div class="h">${q.f}</div></div>
@@ -5493,7 +5534,7 @@ const EXSUF=[
  {m:'Alokaw8gan',s:'-w8gan',r:0,f:'le travail'},{m:'Pemegawinno',s:'-winno',r:2,f:'le danseur'},
  {m:'Pkwessagahigan',s:'-higan',r:1,f:'la clé'},{m:'Wiagaldamw8gan',s:'-w8gan',r:0,f:'la joie'}];
 function exSuf(){
-  const q=jPick(EXSUF); window._ex=q;
+  const q=exPickUnique(EXSUF,x=>x.m); window._ex=q;
   exCadre(`
     <div class="jprompt"><div class="q">Quel suffixe porte ce mot?</div>
       <div class="w">${q.m}</div><div class="h">${q.f}</div></div>
@@ -5507,9 +5548,9 @@ function exRetSuf(){ const q=window._ex;
 
 /* — cégep : familles de racines — */
 function exFam(){
-  const B=documentedRootFamilies();
+  const B=exerciseRootFamilies();
   if(!B.length) return exVocab();
-  const famille=jPick(B), fid=famille.root, relation=famille.relation, mem=famille.members;
+  const famille=exPickUnique(B,x=>x.root), fid=famille.root, relation=famille.relation, mem=famille.members;
   const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
   const nomsFamille=new Set(mem.map(w=>w.aln8ba));
   const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)
