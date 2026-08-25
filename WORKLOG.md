@@ -62,6 +62,11 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Retrait des exemples consultatifs des banques actives.
 - Amélioration des locutions reconnues dans les phrases longues.
 - Invalidation immédiate d'un ancien résultat dès que la phrase source change, afin qu'aucune nouvelle entrée ne puisse sembler associée à une traduction périmée; ajout du raccourci Ctrl ou Cmd + Entrée.
+- Sécurisation des patrons de présentation : un prénom doit être explicite et ne peut plus absorber la suite d'une phrase; une question contenant simplement « comment » et « appeler » ne peut plus être confondue avec « Comment t'appelles-tu? ».
+- Reconnaissance de plusieurs phrases complètes documentées dans un même texte, en les traduisant et en les affichant séparément sans construire de nouvelle syntaxe.
+- Tolérance prudente aux fautes françaises dans les phrases documentées : même nombre de mots, correction limitée, résultat unique, correction visible et copie désactivée.
+- Protection des noms propres placés dans une phrase afin que la tolérance orthographique ne les transforme plus en mots courants proches.
+- Exclusion explicite des prénoms capitalisés de la correction automatique des phrases documentées.
 
 ## Jeux et exercices
 

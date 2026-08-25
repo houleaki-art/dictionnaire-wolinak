@@ -3800,43 +3800,87 @@ function traduire(){
     if(isFr) value=elargirFr(value);
     return value.replace(/[^a-z0-9'8]+/g,' ').replace(/\s+/g,' ').trim();
   };
-  const inputPhraseKey=phraseKey(input,FR);
-  const phraseMatch=DOCUMENTED_SENTENCES.find(p=>
-    (FR?p.fr:[p.aln8ba]).some(s=>phraseKey(s,FR)===inputPhraseKey));
+  const phraseTokens=(s,isFr)=>phraseKey(s,isFr).split(' ').filter(Boolean);
+  const adjacentTranspose=(a,b)=>{
+    if(a.length!==b.length) return false;
+    const diff=[];
+    for(let j=0;j<a.length;j++) if(a[j]!==b[j]) diff.push(j);
+    return diff.length===2 && diff[1]===diff[0]+1
+      && a[diff[0]]===b[diff[1]] && a[diff[1]]===b[diff[0]];
+  };
+  const findDocumentedPhrase=(value,allowCorrection)=>{
+    const key=phraseKey(value,FR);
+    const exact=DOCUMENTED_SENTENCES.find(p=>
+      (FR?p.fr:[p.aln8ba]).some(s=>phraseKey(s,FR)===key));
+    if(exact) return {phrase:exact,source:value,corrected:null};
+    // Les graphies aln8ba ne sont jamais corrigées automatiquement. En français,
+    // une correction n'est proposée que si une seule phrase de même longueur gagne.
+    if(!FR||!allowCorrection) return null;
+    const entered=phraseTokens(value,true);
+    if(entered.length<2) return null;
+    const protectedNames=new Set((value.match(/[A-Za-zÀ-ÿ0-9'8]+/g)||[]).slice(1)
+      .filter(token=>/^[A-ZÀ-Þ]/.test(token)).map(token=>norm(token)));
+    const byPhrase=new Map();
+    DOCUMENTED_SENTENCES.forEach(phrase=>phrase.fr.forEach(form=>{
+      const expected=phraseTokens(form,true);
+      if(expected.length!==entered.length) return;
+      let changed=0,score=0;
+      for(let j=0;j<entered.length;j++){
+        if(entered[j]===expected[j]) continue;
+        if(protectedNames.has(entered[j])) return;
+        if(entered[j].length<4||expected[j].length<4) return;
+        const distance=levDist(entered[j],expected[j]);
+        if(distance!==1&&!adjacentTranspose(entered[j],expected[j])) return;
+        changed++; score++;
+      }
+      const maxChanged=entered.length>=6?2:1;
+      if(!changed||changed>maxChanged) return;
+      const previous=byPhrase.get(phrase);
+      if(!previous||score<previous.score) byPhrase.set(phrase,{phrase,form,score});
+    }));
+    const candidates=[...byPhrase.values()].sort((a,b)=>a.score-b.score);
+    if(!candidates.length||(candidates[1]&&candidates[1].score===candidates[0].score)) return null;
+    return {phrase:candidates[0].phrase,source:value,corrected:candidates[0].form};
+  };
+  const wholePhraseMatch=findDocumentedPhrase(input,true);
+  let phraseMatches=wholePhraseMatch?[wholePhraseMatch]:[];
+  if(!wholePhraseMatch){
+    const segments=(input.match(/[^.!?;\n]+(?:[.!?;]+|$)/g)||[])
+      .map(s=>s.trim()).filter(s=>phraseKey(s,FR));
+    if(segments.length>1){
+      const matches=segments.map(s=>findDocumentedPhrase(s,true));
+      if(matches.every(Boolean)) phraseMatches=matches;
+    }
+  }
 
   // ── Phrases attestées et patrons à trous bâtis sur les données actuelles ──
   const patChunks=[];
-  if(phraseMatch){
-    patChunks.push({type:'pat',label:input,
-      out:FR?phraseMatch.aln8ba:phraseMatch.fr[0],
-      note:'Phrase complète actuelle documentée dans le parcours.'});
+  if(phraseMatches.length){
+    phraseMatches.forEach(match=>patChunks.push({type:'pat',label:match.source,
+      out:FR?match.phrase.aln8ba:match.phrase.fr[0],corrected:match.corrected,
+      note:match.corrected
+        ? 'Saisie rapprochée de « '+match.corrected+' ». Vérifie la correction avant de réutiliser la traduction.'
+        : 'Phrase complète actuelle documentée dans le parcours.'}));
     TOKS=[];
   }
-  if(FR && !phraseMatch){
+  if(FR && !phraseMatches.length){
     const isAppel = t => tokFuzzy(t,'appelle') || t==='appeler';
     // « je m'appelle X » → Nd'alewizi X (le prénom se garde tel quel)
     const pNom = byId('s10');
     if(pNom){
       for(let i=0;i+2<TOKS.length+1 && TOKS[i+2];i++){
         if(TOKS[i].n==='je' && TOKS[i+1].n==='me' && isAppel(TOKS[i+2].n) && !(i>0 && TOKS[i-1].n==='ne')){
-          const nomToks = TOKS.splice(i+3);
-          TOKS.splice(i,3);
-          const nom = nomToks.map(t=>t.o).join(' ');
-          patChunks.push({type:'pat', label:"je m'appelle"+(nom?' '+nom:''), w:pNom,
-            out: pNom[dstField] + (nom? ' ' + nom : ' …'),
+          const nomToks=TOKS.slice(i+3);
+          const nomValide=i===0&&nomToks.length>=1&&nomToks.length<=3
+            &&nomToks.every(t=>/^[A-ZÀ-Þ]/.test(t.o||''));
+          if(!nomValide) break;
+          TOKS.splice(0,TOKS.length);
+          const nom=nomToks.map(t=>t.o).join(' ');
+          patChunks.push({type:'pat',label:"je m'appelle "+nom,w:pNom,
+            out:pNom[dstField]+' '+nom,
             note:"La forme documentée « "+pNom[dstField]+" » porte le verbe; le prénom reste tel quel."});
           break;
         }
-      }
-    }
-    // « comment t'appelles-tu » → T8ni aliwizian?
-    const pQ = byId('man_q43');
-    if(pQ && TOKS.length){
-      const ci = TOKS.findIndex(t=>t.n==='comment');
-      const ai = TOKS.findIndex(t=>isAppel(t.n));
-      if(ci>=0 && ai>ci){
-        patChunks.push({type:'pat', label:TOKS.map(t=>t.o||t.n).join(' '), w:pQ, out:pQ[dstField], note:''});
-        TOKS=[];
       }
     }
   }
@@ -3981,7 +4025,10 @@ function traduire(){
     // 8) repli : le mot vit dans un sens plus long (« appeler » dans « Appeler · nommer »)
     const tk = tokIdx.get(t);
     if(tk && tk.length){ chunks.push({type:'hit', toks:[T], w:tk[0].w, sens:tk[0].sens, alts:[], dansSens:true}); i++; continue; }
-    // 9) tolérance aux fautes — le mot du dictionnaire le plus proche
+    // 9) nom propre au milieu d'une phrase — il ne doit jamais être transformé
+    // en mot courant par la tolérance orthographique (ex. « Mali » → « mai »).
+    if(FR && i>0 && /^[A-ZÀ-Þ]/.test(T.o)){ chunks.push({type:'nom', toks:[T]}); i++; continue; }
+    // 10) tolérance aux fautes — le mot du dictionnaire le plus proche
     let cor=null;
     if(t.length>=4){
       let bestK=null, bestD=9, bestEnt=null;
@@ -3995,9 +4042,9 @@ function traduire(){
       if(bestK && bestD<=seuil) cor={key:bestK, ent:bestEnt};
     }
     if(cor){ chunks.push({type:'hit', toks:[T], w:cor.ent.w, sens:cor.ent.sens, alts:[], corrige:t+' → '+cor.key}); i++; continue; }
-    // 10) nom propre — il se garde tel quel en aln8ba
+    // 11) nom propre en tête de saisie — il se garde tel quel en aln8ba
     if(FR && /^[A-ZÀ-Þ]/.test(T.o)){ chunks.push({type:'nom', toks:[T]}); i++; continue; }
-    // 10bis) aln8ba → français : préfixe de personne détaché (n'- = je…)
+    // 11bis) aln8ba → français : préfixe de personne détaché (n'- = je…)
     if(!FR){
       const mp = t.match(/^(nd'|kd'|wd'|n'|k'|w'|d')(.+)$/);
       if(mp){
@@ -4009,7 +4056,7 @@ function traduire(){
         }
       }
     }
-    // 11) inconnu
+    // 12) inconnu
     chunks.push({type:'miss', toks:[T]}); i++;
   }
 
@@ -4032,7 +4079,7 @@ function traduire(){
   // seule forme exacte ou à un patron documenté. Des fragments ne deviennent
   // jamais une phrase par simple concaténation.
   const contentChunks = chunks.filter(c=>c.type!=='skip');
-  const completePattern = patChunks.length===1 && contentChunks.length===0;
+  const completePattern = patChunks.length>=1 && contentChunks.length===0;
   const wholeHit = patChunks.length===0 && contentChunks.length===1
     && contentChunks[0].type==='hit'
     && contentChunks[0].toks.length===TOKS.length
@@ -4045,18 +4092,22 @@ function traduire(){
     && !contentChunks[0].note
     && !(contentChunks[0].alts||[]).length;
   const completeTranslation = completePattern || wholeHit;
-  const sortie = completePattern ? patChunks[0].out
+  const sortie = completePattern ? patChunks.map(p=>p.out).join('\n')
     : wholeHit ? (contentChunks[0].forceOut || contentChunks[0].w[dstField])
     : '';
   const hasConsultative=chunks.some(c=>c.consultative);
-  TRAD_LAST_OUTPUT = completeTranslation && !hasConsultative ? sortie : '';
+  const hasPhraseCorrection=patChunks.some(p=>p.corrected);
+  TRAD_LAST_OUTPUT = completeTranslation && !hasConsultative && !hasPhraseCorrection ? sortie : '';
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
 
   let html = completeTranslation
-    ? '<div style="background:var(--surface2);border:1px solid var(--green);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
-      + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5">' + escH(sortie) + '</div>'
-      + '<div style="margin-top:8px;color:var(--green);font-size:.75rem;font-weight:700">✓ Correspondance complète documentée</div></div>'
+    ? '<div style="background:var(--surface2);border:1px solid '+(hasPhraseCorrection?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+      + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5;white-space:pre-line">' + escH(sortie) + '</div>'
+      + '<div style="margin-top:8px;color:'+(hasPhraseCorrection?'var(--gold)':'var(--green)')+';font-size:.75rem;font-weight:700">'
+      + (hasPhraseCorrection?'✏️ Phrase documentée reconnue après correction'
+        : patChunks.length>1?'✓ '+patChunks.length+' phrases complètes documentées, traitées séparément'
+        :'✓ Correspondance complète documentée')+'</div></div>'
     : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
       + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
 
@@ -4069,7 +4120,8 @@ function traduire(){
     + '<span style="font-size:.9rem">' + droite + '</span>' + (extra||'') + '</div>';
 
   patChunks.forEach(p=>{
-    html += ligne(escH(p.label),
+    const label=p.corrected?escH(p.label)+' <span style="font-size:.7rem;color:#b8860b">→ '+escH(p.corrected)+'</span>':escH(p.label);
+    html += ligne(label,
       '<b style="color:var(--accent)">'+lnk(p.out, dstField==='aln8ba'?'aln8ba':'fr')+'</b>',
       ' <span style="color:#2e7d32;font-size:.75rem">🌟 phrase documentée</span>')
       + (p.note? '<div style="font-size:.73rem;color:var(--text2);padding:0 0 5px 130px;font-style:italic">'+escH(p.note)+'</div>':'');
@@ -4118,8 +4170,10 @@ function traduire(){
   document.getElementById('tradCopyBtn').style.display = TRAD_LAST_OUTPUT ? 'block' : 'none';
   document.getElementById('tradMeta').textContent = hasConsultative
     ? '📜 Une locution documentée consultative a été reconnue exactement. Son sens est affiché avec prudence et la copie est désactivée; les autres morceaux utilisent les entrées vertes actuelles.'
+    : hasPhraseCorrection
+      ? '✏️ Une faute probable a été rapprochée d’une seule phrase française documentée. La correction est affichée et la copie reste désactivée pour éviter toute réutilisation accidentelle.'
     : completeTranslation
-      ? '✓ Traduction fondée sur une correspondance complète documentée dans les entrées vertes actuelles.'
+      ? '✓ Traduction fondée uniquement sur '+(patChunks.length>1?'des phrases complètes documentées, conservées séparément':'une correspondance complète documentée')+' dans les entrées vertes actuelles.'
       : '⚠️ Analyse de fragments seulement. Aucun ordre grammatical ni aucune phrase n\'est construit; la copie reste désactivée. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
