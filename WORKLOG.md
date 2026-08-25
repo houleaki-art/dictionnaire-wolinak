@@ -108,6 +108,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Arrêt manuel ou automatique fiabilisé, durée d'écoute adaptée à la longueur du mot et libération des enregistrements temporaires dès qu'ils ne servent plus à la réécoute locale.
 - Reformulation du résultat comme « transcription proposée par Chrome », avec nombre d'hypothèses comparées, diagnostic du son manquant et rappel qu'il ne s'agit pas d'une validation linguistique officielle.
 - Les exercices isolés `CH → TS` et `J → DZ` envoient désormais une syllabe technique continue à la voix française, afin d'éviter l'épellation lettre par lettre de `tsa` et `dza`; le guide visible demeure inchangé.
+- `Almos` conserve son guide documenté `al-mos`, mais reçoit une commande synthétique ciblée qui maintient le `A`, le `O` et le `S` final sans étendre cette exception aux autres mots en `-os`.
 
 ## Avertissement public
 

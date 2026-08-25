@@ -3090,6 +3090,11 @@ function voiceSoundDrillToFrenchSpeech(value,label){
   if((label||'').trim().toUpperCase()==='J') return 'dzah';
   return value;
 }
+function voiceDocumentedWordToFrenchSpeech(value,label){
+  // Technical French spelling: keep Almos as one word with audible A, closed O and final S.
+  if((label||'').trim().toLowerCase()==='almos') return 'almôsse';
+  return value;
+}
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
   if(/8w8/i.test(label)) speechCue=voice8W8ToFrenchSpeech(speechCue);
@@ -3098,6 +3103,7 @@ function voiceCueToSpeech(value,label=''){
   if(/k(?:w|u)at[.!?]*$/i.test((label||'').trim())) speechCue=voiceKwatToFrenchSpeech(speechCue);
   if(/t[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalTToFrenchSpeech(speechCue);
   speechCue=voiceSoundDrillToFrenchSpeech(speechCue,label);
+  speechCue=voiceDocumentedWordToFrenchSpeech(speechCue,label);
   return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
