@@ -274,6 +274,7 @@ textarea{resize:vertical;min-height:68px}
 .music-nav button{min-height:48px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font:700 .86rem Georgia,serif;cursor:pointer;transition:var(--tr)}
 .music-nav button:hover{border-color:var(--accent);color:var(--accent);box-shadow:var(--shadow)}
 .music-warning{background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:15px 18px;margin-bottom:18px;color:var(--text2);font-size:.84rem;line-height:1.6}
+.music-rights{border-left-color:var(--accent)}
 .music-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px}
 .music-card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);overflow:hidden}
 .music-cover{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:9px;margin-bottom:14px;background:var(--surface2)}
@@ -318,6 +319,23 @@ textarea{resize:vertical;min-height:68px}
 .lyrics-pair:last-child{border-bottom:0}
 .lyrics-pair span{font-size:.79rem;line-height:1.45}
 .lyrics-pair span:last-child{color:var(--text2);font-style:italic}
+.song-lyrics-raw{margin:0;padding:14px 16px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);font:400 .84rem/1.75 Georgia,serif;white-space:pre-wrap;overflow-wrap:anywhere}
+.music-dock[hidden]{display:none}
+.music-dock{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:520;width:min(900px,calc(100% - 28px));display:grid;grid-template-columns:54px minmax(190px,1fr) auto;align-items:center;gap:12px;padding:10px 12px;border:1px solid rgba(184,92,42,.5);border-radius:14px;background:color-mix(in srgb,var(--surface) 95%,var(--accent));box-shadow:0 12px 38px rgba(0,0,0,.3)}
+.music-dock-cover{width:54px;height:54px;border-radius:9px;object-fit:cover;background:var(--surface2)}
+.music-dock-main{min-width:0}
+.music-dock-main strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--accent);font-size:.86rem;margin-bottom:7px}
+.music-dock-progress-row{display:grid;grid-template-columns:auto minmax(90px,1fr);align-items:center;gap:9px}
+.music-dock-progress-row span{font-size:.68rem;color:var(--text3);white-space:nowrap}
+.music-dock-progress{width:100%;accent-color:var(--accent);cursor:pointer}
+.music-dock-controls{display:flex;gap:6px}
+.music-dock-controls button{min-height:38px;padding:7px 11px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);font:700 .68rem Georgia,serif;cursor:pointer;white-space:nowrap}
+.music-dock-controls button:first-child{background:var(--accent);border-color:var(--accent);color:#fff}
+.music-dock-controls button:hover{border-color:var(--accent);color:var(--accent)}
+.music-dock-controls button:first-child:hover{background:var(--accent-h);color:#fff}
+body.music-dock-open{padding-bottom:94px}
+body.music-dock-open .fab{bottom:104px}
+body.music-dock-open .toast{bottom:116px}
 /* toast */
 .toast{position:fixed;bottom:100px;right:28px;background:var(--text);color:var(--bg);padding:11px 18px;border-radius:9px;font-size:.85rem;box-shadow:var(--shadow-lg);transform:translateY(60px);opacity:0;transition:all .3s;z-index:400;max-width:300px}
 .toast.show{transform:translateY(0);opacity:1}
@@ -405,6 +423,16 @@ textarea{resize:vertical;min-height:68px}
   .fab{bottom:16px;right:16px;width:52px;height:52px;font-size:22px}
   /* Toast */
   .toast{bottom:80px;right:16px;left:16px;max-width:none;font-size:.82rem}
+  .music-dock{left:0;right:0;bottom:0;transform:none;width:100%;grid-template-columns:44px minmax(0,1fr);gap:8px;padding:8px 10px 9px;border-width:1px 0 0;border-radius:0}
+  .music-dock-cover{width:44px;height:44px}
+  .music-dock-main strong{font-size:.78rem;margin-bottom:5px}
+  .music-dock-progress-row{gap:6px}
+  .music-dock-progress-row span{font-size:.62rem}
+  .music-dock-controls{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr}
+  .music-dock-controls button{min-height:36px;padding:6px 5px;font-size:.64rem}
+  body.music-dock-open{padding-bottom:132px}
+  body.music-dock-open .fab{bottom:140px}
+  body.music-dock-open .toast{bottom:144px}
   /* Modal */
   .overlay{padding:10px}
   .modal{border-radius:14px}
@@ -1014,12 +1042,15 @@ textarea{resize:vertical;min-height:68px}
     <div class="music-warning" role="note">
       <strong>À écouter comme des œuvres artistiques en évolution.</strong> Ces maquettes ne constituent ni une attestation linguistique, ni l'enregistrement d'une locutrice ou d'un locuteur, ni un modèle officiel de prononciation. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
     </div>
+    <div class="music-warning music-rights" role="note">
+      <strong>© 2026 Guillaum Labrecque-Houle — écoute seulement.</strong> Aucun téléchargement, aucune copie, aucune réutilisation, aucune modification et aucune redistribution ne sont autorisés. La mise en écoute sur ce site n'accorde aucune licence sur les paroles, les compositions, les enregistrements ou leur présentation.
+    </div>
     <div class="music-grid" id="musicListen">
       <article class="music-card">
         <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la maquette Askwa yudali">
         <h3>Askwa yudali</h3>
         <span class="music-badge">Maquette IA · non studio</span>
-        <audio id="musicAskwa" controls preload="none" aria-label="Écouter la maquette Askwa yudali" onended="musicStopped('musicAskwa','Lecture terminée')">
+        <audio id="musicAskwa" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Askwa yudali" oncontextmenu="return false" onended="musicStopped('musicAskwa','Lecture terminée')">
           <source src="audio/askwa-yudali.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1036,7 +1067,7 @@ textarea{resize:vertical;min-height:68px}
         <img class="music-cover" src="audio/nijia-gabriel.jpg" loading="lazy" alt="Pochette de la maquette Nijia Gabriel">
         <h3>Nijia Gabriel</h3>
         <span class="music-badge">Maquette IA · non studio</span>
-        <audio id="musicNijia" controls preload="none" aria-label="Écouter la maquette Nijia Gabriel" onended="musicStopped('musicNijia','Lecture terminée')">
+        <audio id="musicNijia" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nijia Gabriel" oncontextmenu="return false" onended="musicStopped('musicNijia','Lecture terminée')">
           <source src="audio/nijia-gabriel.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1053,7 +1084,7 @@ textarea{resize:vertical;min-height:68px}
         <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la maquette Nikwonbi N'Wonolonwzé">
         <h3>Nikwonbi N'Wonolonwzé</h3>
         <span class="music-badge">Maquette IA · non studio · 2:37</span>
-        <audio id="musicNikwonbi" controls preload="none" aria-label="Écouter la maquette Nikwonbi N'Wonolonwzé" onended="musicStopped('musicNikwonbi','Lecture terminée')">
+        <audio id="musicNikwonbi" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nikwonbi N'Wonolonwzé" oncontextmenu="return false" onended="musicStopped('musicNikwonbi','Lecture terminée')">
           <source src="audio/nikwonbi-nwonolonwze.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1063,13 +1094,14 @@ textarea{resize:vertical;min-height:68px}
           <button type="button" onclick="musicStop('musicNikwonbi')">■ Arrêter</button>
         </div>
         <div class="music-status" id="musicNikwonbiStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNikwonbi')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
       <article class="music-card">
         <img class="music-cover" src="audio/wla-won-gan-woban-kizoss.jpg" loading="lazy" alt="Pochette du mashup Wla Won Gan x Wô-ban Ki-zoss">
         <h3>Wla Won Gan x Wô-ban Ki-zoss (Mashup)</h3>
         <span class="music-badge">Mashup IA · non studio · 3:49</span>
-        <audio id="musicWlaWonGan" controls preload="none" aria-label="Écouter le mashup Wla Won Gan x Wô-ban Ki-zoss" onended="musicStopped('musicWlaWonGan','Lecture terminée')">
+        <audio id="musicWlaWonGan" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter le mashup Wla Won Gan x Wô-ban Ki-zoss" oncontextmenu="return false" onended="musicStopped('musicWlaWonGan','Lecture terminée')">
           <source src="audio/wla-won-gan-woban-kizoss.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1079,13 +1111,14 @@ textarea{resize:vertical;min-height:68px}
           <button type="button" onclick="musicStop('musicWlaWonGan')">■ Arrêter</button>
         </div>
         <div class="music-status" id="musicWlaWonGanStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceWlaWonGan')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
       <article class="music-card">
         <img class="music-cover" src="audio/kikas-mski-koua.jpg" loading="lazy" alt="Pochette de la maquette Kikas, version Mski Koua">
         <h3>Kikas (Mski Koua Version)</h3>
         <span class="music-badge">Maquette IA · non studio · 3:16</span>
-        <audio id="musicKikas" controls preload="none" aria-label="Écouter la maquette Kikas, version Mski Koua" onended="musicStopped('musicKikas','Lecture terminée')">
+        <audio id="musicKikas" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Kikas, version Mski Koua" oncontextmenu="return false" onended="musicStopped('musicKikas','Lecture terminée')">
           <source src="audio/kikas-mski-koua.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1095,13 +1128,14 @@ textarea{resize:vertical;min-height:68px}
           <button type="button" onclick="musicStop('musicKikas')">■ Arrêter</button>
         </div>
         <div class="music-status" id="musicKikasStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceKikas')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
       <article class="music-card">
         <img class="music-cover" src="audio/est-ce-que-tu-mentends.jpg" loading="lazy" alt="Pochette de la maquette Est-ce que tu m'entends, version Rock Anthem">
         <h3>Est-ce que tu m'entends (Rock Anthem)</h3>
         <span class="music-badge">Maquette IA · non studio · 4:32</span>
-        <audio id="musicEntends" controls preload="none" aria-label="Écouter la maquette Est-ce que tu m'entends, version Rock Anthem" onended="musicStopped('musicEntends','Lecture terminée')">
+        <audio id="musicEntends" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Est-ce que tu m'entends, version Rock Anthem" oncontextmenu="return false" onended="musicStopped('musicEntends','Lecture terminée')">
           <source src="audio/est-ce-que-tu-mentends.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1111,6 +1145,7 @@ textarea{resize:vertical;min-height:68px}
           <button type="button" onclick="musicStop('musicEntends')">■ Arrêter</button>
         </div>
         <div class="music-status" id="musicEntendsStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceEntends')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
     </div>
@@ -1220,6 +1255,430 @@ Kalaata.</p></div>
           </div>
         </div>
       </details>
+
+      <details class="song-lyrics" id="practiceNikwonbi">
+        <summary>Nikwonbi N'Wonolonwzé · paroles en aln8ba</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nikwonbi N'Wonolonwzé">
+            <strong>🎧 Nikwonbi N'Wonolonwzé</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicNikwonbi')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicNikwonbi')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicNikwonbi')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicNikwonbiPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-note"><strong>Texte de travail exact de la maquette.</strong> Il est reproduit pour suivre la chanson; il n'est pas présenté comme une validation linguistique professionnelle.</div>
+          <pre class="song-lyrics-raw">[Intro]
+Ôda n'kelozowé
+Ôda n'lintowé
+Ôda n'pemegonwé
+Ôda n'tagamonwé
+Ôda nd-aïw
+
+[Verse 1]
+N'kwilawato
+N'kwilawato
+N'kwilawatob Aki
+N'kwilawatob Sibo
+N'kwilawatob Wizowongan-al
+
+[Verse 2]
+N'masko!
+N'maskob Pakholigan
+N'maskob Alnonba-Odwawongan
+N'maskob Kdakinna
+Kalaata
+
+[Chorus]
+N'tagamon. N'tagamon.
+N'linto. N'kelozo.
+N'pemegon. N'namiho.
+N'nodam. N'tapsedo.
+Nikwonbi n'wonolonwzé
+Kalaata
+
+[Verse 3]
+Ôda n'wanaldamowen
+N'nanawaldam Wizowongan-al
+N'nanawaldam Kdakinna
+N'awikhon
+K'kezalmelba
+
+[Verse 4]
+N'kikadzi
+N'lintodzi
+N'agakidodzi Awonzsisak
+N'mildodzi Alnonbak
+N'wijokadzi Nidonbak
+
+[Chorus]
+N'tagamon. N'tagamon.
+N'linto. N'kelozo.
+N'pemegon. N'namiho.
+N'nodam. N'tapsedo.
+Nikwonbi n'wonolonwzé
+Kalaata
+
+[Verse 5]
+N'lintobna
+N'pemegonbna
+N'tagamonbna
+N'kikabna
+Askwa yudali nd-aïbena
+Kalaata
+
+[Outro]
+Kizé n'kwilawato
+Kizé n'masko
+Nikwonbi n'tagamon
+Adio, wli nanawalmezi</pre>
+        </div>
+      </details>
+
+      <details class="song-lyrics" id="practiceWlaWonGan">
+        <summary>Wla Won Gan x Wô-ban Ki-zoss · guide de la maquette</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Wla Won Gan x Wô-ban Ki-zoss">
+            <strong>🎧 Wla Won Gan x Wô-ban Ki-zoss</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicWlaWonGan')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicWlaWonGan')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicWlaWonGan')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicWlaWonGanPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-note"><strong>Guide phonétique de la voix artificielle.</strong> Les traits d'union et certaines graphies servent uniquement à guider Suno; ils ne doivent pas être copiés comme graphie officielle.</div>
+          <pre class="song-lyrics-raw">[Intro]
+hand drum heartbeat alone, morning birds, distant river, voice slowly from silence
+
+Kwa-i…
+Kwa-i…
+Wô-ban…
+
+[Verse 1]
+Kwa-i, Ki-zoss —
+Wô-ban ki-zi
+Ki-zoss pa-mi-doo —
+Kiz-gad !
+Sip-sak lin-to —
+A-wan wli-gen
+Kze-lom-sen —
+So-glon —
+Ma-na-gwon !
+
+[Pre-Chorus]
+O-hoo ! O-hoo !
+Ka-la-ta !
+Cha-ga, Al-non-bak —
+cha-ga !
+
+[Chorus]
+Wla-won-gan ! Pak-ho-li-gan !
+Ki-o-na — mi-na — Nda-ki-na !
+Wla-won-gan ! Pak-ho-li-gan !
+Wli-gen mzé-wé — pam-kiz-gak !
+
+[Verse 2]
+Mge-so pa-mi-doo —
+Ka-ka-sakw
+Mol-sem —
+A-was-soss —
+T-ma-kwa —
+Tol-ba
+Se-no-mo-zi —
+Mas-kwa-mo-zi
+Mo-lo-dagw — ta
+K-tschi Ko-a !
+
+[Pre-Chorus 2]
+Mzé-wé ! Mzé-wé !
+A-ki mi-na !
+Ka-la-ta, Al-non-bak —
+Ka-la-ta !
+
+[Chorus]
+Wla-won-gan ! Pak-ho-li-gan !
+Ki-o-na — mi-na — Nda-ki-na !
+Wla-won-gan ! Pak-ho-li-gan !
+Wli-gen mzé-wé — pam-kiz-gak !
+
+[Verse 3]
+Wô-li-nak-tegw —
+Si-bo-bi
+Sol-gon-bi —
+Non-bi wli-gen !
+Wat-zo —
+So-bagw —
+O-da-nak
+Wig-wom wli-gen —
+Gok-tw !
+
+[Verse 4 — call and response, group answers]
+Ni-o-na Wa-Ban-A-ki-ak !
+Hon, hon, hon, hon
+Kda-kin-na !
+Hon, hon, hon, hon
+Wô-li-nak — O-da-nak !
+Hon, hon, hon, hon
+Ni-o-na ! Ni-o-na !
+Hon, hon, hon, hon
+
+[Bridge]
+Sig-wan… Ni-ben… Tag-no-go… Pe-bon…
+Wa-zon-li — So-glon — Pkwa-mi
+Ta mi-na Ki-zoss —
+mi-na Wô-ban
+Spem-ki — A-ki —
+Wa-Ban-A-ki !
+
+[Breakdown]
+drum stops, voice alone, almost whispered
+
+Nok-mess…
+Nma-houm…
+Ni-ga-wess…
+Nmi-tog-wes…
+
+Ô-da n'wa-nal-da-mo-wen…
+
+[Verse 5]
+drum returns, full force
+
+Nok-mess a-gaskw —
+Nma-houm
+Ni-ga-wess —
+Nmi-tog-wes —
+Ni-do-bem
+N-ki-ka pam-kiz-gak —
+sa-ba !
+Sig-na-ga —
+A-won-sis —
+mzé-wé !
+
+[Verse 6]
+K'ke-zal-mel-ba !
+K'ke-zal-mel-ba !
+Ni-don-bak — Al-non-bak —
+mzé-wé !
+Ki-o-na mi-na —
+As-kwa yu-da-li !
+Ka-la-ta ! Ka-la-ta !
+
+[Final Chorus]
+everything, group vocals, loudest
+
+Wla-won-gan ! Pak-ho-li-gan !
+Ki-o-na — mi-na — Nda-ki-na !
+Wla-won-gan ! Pak-ho-li-gan !
+Wli-gen mzé-wé — pam-kiz-gak !
+
+Wla-won-gan ! Pak-ho-li-gan !
+Kda-kin-na — mi-na — Nda-ki-na !
+Wô-ban — Ki-zoss — Wli-gen !
+Wa-Ban-A-ki-ak — Nda-ki-na !
+
+Hon, hon, hon, hon
+Hon, hon, hon, hon
+
+[Outro]
+drum slows, birds return
+
+Wli-gen mzé-wé…
+mi-na…
+mi-na…
+Wô-ban…</pre>
+        </div>
+      </details>
+
+      <details class="song-lyrics" id="practiceKikas">
+        <summary>Kikas (Mski Koua Version) · paroles bilingues</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Kikas, version Mski Koua">
+            <strong>🎧 Kikas (Mski Koua Version)</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicKikas')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicKikas')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicKikas')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicKikasPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-note"><strong>Texte bilingue exact de la maquette.</strong> Les sections aln8ba et françaises sont reproduites telles qu'elles ont été fournies à Suno, sans attestation professionnelle.</div>
+          <pre class="song-lyrics-raw">[Appel]
+Kizos. Aki. Sibo.
+Mski Koua mina
+Ôda n'wanaldam
+
+[Sigwan]
+Sigwan mina, Sigwan
+Kikas — n'kika, n'kika
+Soglonnoo, Solgonbi
+Aki, Aki wligen
+Ôda n'wanaldam
+
+[Niben]
+Niben, Kizos, Wloda
+Mskikwimenak mkwi
+Temaskikos mina
+Mski Koua, Mski Koua
+Ôda n'wanaldam
+
+[Tagwongo]
+Tagwongo, Kzelomsen
+Skweda ta Pekeda
+Spemki, Nokmes, Nmahom
+Mski Koua, Kalaata
+Ôda n'wanaldam
+
+[Pebon]
+Pebon, Mzatanos
+Aki, Aki wligawi
+Kakasakw, Alakwsak
+Mski wligawi mina
+Ôda n'wanaldam
+
+[Signaga]
+Signaga! Signaga!
+Mski mina, Mski mina
+Wôlinaktegw, Ndakina
+Wligen, Wligen, Kalaata
+Ôda n'wanaldam
+
+[Fermeture]
+Kizos. Aki. Sibo.
+Mski Koua mina
+
+[Appel - French]
+Le soleil, la terre
+Le foin d'odeur revient
+On n'oublie pas
+
+[Sigwan - French]
+Kikas, le mois des mains
+Je sème, je sème encore
+La pluie vient du nord
+La terre est bonne, elle attend
+On n'oublie pas
+
+[Niben - French]
+L'été, les fraises rouges
+Les premières sont pour eux
+Le mois de la fenaison
+Le foin monte aux genoux
+On n'oublie pas
+
+[Tagwongo - French]
+Le vent tourne, l'herbe sèche
+Le feu et la fumée
+Ça monte droit vers vous
+Nokmes, Nmahom, en vérité
+On n'oublie pas
+
+[Pebon - French]
+L'hiver, la glace prend
+La terre dort, on la laisse
+Le ciel est plein d'étoiles
+L'herbe dort, elle tient bon
+On n'oublie pas
+
+[Signaga - French]
+Signaga, le printemps
+L'herbe revient chez elle
+Cent ans que ça manquait
+Plus maintenant. On est là.
+On n'oublie pas
+
+[Fermeture]
+Le soleil, la terre
+Le foin d'odeur revient</pre>
+        </div>
+      </details>
+
+      <details class="song-lyrics" id="practiceEntends">
+        <summary>Est-ce que tu m'entends (Rock Anthem) · paroles françaises</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Est-ce que tu m'entends, version Rock Anthem">
+            <strong>🎧 Est-ce que tu m'entends</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicEntends')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicEntends')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicEntends')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicEntendsPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-note"><strong>Paroles françaises de la maquette.</strong> Texte exact utilisé pour cette version rock.</div>
+          <pre class="song-lyrics-raw">[Intro]
+Je marche dans le noir depuis trop longtemps
+Cherchant une lumière, un signe, un vent
+J'ai crié ton nom dans le creux de mes nuits
+Dis-moi Créateur, est-ce que tu me suis
+
+[Couplet 1]
+J'ai porté des blessures que j'ai jamais montrées
+Des silences plus lourds que mes années
+J'ai prié sans savoir vraiment comment faire
+Les mots s'effondraient avant d'sortir de ma terre
+J'ai marché sur des routes que personne connaît
+Cherchant mes racines dans c'qui restait
+De mes ancêtres, de leurs voix, de leur chant
+J'ai tendu les mains vers le ciel, suppliant
+
+[Pré-refrain]
+Dis-moi si t'es là
+Dis-moi si tu vois
+Mon cœur qui se déchire
+Chaque fois que je respire
+
+[Refrain]
+Est-ce que tu m'entends, mon Dieu, est-ce que tu m'entends
+Dans le vent qui souffle, dans le sang qui descend
+De mes ancêtres jusqu'à mes enfants
+Est-ce que tu m'entends, est-ce que tu me comprends
+J'ai besoin d'un signe, j'ai besoin de savoir
+Que j'suis pas juste une ombre dans le noir
+
+[Couplet 2]
+Y'a des matins où j'ai vu une lueur
+Dans le tambour qui bat comme un cœur
+Y'a des soirs où j'ai senti ta présence
+Dans le silence, dans l'évidence
+De la fumée qui monte, de la terre qui respire
+J'ai compris que tu parles sans avoir à le dire
+Dans chaque rivière, dans chaque feuille qui tombe
+Dans les voix anciennes qui sortent de la tombe
+
+[Refrain]
+Est-ce que tu m'entends, mon Dieu, est-ce que tu m'entends
+Dans le vent qui souffle, dans le sang qui descend
+De mes ancêtres jusqu'à mes enfants
+Est-ce que tu m'entends, est-ce que tu me comprends
+J'ai besoin d'un signe, j'ai besoin de savoir
+Que j'suis pas juste une ombre dans le noir
+
+[Pont]
+Je lâche prise, je dépose mes armes
+Je dépose mon doute, mes larmes
+Peut-être que t'as toujours été là
+Dans chaque épreuve, dans chaque combat
+Peut-être que le silence était ta façon
+De me montrer le vrai chemin, la vraie raison
+J'arrête de chercher des réponses dans le ciel
+Je les trouve en moi, dans c'qui est réel
+
+[Refrain final]
+Oui je t'entends, mon Dieu, oui je t'entends
+Dans le vent qui souffle, dans le sang qui descend
+De mes ancêtres jusqu'à mes enfants
+Oui je t'entends, oui je te comprends
+Merci pour le signe, merci de m'avoir montré
+Que j'ai jamais été seul, jamais abandonné
+
+[Outro]
+Je marche dans la lumière maintenant
+Portant les voix de mon sang, de mon temps
+Merci... merci de m'avoir entendu</pre>
+        </div>
+      </details>
     </section>
   </div>
   <!-- STATS VIEW -->
@@ -1283,6 +1742,22 @@ Kalaata.</p></div>
     </div>
   </div>
 </main>
+</div>
+
+<div class="music-dock" id="musicDock" role="region" aria-label="Lecteur musical persistant" hidden>
+  <img class="music-dock-cover" id="musicDockCover" src="" alt="">
+  <div class="music-dock-main">
+    <strong id="musicDockTitle">Aucune chanson</strong>
+    <div class="music-dock-progress-row">
+      <span id="musicDockTime">0:00 / 0:00</span>
+      <input class="music-dock-progress" id="musicDockProgress" type="range" min="0" max="1000" value="0" aria-label="Position dans la chanson" oninput="musicDockSeek(this.value)">
+    </div>
+  </div>
+  <div class="music-dock-controls">
+    <button type="button" id="musicDockToggle" onclick="musicDockToggle()">▶ Reprendre</button>
+    <button type="button" onclick="musicGoTo('musicListen')">🎵 Voir</button>
+    <button type="button" onclick="musicDockClose()">■ Arrêter</button>
+  </div>
 </div>
 
 <!-- FAB -->
@@ -2226,6 +2701,7 @@ function searchBy(term){
 //  VIEWS
 // ══════════════════════════════════════════════════════════
 const MUSIC_TRACK_IDS=['musicAskwa','musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
+let activeMusicId='';
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{
     const status=document.getElementById(statusId);
@@ -2241,11 +2717,70 @@ function musicStopAll(announce=true,exceptId=''){
     audio.currentTime=0;
     if(announce) musicSetStatus(id,'Arrêtée.');
   });
+  if(activeMusicId&&activeMusicId!==exceptId) musicDockSync();
+}
+function musicFormatTime(seconds){
+  const safe=Number.isFinite(seconds)?Math.max(0,Math.floor(seconds)):0;
+  return Math.floor(safe/60)+':'+String(safe%60).padStart(2,'0');
+}
+function musicDockActivate(id){
+  const audio=document.getElementById(id);
+  const dock=document.getElementById('musicDock');
+  if(!audio||!dock) return;
+  const card=audio.closest('.music-card');
+  const title=card?.querySelector('h3')?.textContent?.trim()||'Chanson';
+  const cover=card?.querySelector('.music-cover');
+  activeMusicId=id;
+  document.getElementById('musicDockTitle').textContent=title;
+  const dockCover=document.getElementById('musicDockCover');
+  dockCover.src=cover?.currentSrc||cover?.src||'';
+  dockCover.alt='Pochette de '+title;
+  dock.hidden=false;
+  document.body.classList.add('music-dock-open');
+  musicDockSync();
+}
+function musicDockSync(){
+  const audio=document.getElementById(activeMusicId);
+  if(!audio) return;
+  const duration=Number.isFinite(audio.duration)?audio.duration:0;
+  const current=Number.isFinite(audio.currentTime)?audio.currentTime:0;
+  const time=document.getElementById('musicDockTime');
+  const progress=document.getElementById('musicDockProgress');
+  const toggle=document.getElementById('musicDockToggle');
+  if(time) time.textContent=musicFormatTime(current)+' / '+musicFormatTime(duration);
+  if(progress) progress.value=duration?String(Math.round(current/duration*1000)):'0';
+  if(toggle){
+    const paused=audio.paused||audio.ended;
+    toggle.textContent=paused?'▶ Reprendre':'Ⅱ Pause';
+    toggle.setAttribute('aria-label',paused?'Reprendre la chanson':'Mettre la chanson en pause');
+  }
+}
+async function musicDockToggle(){
+  const audio=document.getElementById(activeMusicId);
+  if(!audio) return;
+  if(audio.paused||audio.ended){
+    if(audio.ended) audio.currentTime=0;
+    await musicStart(activeMusicId);
+  }else musicPause(activeMusicId);
+}
+function musicDockSeek(value){
+  const audio=document.getElementById(activeMusicId);
+  if(!audio||!Number.isFinite(audio.duration)) return;
+  audio.currentTime=Math.max(0,Math.min(audio.duration,Number(value)/1000*audio.duration));
+  musicDockSync();
+}
+function musicDockClose(){
+  if(activeMusicId) musicStop(activeMusicId);
+  activeMusicId='';
+  const dock=document.getElementById('musicDock');
+  if(dock) dock.hidden=true;
+  document.body.classList.remove('music-dock-open');
 }
 async function musicStart(id){
   const audio=document.getElementById(id);
   if(!audio) return;
   musicStopAll(true,id);
+  musicDockActivate(id);
   try{
     await audio.play();
     musicSetStatus(id,'Lecture en cours…');
@@ -2259,6 +2794,7 @@ function musicPause(id){
   if(!audio) return;
   audio.pause();
   musicSetStatus(id,audio.currentTime>0?'En pause.':'Prête à écouter.');
+  if(id===activeMusicId) musicDockSync();
 }
 function musicStop(id){ musicStopped(id,'Arrêtée.'); }
 function musicStopped(id,message){
@@ -2267,6 +2803,7 @@ function musicStopped(id,message){
   audio.pause();
   audio.currentTime=0;
   musicSetStatus(id,message||'Arrêtée.');
+  if(id===activeMusicId) musicDockSync();
 }
 function musicGoTo(id){
   setView('musique');
@@ -2283,18 +2820,26 @@ function initMusicPlayers(){
   MUSIC_TRACK_IDS.forEach(id=>{
     const audio=document.getElementById(id);
     if(!audio) return;
+    audio.setAttribute('controlsList','nodownload noplaybackrate');
+    audio.setAttribute('disablePictureInPicture','');
+    audio.addEventListener('contextmenu',event=>event.preventDefault());
+    audio.addEventListener('dragstart',event=>event.preventDefault());
     audio.addEventListener('play',()=>{
       musicStopAll(true,id);
+      musicDockActivate(id);
       musicSetStatus(id,'Lecture en cours…');
     });
     audio.addEventListener('pause',()=>{
       if(audio.currentTime>0&&!audio.ended) musicSetStatus(id,'En pause.');
+      if(id===activeMusicId) musicDockSync();
+    });
+    ['timeupdate','loadedmetadata','durationchange'].forEach(eventName=>{
+      audio.addEventListener(eventName,()=>{ if(id===activeMusicId) musicDockSync(); });
     });
   });
 }
 function setView(v,keepGameContext=false){
   if(v==='jeux'&&!keepGameContext){ jCtx=null; jCat='toutes'; }
-  if(v!=='musique') musicStopAll(false);
   S.view=v; S.cat=''; S.letter='';
   const gv=['flashcard','jeux'].includes(v)?'apprendre':v;
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===gv));
