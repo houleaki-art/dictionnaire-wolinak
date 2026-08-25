@@ -2927,9 +2927,9 @@ function voiceCueToSpeech(value){
 function voiceCueForWord(w){
   const word=(w&&w.aln8ba||'').trim();
   if(word.toLowerCase()==='8h8') return 'hon-hon';
-  if(word) return alnToVoiceCue(word);
   const ph=(w&&w.phonetic||'').replace(/[☼·]/g,' ').replace(/\s+/g,' ').trim();
-  return ph&&ph.length<80?phoneticToVoiceCue(ph):'';
+  if(ph&&ph.length<80) return phoneticToVoiceCue(ph);
+  return word?alnToVoiceCue(word):'';
 }
 function voiceKey(value){
   return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
