@@ -2870,9 +2870,18 @@ function alnToVoiceCue(value){
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
     .replace(/-/g,' ').replace(/\s+/g,' ').trim();
 }
+function phoneticToVoiceCue(value){
+  return (value||'').toLowerCase()
+    .replace(/[☼·]/g,' ').replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
+    .replace(/w(?=[aeiouyàâäéèêëîïôöùûü])/g,'ou')
+    .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s-])/g,'ô')
+    .replace(/w(?=$|[\s-])/g,'')
+    .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
+    .replace(/-/g,' ').replace(/\s+/g,' ').trim();
+}
 function voiceCueForWord(w){
   const ph=(w&&w.phonetic||'').replace(/[☼·]/g,' ').replace(/\s+/g,' ').trim();
-  return ph&&ph.length<80?ph:alnToVoiceCue(w&&w.aln8ba||'');
+  return ph&&ph.length<80?phoneticToVoiceCue(ph):alnToVoiceCue(w&&w.aln8ba||'');
 }
 function voiceKey(value){
   return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
