@@ -3035,20 +3035,24 @@ function joinVoicePersonalPrefix(value){
 }
 function alnToVoiceCue(value){
   return joinVoicePersonalPrefix((value||'').toLowerCase())
-    .replace(/\b8h8\b/g,'zznasalzz')
+    .replace(/\b8h8\b/g,'zzaffirmativezz')
+    // Reuse the documented isolated guide "to-ni" inside longer T8ni phrases.
+    .replace(/\bt8ni\b/g,'zzquestionzz')
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
-    .replace(/o(?!u)/g,'ou').replace(/i\b/g,'é')
+    // O stays O as in "zéro"; only documented final -on and O before Z change.
+    .replace(/on\b/g,'oun').replace(/o(?=z)/g,'au').replace(/i\b/g,'é')
     .replace(/w(?=[aeiouyàâäéèêëîïôöùûü])/g,'zzglidezz')
     .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s])/g,'o')
     .replace(/w\b/g,'')
     .replace(/ouzzglidezz/g,'ou').replace(/zzglidezz/g,'ou')
-    .replace(/zznasalzz/g,'hon-hon')
+    .replace(/zzquestionzz/g,'to-ni')
+    .replace(/zzaffirmativezz/g,'an-han')
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
     .replace(/\s+/g,' ').trim();
 }
 function phoneticToVoiceCue(value){
   return joinVoicePersonalPrefix((value||'').toLowerCase().replace(/[☼·]/g,' '))
-    .replace(/\b8h8\b/g,'hon-hon')
+    .replace(/\b8h8\b/g,'an-han')
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
     // A visual syllable break does not change the sound that follows W.
     .replace(/w(?=-+[aeiouyàâäéèêëîïôöùûü])/g,'ou')
@@ -3090,9 +3094,16 @@ function voiceSoundDrillToFrenchSpeech(value,label){
   if((label||'').trim().toUpperCase()==='J') return 'dzah';
   return value;
 }
+function voiceAffirmativeToFrenchSpeech(value,label){
+  // One continuous token prevents French TTS from spelling the isolated A and N.
+  if((label||'').trim().replace(/[.!?]+$/,'').toLowerCase()==='8h8') return 'anhan';
+  return value;
+}
 function voiceDocumentedWordToFrenchSpeech(value,label){
   // Technical French spelling: keep Almos as one word with audible A, closed O and final S.
   if((label||'').trim().toLowerCase()==='almos') return 'almôsse';
+  // French AU elicits the documented O while preserving one continuous word and final A.
+  if((label||'').trim().toLowerCase()==='kiona') return 'kiauna';
   return value;
 }
 function voiceCueToSpeech(value,label=''){
@@ -3103,12 +3114,13 @@ function voiceCueToSpeech(value,label=''){
   if(/k(?:w|u)at[.!?]*$/i.test((label||'').trim())) speechCue=voiceKwatToFrenchSpeech(speechCue);
   if(/t[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalTToFrenchSpeech(speechCue);
   speechCue=voiceSoundDrillToFrenchSpeech(speechCue,label);
+  speechCue=voiceAffirmativeToFrenchSpeech(speechCue,label);
   speechCue=voiceDocumentedWordToFrenchSpeech(speechCue,label);
   return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
   const word=(w&&w.aln8ba||'').trim();
-  if(word.toLowerCase()==='8h8') return 'hon-hon';
+  if(word.toLowerCase()==='8h8') return 'an-han';
   const ph=(w&&w.phonetic||'').replace(/[☼·]/g,' ').replace(/\s+/g,' ').trim();
   if(ph&&ph.length<80) return phoneticToVoiceCue(ph);
   return word?alnToVoiceCue(word):'';
@@ -3200,22 +3212,19 @@ function voiceSpeak(label,cue,announce=true,slow=false){
   const displayCue=phoneticToVoiceCue(cue||alnToVoiceCue(label));
   const spokenCue=voiceCueToSpeech(displayCue,label);
   if(!spokenCue) return;
-  const isMurmur=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase()==='8h8';
-  const shownCue=isMurmur?'hon-hon':displayCue;
-  const ttsCue=isMurmur?'hon… hon':spokenCue;
   if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
   const wasSpeaking=speechSynthesis.speaking||speechSynthesis.pending;
   if(wasSpeaking) speechSynthesis.cancel();
   // Leading punctuation gives the audio output time to open before the first phoneme.
-  const u=new SpeechSynthesisUtterance(`… ${ttsCue}`);
+  const u=new SpeechSynthesisUtterance(`… ${spokenCue}`);
   const voices=speechSynthesis.getVoices();
   u.voice=voices.find(v=>/^fr-CA$/i.test(v.lang))||voices.find(v=>/^fr/i.test(v.lang))||null;
   u.lang=u.voice?u.voice.lang:'fr-CA';
-  u.rate=isMurmur?(slow?.46:.56):(slow?.6:.74); u.pitch=isMurmur?.7:1; u.volume=1;
+  u.rate=slow?.6:.74; u.pitch=1; u.volume=1;
   voiceSpeakTimer=setTimeout(()=>{
     voiceSpeakTimer=null; speechSynthesis.resume(); speechSynthesis.speak(u);
   },wasSpeaking?320:180);
-  if(announce) voiceSetStatus(`Guide synthétique approximatif${isMurmur?' murmuré':''}${slow?' lent':''} : « ${shownCue} ». Écoute, puis utilise le micro.`);
+  if(announce) voiceSetStatus(`Guide synthétique approximatif${slow?' lent':''} : « ${displayCue} ». Écoute, puis utilise le micro.`);
 }
 function voiceSetStatus(message){
   const el=document.getElementById('voiceStatus'); if(el) el.textContent=message;
@@ -3365,7 +3374,7 @@ function aprVoiceTargets(m,lecHtml){
   if(m.ex==='sons') return [
     {text:'CH',display:'CH → TS',cue:'tsa',meaning:'Le son de CH',accepted:['tsa'],uncertain:['sa','ça'],focus:'CH se prononce TS'},
     {text:'J',display:'J → DZ',cue:'dza',meaning:'Le son de J',accepted:['dza'],uncertain:['za'],focus:'J se prononce DZ'},
-    {text:'8h8',cue:'hon-hon',meaning:'Oui',accepted:['hon hon','on on','hum hum'],focus:'8h8 se prononce comme un « hon-hon » murmuré'},
+    {text:'8h8',cue:'an-han',meaning:'Oui',accepted:['an han','anhan','on han'],focus:'8h8 est le oui clair « an-han »'},
     {text:'Wli',cue:'ô-li',meaning:'Bon · bien',accepted:['oli','au lit','wli'],focus:'W devant une consonne sonne Ô'},
     {text:'Mziwi',cue:'mzi-wé',meaning:'Tout le monde',accepted:['mziwé','mes oui','mziwi'],focus:'I final sonne souvent É'}
   ];
@@ -4387,8 +4396,9 @@ const NIVEAUX=[
  {t:"Les sons d'abord",d:"Cinq repères de prononciation : CH, J, 8, W et I.",ex:'sons',lec:`
   <p>L'aln8ba s'écrit presque comme il se prononce. Avant le premier mot, deux minutes pour l'alphabet.</p>
   <div class="aprnote"><b>Le 8 se dit comme un « an » nasal</b>
-   Entre le <i>an</i> et le <i>on</i>. Dans <span class="al8">8h8</span> (oui), les deux sons forment un « hon-hon » murmuré,
-   et <span class="al8">W8linak</span> sonne « Wanlinak ».</div>
+   Entre le <i>an</i> et le <i>on</i>. Le oui <span class="al8">8h8</span> se dit clairement « an-han ».
+   Il ne faut pas le confondre avec le <span class="al8">h8</span> historique, murmuré collectivement en conseil.
+   <span class="al8">W8linak</span> sonne « Wanlinak ».</div>
   <table class="aprtab"><tr><th>Lettre</th><th>Comment la dire (Manuel de l'étudiant 1, pages 9 à 13)</th></tr>
   <tr><td class="k">CH</td><td>se prononce <b>TS</b>, jamais comme dans « chien »</td></tr>
   <tr><td class="k">J</td><td>se prononce <b>DZ</b>, jamais comme en français</td></tr>
@@ -4413,8 +4423,9 @@ const NIVEAUX=[
   <tr><td class="k">Nda</td><td>Non</td></tr>
   <tr><td class="k">Wliwni</td><td>Merci</td></tr>
   <tr><td class="k">Adio</td><td>Au revoir</td></tr></table>
-  <div class="aprnote"><b>Le 8 se dit comme un « an » nasal</b>
-   Entre le <i>an</i> et le <i>on</i>. Dans <span class="al8">8h8</span>, les deux sons forment un « hon-hon » murmuré.</div>`},
+  <div class="aprnote"><b>Deux formes à ne pas confondre</b>
+   <span class="al8">8h8</span> est le oui clair « an-han ». Le <span class="al8">h8</span> murmuré en conseil
+   est une forme historique distincte conservée aux Archives; il ne sert pas de réponse dans ce module.</div>`},
  {t:"Se présenter",d:"Dire son nom, demander celui de l'autre, remercier.",cat:'salut',ex:'vocab',lec:`
   <p>Tes premières phrases complètes — quatre échanges, c'est tout ce qu'il faut pour se présenter.</p>
   <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>

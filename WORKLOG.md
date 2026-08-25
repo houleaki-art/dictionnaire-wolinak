@@ -97,7 +97,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Fluidification des mots et protection du premier phonème contre les coupures audio.
 - Séparation du découpage visuel et de la parole : le guide documenté détermine les sons, mais la synthèse reçoit un mot continu, sans coupures syllabiques; l'orthographe complète sert de repli lorsqu'aucun guide n'existe.
 - Ajout d'une écoute lente.
-- Correction de 8h8 afin de le guider comme un « hon-hon » murmuré.
+- Séparation corrigée de deux formes auparavant confondues : `8h8`, le oui clair guidé `an-han`, et le `h8` historique, murmuré collectivement en conseil et conservé aux Archives.
 - Stabilisation du groupe 8K dans le guide synthétique : le repère visible « an-k » reste inchangé, tandis que l'orthographe technique envoyée à la voix française préserve la voyelle nasale suivie du son K.
 - Protection des 61 finales en -ak contre la coupure du K par la synthèse française; les cartes rappellent aussi que 8 est une voyelle nasale entre « an » et « on », et non un simple « an » français.
 - Protection de la suite 8w8 dans le repli synthétique : les deux voyelles nasales restent audibles et le W forme une liaison continue, sans pause ni syllabe « ou » autonome; le guide visible est explicitement qualifié d'approximatif lorsqu'aucune prononciation documentée n'est fournie.
@@ -109,6 +109,9 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Reformulation du résultat comme « transcription proposée par Chrome », avec nombre d'hypothèses comparées, diagnostic du son manquant et rappel qu'il ne s'agit pas d'une validation linguistique officielle.
 - Les exercices isolés `CH → TS` et `J → DZ` envoient désormais une syllabe technique continue à la voix française, afin d'éviter l'épellation lettre par lettre de `tsa` et `dza`; le guide visible demeure inchangé.
 - `Almos` conserve son guide documenté `al-mos`, mais reçoit une commande synthétique ciblée qui maintient le `A`, le `O` et le `S` final sans étendre cette exception aux autres mots en `-os`.
+- Le repli sans guide ne transforme plus tous les `O` en `OU` : le `O` ordinaire reste celui de « zéro », tandis que seules les exceptions documentées `-on` et `oz` deviennent respectivement `-oun` et `auz`.
+- Les phrases sans guide qui commencent par `T8ni` réutilisent maintenant le guide documenté `to-ni` de l'entrée isolée, au lieu du repli générique `tanné`.
+- `Kiona` reçoit une orthographe strictement technique continue utilisant le digramme français `au` pour faire entendre le `O` de « zéro » et le `A` final, sans changer la forme affichée ni la base.
 
 ## Avertissement public
 
