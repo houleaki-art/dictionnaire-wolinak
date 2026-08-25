@@ -36,6 +36,8 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Ajout de la pratique vocale, du suivi de progression et d'un repli sans score.
 - Amélioration de l'accessibilité des scores et des retours de réponse.
 - Séparation des banques de chaque leçon afin que quiz, cartes et pratique vocale portent sur son contenu propre; les modules d'approfondissement excluent les mots déjà enseignés plus tôt dans la même catégorie.
+- Contextualisation des exercices répétés du secondaire et élimination des questions identiques au cours d'une même séance pour les banques fixes.
+- Séparation des deux exercices de familles du cégep entre dérivations documentées et alternances de bases verbales documentées.
 
 ## Archives et prudence linguistique
 
