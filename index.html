@@ -2860,15 +2860,17 @@ function stopRec(){
 //  PRATIQUE VOCALE — écoute, micro et comparaison phonétique
 // ══════════════════════════════════════════════════════════
 let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
-let voiceRecognition=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null;
+let voiceRecognition=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceSpeakTimer=null;
 
 function alnToVoiceCue(value){
   return (value||'').toLowerCase()
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
+    .replace(/o/g,'ou').replace(/i\b/g,'é')
+    .replace(/w(?=[aeiouyàâäéèêëîïôöùûü])/g,'ou')
     .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s])/g,'ô')
-    .replace(/w\b/g,'').replace(/o/g,'ou').replace(/i\b/g,'é')
+    .replace(/w\b/g,'')
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
-    .replace(/-/g,' ').replace(/\s+/g,' ').trim();
+    .replace(/\s+/g,' ').trim();
 }
 function phoneticToVoiceCue(value){
   return (value||'').toLowerCase()
@@ -2877,7 +2879,10 @@ function phoneticToVoiceCue(value){
     .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s-])/g,'ô')
     .replace(/w(?=$|[\s-])/g,'')
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
-    .replace(/-/g,' ').replace(/\s+/g,' ').trim();
+    .replace(/\s+/g,' ').trim();
+}
+function voiceCueToSpeech(value){
+  return phoneticToVoiceCue(value).replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
   const ph=(w&&w.phonetic||'').replace(/[☼·]/g,' ').replace(/\s+/g,' ').trim();
@@ -2923,13 +2928,18 @@ function voiceSpeak(label,cue,announce=true){
     if(announce) voiceSetStatus('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
     return;
   }
+  const spokenCue=voiceCueToSpeech(cue||alnToVoiceCue(label));
+  if(!spokenCue) return;
+  if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(cue||alnToVoiceCue(label));
+  const u=new SpeechSynthesisUtterance(spokenCue);
   const voices=speechSynthesis.getVoices();
   u.voice=voices.find(v=>/^fr-CA$/i.test(v.lang))||voices.find(v=>/^fr/i.test(v.lang))||null;
-  u.lang=u.voice?u.voice.lang:'fr-CA'; u.rate=.72; u.pitch=.95;
-  speechSynthesis.speak(u);
-  if(announce) voiceSetStatus(`Guide synthétique approximatif : « ${cue} ». Écoute, puis utilise le micro.`);
+  u.lang=u.voice?u.voice.lang:'fr-CA'; u.rate=.78; u.pitch=1;
+  voiceSpeakTimer=setTimeout(()=>{
+    voiceSpeakTimer=null; speechSynthesis.resume(); speechSynthesis.speak(u);
+  },80);
+  if(announce) voiceSetStatus(`Guide synthétique approximatif : « ${spokenCue} ». Écoute, puis utilise le micro.`);
 }
 function voiceSetStatus(message){
   const el=document.getElementById('voiceStatus'); if(el) el.textContent=message;
@@ -2948,6 +2958,7 @@ function voiceResetMic(){
 function voiceStopActive(){
   if(voiceRecognition){try{voiceRecognition.abort();}catch(e){} voiceRecognition=null;}
   if(voiceFallbackTimer){clearTimeout(voiceFallbackTimer);voiceFallbackTimer=null;}
+  if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
   if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
     try{voiceFallbackRecorder.stop();}catch(e){}
   }
