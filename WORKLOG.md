@@ -101,6 +101,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Stabilisation du groupe 8K dans le guide synthétique : le repère visible « an-k » reste inchangé, tandis que l'orthographe technique envoyée à la voix française préserve la voyelle nasale suivie du son K.
 - Protection des 61 finales en -ak contre la coupure du K par la synthèse française; les cartes rappellent aussi que 8 est une voyelle nasale entre « an » et « on », et non un simple « an » français.
 - Protection de la suite 8w8 dans le repli synthétique : les deux voyelles nasales restent audibles et le W forme une liaison continue, sans pause ni syllabe « ou » autonome; le guide visible est explicitement qualifié d'approximatif lorsqu'aucune prononciation documentée n'est fournie.
+- Protection des finales en `t` contre leur disparition dans la synthèse française; le cas historique `Ali-paskuat` reçoit en plus une commande vocale ciblée qui conserve le groupe `kw` continu et le `t` audible, sans modifier sa graphie de 1884 ni présenter son guide approximatif comme une attestation.
 
 ## Avertissement public
 

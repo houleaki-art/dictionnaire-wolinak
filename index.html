@@ -3075,11 +3075,22 @@ function voice8W8ToFrenchSpeech(value){
   // without turning "ou" into a separate syllable or pausing inside the word.
   return value.replace(/an-?ou-?an/g,"an'ouan");
 }
+function voiceKwatToFrenchSpeech(value){
+  // French "couatte" keeps KW as one glide and makes the final T audible.
+  // This command spelling is limited to the documented -kwat/-kuat ending.
+  return value.replace(/k-?ou-?at$/,'couatte');
+}
+function voiceFinalTToFrenchSpeech(value){
+  // A final E is only a TTS command: it prevents French voices from muting T.
+  return value.replace(/t$/,'tte');
+}
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
   if(/8w8/i.test(label)) speechCue=voice8W8ToFrenchSpeech(speechCue);
   if(/8k/i.test(label)) speechCue=voice8KToFrenchSpeech(speechCue);
   if(/ak[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalAkToFrenchSpeech(speechCue);
+  if(/k(?:w|u)at[.!?]*$/i.test((label||'').trim())) speechCue=voiceKwatToFrenchSpeech(speechCue);
+  if(/t[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalTToFrenchSpeech(speechCue);
   return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
