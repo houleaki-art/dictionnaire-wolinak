@@ -4806,6 +4806,7 @@ function aprGramView(){
    JEUX
    ═══════════════════════════════════════════════════════ */
 let jCur=null, jSc={ok:0,no:0}, jCat='toutes', jInv=false, jWS='animal';
+let jAsked={genre:[],sens:[],negat:[],plur:[],fam:[]};
 /* Contexte niveau : rempli par aprJeux() quand on vient du parcours */
 let jCtx=null;
 function jPoolSur(){
@@ -4815,6 +4816,21 @@ function jPoolSur(){
 }
 const jPick=a=>a[Math.floor(Math.random()*a.length)];
 const jShuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+function jPickFresh(game,pool,keyFn){
+  if(!pool.length) return null;
+  const key=keyFn||((x)=>x.id||x.aln8ba||x.v||x.s||x.root);
+  const asked=jAsked[game]||(jAsked[game]=[]);
+  let available=pool.filter(item=>!asked.includes(key(item)));
+  if(!available.length){
+    const last=asked[asked.length-1];
+    asked.length=0;
+    available=pool.filter(item=>key(item)!==last);
+    if(!available.length) available=pool;
+  }
+  const chosen=jPick(available);
+  asked.push(key(chosen));
+  return chosen;
+}
 function jUniqueBy(pool,key,n,used=[]){
   const seen=new Set(used.map(x=>(x||'').trim().toLowerCase())), out=[];
   for(const w of jShuf(pool)){
@@ -4844,7 +4860,7 @@ function jeuInit(){
     `<button class="gcard" data-j="${j.id}"><b>${j.t}</b><span>${j.d}</span><i>${j.n}</i></button>`).join('');
   document.querySelectorAll('#jMenu .gcard').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('#jMenu .gcard').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on'); jCur=b.dataset.j; jSc={ok:0,no:0};
+    b.classList.add('on'); jCur=b.dataset.j; jSc={ok:0,no:0}; jAsked[jCur]=[];
     ({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam,caches:jCaches})[jCur]();
   });
   const st=document.getElementById('jStage');
@@ -4881,7 +4897,7 @@ function jAns(bon,i,retour){
 function jGenre(){
   const pool=jPoolSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
   if(pool.length<2) return jFrame('Animé ou inanimé?','<p style="text-align:center;color:var(--text2)">Pas assez de mots marqués.</p>');
-  const w=jPick(pool), an=/nom animé/i.test(w.grammar);
+  const w=jPickFresh('genre',pool,x=>x.id||x.aln8ba), an=/nom animé/i.test(w.grammar);
   jFrame('Animé ou inanimé?',`
     <div class="jprompt"><div class="q">De quel genre est ce mot?</div>
       <div class="w">${w.aln8ba}</div><div class="h">${w.fr}</div></div>
@@ -4907,7 +4923,7 @@ function jSens(){
   const ctrl=`<select onchange="jCat=this.value;jSens()" style="font-family:inherit;font-size:.78rem;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text)">
       ${['toutes',...cats].map(c=>`<option ${c===jCat?'selected':''}>${c}</option>`).join('')}</select>
     <button class="chip" onclick="jInv=!jInv;jSens()">${jInv?'Sens → Mot':'Mot → Sens'}</button>`;
-  const bon=jPick(pool), key=w=>jInv?w.aln8ba:w.fr;
+  const bon=jPickFresh('sens',pool,x=>x.id||x.aln8ba), key=w=>jInv?w.aln8ba:w.fr;
   const autres=jUniqueBy(pool.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
   if(autres.length<3) return jFrame('Devinette','<p style="text-align:center;color:var(--text2)">Pas assez de réponses distinctes dans cette catégorie.</p>',ctrl);
   const tous=jShuf([bon,...autres]);
@@ -4930,7 +4946,7 @@ const JNEG=[
  {v:"N'saosa",f:"je sors",r:1,n:"Nda n'saosawi",w:"Le radical finit par -a, donc le suffixe est -WI."},
  {v:"N'mikwaldam",f:"je me souviens",r:2,n:"Nda n'mikwaldamowen",w:"Verbe du groupe documenté en -aldam- : le suffixe est -OWEN."}];
 function jNegat(){
-  const q=jPick(JNEG); window._jq=q;
+  const q=jPickFresh('negat',JNEG,x=>x.v); window._jq=q;
   jFrame('La négation',`
     <div class="jprompt"><div class="q">Comment dire le contraire?</div>
       <div class="w">${q.v}</div><div class="h">${q.f}</div></div>
@@ -4951,7 +4967,7 @@ const JPLUR=[
  {s:'Namasis',p:'Namasisak',f:'poisson',r:0,w:"Paire documentée : nom animé avec pluriel actuel attesté."},
  {s:'Sata',p:'Satal',f:'bleuet',r:3,w:"Paire documentée : nom inanimé avec pluriel actuel attesté."}];
 function jPlur(){
-  const q=jPick(JPLUR); window._jp=q;
+  const q=jPickFresh('plur',JPLUR,x=>x.s); window._jp=q;
   const autres=jShuf(JPLUR.filter(x=>x.p!==q.p)).slice(0,3).map(x=>x.p);
   const opts=jShuf([q.p,...autres]), ib=opts.indexOf(q.p);
   jFrame('Le bon pluriel',`
@@ -5002,7 +5018,7 @@ function aprFamilyAlternationLec(){
 function jFam(){
   const B=documentedRootFamilies();
   if(!B.length) return jFrame('Familles de mots','<p style="text-align:center;color:var(--text2)">Pas assez de familles.</p>');
- const famille=jPick(B), fid=famille.root, relation=famille.relation, mem=famille.members;
+ const famille=jPickFresh('fam',B,x=>x.root), fid=famille.root, relation=famille.relation, mem=famille.members;
  const base=jPick(mem), cous=jPick(mem.filter(w=>w.aln8ba!==base.aln8ba));
  const nomsFamille=new Set(mem.map(w=>w.aln8ba));
  const distracteurs=jUniqueBy(aprSur().filter(w=>!nomsFamille.has(w.aln8ba)
