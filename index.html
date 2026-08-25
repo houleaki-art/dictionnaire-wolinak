@@ -2986,9 +2986,9 @@ function voiceFinalAkToFrenchSpeech(value){
   return value.replace(/-?ak$/,'aque');
 }
 function voice8W8ToFrenchSpeech(value){
-  // Keep both nasal vowels audible around the W glide. This boundary is only
-  // a command for French TTS; the visible Abenaki word remains unsegmented.
-  return value.replace(/an-?ou-?an/g,'an ouan');
+  // The apostrophe asks French TTS to join the W glide to the second nasal
+  // without turning "ou" into a separate syllable or pausing inside the word.
+  return value.replace(/an-?ou-?an/g,"an'ouan");
 }
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
