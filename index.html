@@ -255,6 +255,23 @@ textarea{resize:vertical;min-height:68px}
 .ptable{width:100%;border-collapse:collapse;margin-top:8px;font-size:.85rem}
 .ptable td{padding:5px 8px;border:1px solid var(--border);color:var(--text2)}
 .ptable td:first-child{font-weight:700;color:var(--accent);background:var(--surface2);width:28%}
+/* music */
+.music-view{display:none}
+.music-view.show{display:block}
+.music-hero{background:linear-gradient(135deg,#1e1008,#4a2808 58%,#743616);border-radius:var(--r);padding:clamp(24px,4vw,40px);color:#f8f0e0;margin-bottom:18px;position:relative;overflow:hidden}
+.music-hero::after{content:'♪';position:absolute;right:26px;top:50%;transform:translateY(-50%);font-size:112px;opacity:.07}
+.music-kicker{font-size:.67rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#f0c060;margin-bottom:8px}
+.music-hero h2{font-size:clamp(1.55rem,4vw,2.2rem);line-height:1.1;margin-bottom:10px}
+.music-hero p{max-width:720px;font-size:.9rem;line-height:1.65;color:rgba(255,255,255,.78)}
+.music-warning{background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:15px 18px;margin-bottom:18px;color:var(--text2);font-size:.84rem;line-height:1.6}
+.music-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px}
+.music-card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.music-card h3{color:var(--accent);font-size:1.12rem;margin-bottom:5px}
+.music-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(212,160,48,.35);border-radius:12px;background:rgba(212,160,48,.1);color:#9a6e12;font-size:.63rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:13px}
+[data-theme=dark] .music-badge{color:#f0c060}
+.music-card audio{display:block;width:100%;height:40px;accent-color:var(--accent);margin-bottom:13px}
+.music-credit{font-size:.76rem;line-height:1.55;color:var(--text3)}
+.music-credit strong{color:var(--text2)}
 /* toast */
 .toast{position:fixed;bottom:100px;right:28px;background:var(--text);color:var(--bg);padding:11px 18px;border-radius:9px;font-size:.85rem;box-shadow:var(--shadow-lg);transform:translateY(60px);opacity:0;transition:all .3s;z-index:400;max-width:300px}
 .toast.show{transform:translateY(0);opacity:1}
@@ -322,6 +339,10 @@ textarea{resize:vertical;min-height:68px}
   main{padding:12px 14px;min-width:0}
   /* Grille mots */
   .wgrid{grid-template-columns:1fr}
+  .music-grid{grid-template-columns:1fr}
+  .music-hero{padding:24px 20px}
+  .music-hero::after{font-size:78px;right:12px}
+  .music-card{padding:16px}
   /* Cartes */
   .card{padding:14px}
   .word{font-size:1.35rem}
@@ -738,9 +759,10 @@ textarea{resize:vertical;min-height:68px}
     <button class="sb" data-view="favorites" onclick="setView('favorites')"><span class="ic">⭐</span>Favoris<span class="cn" id="cn-fav">0</span></button>
     <button class="sb" data-view="stats" onclick="setView('stats')"><span class="ic">📊</span>Statistiques</button>
     <button class="sb" data-view="traducteur" onclick="setView('traducteur')"><span class="ic">🪶</span>Traducteur</button>
-      <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
-      <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique</button>
-      <button class="sb" data-view="archives" onclick="setView('archives')"><span class="ic">📜</span>Archives<span class="cn" id="cn-arch">0</span></button>
+    <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
+    <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique</button>
+    <button class="sb" data-view="musique" onclick="setView('musique')"><span class="ic">🎵</span>Musique</button>
+    <button class="sb" data-view="archives" onclick="setView('archives')"><span class="ic">📜</span>Archives<span class="cn" id="cn-arch">0</span></button>
 
   </div>
   <div style="margin-bottom:4px">
@@ -915,6 +937,46 @@ textarea{resize:vertical;min-height:68px}
       <div class="trad-disclaimer">
         ⚠️ Traduction expérimentale — L'aln8ba est une langue vivante en revitalisation. Pour un usage officiel ou cérémoniel, valide avec les aînés et les gardiens de la langue de la Nation.
       </div>
+    </div>
+  </div>
+  <!-- MUSIC VIEW -->
+  <div class="music-view" id="musiqueView">
+    <section class="music-hero" aria-labelledby="musicTitle">
+      <div class="music-kicker">Créations personnelles · Maquettes musicales</div>
+      <h2 id="musicTitle">🎵 Chansons du projet</h2>
+      <p>Paroles et conception de <strong>Guillaum Labrecque-Houle</strong>. Les voix et les arrangements sont reproduits avec une intelligence artificielle afin de servir de maquettes au dictionnaire, en attendant de possibles enregistrements en studio.</p>
+    </section>
+    <div class="music-warning" role="note">
+      <strong>À écouter comme des œuvres artistiques en évolution.</strong> Ces maquettes ne constituent ni une attestation linguistique, ni l'enregistrement d'une locutrice ou d'un locuteur, ni un modèle officiel de prononciation. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
+    </div>
+    <div class="music-grid">
+      <article class="music-card">
+        <h3>Askwa yudali</h3>
+        <span class="music-badge">Maquette IA · non studio</span>
+        <audio controls preload="none" aria-label="Écouter la maquette Askwa yudali">
+          <source src="audio/askwa-yudali.mp3" type="audio/mpeg">
+          Votre navigateur ne prend pas en charge la lecture audio.
+        </audio>
+        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+      </article>
+      <article class="music-card">
+        <h3>Païa Aw8sis</h3>
+        <span class="music-badge">Maquette IA · non studio</span>
+        <audio controls preload="none" aria-label="Écouter la maquette Païa Aw8sis">
+          <source src="audio/paia-aw8sis.mp3" type="audio/mpeg">
+          Votre navigateur ne prend pas en charge la lecture audio.
+        </audio>
+        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+      </article>
+      <article class="music-card">
+        <h3>Nijia Gabriel</h3>
+        <span class="music-badge">Maquette IA · non studio</span>
+        <audio controls preload="none" aria-label="Écouter la maquette Nijia Gabriel">
+          <source src="audio/nijia-gabriel.mp3" type="audio/mpeg">
+          Votre navigateur ne prend pas en charge la lecture audio.
+        </audio>
+        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+      </article>
     </div>
   </div>
   <!-- STATS VIEW -->
@@ -1218,6 +1280,7 @@ textarea{resize:vertical;min-height:68px}
       <button class="sb" onclick="mobileNav('traducteur')"><span class="ic">🪶</span>Traducteur</button>
       <button class="sb" onclick="mobileNav('apprendre')"><span class="ic">🎓</span>Apprendre</button>
       <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique</button>
+      <button class="sb" onclick="mobileNav('musique')"><span class="ic">🎵</span>Musique</button>
       <button class="sb" onclick="mobileNav('archives')"><span class="ic">📜</span>Archives</button>
       <div class="sl" style="margin-top:12px">Catégories</div>
       <button class="sb" onclick="mobileFilterCat('')">🔷 Toutes</button>
@@ -1935,8 +1998,9 @@ function setView(v,keepGameContext=false){
   document.getElementById('traducteurView').style.display = v==='traducteur'?'block':'none';
   document.getElementById('apprendreView').className = 'apr'+(v==='apprendre'?' show':'');
   document.getElementById('jeuxView').className      = 'jeu'+(v==='jeux'?' show':'');
+  document.getElementById('musiqueView').className   = 'music-view'+(v==='musique'?' show':'');
   document.getElementById('archivesView').style.display = v==='archives'?'block':'none';
-  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Traducteur',apprendre:'Apprendre la langue',jeux:'Jeux',archives:'Archives — les mots des ancêtres'}[v]||'';
+  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Traducteur',apprendre:'Apprendre la langue',jeux:'Jeux',musique:'Musique',archives:'Archives — les mots des ancêtres'}[v]||'';
   if(['all','favorites'].includes(v)) renderWords();
   if(v==='flashcard') initFC();
   if(v==='stats') renderStats();
@@ -1960,6 +2024,7 @@ function filterCat(cat){
   document.getElementById('traducteurView').style.display='none';
   document.getElementById('apprendreView').className='apr';
   document.getElementById('jeuxView').className='jeu';
+  document.getElementById('musiqueView').className='music-view';
   document.getElementById('archivesView').style.display='none';
   document.getElementById('viewTitle').textContent=cat?catLabel(cat):'Tous les mots';
   renderWords();
@@ -2571,6 +2636,12 @@ function openAdmin(){
   document.getElementById('fcView').className='fcmode';
   document.getElementById('statsView').style.display='none';
   document.getElementById('aboutView').className='about-open';
+  document.getElementById('pratiqueView').className='pratique-view';
+  document.getElementById('traducteurView').style.display='none';
+  document.getElementById('apprendreView').className='apr';
+  document.getElementById('jeuxView').className='jeu';
+  document.getElementById('musiqueView').className='music-view';
+  document.getElementById('archivesView').style.display='none';
   document.getElementById('adminView').className='admin-panel open';
   document.getElementById('viewTitle').textContent='Administration';
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.remove('on'));
