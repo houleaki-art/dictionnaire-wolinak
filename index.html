@@ -2963,8 +2963,16 @@ function phoneticToVoiceCue(value){
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
     .replace(/\s+/g,' ').trim();
 }
-function voiceCueToSpeech(value){
-  return phoneticToVoiceCue(value).replace(/-/g,'').replace(/\s+/g,' ').trim();
+function voice8KToFrenchSpeech(value){
+  // French TTS may spell or clip "ank". This spelling changes only its input,
+  // while the learner continues to see the documented approximate cue "an-k".
+  return value.replace(/an-?k(?=[aeiouyàâäéèêëîïôöùûü])/g,'anqu')
+    .replace(/an-?k/g,'anque');
+}
+function voiceCueToSpeech(value,label=''){
+  let speechCue=phoneticToVoiceCue(value);
+  if(/8k/i.test(label)) speechCue=voice8KToFrenchSpeech(speechCue);
+  return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
   const word=(w&&w.aln8ba||'').trim();
@@ -3013,10 +3021,11 @@ function voiceSpeak(label,cue,announce=true,slow=false){
     if(announce) voiceSetStatus('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
     return;
   }
-  const spokenCue=voiceCueToSpeech(cue||alnToVoiceCue(label));
+  const displayCue=phoneticToVoiceCue(cue||alnToVoiceCue(label));
+  const spokenCue=voiceCueToSpeech(displayCue,label);
   if(!spokenCue) return;
   const isMurmur=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase()==='8h8';
-  const shownCue=isMurmur?'hon-hon':spokenCue;
+  const shownCue=isMurmur?'hon-hon':displayCue;
   const ttsCue=isMurmur?'hon… hon':spokenCue;
   if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
   const wasSpeaking=speechSynthesis.speaking||speechSynthesis.pending;
