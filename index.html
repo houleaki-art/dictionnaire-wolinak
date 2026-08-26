@@ -1933,7 +1933,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-25-mobile-003';
+const APP_RESET_VERSION = '2026-08-25-translator-004';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -4621,6 +4621,13 @@ const DOCUMENTED_SENTENCES=[
     note:"Phrase complète documentée. Elle exprime l'action actuelle de parler abénakis; elle ne traduit pas à elle seule le rêve, la durée ni l'intention future."}
 ];
 
+// Ces formulations françaises renvoient vers une phrase complète déjà
+// documentée. Elles ne créent jamais une nouvelle forme aln8ba.
+const DOCUMENTED_SENTENCE_ALIASES={
+  salut:'Bonjour',coucou:'Bonjour',allo:'Bonjour',
+  ciao:'Au revoir',adieu:'Au revoir'
+};
+
 // Une reformulation conserve l'intention centrale sans prétendre traduire les
 // nuances absentes des phrases complètes documentées.
 const DOCUMENTED_INTENT_ALTERNATIVES=[
@@ -4835,6 +4842,16 @@ function traduire(){
     mets:'mettre',met:'mettre',dors:'dormir',sors:'sortir',pars:'partir',
     appelle:'appeler',appelles:'appeler',appellent:'appeler',comprends:'comprendre',comprend:'comprendre',
     entends:'entendre',entend:'entendre',rejoins:'rejoindre',rejoint:'rejoindre'};
+  const probableFrenchVerb=t=>{
+    if(IRREG[t]) return {surface:t,lemma:IRREG[t],corrected:false};
+    if(t.length<3) return null;
+    const matches=Object.entries(IRREG).filter(([surface])=>
+      surface[0]===t[0]&&Math.abs(surface.length-t.length)<=1&&levDist(t,surface)===1);
+    if(!matches.length) return null;
+    const lemmas=new Set(matches.map(([,lemma])=>lemma));
+    if(lemmas.size!==1) return {ambiguous:true};
+    return {surface:matches[0][0],lemma:matches[0][1],corrected:true};
+  };
   const NON_LEXICAL_AUXILIARIES=new Set([
     'suis','es','est','sommes','etes','sont','etais','etait',
     'ai','as','a','avons','avez','ont','avais','avait'
@@ -4891,13 +4908,15 @@ function traduire(){
   const POSS = {mon:"n'-",ma:"n'-",mes:"n'-",ton:"k'-",ta:"k'-",tes:"k'-",son:"w'-",sa:"w'-",ses:"w'-"};
   // Pronoms objets — expliqués avec des exemples réels du dictionnaire
   const OBJP = {};
-  const addObj=(keys,titre,id,note)=>{const w=id?byId(id):null; const ex=w?" Ex : "+w[dstField]+" — "+w[srcField]:""; keys.forEach(k=>OBJP[k]={titre, note:note+ex});};
+  const addObj=(keys,titre,id,note,preview)=>{const w=id?byId(id):null; const ex=w?" Ex : "+w[dstField]+" — "+w[srcField]:""; keys.forEach(k=>OBJP[k]={titre, note:note+ex,preview});};
   if(FR){
     addObj(['me'],"me / m'-",'lau_kkezalmi',"« me » est porté par le verbe, pas dit à part.");
     addObj(['te'],"te / t'-",'lau_kkezalmel',"« te » est porté par le verbe, pas dit à part.");
     addObj(['se'],"se / s'-",'mas_liwitozik',"« se » (réfléchi) devient souvent le suffixe -d8zo / -t8zo.");
     addObj(['lui'],"lui",null,"« lui » objet se porte sur le verbe.");
     addObj(['leur'],"leur",null,"« leur » se porte sur le verbe ou par le préfixe w'- … -w8.");
+    addObj(['y'],"complément « y »",null,"« y » fait partie de la construction verbale ou locative; il ne se traduit pas comme un mot autonome.","complément porté par la construction verbale; équivalent autonome non établi");
+    addObj(['en'],"complément « en »",null,"« en » fait partie de la construction verbale; il ne se traduit pas comme un mot autonome.","complément porté par la construction verbale; équivalent autonome non établi");
   }
   const wNeg = FR ? pool.find(w=>/^Nda\b/i.test(w.aln8ba||'') && /négation/i.test(w.grammar||'')) : null;
 
@@ -4971,6 +4990,11 @@ function traduire(){
     const exact=DOCUMENTED_SENTENCES.find(p=>
       (FR?p.fr:[p.aln8ba]).some(s=>phraseKey(s,FR)===key));
     if(exact) return {phrase:exact,source:value,corrected:null};
+    if(FR&&DOCUMENTED_SENTENCE_ALIASES[key]){
+      const target=DOCUMENTED_SENTENCE_ALIASES[key];
+      const aliasPhrase=DOCUMENTED_SENTENCES.find(p=>p.fr.some(s=>phraseKey(s,true)===phraseKey(target,true)));
+      if(aliasPhrase) return {phrase:aliasPhrase,source:value,corrected:null,alias:target};
+    }
     // Les graphies aln8ba ne sont jamais corrigées automatiquement. En français,
     // une correction n'est proposée que si une seule phrase de même longueur gagne.
     if(!FR||!allowCorrection) return null;
@@ -5099,9 +5123,11 @@ function traduire(){
   orderedRecognized.forEach(item=>{
     if(item.kind==='phrase'){
       const match=item.match, chunk={type:'pat',label:match.source,
-        out:FR?match.phrase.aln8ba:match.phrase.fr[0],corrected:match.corrected,
+        out:FR?match.phrase.aln8ba:match.phrase.fr[0],corrected:match.corrected,alias:match.alias,
         consultative:Boolean(match.phrase.consultative),source:match.phrase.source||'',
-        note:match.phrase.note||(match.corrected
+        note:match.phrase.note||(match.alias
+          ? 'Formulation française courante interprétée comme « '+match.alias+' »; la phrase aln8ba documentée correspondante est utilisée sans modification.'
+          :match.corrected
           ? 'Saisie rapprochée de « '+match.corrected+' ». Vérifie la correction avant de réutiliser la traduction.'
           : 'Phrase complète actuelle documentée dans le parcours.')};
       patChunks.push(chunk); recognizedChunks.push(chunk);
@@ -5197,6 +5223,16 @@ function traduire(){
         note:"Le Manuel de l'étudiant 1 documente la phrase complète Nd'aln8ba8dwa. Le traducteur la propose comme reformulation; il ne transforme pas cette forme conjuguée en infinitif autonome."});
       i+=2;
       continue;
+    }
+    if(FR&&t==='aller'){
+      const currentGoing=byId('man_v10');
+      if(currentGoing){
+        chunks.push({type:'gram',toks:[T],titre:currentGoing.aln8ba,
+          preview:"forme complète connue Nd'alosa (« je vais, de façon générale »); infinitif autonome non établi",
+          note:"L'entrée actuelle documente la phrase complète Nd'alosa (« je vais, de façon générale »). Elle aide à comprendre l'idée d'aller, mais le traducteur ne la réutilise pas comme infinitif après un autre verbe."});
+        i++;
+        continue;
+      }
     }
     if(FR){
       const connector=DOCUMENTED_CONNECTORS.find(item=>norm(item.fr)===t);
@@ -5315,7 +5351,7 @@ function traduire(){
     // 3) pronom sujet — expliqué
     if(FR && PRON[t]){ const p=PRON[t]; chunks.push({type:'gram', toks:[T], titre:p.w[dstField], note:p.note,preview:p.preview}); lastPron=t; i++; continue; }
     // 3b) pronom objet (me/te/se…) — expliqué avec un exemple réel
-    if(FR && OBJP[t]){ const o=OBJP[t]; chunks.push({type:'gram', toks:[T], titre:o.titre, note:o.note}); i++; continue; }
+    if(FR && OBJP[t]){ const o=OBJP[t]; chunks.push({type:'gram', toks:[T], titre:o.titre, note:o.note,preview:o.preview}); i++; continue; }
     // 4) possessif — préfixe sur le nom
     if(FR && POSS[t]){ chunks.push({type:'gram', toks:[T], titre:POSS[t], note:"Le possesseur colle directement au nom : "+POSS[t]+" devant le mot (ex : n'+mot = mon…)."}); i++; continue; }
     // 5) négation « ne … pas »
@@ -5351,8 +5387,11 @@ function traduire(){
     if(FR && SYN[t]){
       let synHit=null;
       for(const syn of SYN[t]){
-        const l2 = idx.get(syn) || tokIdx.get(syn) || [];
-        if(l2.length){ synHit={syn, ent:l2[0]}; break; }
+        const synToks=phraseTokens(syn,true);
+        const l2=(idx.get(synToks[0])||[]).filter(c=>
+          c.toks.length===synToks.length&&c.toks.every((token,k)=>token===synToks[k]));
+        const distinct=new Map(l2.map(c=>[c.w[dstField],c]));
+        if(distinct.size===1){ synHit={syn, ent:distinct.values().next().value}; break; }
       }
       if(synHit){ chunks.push({type:'hit', toks:[T], w:synHit.ent.w, sens:synHit.ent.sens, alts:[], viaSyn:synHit.syn}); i++; continue; }
     }
@@ -5371,8 +5410,21 @@ function traduire(){
     }
     // 10) Tolérance française très prudente : une seule modification et un seul
     // candidat. Une graphie aln8ba n'est jamais corrigée automatiquement.
+    const verbGuess=FR?probableFrenchVerb(t):null;
+    if(verbGuess){
+      const lemma=verbGuess.ambiguous?'forme verbale française probable':verbGuess.lemma;
+      const correction=verbGuess.corrected?' Correction française probable : « '+verbGuess.surface+' »; elle doit être vérifiée.':'';
+      chunks.push({type:'gram',toks:[T],titre:verbGuess.ambiguous?lemma:'verbe « '+lemma+' »',
+        preview:verbGuess.ambiguous
+          ? 'forme verbale française probable; correction ambiguë et forme aln8ba non établie'
+          :'verbe « '+lemma+' » reconnu; forme aln8ba active non établie dans cette construction',
+        note:'La forme française « '+t+' » est reconnue comme '+(verbGuess.ambiguous?'probablement verbale':'le verbe « '+lemma+' »')+'.'+correction+' Aucune forme aln8ba active complète n’est documentée pour cette construction; aucune correction vers un mot aln8ba sans rapport n’est tentée.'});
+      lastPron=null;
+      i++;
+      continue;
+    }
     let cor=null;
-    if(FR&&t.length>=4){
+    if(FR&&t.length>=4&&!lastPron){
       let bestD=9;
       const bestCandidates=new Map();
       const tryKeys=(map)=>{ for(const k of map.keys()){
@@ -5567,9 +5619,10 @@ function traduire(){
   if(!completeTranslation&&!completeRule&&continuousProposal){
     html='<div style="background:var(--surface2);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px">'
       + '<div style="color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">'
-      + (previewHasGaps?'Proposition continue — passages non traduits conservés'
+      + (previewHasGaps?'Aperçu ordonné — passages non traduits conservés'
         :previewHasConsultative&&previewCandidates.length===1?'Forme consultative reconnue — usage actuel à valider'
-        :'Texte traduit — proposition construite à valider')+'</div>'
+        :previewCandidates.length===1?'Correspondance lexicale reconnue — pas une phrase complète'
+        :'Fragments reconnus — aucun assemblage grammatical')+'</div>'
       + '<div style="font-size:1.25rem;font-weight:700;color:var(--accent);line-height:1.55;overflow-wrap:anywhere">'+escH(continuousProposal)+'</div>'
       + '<div style="font-size:.75rem;color:var(--text2);margin-top:9px">Le texte est affiché en un seul bloc et dans l’ordre de la saisie. '
       + (previewHasGaps?'Les éléments entre ⟦crochets⟧ restent visibles parce qu’aucune traduction sûre ne leur a été attribuée. ':'')
