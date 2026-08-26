@@ -4627,7 +4627,7 @@ const DOCUMENTED_INTENT_ALTERNATIVES=[
   {id:'parler-aln8ba',required:[['reve','reves','rever'],['parle','parler'],['aln8ba8dwaw8gan','abenakis']],
     fr:'Je parle abénakis',aln8ba:"Nd'aln8ba8dwa",
     source:"Manuel de l'étudiant 1 (2018)",
-    note:"Cette reformulation exprime l'objectif central avec une phrase complète documentée. Elle ne traduit pas « je rêve » ni « depuis longtemps » et ne doit pas être présentée comme une traduction mot à mot."}
+    note:"Cette reformulation exprime l'objectif central avec une phrase complète documentée. Legwasi (« rêver ») et Sipki (« longtemps ») sont reconnus séparément, mais aucune source vérifiée du projet ne fournit leur construction à la première personne dans cette phrase; les éléments ne sont donc pas assemblés automatiquement."}
 ];
 
 // Paires VTA/VTI et objets dont la classe est documentée dans le Manuel de
@@ -4660,6 +4660,8 @@ const DOCUMENTED_CONSULTATIVE_FRAGMENTS=[
   {fr:'et',aln8ba:'Ta',source:'Henry Lorne Masta, 1932 — conjonction documentée, à valider dans l’usage actuel.'},
   {fr:'cela',aln8ba:'Ni',source:'Fichier de référence du projet — « Ni = cela; Ta = et. Ne pas confondre ».'},
   {fr:'depuis',frOut:'de / depuis',aln8ba:'Oji',source:'Henry Lorne Masta, 1932 — forme documentée, à valider dans l’usage actuel.'},
+  {fr:'rêve',frOut:'rêver (entrée lexicale; personne grammaticale non établie)',aln8ba:'Legwasi',source:'Edited Abenaki Dictionary — entrée « legwasi: dream »; compilation de Joseph Joubert et Jesse Bruchac, édition de Wyatt Denious, fondée notamment sur Gordon Day, Laurent, Masta et Cécile Wawanolett. La forme « je rêve » n’est pas construite automatiquement.'},
+  {fr:'longtemps',aln8ba:'Sipki',source:'Edited Abenaki Dictionary — entrée « sipki: late, a long time »; compilation de Joseph Joubert et Jesse Bruchac, édition de Wyatt Denious, fondée notamment sur Gordon Day, Laurent, Masta et Cécile Wawanolett. Forme consultative à valider dans l’usage actuel.'},
   {fr:'ici',aln8ba:'Yudali',source:'Henry Lorne Masta, 1932 — forme documentée, à valider dans l’usage actuel.'}
 ];
 
@@ -4878,13 +4880,13 @@ function traduire(){
 
   // ── Pronoms, possessifs, négation : expliqués, pas traduits bêtement ──
   const PRON={};
-  const addPron=(keys,id,note)=>{const w=byId(id); if(w) keys.forEach(k=>PRON[k]={w,note});};
+  const addPron=(keys,id,note,preview)=>{const w=byId(id); if(w) keys.forEach(k=>PRON[k]={w,note,preview});};
   if(FR){
-    addPron(['je','moi'],'mst077',"« je » voyage avec le verbe (préfixe n'- / nd'-). « Nia » = moi, quand on insiste.");
-    addPron(['tu','toi'],'man_p02',"« tu » se porte sur le verbe (préfixe k'- / kd'-). « Kia » = toi, quand on insiste.");
-    addPron(['il','elle','lui'],'man_p03',"« il / elle » se porte sur le verbe (préfixe w'- / wd'-). « Agma » = lui / elle.");
-    addPron(['nous'],'cor0126',"Deux « nous » en aln8ba : Kiona = avec toi · Niona = sans toi.");
-    addPron(['vous'],'man_p06',"« vous » — le verbe prend le préfixe k'- avec la fin -ba.");
+    addPron(['je','moi'],'mst077',"« je » voyage avec le verbe (préfixe n'- / nd'-). « Nia » = moi, quand on insiste.","préfixe verbal n'- / nd'-; Nia seulement pour insister");
+    addPron(['tu','toi'],'man_p02',"« tu » se porte sur le verbe (préfixe k'- / kd'-). « Kia » = toi, quand on insiste.","préfixe verbal k'- / kd'-; Kia seulement pour insister");
+    addPron(['il','elle','lui'],'man_p03',"« il / elle » se porte sur le verbe (préfixe w'- / wd'-). « Agma » = lui / elle.","préfixe verbal w'- / wd'-; Agma seulement pour insister");
+    addPron(['nous'],'cor0126',"Deux « nous » en aln8ba : Kiona = avec toi · Niona = sans toi.","marqué sur le verbe; Kiona inclut l'interlocuteur, Niona l'exclut");
+    addPron(['vous'],'man_p06',"« vous » — le verbe prend le préfixe k'- avec la fin -ba.","préfixe verbal k'- avec la fin -ba");
   }
   const POSS = {mon:"n'-",ma:"n'-",mes:"n'-",ton:"k'-",ta:"k'-",tes:"k'-",son:"w'-",sa:"w'-",ses:"w'-"};
   // Pronoms objets — expliqués avec des exemples réels du dictionnaire
@@ -5189,6 +5191,13 @@ function traduire(){
       i=classContext.end;
       continue;
     }
+    if(FR&&t==='parler'&&TOKS[i+1]&&['aln8ba8dwaw8gan','abenakis'].includes(TOKS[i+1].n)){
+      chunks.push({type:'gram',toks:TOKS.slice(i,i+2),titre:"Nd'aln8ba8dwa",
+        preview:"forme complète connue Nd'aln8ba8dwa (« je parle abénakis »)",
+        note:"Le Manuel de l'étudiant 1 documente la phrase complète Nd'aln8ba8dwa. Le traducteur la propose comme reformulation; il ne transforme pas cette forme conjuguée en infinitif autonome."});
+      i+=2;
+      continue;
+    }
     if(FR){
       const connector=DOCUMENTED_CONNECTORS.find(item=>norm(item.fr)===t);
       if(connector){
@@ -5304,7 +5313,7 @@ function traduire(){
       continue;
     }
     // 3) pronom sujet — expliqué
-    if(FR && PRON[t]){ const p=PRON[t]; chunks.push({type:'gram', toks:[T], titre:p.w[dstField], note:p.note}); lastPron=t; i++; continue; }
+    if(FR && PRON[t]){ const p=PRON[t]; chunks.push({type:'gram', toks:[T], titre:p.w[dstField], note:p.note,preview:p.preview}); lastPron=t; i++; continue; }
     // 3b) pronom objet (me/te/se…) — expliqué avec un exemple réel
     if(FR && OBJP[t]){ const o=OBJP[t]; chunks.push({type:'gram', toks:[T], titre:o.titre, note:o.note}); i++; continue; }
     // 4) possessif — préfixe sur le nom
@@ -5400,6 +5409,7 @@ function traduire(){
 
   const outEl = document.getElementById('tradOutput');
   const hits = chunks.filter(c=>c.type==='hit');
+  const gramChunks = chunks.filter(c=>c.type==='gram');
   const classChunks = chunks.filter(c=>c.type==='classrule');
   const connectorChunks = chunks.filter(c=>c.type==='connector');
   const consultativeChunks = chunks.filter(c=>c.type==='consultative');
@@ -5409,7 +5419,7 @@ function traduire(){
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
 
-  if(!hits.length && !patChunks.length && !ruleChunks.length && !classChunks.length && !connectorChunks.length && !consultativeChunks.length){
+  if(!hits.length && !gramChunks.length && !patChunks.length && !ruleChunks.length && !classChunks.length && !connectorChunks.length && !consultativeChunks.length){
     outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples, ou propose le mot manquant avec le bouton ＋ en bas à droite.</span>' + essaisHtml;
     document.getElementById('tradBtnTxt').textContent = 'Traduire →';
     TRAD_LAST_OUTPUT = '';
@@ -5494,10 +5504,18 @@ function traduire(){
     const source=c.toks.map(t=>t.o||t.n).join(' ');
     if(c.type==='skip'||(c.type==='classrule'&&c.form&&c.noun)) return;
     if(c.type==='connector') previewCandidates.push({source,out:c.out,gap:false,consultative:true});
-    else if(c.type==='consultative') previewCandidates.push({source,out:c.out,gap:false,consultative:true});
+    else if(c.type==='consultative'){
+      const isolated=TOKS.length===1;
+      previewCandidates.push({source,
+        out:isolated?c.out:'⟦'+c.out+' — forme consultative isolée⟧',
+        gap:!isolated,consultative:true});
+    }
     else if(c.type==='hit') previewCandidates.push({source,out:c.forceOut||c.w[dstField],gap:false,consultative:Boolean(c.consultative)});
     else if(c.type==='nom') previewCandidates.push({source,out:c.toks[0].o,gap:false,consultative:false});
     else if(c.type==='classrule') previewCandidates.push({source,out:'⟦'+source+' — objet requis⟧',gap:true,consultative:false});
+    else if(c.type==='gram') previewCandidates.push({source,
+      out:'⟦'+source+' — '+(c.preview||c.titre||'relation grammaticale')+'⟧',
+      gap:true,consultative:false});
     else previewCandidates.push({source,out:'⟦'+source+' — non traduit⟧',gap:true,consultative:false});
   });
   previewCandidates.forEach((item,index)=>{
@@ -5549,7 +5567,9 @@ function traduire(){
   if(!completeTranslation&&!completeRule&&continuousProposal){
     html='<div style="background:var(--surface2);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px">'
       + '<div style="color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">'
-      + (previewHasGaps?'Proposition continue — passages non traduits conservés':'Texte traduit — proposition construite à valider')+'</div>'
+      + (previewHasGaps?'Proposition continue — passages non traduits conservés'
+        :previewHasConsultative&&previewCandidates.length===1?'Forme consultative reconnue — usage actuel à valider'
+        :'Texte traduit — proposition construite à valider')+'</div>'
       + '<div style="font-size:1.25rem;font-weight:700;color:var(--accent);line-height:1.55;overflow-wrap:anywhere">'+escH(continuousProposal)+'</div>'
       + '<div style="font-size:.75rem;color:var(--text2);margin-top:9px">Le texte est affiché en un seul bloc et dans l’ordre de la saisie. '
       + (previewHasGaps?'Les éléments entre ⟦crochets⟧ restent visibles parce qu’aucune traduction sûre ne leur a été attribuée. ':'')
