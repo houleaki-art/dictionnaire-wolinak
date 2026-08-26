@@ -239,9 +239,13 @@ Pour chaque nouvelle génération :
 | Askwa yudali | 2:59 | https://suno.com/song/55daec54-204e-4ae6-a856-dd3a82f64464 |
 | Nijia Gabriel | 2:07 | https://suno.com/song/0d090de4-cc1f-47f7-a414-5f0400c0ee32 |
 | Nikw8bi nd'aln8ba8dwa | 1:58 | https://suno.com/song/27a8bff1-a867-4c0b-be9c-9d06e3a55e12 |
-| Wig8damoda | 2:07 | https://suno.com/song/88f63d90-3fd6-44d0-86ee-0d3fd7d2c25a |
+| Wig8damoda | 2:47 | https://suno.com/song/7c394b39-e6ac-45c6-9c35-fd62ec0d61ba |
 | Kikas | 1:19 | https://suno.com/song/86979f10-61bb-459b-a5d2-d28ea9042fe4 |
 
 Les cinq fichiers ont été chargés et démarrés dans Chrome sans erreur. Un repérage automatique de la parole a aussi servi à écarter une variante qui comprimait ou omettait la finale de `Nikw8bi nd'aln8ba8dwa`. Ce repérage vérifie la présence générale des sections; il ne peut pas attester la prononciation aln8ba. Le site qualifie donc explicitement chaque piste d'« audio IA à valider ».
 
 Les anciennes maquettes aln8ba ont été retirées du dépôt public. Une sauvegarde de travail privée est conservée hors du dépôt pour documenter l'amélioration continue; elle ne doit pas être remise en ligne.
+
+### Correction de `Kwaï mziwi`
+
+La première reconstruction de `Wig8damoda` avalait `Kwaï` au début de l'appel et ne laissait entendre que `mziwi`. Elle a été retirée. Dans la génération de remplacement, la graphie publique reste `Kwaï mziwi!`, tandis que le guide vocal privé place `Kwaï!` et `Mziwi!` sur deux attaques distinctes après quatre temps instrumentaux. Deux variantes ont été générées; la première, qui retardait trop longtemps l'entrée vocale, a été rejetée. La seconde conserve une attaque audible avant `mziwi` et devient la maquette publiée. Cette correction technique ne constitue toujours pas une attestation linguistique de la voix Suno.
