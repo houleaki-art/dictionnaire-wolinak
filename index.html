@@ -187,6 +187,32 @@ textarea{resize:vertical;min-height:68px}
 .rec-btn.stop{background:rgba(232,69,69,.12);color:#e84545;border:1px solid rgba(232,69,69,.3)}
 .rec-btn:hover{opacity:.85;transform:scale(1.03)}
 .rec-status{font-size:.8rem;color:var(--text3);margin-top:6px}
+.ca.corpus-rec{color:var(--accent);border-color:var(--accent)}
+.ca.corpus-rec:hover{background:rgba(184,92,42,.12)}
+.corpus-target{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:12px;padding:14px 16px;margin-bottom:16px;border:1px solid rgba(184,92,42,.28);border-radius:12px;background:linear-gradient(135deg,rgba(184,92,42,.08),rgba(212,160,48,.05))}
+.corpus-target strong{display:block;color:var(--accent);font-size:1.35rem;font-style:italic}
+.corpus-target span{display:block;color:var(--text2);font-size:.84rem;line-height:1.45}
+.corpus-privacy{padding:11px 13px;margin-bottom:14px;border-left:3px solid var(--green);background:rgba(61,122,80,.08);font-size:.78rem;line-height:1.5;color:var(--text2)}
+.corpus-consent{display:flex;align-items:flex-start;gap:9px;padding:12px 13px;margin:12px 0;border:1px solid var(--border);border-radius:10px;background:var(--surface2);font-size:.8rem;line-height:1.45;color:var(--text2)}
+.corpus-consent input{margin-top:3px;flex:0 0 auto}
+.corpus-recorder{border:2px dashed var(--border);border-radius:12px;padding:16px;text-align:center;margin:14px 0;transition:var(--tr)}
+.corpus-recorder.recording{border-color:var(--red);background:rgba(192,57,43,.06)}
+.corpus-recorder audio{width:100%;height:38px;margin-top:12px}
+.corpus-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
+.corpus-status{min-height:22px;margin-top:10px;color:var(--text3);font-size:.8rem;line-height:1.4}
+.corpus-status.error{color:var(--red)}
+.corpus-status.ready{color:var(--green);font-weight:700}
+.corpus-saved{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.corpus-saved-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.corpus-clip-list{display:flex;flex-direction:column;gap:7px;max-height:220px;overflow:auto}
+.corpus-clip{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface2)}
+.corpus-clip-main{flex:1;min-width:0}
+.corpus-clip-main strong,.corpus-clip-main span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.corpus-clip-main strong{font-size:.82rem;color:var(--text)}
+.corpus-clip-main span{font-size:.68rem;color:var(--text3);margin-top:2px}
+.corpus-mini{padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text2);cursor:pointer;font:700 .7rem Georgia,serif}
+.corpus-mini:hover{border-color:var(--accent);color:var(--accent)}
+.form-rec-action{display:flex;justify-content:flex-end;align-items:center}
 /* correction history */
 .corr-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .corr-item{background:var(--surface2);border-radius:7px;padding:8px 12px;font-size:.8rem;color:var(--text2)}
@@ -529,7 +555,8 @@ body.music-dock-open .toast{bottom:116px}
 @media print{header,.fab,aside,.toolbar,.cacts,.pending-banner{display:none!important}.layout{display:block}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:10px;box-shadow:none}.cdet{display:block!important}}
 /* ── FAMILLE DE MOTS ── */
 .family-badge{font-size:.67rem;padding:2px 8px;border-radius:9px;font-weight:700;background:rgba(184,92,42,.12);color:var(--accent);border:1px solid rgba(184,92,42,.22)}
-.family-forms{display:grid;grid-template-columns:max-content 1fr 1.6fr;gap:4px 14px;margin-top:10px;padding:10px 13px;background:var(--bg3);border-radius:8px;align-items:baseline}
+.family-forms{display:flex;flex-direction:column;gap:5px;margin-top:10px;padding:10px 13px;background:var(--bg3);border-radius:8px}
+.family-form-row{display:grid;grid-template-columns:max-content 1fr 1.6fr max-content;gap:4px 14px;align-items:center}
 .form-lbl{font-size:.62rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 .form-val{font-size:.95rem;color:var(--accent);font-style:italic;font-weight:700}
 .form-tr{font-size:.8rem;color:var(--text2)}
@@ -819,6 +846,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .btn,.aprbtn,.voice-btn,.chip,.trad-dir-btn,.trad-clear-btn,.trad-btn,.trad-copy-btn{min-height:44px}
   input[type=text],select,textarea{min-height:44px;font-size:16px}
   .mclose,.drawer-close{width:44px;height:44px;min-width:44px}
+  .corpus-target{grid-template-columns:1fr}
+  .corpus-actions .btn{flex:1;min-width:132px;padding:9px 11px}
+  .corpus-clip{align-items:flex-start;flex-wrap:wrap}
+  #editCorpusHeaderBtn{width:44px;min-width:44px;padding:0;font-size:0}
+  #editCorpusHeaderBtn::before{content:'🎙️';font-size:18px}
+  .family-form-row{grid-template-columns:max-content minmax(0,1fr) max-content;gap:3px 8px}
+  .family-form-row .form-tr{grid-column:1/3;font-size:.75rem}
+  .family-form-row .form-rec-action{grid-column:3;grid-row:1/3}
   .drawer-panel{width:min(330px,92vw)}
   .drawer-header{position:sticky;top:0;z-index:2;padding:14px 16px}
   .sb{min-height:48px;padding:10px 18px;font-size:.9rem}
@@ -1542,6 +1577,7 @@ Merci... merci de m'avoir entendu</pre>
           <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
           <button class="btn btn-secondary" onclick="changePin()">🔑 Changer mot de passe</button>
           <button class="btn btn-secondary" onclick="runLinguisticAudit()" title="Analyser tous les mots selon les règles grammaticales abenakises">🔬 Audit linguistique</button>
+          <button class="btn btn-primary" onclick="corpusOpenDictionary()" title="Afficher le micro sur chaque forme verte">🎙️ Enregistrer les mots verts</button>
         </div>
         <div id="auditResults" style="display:none;margin-bottom:18px"></div>
         <h4 style="margin-bottom:12px;color:var(--text2)">🔤 Formes en attente d'un sens</h4>
@@ -1730,12 +1766,20 @@ Merci... merci de m'avoir entendu</pre>
   <div class="modal wide">
     <div class="mhdr">
       <div><h2>✏️ Modifier le mot</h2><p>Mode administrateur</p></div>
-      <button class="mclose" onclick="closeModal('editModal')" aria-label="Fermer la modification">✕</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-primary" id="editCorpusHeaderBtn" onclick="openCorpusRecorderFromEdit(event)" aria-label="Enregistrer la voix de ce mot">🎙️ Enregistrer la voix</button>
+        <button class="mclose" onclick="closeModal('editModal')" aria-label="Fermer la modification">✕</button>
+      </div>
     </div>
     <div class="mbody">
       <div class="frow">
         <div class="fg"><label>Mot en Aln8ba *</label><input type="text" id="e-aln8ba"></div>
         <div class="fg"><label>Phonétique</label><input type="text" id="e-phonetic"></div>
+      </div>
+      <div class="corpus-privacy" id="editCorpusPanel" style="margin-top:12px;margin-bottom:16px">
+        <strong style="display:block;margin-bottom:4px">Prononciation de référence avec ta voix</strong>
+        <span id="editCorpusMessage" style="display:block">Enregistre cette forme séparément; le son restera privé dans le corpus de travail.</span>
+        <button class="btn btn-success" id="editCorpusBodyBtn" style="margin-top:10px" onclick="openCorpusRecorderFromEdit(event)">⏺ Enregistrer ce mot maintenant</button>
       </div>
       <div class="frow">
         <div class="fg"><label>Traduction française *</label><input type="text" id="e-fr"></div>
@@ -1768,6 +1812,89 @@ Merci... merci de m'avoir entendu</pre>
         <button class="btn btn-primary" onclick="saveEdit()">💾 Enregistrer</button>
       </div>
       <div id="corrHistory"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CORPUS VOCAL PRIVE (ADMIN) -->
+<div class="overlay" id="corpusModal">
+  <div class="modal wide">
+    <div class="mhdr">
+      <div><h2>🎙️ Enregistrer une référence aln8ba</h2><p>Corpus privé de travail · mode administrateur</p></div>
+      <button class="mclose" onclick="closeCorpusRecorder()" aria-label="Fermer l'enregistreur">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="corpus-target">
+        <div>
+          <span>Forme exacte à prononcer</span>
+          <strong id="corpusWord">—</strong>
+          <span id="corpusGuide"></span>
+        </div>
+        <div>
+          <span>Repère de sens</span>
+          <strong id="corpusMeaning" style="font-size:1.05rem;font-style:normal;color:var(--text)">—</strong>
+          <span>Prononce seulement la forme aln8ba affichée, dans une pièce calme, sans musique.</span>
+        </div>
+      </div>
+
+      <div class="corpus-privacy"><strong>Privé par défaut.</strong> Le son reste dans ce navigateur après avoir choisi « Conserver ». Il n'est ni publié, ni envoyé à Supabase, ni joué aux visiteurs. En le conservant après réécoute, tu confirmes toi-même que cette prise est une prononciation de référence; cela ne constitue pas une attestation professionnelle externe.</div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Identifiant vocal pseudonyme *</label>
+          <input type="text" id="corpusSpeaker" value="spk-001" inputmode="text" autocomplete="off" spellcheck="false" aria-describedby="corpusSpeakerHint">
+          <span class="hint" id="corpusSpeakerHint">Format : spk- suivi de lettres minuscules, chiffres ou tirets. Aucun nom réel.</span>
+        </div>
+        <div class="fg">
+          <label>Dialecte déclaré *</label>
+          <select id="corpusDialect">
+            <option value="Odanak-Wolinak">Odanak-Wolinak</option>
+            <option value="Wolinak">Wolinak</option>
+            <option value="Odanak">Odanak</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label>Identifiant de consentement *</label>
+          <input type="text" id="corpusConsent" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="fg">
+          <label>Note technique (optionnel)</label>
+          <input type="text" id="corpusNotes" maxlength="180" placeholder="Ex. deuxième prise, micro du téléphone">
+        </div>
+      </div>
+
+      <label class="corpus-consent">
+        <input type="checkbox" id="corpusConsentCheck">
+        <span>J'autorise explicitement cet enregistrement à être conservé pour la recherche, l'entraînement et l'évaluation du futur moteur vocal aln8ba. Je comprends qu'il ne sera pas publié automatiquement et que je pourrai supprimer cette copie locale.</span>
+      </label>
+
+      <div class="corpus-recorder" id="corpusRecorderZone">
+        <div class="corpus-actions">
+          <button class="btn btn-primary" id="corpusStart" onclick="corpusStartRecording()">⏺ Commencer</button>
+          <button class="btn btn-danger" id="corpusStop" style="display:none" onclick="corpusStopRecording()">⏹ Arrêter</button>
+          <button class="btn btn-secondary" id="corpusRetry" style="display:none" onclick="corpusResetDraft()">↻ Refaire</button>
+        </div>
+        <div class="corpus-status" id="corpusStatus" role="status" aria-live="polite">Le microphone démarrera seulement après avoir coché le consentement puis touché « Commencer ».</div>
+        <audio id="corpusPlayback" controls preload="metadata" style="display:none"></audio>
+        <div class="corpus-actions" id="corpusSaveActions" style="display:none">
+          <button class="btn btn-success" onclick="corpusSaveLocal()">💾 Conserver et valider ma prise</button>
+          <button class="btn btn-secondary" onclick="corpusDownloadDraft()">📥 Télécharger ce WAV</button>
+        </div>
+      </div>
+
+      <div class="corpus-saved">
+        <div class="corpus-saved-head">
+          <div><strong id="corpusSavedCount">0 prise locale</strong><div style="font-size:.7rem;color:var(--text3);margin-top:2px">Chaque prise conservée est validée par son locuteur.</div></div>
+          <button class="corpus-mini" onclick="corpusExportManifest()">Exporter le manifeste JSONL</button>
+        </div>
+        <div class="corpus-clip-list" id="corpusClipList"><span style="font-size:.78rem;color:var(--text3)">Aucune prise conservée sur cet appareil.</span></div>
+      </div>
+
+      <div class="btns">
+        <button class="btn btn-secondary" onclick="closeCorpusRecorder()">Fermer</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2275,6 +2402,9 @@ const S = {
 let WORDS = SEED.map(w=>{const f=FAMILY_MAP[w.id];return f?{...w,...f}:w;});
 let FAVS  = loadFavs();
 let mediaRecorder = null, audioChunks = [], audioBlob = null;
+let corpusWord=null, corpusRecorder=null, corpusStream=null, corpusChunks=[];
+let corpusTimer=null, corpusDraftBlob=null, corpusDraftUrl='', corpusDraftMeta=null;
+let corpusRequestToken=0, corpusStarting=false;
 let WORD_RENDER_LIMIT = 0;
 let WORD_RENDER_KEY = '';
 
@@ -2326,6 +2456,9 @@ const EXERCISE_DOUTE=/FORME CONSTRUITE|à confirmer|Sens à confirmer|reconstrui
 function isExerciseSafe(w){
   return !!w && w.aln8ba!=='__version__' && w.cat!=='system' && !enAttente(w)
     && getWordLevel(w)==='vert' && !EXERCISE_DOUTE.test(w.notes||'');
+}
+function isCorpusEligible(w){
+  return isExerciseSafe(w) && !/^(HISTOIRE|DIVERGENCE)\s*·/i.test((w.aln8ba||'').trim());
 }
 function filtered(){
   // Les formes en attente ne figurent jamais dans le dictionnaire, même pour l'admin
@@ -2399,10 +2532,12 @@ function makeFamilyCard(members){
   const isFav=FAVS.includes(id);
   const isExp=S.expanded.has(id);
   const related=(base.related||[]).filter(r=>r&&!members.some(m=>m.aln8ba===r)).map(r=>`<span class="rchip" onclick="searchBy('${escH(escQ(r))}');event.stopPropagation()">${escH(r)}</span>`).join('');
-  const formsHtml=members.map(m=>`
+  const formsHtml=members.map(m=>`<div class="family-form-row">
     <span class="form-lbl">${escH(FORM_LABELS[m.formType]||m.formType)}</span>
     <span class="form-val">${hl(m.aln8ba)}</span>
-    <span class="form-tr">${hl(m.fr)}</span>`).join('');
+    <span class="form-tr">${hl(m.fr)}</span>
+    <span class="form-rec-action">${adminUnlocked&&isCorpusEligible(m)?`<button class="ca corpus-rec" onclick="openCorpusRecorder('${m.id}',event)" title="Enregistrer une référence vocale pour ${escH(m.aln8ba)}" aria-label="Enregistrer une référence vocale pour ${escH(m.aln8ba)}">🎙️</button>`:''}</span>
+  </div>`).join('');
   return `<div class="card${isExp?' exp':''}" id="c${id}" onclick="toggleCard('${id}',event)">
     <div class="card-top">
       <div><div class="word">${hl(base.aln8ba)}</div>${cardPhonetic(base)}</div>
@@ -2440,6 +2575,7 @@ function makeSingleCard(w){
       <div><div class="word">${hl(w.aln8ba)}</div>${cardPhonetic(w)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
         ${hasAudio?`<button class="ca audio" onclick="playAudio('${w.id}')" title="Écouter l’enregistrement natif">▶</button>`:''}
+        ${adminUnlocked&&isCorpusEligible(w)?`<button class="ca corpus-rec" onclick="openCorpusRecorder('${w.id}',event)" title="Enregistrer une référence vocale" aria-label="Enregistrer une référence vocale pour ${escH(w.aln8ba)}">🎙️</button>`:''}
         <button class="ca" onclick="toggleFav('${w.id}')" title="Favori" id="fav${w.id}">${isFav?'⭐':'☆'}</button>
       </div>
     </div>
@@ -3692,6 +3828,14 @@ function openEdit(id){
   document.getElementById('e-notes').value=w.notes||'';
   document.getElementById('e-related').value=(w.related||[]).join(', ');
   document.getElementById('e-corrNote').value='';
+  const corpusEligible=isCorpusEligible(w);
+  const corpusMessage=document.getElementById('editCorpusMessage');
+  const corpusHeaderButton=document.getElementById('editCorpusHeaderBtn');
+  const corpusBodyButton=document.getElementById('editCorpusBodyBtn');
+  corpusHeaderButton.disabled=!corpusEligible; corpusBodyButton.disabled=!corpusEligible;
+  corpusMessage.textContent=corpusEligible
+    ? `Enregistre « ${w.aln8ba} » séparément; ta prise restera privée dans le corpus de travail.`
+    : 'Cette fiche n’est pas une forme verte actuelle admissible au corpus vocal.';
   // Show correction history
   const ch=document.getElementById('corrHistory');
   if(w.corrections&&w.corrections.length){
@@ -3703,6 +3847,10 @@ function openEdit(id){
       </div>`).join('')}</div>`;
   } else { ch.innerHTML=''; }
   openModal('editModal');
+}
+function openCorpusRecorderFromEdit(e){
+  const id=document.getElementById('e-id').value;
+  openCorpusRecorder(id,e);
 }
 function saveEdit(){
   const id=document.getElementById('e-id').value;
@@ -3903,6 +4051,292 @@ function stopRec(){
   if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
   document.getElementById('recStartBtn').style.display='';
   document.getElementById('recStopBtn').style.display='none';
+}
+
+// Corpus vocal prive: collecte locale, jamais envoyee automatiquement a Supabase.
+const CORPUS_DB_NAME='aln8ba-voice-corpus-v1';
+const CORPUS_STORE='clips';
+let corpusSavedAudioUrl='';
+
+function corpusOpenDictionary(){
+  S.q=''; S.cat=''; S.letter='';
+  const input=document.getElementById('searchIn'); if(input) input.value='';
+  setView('all');
+  setTimeout(()=>document.getElementById('wordsContainer')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  toast('🎙️ Le micro apparaît maintenant sur chaque forme verte.');
+}
+function corpusDefaultConsentId(){
+  const day=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  return `consent-self-${day}`;
+}
+function corpusRecall(key,fallback=''){
+  try{return localStorage.getItem(key)||fallback;}catch(error){return fallback;}
+}
+function corpusRemember(key,value){
+  try{localStorage.setItem(key,value);}catch(error){}
+}
+function corpusSetStatus(message,state=''){
+  const status=document.getElementById('corpusStatus'); if(!status) return;
+  status.textContent=message;
+  status.className='corpus-status'+(state?' '+state:'');
+}
+function openCorpusRecorder(id,e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  if(!adminUnlocked){toast('🔒 Ouvre d’abord le mode administrateur.');return;}
+  const word=WORDS.find(item=>item.id===id);
+  if(!isCorpusEligible(word)){toast('Seules les formes linguistiques vertes actuelles peuvent entrer dans le corpus.');return;}
+  corpusAbortRecording(); corpusResetDraft(); corpusWord=word;
+  document.getElementById('corpusWord').textContent=word.aln8ba;
+  document.getElementById('corpusGuide').textContent='Aucun guide synthétique ici : ta prononciation réelle sert de référence.';
+  document.getElementById('corpusMeaning').textContent=word.fr||'—';
+  document.getElementById('corpusSpeaker').value=corpusRecall('aln8ba_corpus_speaker','spk-001');
+  document.getElementById('corpusDialect').value=corpusRecall('aln8ba_corpus_dialect','Odanak-Wolinak');
+  document.getElementById('corpusConsent').value=corpusRecall('aln8ba_corpus_consent',corpusDefaultConsentId());
+  document.getElementById('corpusNotes').value='';
+  document.getElementById('corpusConsentCheck').checked=false;
+  corpusSetStatus('Le microphone démarrera seulement après avoir coché le consentement puis touché « Commencer ».');
+  openModal('corpusModal');
+  corpusRenderSaved();
+}
+function closeCorpusRecorder(){
+  corpusAbortRecording(); corpusResetDraft(); corpusWord=null;
+  document.getElementById('corpusModal')?.classList.remove('open');
+}
+function corpusAbortRecording(){
+  corpusRequestToken++; corpusStarting=false;
+  if(corpusTimer){clearTimeout(corpusTimer);corpusTimer=null;}
+  if(corpusRecorder&&corpusRecorder.state!=='inactive'){
+    corpusRecorder.ondataavailable=null; corpusRecorder.onstop=null;
+    try{corpusRecorder.stop();}catch(error){}
+  }
+  corpusRecorder=null; corpusChunks=[];
+  if(corpusStream) corpusStream.getTracks().forEach(track=>track.stop());
+  corpusStream=null;
+  document.getElementById('corpusRecorderZone')?.classList.remove('recording');
+}
+function corpusResetDraft(){
+  corpusDraftBlob=null; corpusDraftMeta=null;
+  if(corpusDraftUrl){URL.revokeObjectURL(corpusDraftUrl);corpusDraftUrl='';}
+  const player=document.getElementById('corpusPlayback');
+  if(player){player.pause();player.removeAttribute('src');player.load();player.style.display='none';}
+  const start=document.getElementById('corpusStart'); if(start){start.style.display='';start.disabled=false;}
+  const stop=document.getElementById('corpusStop'); if(stop) stop.style.display='none';
+  const retry=document.getElementById('corpusRetry'); if(retry) retry.style.display='none';
+  const save=document.getElementById('corpusSaveActions'); if(save) save.style.display='none';
+  document.getElementById('corpusRecorderZone')?.classList.remove('recording');
+  if(corpusWord) corpusSetStatus(`Prêt à enregistrer « ${corpusWord.aln8ba} »; une seule forme, sans phrase autour.`);
+}
+function corpusValidateProfile(){
+  const speaker=(document.getElementById('corpusSpeaker').value||'').trim();
+  const consent=(document.getElementById('corpusConsent').value||'').trim();
+  const dialect=document.getElementById('corpusDialect').value;
+  if(!/^spk-[a-z0-9-]{3,40}$/.test(speaker)) throw new Error('Identifiant vocal invalide. Exemple accepté : spk-001.');
+  if(!/^consent-[a-z0-9-]{3,60}$/.test(consent)) throw new Error('Identifiant de consentement invalide. Utilise seulement des minuscules, chiffres et tirets après consent-.');
+  if(!['Odanak','Wolinak','Odanak-Wolinak'].includes(dialect)) throw new Error('Dialecte invalide.');
+  return {speaker,consent,dialect};
+}
+async function corpusStartRecording(){
+  if(!corpusWord) return;
+  if(corpusStarting||corpusRecorder) return;
+  if(!document.getElementById('corpusConsentCheck').checked){
+    corpusSetStatus('Coche d’abord le consentement explicite. Le microphone reste fermé.','error');return;
+  }
+  try{corpusValidateProfile();}catch(error){corpusSetStatus(error.message,'error');return;}
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+    corpusSetStatus('Ce navigateur ne permet pas cet enregistrement. Utilise Chrome récent sur HTTPS.','error');return;
+  }
+  corpusResetDraft();
+  const requestToken=++corpusRequestToken;
+  corpusStarting=true;
+  document.getElementById('corpusStart').disabled=true;
+  try{
+    corpusStream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    if(requestToken!==corpusRequestToken||!document.getElementById('corpusModal').classList.contains('open')){
+      corpusStream.getTracks().forEach(track=>track.stop()); corpusStream=null; corpusStarting=false; return;
+    }
+    corpusStarting=false;
+    corpusChunks=[];
+    const mime=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>MediaRecorder.isTypeSupported?.(type));
+    corpusRecorder=new MediaRecorder(corpusStream,mime?{mimeType:mime}:undefined);
+    corpusRecorder.ondataavailable=event=>{if(event.data&&event.data.size) corpusChunks.push(event.data);};
+    corpusRecorder.onerror=()=>corpusSetStatus('L’enregistrement a échoué. Réessaie après avoir vérifié le microphone.','error');
+    corpusRecorder.onstop=async()=>{
+      if(corpusTimer){clearTimeout(corpusTimer);corpusTimer=null;}
+      if(corpusStream) corpusStream.getTracks().forEach(track=>track.stop());
+      corpusStream=null;
+      document.getElementById('corpusRecorderZone').classList.remove('recording');
+      document.getElementById('corpusStop').style.display='none';
+      document.getElementById('corpusRetry').style.display='';
+      if(!corpusChunks.length){corpusSetStatus('Aucun son n’a été capté. Recommence.','error');return;}
+      corpusSetStatus('Conversion en WAV mono 16 kHz…');
+      try{
+        const original=new Blob(corpusChunks,{type:corpusRecorder?.mimeType||corpusChunks[0].type||'audio/webm'});
+        corpusDraftBlob=await corpusConvertToWav(original);
+        corpusDraftUrl=URL.createObjectURL(corpusDraftBlob);
+        const player=document.getElementById('corpusPlayback');
+        player.src=corpusDraftUrl; player.style.display='block';
+        document.getElementById('corpusSaveActions').style.display='flex';
+        corpusSetStatus('Prise prête. Écoute-la au complet avant de la conserver.','ready');
+      }catch(error){corpusSetStatus(`Conversion impossible : ${error.message}`,'error');}
+      corpusRecorder=null; corpusChunks=[];
+    };
+    corpusRecorder.start(250);
+    document.getElementById('corpusStart').style.display='none';
+    document.getElementById('corpusStop').style.display='';
+    document.getElementById('corpusRecorderZone').classList.add('recording');
+    corpusSetStatus(`Enregistrement de « ${corpusWord.aln8ba} » en cours… arrêt automatique dans 15 secondes.`);
+    corpusTimer=setTimeout(corpusStopRecording,15000);
+  }catch(error){
+    if(corpusStream) corpusStream.getTracks().forEach(track=>track.stop());
+    corpusStream=null; corpusRecorder=null; corpusStarting=false;
+    document.getElementById('corpusStart').disabled=false;
+    corpusSetStatus('Microphone inaccessible. Vérifie l’autorisation du site dans Chrome, puis réessaie.','error');
+  }
+}
+function corpusStopRecording(){
+  if(corpusRecorder&&corpusRecorder.state==='recording') corpusRecorder.stop();
+}
+async function corpusConvertToWav(blob){
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass) throw new Error('décodage audio indisponible');
+  const context=new AudioContextClass();
+  try{
+    const decoded=await context.decodeAudioData(await blob.arrayBuffer());
+    if(decoded.duration<0.25) throw new Error('prise trop courte; laisse au moins un quart de seconde');
+    if(decoded.duration>15.1) throw new Error('prise trop longue; limite-toi à une seule forme');
+    const source=new Float32Array(decoded.length);
+    for(let channel=0;channel<decoded.numberOfChannels;channel++){
+      const data=decoded.getChannelData(channel);
+      for(let i=0;i<data.length;i++) source[i]+=data[i]/decoded.numberOfChannels;
+    }
+    const rate=16000, ratio=decoded.sampleRate/rate;
+    const length=Math.max(1,Math.round(source.length/ratio));
+    const samples=new Float32Array(length);
+    for(let i=0;i<length;i++){
+      const position=i*ratio, left=Math.floor(position), right=Math.min(left+1,source.length-1), mix=position-left;
+      samples[i]=source[left]*(1-mix)+source[right]*mix;
+    }
+    return corpusEncodeWav(samples,rate);
+  }finally{await context.close();}
+}
+function corpusEncodeWav(samples,sampleRate){
+  const buffer=new ArrayBuffer(44+samples.length*2), view=new DataView(buffer);
+  const text=(offset,value)=>{for(let i=0;i<value.length;i++) view.setUint8(offset+i,value.charCodeAt(i));};
+  text(0,'RIFF'); view.setUint32(4,36+samples.length*2,true); text(8,'WAVE'); text(12,'fmt ');
+  view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true);
+  view.setUint32(24,sampleRate,true); view.setUint32(28,sampleRate*2,true);
+  view.setUint16(32,2,true); view.setUint16(34,16,true); text(36,'data'); view.setUint32(40,samples.length*2,true);
+  for(let i=0,offset=44;i<samples.length;i++,offset+=2){
+    const sample=Math.max(-1,Math.min(1,samples[i]));
+    view.setInt16(offset,sample<0?sample*0x8000:sample*0x7fff,true);
+  }
+  return new Blob([buffer],{type:'audio/wav'});
+}
+function corpusSlug(value){
+  return (value||'mot').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+    .replace(/8/g,'8').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'mot';
+}
+function corpusBuildMeta(){
+  if(!corpusWord||!corpusDraftBlob) throw new Error('Aucune prise prête.');
+  const profile=corpusValidateProfile(), recordedAt=new Date().toISOString();
+  const stamp=recordedAt.replace(/\D/g,'').slice(0,17);
+  const filename=`${corpusSlug(corpusWord.aln8ba)}-${stamp}.wav`;
+  const note=(document.getElementById('corpusNotes').value||'').trim();
+  return {
+    id:`${profile.speaker}-${corpusWord.id}-${stamp}`,
+    meta:{clip:`audio/${profile.speaker}/${filename}`,transcript:corpusWord.aln8ba,speaker_id:profile.speaker,
+      consent_id:profile.consent,consent_scope:['asr-training','evaluation'],review_status:'approved',
+      reviewer_id:`${profile.speaker}-self`,source_status:'green-current',dialect:profile.dialect,recorded_at:recordedAt,
+      notes:note||'Prononciation confirmee par le locuteur apres reecoute; aucune attestation professionnelle externe.'}
+  };
+}
+function corpusOpenDb(){
+  return new Promise((resolve,reject)=>{
+    if(!window.indexedDB){reject(new Error('Stockage local indisponible.'));return;}
+    const request=indexedDB.open(CORPUS_DB_NAME,1);
+    request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains(CORPUS_STORE)) request.result.createObjectStore(CORPUS_STORE,{keyPath:'id'});};
+    request.onsuccess=()=>resolve(request.result); request.onerror=()=>reject(request.error||new Error('IndexedDB indisponible.'));
+  });
+}
+async function corpusDbPut(record){
+  const db=await corpusOpenDb();
+  return new Promise((resolve,reject)=>{const tx=db.transaction(CORPUS_STORE,'readwrite');tx.objectStore(CORPUS_STORE).put(record);tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>{db.close();reject(tx.error);};});
+}
+async function corpusDbAll(){
+  const db=await corpusOpenDb();
+  return new Promise((resolve,reject)=>{const tx=db.transaction(CORPUS_STORE,'readonly'),request=tx.objectStore(CORPUS_STORE).getAll();request.onsuccess=()=>resolve(request.result||[]);request.onerror=()=>reject(request.error);tx.oncomplete=()=>db.close();});
+}
+async function corpusDbGet(id){
+  const db=await corpusOpenDb();
+  return new Promise((resolve,reject)=>{const tx=db.transaction(CORPUS_STORE,'readonly'),request=tx.objectStore(CORPUS_STORE).get(id);request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);tx.oncomplete=()=>db.close();});
+}
+async function corpusDbDelete(id){
+  const db=await corpusOpenDb();
+  return new Promise((resolve,reject)=>{const tx=db.transaction(CORPUS_STORE,'readwrite');tx.objectStore(CORPUS_STORE).delete(id);tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>{db.close();reject(tx.error);};});
+}
+async function corpusSaveLocal(){
+  if(!document.getElementById('corpusConsentCheck').checked){corpusSetStatus('Le consentement doit rester coché pour conserver la prise.','error');return;}
+  try{
+    corpusDraftMeta=corpusDraftMeta||corpusBuildMeta();
+    const record={...corpusDraftMeta,wav:corpusDraftBlob,stored_at:new Date().toISOString()};
+    await corpusDbPut(record);
+    corpusRemember('aln8ba_corpus_speaker',record.meta.speaker_id);
+    corpusRemember('aln8ba_corpus_dialect',record.meta.dialect);
+    corpusRemember('aln8ba_corpus_consent',record.meta.consent_id);
+    corpusSetStatus('Prise conservée et validée par toi comme prononciation de référence.','ready');
+    await corpusRenderSaved();
+  }catch(error){corpusSetStatus(error.message||'Impossible de conserver cette prise.','error');}
+}
+function corpusDownloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob), link=document.createElement('a');
+  link.href=url; link.download=filename; document.body.appendChild(link); link.click(); link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function corpusDownloadDraft(){
+  try{
+    corpusDraftMeta=corpusDraftMeta||corpusBuildMeta();
+    corpusDownloadBlob(corpusDraftBlob,corpusDraftMeta.meta.clip.split('/').pop());
+  }catch(error){corpusSetStatus(error.message,'error');}
+}
+async function corpusDownloadSaved(id){
+  try{const record=await corpusDbGet(id);if(record) corpusDownloadBlob(record.wav,record.meta.clip.split('/').pop());}
+  catch(error){toast('Téléchargement impossible.');}
+}
+async function corpusPlaySaved(id){
+  try{
+    const record=await corpusDbGet(id); if(!record) return;
+    if(corpusSavedAudioUrl) URL.revokeObjectURL(corpusSavedAudioUrl);
+    corpusSavedAudioUrl=URL.createObjectURL(record.wav);
+    await new Audio(corpusSavedAudioUrl).play();
+  }catch(error){toast('Lecture locale impossible.');}
+}
+async function corpusDeleteSaved(id){
+  if(!confirm('Supprimer définitivement cette prise locale?')) return;
+  try{await corpusDbDelete(id);await corpusRenderSaved();toast('Prise locale supprimée.');}
+  catch(error){toast('Suppression impossible.');}
+}
+async function corpusExportManifest(){
+  try{
+    const records=await corpusDbAll();
+    if(!records.length){toast('Aucune prise locale à exporter.');return;}
+    const jsonl=records.sort((a,b)=>a.meta.recorded_at.localeCompare(b.meta.recorded_at)).map(record=>JSON.stringify(record.meta)).join('\n')+'\n';
+    corpusDownloadBlob(new Blob([jsonl],{type:'application/x-ndjson'}),'manifest.approved.jsonl');
+    toast('Manifeste exporté; les WAV se téléchargent depuis chaque ligne.');
+  }catch(error){toast('Export impossible sur ce navigateur.');}
+}
+async function corpusRenderSaved(){
+  const count=document.getElementById('corpusSavedCount'), list=document.getElementById('corpusClipList');
+  if(!count||!list) return;
+  try{
+    const records=(await corpusDbAll()).sort((a,b)=>b.meta.recorded_at.localeCompare(a.meta.recorded_at));
+    count.textContent=`${records.length} prise${records.length>1?'s':''} locale${records.length>1?'s':''}`;
+    list.innerHTML=records.length?records.map(record=>`<div class="corpus-clip">
+      <div class="corpus-clip-main"><strong>${escH(record.meta.transcript)}</strong><span>${escH(record.meta.speaker_id)} · ${escH(record.meta.dialect)} · validée par le locuteur</span></div>
+      <button class="corpus-mini" onclick="corpusPlaySaved('${escQ(record.id)}')">Écouter</button>
+      <button class="corpus-mini" onclick="corpusDownloadSaved('${escQ(record.id)}')">WAV</button>
+      <button class="corpus-mini" onclick="corpusDeleteSaved('${escQ(record.id)}')" aria-label="Supprimer la prise ${escH(record.meta.transcript)}">Supprimer</button>
+    </div>`).join(''):'<span style="font-size:.78rem;color:var(--text3)">Aucune prise conservée sur cet appareil.</span>';
+  }catch(error){count.textContent='Corpus local indisponible';list.innerHTML='<span style="font-size:.78rem;color:var(--red)">Le navigateur bloque le stockage local.</span>';}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -4380,7 +4814,7 @@ function updateAdminBadge(){
 function catLabel(c){return{salut:'Salutations',famille:'Famille',territoire:'Territoire',nature:'Nature / Ciel',animal:'Animaux',plante:'Plantes / Nourriture',action:'Actions / Valeurs',temps:'Temps',nombre:'Nombres',description:'Description',corps:'Corps humain',couleur:'Couleurs',grammaire:'Grammaire',toponymie:'Toponymie'}[c]||c;}
 function catIcon(c){return{salut:'🤝',famille:'👨‍👩‍👧',territoire:'🌍',nature:'🌿',animal:'🦌',plante:'🌱',action:'💡'}[c]||'📖';}
 function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModal(id){if(id==='corpusModal'){closeCorpusRecorder();return;}document.getElementById(id).classList.remove('open');}
 function setEntryWarningActive(active){
   document.body.classList.toggle('warning-open',active);
   [...document.body.children].forEach(el=>{
@@ -4450,7 +4884,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     document.getElementById('themeBtn').textContent='☀️';
   }
   // Close overlays on bg click
-  document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+  document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id);}));
   // Close overlays on Escape
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
   // Init

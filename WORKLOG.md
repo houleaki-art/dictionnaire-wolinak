@@ -98,7 +98,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Fluidification des mots et protection du premier phonème contre les coupures audio.
 - Séparation du découpage visuel et de la parole : le guide documenté détermine les sons, mais la synthèse reçoit un mot continu, sans coupures syllabiques; l'orthographe complète sert de repli lorsqu'aucun guide n'existe.
 - Ajout d'une écoute lente.
-- Séparation corrigée de deux formes auparavant confondues : `8h8`, le oui clair guidé `an-han`, et le `h8` historique, murmuré collectivement en conseil et conservé aux Archives.
+- Séparation de deux formes auparavant confondues : `8h8`, le oui clair, et le `h8` historique, murmuré collectivement en conseil et conservé aux Archives. Le collecteur natif ne réutilise aucun ancien guide synthétique pour ces formes.
 - Stabilisation du groupe 8K dans le guide synthétique : le repère visible « an-k » reste inchangé, tandis que l'orthographe technique envoyée à la voix française préserve la voyelle nasale suivie du son K.
 - Protection des 61 finales en -ak contre la coupure du K par la synthèse française; les cartes rappellent aussi que 8 est une voyelle nasale entre « an » et « on », et non un simple « an » français.
 - Protection de la suite 8w8 dans le repli synthétique : les deux voyelles nasales restent audibles et le W forme une liaison continue, sans pause ni syllabe « ou » autonome; le guide visible est explicitement qualifié d'approximatif lorsqu'aucune prononciation documentée n'est fournie.
@@ -119,7 +119,10 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Séparation déterministe des ensembles par locuteur, jamais par clip, afin qu'une même voix ne puisse pas gonfler artificiellement les résultats de test.
 - Ajout d'un garde-fou lexical commun à JavaScript et Python : les formes courtes exigent une sortie exacte et toute ambiguïté reste non résolue.
 - Ajout d'un service d'inférence qui refuse de démarrer sans modèle entraîné, exige un consentement `one-shot`, supprime le fichier temporaire et ne produit aucun score de prononciation non calibré.
-- Treize tests automatisés couvrent les caractères aln8ba, les ambiguïtés, le consentement, le WAV, le vocabulaire CTC et l'absence de fuite de locuteur.
+- Seize tests automatisés couvrent les caractères aln8ba, les ambiguïtés, le consentement, le WAV, l'interface de collecte, le vocabulaire CTC et l'absence de fuite de locuteur.
+- Ajout d'un enregistreur administrateur directement sur chaque forme verte actuelle : consentement explicite avant l'ouverture du micro, conversion WAV mono 16 kHz, réécoute, conservation privée dans le navigateur, téléchargement et export du manifeste JSONL.
+- Ajout du même accès vocal directement dans la fenêtre `Modifier le mot`, en haut et dans le formulaire, pour que la collecte soit impossible à manquer.
+- Les prises conservées par Guillaum sont marquées comme validées par le locuteur après réécoute; cette validation sert au corpus de travail sans être présentée comme une attestation professionnelle externe.
 
 ## Avertissement public
 

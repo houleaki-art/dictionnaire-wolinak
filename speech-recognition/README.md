@@ -41,6 +41,23 @@ Les noms réels des personnes ne doivent pas apparaître dans le manifeste. Un
 `speaker_id` pseudonyme stable est nécessaire uniquement pour empêcher une
 fuite de locuteur entre les ensembles.
 
+## Enregistrer depuis le dictionnaire
+
+1. Ouvrir l'administration et choisir `Enregistrer les mots verts`.
+2. Toucher le micro sur la forme voulue, ou ouvrir `Modifier le mot` puis
+   choisir `Enregistrer la voix`. Les formes historiques, orange ou en attente
+   n'ont volontairement aucun bouton de collecte.
+3. Confirmer le consentement, enregistrer une seule forme, arrêter puis
+   réécouter la prise.
+4. Choisir `Conserver et valider ma prise`. Le navigateur convertit le son en
+   WAV PCM 16 bits, mono, 16 kHz et le garde dans IndexedDB sur cet appareil.
+5. Télécharger chaque WAV et `manifest.approved.jsonl`, puis placer les WAV
+   sous `corpus/audio/<speaker_id>/` et le manifeste sous `corpus/`.
+
+Cette collecte n'écrit jamais dans Supabase et ne rend aucun son public. La
+validation `approved` signifie ici que le locuteur a réécouté et confirmé sa
+propre prononciation; elle ne constitue pas une attestation professionnelle.
+
 ## Préparer un corpus
 
 ```powershell
@@ -89,4 +106,3 @@ répertoire ou le lexique approuvé manque.
   contenu vocal.
 - Le retrait d'un consentement doit permettre de retrouver et supprimer tous
   les clips associés au `consent_id`, puis d'entraîner une nouvelle version.
-
