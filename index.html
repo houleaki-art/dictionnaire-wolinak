@@ -1159,7 +1159,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </section>
     <nav class="music-nav" aria-label="Sections des chansons">
       <button type="button" onclick="musicGoTo('musicListen')">🎧 Écouter les chansons</button>
-      <button type="button" onclick="musicGoTo('musicPractice')">📝 Pratiquer avec les paroles</button>
+      <button type="button" onclick="musicGoTo('musicPractice')">🛠️ Suivre la reconstruction</button>
     </nav>
     <div class="music-warning" role="note">
       <strong>À écouter comme des œuvres artistiques en évolution.</strong> Ces maquettes ne constituent ni une attestation linguistique, ni l'enregistrement d'une locutrice ou d'un locuteur, ni un modèle officiel de prononciation. Suno chante le texte qui lui est fourni : il ne le traduit pas et ne valide ni sa graphie ni sa grammaire. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
@@ -1167,13 +1167,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="music-warning music-rights" role="note">
       <strong>© 2026 Guillaum Labrecque-Houle — écoute seulement.</strong> Aucun téléchargement, aucune copie, aucune réutilisation, aucune modification et aucune redistribution ne sont autorisés. La mise en écoute sur ce site n'accorde aucune licence sur les paroles, les compositions, les enregistrements ou leur présentation.
     </div>
+    <div class="music-warning" role="status">
+      <strong>Révision linguistique prioritaire en cours.</strong> Les cinq anciennes maquettes contenant de l'aln8ba ont été retirées de l'écoute et de la pratique le 25 août 2026. Elles seront remises en ligne une par une seulement après vérification des paroles, de la négation, des conjugaisons et de la prononciation. La chanson française demeure disponible.
+    </div>
     <div class="music-grid" id="musicListen">
-      <article class="music-card">
+      <article class="music-card" hidden>
         <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la maquette Askwa yudali">
         <h3>Askwa yudali</h3>
         <span class="music-badge">Maquette IA · non studio</span>
         <audio id="musicAskwa" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Askwa yudali" oncontextmenu="return false" onended="musicStopped('musicAskwa','Lecture terminée')">
-          <source src="audio/askwa-yudali.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
         <div class="music-controls" aria-label="Commandes pour Askwa yudali">
@@ -1185,12 +1187,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceAskwa')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card">
+      <article class="music-card" hidden>
         <img class="music-cover" src="audio/nijia-gabriel.jpg" loading="lazy" alt="Pochette de la maquette Nijia Gabriel">
         <h3>Nijia Gabriel</h3>
         <span class="music-badge">Maquette IA · non studio</span>
         <audio id="musicNijia" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nijia Gabriel" oncontextmenu="return false" onended="musicStopped('musicNijia','Lecture terminée')">
-          <source src="audio/nijia-gabriel.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
         <div class="music-controls" aria-label="Commandes pour Nijia Gabriel">
@@ -1202,12 +1203,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNijia')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card">
+      <article class="music-card" hidden>
         <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la maquette Nikwonbi N'Wonolonwzé">
         <h3>Nikwonbi N'Wonolonwzé</h3>
         <span class="music-badge">Maquette IA · non studio · 2:37</span>
         <audio id="musicNikwonbi" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nikwonbi N'Wonolonwzé" oncontextmenu="return false" onended="musicStopped('musicNikwonbi','Lecture terminée')">
-          <source src="audio/nikwonbi-nwonolonwze.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
         <div class="music-controls" aria-label="Commandes pour Nikwonbi N'Wonolonwzé">
@@ -1219,12 +1219,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNikwonbi')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card">
+      <article class="music-card" hidden>
         <img class="music-cover" src="audio/wla-won-gan-woban-kizoss.jpg" loading="lazy" alt="Pochette du mashup Wla Won Gan x Wô-ban Ki-zoss">
         <h3>Wla Won Gan x Wô-ban Ki-zoss (Mashup)</h3>
         <span class="music-badge">Mashup IA · non studio · 3:49</span>
         <audio id="musicWlaWonGan" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter le mashup Wla Won Gan x Wô-ban Ki-zoss" oncontextmenu="return false" onended="musicStopped('musicWlaWonGan','Lecture terminée')">
-          <source src="audio/wla-won-gan-woban-kizoss.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
         <div class="music-controls" aria-label="Commandes pour Wla Won Gan x Wô-ban Ki-zoss">
@@ -1236,12 +1235,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceWlaWonGan')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card">
+      <article class="music-card" hidden>
         <img class="music-cover" src="audio/kikas-mski-koua.jpg" loading="lazy" alt="Pochette de la maquette Kikas, version Mski Koua">
         <h3>Kikas (Mski Koua Version)</h3>
         <span class="music-badge">Maquette IA · non studio · 3:16</span>
         <audio id="musicKikas" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Kikas, version Mski Koua" oncontextmenu="return false" onended="musicStopped('musicKikas','Lecture terminée')">
-          <source src="audio/kikas-mski-koua.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
         <div class="music-controls" aria-label="Commandes pour Kikas, version Mski Koua">
@@ -1273,11 +1271,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <section class="music-practice-section" id="musicPractice" aria-labelledby="musicPracticeTitle">
       <div class="music-practice-head">
-        <h3 id="musicPracticeTitle">📝 Pratique avec les chansons</h3>
-        <p>Choisis une chanson, démarre-la, puis suis le texte à voix haute. Les passages en aln8ba sont des textes de travail non validés : ils ne doivent pas servir de traduction, de modèle grammatical ou de graphie officielle. Les astuces phonétiques données au synthétiseur sont signalées séparément.</p>
+        <h3 id="musicPracticeTitle">🛠️ Reconstruction des chansons aln8ba</h3>
+        <p>Les anciens textes aln8ba ont été retirés de la pratique parce que plusieurs formes demandent une nouvelle vérification linguistique. Chaque chanson sera rétablie seulement avec une fiche de sources, une graphie d'apprentissage distincte du guide phonétique de la voix artificielle et un nouvel audio contrôlé. La pratique française reste accessible ci-dessous.</p>
       </div>
 
-      <details class="song-lyrics" id="practiceAskwa">
+      <details class="song-lyrics" id="practiceAskwa" hidden>
         <summary>Askwa yudali · texte de travail en aln8ba · non validé</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Askwa yudali">
@@ -1316,7 +1314,7 @@ Askwa yudali nd-aïbena.</p></div>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceNijia">
+      <details class="song-lyrics" id="practiceNijia" hidden>
         <summary>Nijia Gabriel · texte de travail en aln8ba · non validé</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nijia Gabriel">
@@ -1378,7 +1376,7 @@ Kalaata.</p></div>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceNikwonbi">
+      <details class="song-lyrics" id="practiceNikwonbi" hidden>
         <summary>Nikwonbi N'Wonolonwzé · texte de travail en aln8ba · non validé</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nikwonbi N'Wonolonwzé">
@@ -1458,7 +1456,7 @@ Adio, wli nanawalmezi</pre>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceWlaWonGan">
+      <details class="song-lyrics" id="practiceWlaWonGan" hidden>
         <summary>Wla Won Gan x Wô-ban Ki-zoss · guide de la maquette</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Wla Won Gan x Wô-ban Ki-zoss">
@@ -1613,7 +1611,7 @@ Wô-ban…</pre>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceKikas">
+      <details class="song-lyrics" id="practiceKikas" hidden>
         <summary>Kikas (Mski Koua Version) · texte de travail bilingue · non validé</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Kikas, version Mski Koua">
@@ -2828,7 +2826,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-const MUSIC_TRACK_IDS=['musicAskwa','musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
+const MUSIC_TRACK_IDS=['musicEntends'];
 let activeMusicId='';
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{
