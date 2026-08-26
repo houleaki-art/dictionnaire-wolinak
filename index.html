@@ -1168,26 +1168,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <strong>© 2026 Guillaum Labrecque-Houle — écoute seulement.</strong> Aucun téléchargement, aucune copie, aucune réutilisation, aucune modification et aucune redistribution ne sont autorisés. La mise en écoute sur ce site n'accorde aucune licence sur les paroles, les compositions, les enregistrements ou leur présentation.
     </div>
     <div class="music-warning" role="status">
-      <strong>Reconstructions du 25 août 2026.</strong> Les cinq anciennes maquettes contenant des formes douteuses ont été retirées. Les nouvelles versions emploient des phrases ou des mots documentés et séparent la graphie d'apprentissage du guide phonétique donné à la voix artificielle. Ce contrôle réduit les erreurs, mais ne transforme pas la voix Suno en modèle officiel de prononciation.
+      <strong>Reconstructions du 25 août 2026.</strong> Les anciennes maquettes contenant des formes douteuses ont été retirées. Les versions conservées emploient des phrases ou des mots documentés et séparent la graphie d'apprentissage du guide phonétique donné à la voix artificielle. Ce contrôle réduit les erreurs, mais ne transforme pas la voix Suno en modèle officiel de prononciation.
     </div>
     <div class="music-grid" id="musicListen">
-      <article class="music-card">
-        <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la maquette Askwa yudali">
-        <h3>Askwa yudali</h3>
-        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 2:59</span>
-        <audio id="musicAskwa" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Askwa yudali" oncontextmenu="return false" onended="musicStopped('musicAskwa','Lecture terminée')">
-          <source src="audio/askwa-yudali-v2.mp3" type="audio/mpeg">
-          Votre navigateur ne prend pas en charge la lecture audio.
-        </audio>
-        <div class="music-controls" aria-label="Commandes pour Askwa yudali">
-          <button type="button" onclick="musicStart('musicAskwa')">▶ Démarrer</button>
-          <button type="button" onclick="musicPause('musicAskwa')">Ⅱ Pause</button>
-          <button type="button" onclick="musicStop('musicAskwa')">■ Arrêter</button>
-        </div>
-        <div class="music-status" id="musicAskwaStatus" role="status" aria-live="polite">Prête à écouter.</div>
-        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceAskwa')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
-      </article>
       <article class="music-card">
         <img class="music-cover" src="audio/nijia-gabriel.jpg" loading="lazy" alt="Pochette de la maquette Nijia Gabriel">
         <h3>Nijia Gabriel</h3>
@@ -1279,44 +1262,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <h3 id="musicPracticeTitle">📝 Textes sourcés des nouvelles maquettes</h3>
         <p>Le texte affiché emploie la graphie du dictionnaire ou conserve explicitement la graphie de sa source. Suno reçoit un guide phonétique séparé qui n'est pas montré comme orthographe. Une juxtaposition poétique de mots attestés n'est pas une traduction littérale, et ces maquettes demeurent sujettes à la révision de personnes qualifiées.</p>
       </div>
-
-
-      <details class="song-lyrics" id="practiceAskwa">
-        <summary>Askwa yudali · paroles reconstruites et sourcées · audio IA à valider</summary>
-        <div class="lyrics-body">
-          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Askwa yudali">
-            <strong>🎧 Askwa yudali</strong>
-            <div class="lyrics-player-controls">
-              <button type="button" onclick="musicStart('musicAskwa')">▶ Démarrer</button>
-              <button type="button" onclick="musicPause('musicAskwa')">Ⅱ Pause</button>
-              <button type="button" onclick="musicStop('musicAskwa')">■ Arrêter</button>
-            </div>
-            <div class="music-status" id="musicAskwaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
-          </div>
-          <div class="lyrics-note"><strong>Statut du titre.</strong> « Askwa » et « Yudali » sont deux mots consultatifs de Masta (1932). Leur réunion est un titre poétique de l'auteur, pas une phrase retrouvée mot à mot.</div>
-          <div class="lyrics-note"><strong>Traçabilité.</strong> Les lignes actuelles viennent du Manuel et des notes du projet. « Niona W8banakiak » vient de Masta (1932) et « K'kezalmel » de Laurent (1884); ces formes historiques demeurent signalées.</div>
-          <div class="lyrics-grid">
-            <div class="lyrics-part"><h4>Intro</h4><p>Païa, aw8sis.
-Wligen, païa.</p></div>
-            <div class="lyrics-part"><h4>Couplet 1</h4><p>N'wigi W8linak.
-Nd'ai wigwomek.
-N'wal8wzin, wliwni.
-N'mikwaldam. Kalaata.</p></div>
-            <div class="lyrics-part"><h4>Refrain</h4><p>Païa, aw8sis, païa.
-Kiona. Kdakinna.
-Niona W8banakiak.
-Wig8damoda!</p></div>
-            <div class="lyrics-part"><h4>Couplet 2</h4><p>Nikw8bi nd'aln8ba8dwa.
-N'klozi. N'mikwaldam.
-Wôbanaki mikwalda.
-Mina ida! Kalaata.</p></div>
-            <div class="lyrics-part"><h4>Pont</h4><p>K'kezalmel.
-Wli nanawalmezi.
-Adio.
-Wli nanawalmezi.</p></div>
-          </div>
-        </div>
-      </details>
 
 
       <details class="song-lyrics" id="practiceNijia">
@@ -2601,7 +2546,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-const MUSIC_TRACK_IDS=['musicAskwa','musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
+const MUSIC_TRACK_IDS=['musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
 let activeMusicId='';
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{

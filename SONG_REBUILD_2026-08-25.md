@@ -11,43 +11,9 @@ Date de travail : 25 août 2026
 - Aucun suffixe, pluriel, négatif ou paradigme n'est créé uniquement parce qu'il paraît plausible.
 - Un nouvel audio n'est publié qu'après comparaison audible avec le texte chanté.
 
-## 1. Askwa yudali
+## 1. Askwa yudali — retirée
 
-Statut du titre : composition poétique formée de `Askwa` (« encore », Masta 1932, consultatif) et `Yudali` (« ici », Masta 1932, consultatif). Le titre n'est pas présenté comme une phrase attestée mot à mot.
-
-### Paroles d'apprentissage
-
-```text
-[Intro]
-Païa, aw8sis.
-Wligen, païa.
-
-[Couplet 1]
-N'wigi W8linak.
-Nd'ai wigwomek.
-N'wal8wzin, wliwni.
-N'mikwaldam. Kalaata.
-
-[Refrain]
-Païa, aw8sis, païa.
-Kiona. Kdakinna.
-Niona W8banakiak.
-Wig8damoda!
-
-[Couplet 2]
-Nikw8bi nd'aln8ba8dwa.
-N'klozi. N'mikwaldam.
-Wôbanaki mikwalda.
-Mina ida! Kalaata.
-
-[Pont]
-K'kezalmel.
-Wli nanawalmezi.
-Adio.
-Wli nanawalmezi.
-```
-
-Traçabilité : `Païa`, `Aw8sis`, `Wligen`, `Nd'ai wigwomek`, `N'wal8wzin`, `Wliwni`, `N'mikwaldam`, `Kiona`, `Kdakinna`, `Wig8damoda`, `N'klozi`, `Mina ida`, `Wli nanawalmezi` et `Adio` sont documentés dans le Manuel ou les notes actuelles du projet. `Niona W8banakiak` est une phrase de Masta (1932). `K'kezalmel` est une forme de Laurent (1884). `Nikw8bi nd'aln8ba8dwa` est conservé comme exemple pédagogique du projet à faire confirmer dans l'usage actuel.
+Retirée du dictionnaire public le 26 août 2026 en raison de problèmes importants de prononciation dans la maquette IA. Le fichier audio, la pochette, les paroles de pratique et le lien de génération ont été supprimés. Cette note conserve uniquement la trace de la décision dans le suivi d'amélioration continue; la chanson ne doit pas être republiée sans une nouvelle validation complète.
 
 ## 2. Nijia Gabriel
 
@@ -236,13 +202,12 @@ Pour chaque nouvelle génération :
 
 | Chanson | Durée du fichier publié | Génération Suno retenue |
 |---|---:|---|
-| Askwa yudali | 2:59 | https://suno.com/song/55daec54-204e-4ae6-a856-dd3a82f64464 |
 | Nijia Gabriel | 2:07 | https://suno.com/song/0d090de4-cc1f-47f7-a414-5f0400c0ee32 |
 | Nikw8bi nd'aln8ba8dwa | 1:58 | https://suno.com/song/27a8bff1-a867-4c0b-be9c-9d06e3a55e12 |
 | Wig8damoda | 2:47 | https://suno.com/song/7c394b39-e6ac-45c6-9c35-fd62ec0d61ba |
 | Kikas | 1:19 | https://suno.com/song/86979f10-61bb-459b-a5d2-d28ea9042fe4 |
 
-Les cinq fichiers ont été chargés et démarrés dans Chrome sans erreur. Un repérage automatique de la parole a aussi servi à écarter une variante qui comprimait ou omettait la finale de `Nikw8bi nd'aln8ba8dwa`. Ce repérage vérifie la présence générale des sections; il ne peut pas attester la prononciation aln8ba. Le site qualifie donc explicitement chaque piste d'« audio IA à valider ».
+Les quatre fichiers conservés ont été chargés et démarrés dans Chrome sans erreur. Un repérage automatique de la parole a aussi servi à écarter une variante qui comprimait ou omettait la finale de `Nikw8bi nd'aln8ba8dwa`. Ce repérage vérifie la présence générale des sections; il ne peut pas attester la prononciation aln8ba. Le site qualifie donc explicitement chaque piste d'« audio IA à valider ».
 
 Les anciennes maquettes aln8ba ont été retirées du dépôt public. Une sauvegarde de travail privée est conservée hors du dépôt pour documenter l'amélioration continue; elle ne doit pas être remise en ligne.
 
