@@ -21,6 +21,13 @@ test('le consentement est verifie avant toute demande de microphone', () => {
   assert.match(source, /Le microphone reste fermé/);
 });
 
+test('le bouton des cartes utilise la collecte rapide sans ouvrir de modal', () => {
+  const source = sourceBetween('async function corpusQuickStart', 'function corpusQuickStop');
+  assert.ok(source.indexOf('corpusQuickConsent()') < source.indexOf('getUserMedia'));
+  assert.match(html, /onclick="corpusQuickStart\('/);
+  assert.doesNotMatch(html, /class="ca corpus-rec[^>]+onclick="openCorpusRecorder\('/);
+});
+
 test('le collecteur reste local et necrit jamais dans Supabase', () => {
   const source = sourceBetween('// Corpus vocal prive', '//  PRATIQUE VOCALE');
   assert.doesNotMatch(source, /fetch\s*\(|saveWords\s*\(|pushPending\s*\(|SB_URL|SB_AUTH/);

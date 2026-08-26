@@ -213,6 +213,19 @@ textarea{resize:vertical;min-height:68px}
 .corpus-mini{padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text2);cursor:pointer;font:700 .7rem Georgia,serif}
 .corpus-mini:hover{border-color:var(--accent);color:var(--accent)}
 .form-rec-action{display:flex;justify-content:flex-end;align-items:center}
+.corpus-quick-dock{display:none;position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:360;width:min(760px,calc(100vw - 32px));padding:12px 14px;border:1px solid rgba(184,92,42,.42);border-radius:14px;background:var(--surface);box-shadow:0 12px 38px rgba(30,18,10,.3);align-items:center;gap:12px}
+.corpus-quick-dock.open{display:flex}
+.corpus-quick-dot{width:11px;height:11px;border-radius:50%;background:var(--green);flex:0 0 auto}
+.corpus-quick-dock.recording .corpus-quick-dot{background:var(--red);animation:pulse .8s infinite}
+.corpus-quick-copy{flex:1;min-width:0}
+.corpus-quick-copy strong,.corpus-quick-copy span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.corpus-quick-copy strong{color:var(--accent);font-size:.95rem}
+.corpus-quick-copy span{color:var(--text3);font-size:.72rem;margin-top:2px}
+.corpus-quick-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.corpus-quick-controls audio{width:190px;height:34px}
+.corpus-quick-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:none;color:var(--text3);cursor:pointer;flex:0 0 auto}
+.ca.corpus-rec.saved{color:var(--green);border-color:var(--green);background:rgba(61,122,80,.08)}
+body.music-dock-open .corpus-quick-dock{bottom:112px}
 /* correction history */
 .corr-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .corr-item{background:var(--surface2);border-radius:7px;padding:8px 12px;font-size:.8rem;color:var(--text2)}
@@ -849,6 +862,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .corpus-target{grid-template-columns:1fr}
   .corpus-actions .btn{flex:1;min-width:132px;padding:9px 11px}
   .corpus-clip{align-items:flex-start;flex-wrap:wrap}
+  .corpus-quick-dock{bottom:10px;width:calc(100vw - 16px);padding:10px;gap:8px;align-items:flex-start}
+  .corpus-quick-copy span{white-space:normal;line-height:1.25}
+  .corpus-quick-controls{width:100%;justify-content:stretch}
+  .corpus-quick-controls .btn{flex:1;min-width:105px;padding:8px 9px}
+  .corpus-quick-controls audio{width:100%;order:-1}
+  body.music-dock-open .corpus-quick-dock{bottom:128px}
   #editCorpusHeaderBtn{width:44px;min-width:44px;padding:0;font-size:0}
   #editCorpusHeaderBtn::before{content:'🎙️';font-size:18px}
   .family-form-row{grid-template-columns:max-content minmax(0,1fr) max-content;gap:3px 8px}
@@ -1578,6 +1597,7 @@ Merci... merci de m'avoir entendu</pre>
           <button class="btn btn-secondary" onclick="changePin()">🔑 Changer mot de passe</button>
           <button class="btn btn-secondary" onclick="runLinguisticAudit()" title="Analyser tous les mots selon les règles grammaticales abenakises">🔬 Audit linguistique</button>
           <button class="btn btn-primary" onclick="corpusOpenDictionary()" title="Afficher le micro sur chaque forme verte">🎙️ Enregistrer les mots verts</button>
+          <button class="btn btn-secondary" onclick="corpusExportManifest()">📥 Exporter les voix</button>
         </div>
         <div id="auditResults" style="display:none;margin-bottom:18px"></div>
         <h4 style="margin-bottom:12px;color:var(--text2)">🔤 Formes en attente d'un sens</h4>
@@ -1631,6 +1651,22 @@ Merci... merci de m'avoir entendu</pre>
     <button type="button" onclick="musicGoTo('musicListen')">🎵 Voir</button>
     <button type="button" onclick="musicDockClose()">■ Arrêter</button>
   </div>
+</div>
+
+<!-- BARRE RAPIDE DU CORPUS VOCAL (ADMIN) -->
+<div class="corpus-quick-dock" id="corpusQuickDock" role="status" aria-live="polite">
+  <span class="corpus-quick-dot" aria-hidden="true"></span>
+  <div class="corpus-quick-copy">
+    <strong id="corpusQuickWord">Prononciation</strong>
+    <span id="corpusQuickStatus">Prêt.</span>
+  </div>
+  <div class="corpus-quick-controls">
+    <button class="btn btn-danger" id="corpusQuickStop" style="display:none" onclick="corpusQuickStop()">⏹ Arrêter</button>
+    <audio id="corpusQuickPlayback" controls preload="metadata" style="display:none"></audio>
+    <button class="btn btn-secondary" id="corpusQuickRedo" style="display:none" onclick="corpusQuickRedo()">↻ Refaire</button>
+    <button class="btn btn-secondary" id="corpusQuickManage" style="display:none" onclick="corpusQuickManage()">Gérer</button>
+  </div>
+  <button class="corpus-quick-close" onclick="corpusQuickClose()" aria-label="Fermer la barre vocale">✕</button>
 </div>
 
 <!-- FAB -->
@@ -1779,7 +1815,10 @@ Merci... merci de m'avoir entendu</pre>
       <div class="corpus-privacy" id="editCorpusPanel" style="margin-top:12px;margin-bottom:16px">
         <strong style="display:block;margin-bottom:4px">Prononciation de référence avec ta voix</strong>
         <span id="editCorpusMessage" style="display:block">Enregistre cette forme séparément; le son restera privé dans le corpus de travail.</span>
-        <button class="btn btn-success" id="editCorpusBodyBtn" style="margin-top:10px" onclick="openCorpusRecorderFromEdit(event)">⏺ Enregistrer ce mot maintenant</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-success" id="editCorpusBodyBtn" onclick="openCorpusRecorderFromEdit(event)">⏺ Enregistrer ce mot maintenant</button>
+          <button class="btn btn-secondary" onclick="openCorpusRecorder(document.getElementById('e-id').value,event)">Écouter et exporter les prises</button>
+        </div>
       </div>
       <div class="frow">
         <div class="fg"><label>Traduction française *</label><input type="text" id="e-fr"></div>
@@ -2405,6 +2444,9 @@ let mediaRecorder = null, audioChunks = [], audioBlob = null;
 let corpusWord=null, corpusRecorder=null, corpusStream=null, corpusChunks=[];
 let corpusTimer=null, corpusDraftBlob=null, corpusDraftUrl='', corpusDraftMeta=null;
 let corpusRequestToken=0, corpusStarting=false;
+const corpusRecordedIds=new Set();
+let corpusQuickWord=null, corpusQuickRecorder=null, corpusQuickStream=null, corpusQuickChunks=[];
+let corpusQuickTimer=null, corpusQuickToken=0, corpusQuickDiscard=false, corpusQuickRecord=null, corpusQuickReplaceRecord=null, corpusQuickUrl='';
 let WORD_RENDER_LIMIT = 0;
 let WORD_RENDER_KEY = '';
 
@@ -2536,7 +2578,7 @@ function makeFamilyCard(members){
     <span class="form-lbl">${escH(FORM_LABELS[m.formType]||m.formType)}</span>
     <span class="form-val">${hl(m.aln8ba)}</span>
     <span class="form-tr">${hl(m.fr)}</span>
-    <span class="form-rec-action">${adminUnlocked&&isCorpusEligible(m)?`<button class="ca corpus-rec" onclick="openCorpusRecorder('${m.id}',event)" title="Enregistrer une référence vocale pour ${escH(m.aln8ba)}" aria-label="Enregistrer une référence vocale pour ${escH(m.aln8ba)}">🎙️</button>`:''}</span>
+    <span class="form-rec-action">${adminUnlocked&&isCorpusEligible(m)?`<button class="ca corpus-rec${corpusRecordedIds.has(m.id)?' saved':''}" data-corpus-word="${escH(m.id)}" onclick="corpusQuickStart('${m.id}',event)" title="Enregistrer rapidement ${escH(m.aln8ba)}" aria-label="Enregistrer rapidement ${escH(m.aln8ba)}">${corpusRecordedIds.has(m.id)?'✓':'🎙️'}</button>`:''}</span>
   </div>`).join('');
   return `<div class="card${isExp?' exp':''}" id="c${id}" onclick="toggleCard('${id}',event)">
     <div class="card-top">
@@ -2575,7 +2617,7 @@ function makeSingleCard(w){
       <div><div class="word">${hl(w.aln8ba)}</div>${cardPhonetic(w)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
         ${hasAudio?`<button class="ca audio" onclick="playAudio('${w.id}')" title="Écouter l’enregistrement natif">▶</button>`:''}
-        ${adminUnlocked&&isCorpusEligible(w)?`<button class="ca corpus-rec" onclick="openCorpusRecorder('${w.id}',event)" title="Enregistrer une référence vocale" aria-label="Enregistrer une référence vocale pour ${escH(w.aln8ba)}">🎙️</button>`:''}
+        ${adminUnlocked&&isCorpusEligible(w)?`<button class="ca corpus-rec${corpusRecordedIds.has(w.id)?' saved':''}" data-corpus-word="${escH(w.id)}" onclick="corpusQuickStart('${w.id}',event)" title="Enregistrer rapidement ${escH(w.aln8ba)}" aria-label="Enregistrer rapidement ${escH(w.aln8ba)}">${corpusRecordedIds.has(w.id)?'✓':'🎙️'}</button>`:''}
         <button class="ca" onclick="toggleFav('${w.id}')" title="Favori" id="fav${w.id}">${isFav?'⭐':'☆'}</button>
       </div>
     </div>
@@ -3850,7 +3892,9 @@ function openEdit(id){
 }
 function openCorpusRecorderFromEdit(e){
   const id=document.getElementById('e-id').value;
-  openCorpusRecorder(id,e);
+  if(!corpusQuickConsent()) return;
+  closeModal('editModal');
+  corpusQuickStart(id,e);
 }
 function saveEdit(){
   const id=document.getElementById('e-id').value;
@@ -4075,6 +4119,153 @@ function corpusRecall(key,fallback=''){
 function corpusRemember(key,value){
   try{localStorage.setItem(key,value);}catch(error){}
 }
+function corpusQuickProfile(){
+  let speaker=corpusRecall('aln8ba_corpus_speaker','spk-001');
+  let consent=corpusRecall('aln8ba_corpus_consent',corpusDefaultConsentId());
+  let dialect=corpusRecall('aln8ba_corpus_dialect','Odanak-Wolinak');
+  if(!/^spk-[a-z0-9-]{3,40}$/.test(speaker)) speaker='spk-001';
+  if(!/^consent-[a-z0-9-]{3,60}$/.test(consent)) consent=corpusDefaultConsentId();
+  if(!['Odanak','Wolinak','Odanak-Wolinak'].includes(dialect)) dialect='Odanak-Wolinak';
+  return {speaker,consent,dialect};
+}
+function corpusQuickConsent(){
+  if(corpusRecall('aln8ba_corpus_quick_consent_v1')==='yes') return true;
+  const accepted=confirm('COLLECTE VOCALE PRIVÉE\n\nLe prochain geste ouvrira ton microphone pour enregistrer un mot aln8ba. La prise sera conservée seulement dans ce navigateur pour entraîner et évaluer le futur moteur vocal. Elle ne sera ni publiée ni envoyée à Supabase.\n\nAutorises-tu cette collecte pour tes prochaines prises?');
+  if(accepted) corpusRemember('aln8ba_corpus_quick_consent_v1','yes');
+  return accepted;
+}
+function corpusQuickShow(word,message){
+  const dock=document.getElementById('corpusQuickDock');
+  document.getElementById('corpusQuickWord').textContent=word.aln8ba;
+  document.getElementById('corpusQuickStatus').textContent=message;
+  dock.classList.add('open');
+}
+function corpusQuickResetControls(){
+  const player=document.getElementById('corpusQuickPlayback');
+  player.pause(); player.removeAttribute('src'); player.load(); player.style.display='none';
+  if(corpusQuickUrl){URL.revokeObjectURL(corpusQuickUrl);corpusQuickUrl='';}
+  document.getElementById('corpusQuickStop').style.display='none';
+  document.getElementById('corpusQuickRedo').style.display='none';
+  document.getElementById('corpusQuickManage').style.display='none';
+  document.getElementById('corpusQuickDock').classList.remove('recording');
+}
+async function corpusQuickStart(id,e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  if(!adminUnlocked){toast('🔒 Ouvre d’abord le mode administrateur.');return;}
+  const word=WORDS.find(item=>item.id===id);
+  if(!isCorpusEligible(word)){toast('Cette fiche ne peut pas entrer dans le corpus vocal.');return;}
+  if(corpusQuickRecorder||corpusQuickStream){
+    if(corpusQuickWord?.id===id) corpusQuickStop();
+    else toast(`Termine d’abord l’enregistrement de « ${corpusQuickWord?.aln8ba||'ce mot'} ».`);
+    return;
+  }
+  if(corpusRecorder||corpusStarting){toast('Ferme d’abord l’enregistreur détaillé.');return;}
+  if(!corpusQuickConsent()) return;
+  if(corpusQuickReplaceRecord&&corpusQuickReplaceRecord.word_id!==id) corpusQuickReplaceRecord=null;
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){toast('Ce navigateur ne permet pas l’enregistrement vocal.');return;}
+
+  corpusQuickToken++;
+  const token=corpusQuickToken;
+  corpusQuickWord=word; corpusQuickChunks=[]; corpusQuickDiscard=false; corpusQuickRecord=null;
+  corpusQuickResetControls();
+  corpusQuickShow(word,'Ouverture du microphone…');
+  try{
+    corpusQuickStream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    if(token!==corpusQuickToken){corpusQuickStream.getTracks().forEach(track=>track.stop());corpusQuickStream=null;return;}
+    const mime=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>MediaRecorder.isTypeSupported?.(type));
+    corpusQuickRecorder=new MediaRecorder(corpusQuickStream,mime?{mimeType:mime}:undefined);
+    const recorderMime=corpusQuickRecorder.mimeType||mime||'audio/webm';
+    corpusQuickRecorder.ondataavailable=event=>{if(event.data&&event.data.size) corpusQuickChunks.push(event.data);};
+    corpusQuickRecorder.onstop=async()=>{
+      if(corpusQuickTimer){clearTimeout(corpusQuickTimer);corpusQuickTimer=null;}
+      if(corpusQuickStream) corpusQuickStream.getTracks().forEach(track=>track.stop());
+      corpusQuickStream=null;
+      document.getElementById('corpusQuickDock').classList.remove('recording');
+      document.getElementById('corpusQuickStop').style.display='none';
+      const discarded=corpusQuickDiscard;
+      corpusQuickRecorder=null;
+      if(discarded){corpusQuickChunks=[];corpusQuickDiscard=false;return;}
+      if(!corpusQuickChunks.length){
+        document.getElementById('corpusQuickStatus').textContent='Aucun son capté. Touche Refaire.';
+        document.getElementById('corpusQuickRedo').style.display='';return;
+      }
+      document.getElementById('corpusQuickStatus').textContent='Conversion et sauvegarde…';
+      try{
+        const source=new Blob(corpusQuickChunks,{type:recorderMime});
+        const wav=await corpusConvertToWav(source);
+        const profile=corpusQuickProfile();
+        const built=corpusBuildMetaFor(word,wav,profile,'Collecte rapide; prononciation validee par le locuteur.');
+        corpusQuickRecord={...built,wav,stored_at:new Date().toISOString()};
+        await corpusDbPut(corpusQuickRecord);
+        if(corpusQuickReplaceRecord&&corpusQuickReplaceRecord.id!==corpusQuickRecord.id){
+          try{await corpusDbDelete(corpusQuickReplaceRecord.id);}catch(error){}
+          corpusQuickReplaceRecord=null;
+        }
+        corpusRecordedIds.add(word.id); corpusQuickMarkWord(word.id,true);
+        corpusQuickUrl=URL.createObjectURL(wav);
+        const player=document.getElementById('corpusQuickPlayback');
+        player.src=corpusQuickUrl; player.style.display='block';
+        document.getElementById('corpusQuickRedo').style.display='';
+        document.getElementById('corpusQuickManage').style.display='';
+        document.getElementById('corpusQuickStatus').textContent='✓ Enregistré et validé. Passe au mot suivant.';
+        toast(`✓ « ${word.aln8ba} » enregistré.`);
+      }catch(error){
+        document.getElementById('corpusQuickStatus').textContent=`Prise refusée : ${error.message}`;
+        document.getElementById('corpusQuickRedo').style.display='';
+      }
+      corpusQuickChunks=[];
+    };
+    corpusQuickRecorder.start(250);
+    document.getElementById('corpusQuickDock').classList.add('recording');
+    document.getElementById('corpusQuickStop').style.display='';
+    document.getElementById('corpusQuickStatus').textContent='Enregistrement en cours. Prononce le mot puis touche Arrêter.';
+    corpusQuickTimer=setTimeout(corpusQuickStop,15000);
+  }catch(error){
+    if(corpusQuickStream) corpusQuickStream.getTracks().forEach(track=>track.stop());
+    corpusQuickStream=null; corpusQuickRecorder=null;
+    document.getElementById('corpusQuickStatus').textContent='Microphone inaccessible. Vérifie son autorisation dans Chrome.';
+  }
+}
+function corpusQuickStop(){
+  if(corpusQuickRecorder&&corpusQuickRecorder.state==='recording') corpusQuickRecorder.stop();
+}
+function corpusQuickMarkWord(id,saved){
+  document.querySelectorAll('.corpus-rec').forEach(button=>{
+    if(button.dataset.corpusWord===id){
+      button.classList.toggle('saved',saved); button.textContent=saved?'✓':'🎙️';
+    }
+  });
+}
+async function corpusQuickRedo(){
+  const word=corpusQuickWord; if(!word) return;
+  if(corpusQuickRecord) corpusQuickReplaceRecord=corpusQuickRecord;
+  corpusQuickRecord=null;
+  corpusQuickClose(false);
+  corpusQuickStart(word.id);
+}
+function corpusQuickManage(){
+  const id=corpusQuickWord?.id; corpusQuickClose(false);
+  if(id) openCorpusRecorder(id);
+}
+function corpusQuickClose(discard=true){
+  corpusQuickToken++;
+  if(corpusQuickTimer){clearTimeout(corpusQuickTimer);corpusQuickTimer=null;}
+  if(corpusQuickRecorder&&corpusQuickRecorder.state!=='inactive'){
+    corpusQuickDiscard=discard; try{corpusQuickRecorder.stop();}catch(error){}
+  }
+  if(corpusQuickStream) corpusQuickStream.getTracks().forEach(track=>track.stop());
+  corpusQuickStream=null;
+  if(discard) corpusQuickChunks=[];
+  corpusQuickResetControls();
+  document.getElementById('corpusQuickDock').classList.remove('open');
+}
+async function corpusRefreshRecordedIds(){
+  try{
+    const records=await corpusDbAll(); corpusRecordedIds.clear();
+    records.forEach(record=>{if(record.word_id) corpusRecordedIds.add(record.word_id);});
+    document.querySelectorAll('.corpus-rec').forEach(button=>corpusQuickMarkWord(button.dataset.corpusWord,corpusRecordedIds.has(button.dataset.corpusWord)));
+  }catch(error){}
+}
 function corpusSetStatus(message,state=''){
   const status=document.getElementById('corpusStatus'); if(!status) return;
   status.textContent=message;
@@ -4238,13 +4429,18 @@ function corpusSlug(value){
 }
 function corpusBuildMeta(){
   if(!corpusWord||!corpusDraftBlob) throw new Error('Aucune prise prête.');
-  const profile=corpusValidateProfile(), recordedAt=new Date().toISOString();
-  const stamp=recordedAt.replace(/\D/g,'').slice(0,17);
-  const filename=`${corpusSlug(corpusWord.aln8ba)}-${stamp}.wav`;
+  const profile=corpusValidateProfile();
   const note=(document.getElementById('corpusNotes').value||'').trim();
+  return corpusBuildMetaFor(corpusWord,corpusDraftBlob,profile,note);
+}
+function corpusBuildMetaFor(word,blob,profile,note=''){
+  if(!word||!blob) throw new Error('Aucune prise prête.');
+  const recordedAt=new Date().toISOString();
+  const stamp=recordedAt.replace(/\D/g,'').slice(0,17);
+  const filename=`${corpusSlug(word.aln8ba)}-${stamp}.wav`;
   return {
-    id:`${profile.speaker}-${corpusWord.id}-${stamp}`,
-    meta:{clip:`audio/${profile.speaker}/${filename}`,transcript:corpusWord.aln8ba,speaker_id:profile.speaker,
+    id:`${profile.speaker}-${word.id}-${stamp}`,word_id:word.id,
+    meta:{clip:`audio/${profile.speaker}/${filename}`,transcript:word.aln8ba,speaker_id:profile.speaker,
       consent_id:profile.consent,consent_scope:['asr-training','evaluation'],review_status:'approved',
       reviewer_id:`${profile.speaker}-self`,source_status:'green-current',dialect:profile.dialect,recorded_at:recordedAt,
       notes:note||'Prononciation confirmee par le locuteur apres reecoute; aucune attestation professionnelle externe.'}
@@ -4280,6 +4476,7 @@ async function corpusSaveLocal(){
     corpusDraftMeta=corpusDraftMeta||corpusBuildMeta();
     const record={...corpusDraftMeta,wav:corpusDraftBlob,stored_at:new Date().toISOString()};
     await corpusDbPut(record);
+    if(record.word_id){corpusRecordedIds.add(record.word_id);corpusQuickMarkWord(record.word_id,true);}
     corpusRemember('aln8ba_corpus_speaker',record.meta.speaker_id);
     corpusRemember('aln8ba_corpus_dialect',record.meta.dialect);
     corpusRemember('aln8ba_corpus_consent',record.meta.consent_id);
@@ -4312,7 +4509,7 @@ async function corpusPlaySaved(id){
 }
 async function corpusDeleteSaved(id){
   if(!confirm('Supprimer définitivement cette prise locale?')) return;
-  try{await corpusDbDelete(id);await corpusRenderSaved();toast('Prise locale supprimée.');}
+  try{await corpusDbDelete(id);await corpusRefreshRecordedIds();await corpusRenderSaved();toast('Prise locale supprimée.');}
   catch(error){toast('Suppression impossible.');}
 }
 async function corpusExportManifest(){
@@ -4850,6 +5047,7 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 document.addEventListener('DOMContentLoaded', async ()=>{
   initEntryWarning();
   initMusicPlayers();
+  corpusRefreshRecordedIds();
   // Chargement depuis Supabase (source unique des mots depuis le 2026-08-18)
   (async()=>{
     try{

@@ -45,12 +45,15 @@ fuite de locuteur entre les ensembles.
 
 1. Ouvrir l'administration et choisir `Enregistrer les mots verts`.
 2. Toucher le micro sur la forme voulue, ou ouvrir `Modifier le mot` puis
-   choisir `Enregistrer la voix`. Les formes historiques, orange ou en attente
-   n'ont volontairement aucun bouton de collecte.
-3. Confirmer le consentement, enregistrer une seule forme, arrêter puis
-   réécouter la prise.
-4. Choisir `Conserver et valider ma prise`. Le navigateur convertit le son en
-   WAV PCM 16 bits, mono, 16 kHz et le garde dans IndexedDB sur cet appareil.
+   choisir `Enregistrer la voix`. Le consentement rapide est demandé une seule
+   fois. Les formes historiques, orange ou en attente n'ont volontairement
+   aucun bouton de collecte.
+3. Prononcer une seule forme et toucher `Arrêter` dans la barre compacte. Le
+   navigateur convertit immédiatement le son en WAV PCM 16 bits, mono, 16 kHz,
+   le valide comme prise du locuteur et le garde dans IndexedDB sur cet appareil.
+4. Utiliser `Refaire` seulement si la prise doit être remplacée. La grande
+   fenêtre n'est plus nécessaire pour enregistrer; elle sert à écouter,
+   supprimer ou exporter les prises.
 5. Télécharger chaque WAV et `manifest.approved.jsonl`, puis placer les WAV
    sous `corpus/audio/<speaker_id>/` et le manifeste sous `corpus/`.
 

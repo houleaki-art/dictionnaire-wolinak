@@ -119,9 +119,10 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Séparation déterministe des ensembles par locuteur, jamais par clip, afin qu'une même voix ne puisse pas gonfler artificiellement les résultats de test.
 - Ajout d'un garde-fou lexical commun à JavaScript et Python : les formes courtes exigent une sortie exacte et toute ambiguïté reste non résolue.
 - Ajout d'un service d'inférence qui refuse de démarrer sans modèle entraîné, exige un consentement `one-shot`, supprime le fichier temporaire et ne produit aucun score de prononciation non calibré.
-- Seize tests automatisés couvrent les caractères aln8ba, les ambiguïtés, le consentement, le WAV, l'interface de collecte, le vocabulaire CTC et l'absence de fuite de locuteur.
+- Dix-sept tests automatisés couvrent les caractères aln8ba, les ambiguïtés, le consentement, le WAV, l'interface de collecte, le vocabulaire CTC et l'absence de fuite de locuteur.
 - Ajout d'un enregistreur administrateur directement sur chaque forme verte actuelle : consentement explicite avant l'ouverture du micro, conversion WAV mono 16 kHz, réécoute, conservation privée dans le navigateur, téléchargement et export du manifeste JSONL.
 - Ajout du même accès vocal directement dans la fenêtre `Modifier le mot`, en haut et dans le formulaire, pour que la collecte soit impossible à manquer.
+- Remplacement du parcours à plusieurs fenêtres par une collecte rapide : un toucher sur le micro démarre la prise, une petite barre fixe permet de l'arrêter, puis le WAV est validé et conservé automatiquement; le consentement n'est demandé qu'à la première prise.
 - Les prises conservées par Guillaum sont marquées comme validées par le locuteur après réécoute; cette validation sert au corpus de travail sans être présentée comme une attestation professionnelle externe.
 
 ## Avertissement public
