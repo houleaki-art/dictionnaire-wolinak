@@ -1038,7 +1038,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
     </div>
     <div style="display:flex;gap:12px">
-      <button class="btn btn-secondary" onclick="fcListen()">🔊 Écouter</button>
+      <button class="btn btn-secondary" id="fcListenBtn" onclick="fcListen()" style="display:none">▶ Écouter l’enregistrement</button>
       <button class="btn btn-secondary" onclick="fcNext()">Mot suivant →</button>
     </div>
   </div>
@@ -2462,7 +2462,7 @@ function makeFamilyCard(members){
     <div class="card-top">
       <div><div class="word">${hl(base.aln8ba)}</div>${cardPhonetic(base)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
-        <button class="ca audio" onclick="playAudio('${id}')" title="${base.audio?'Écouter l’enregistrement':'Écouter le guide vocal approximatif'}">${base.audio?'▶':'🔊'}</button>
+        ${base.audio?`<button class="ca audio" onclick="playAudio('${id}')" title="Écouter l’enregistrement natif">▶</button>`:''}
         <button class="ca" onclick="toggleFav('${id}')" title="Favori" id="fav${id}">${isFav?'⭐':'☆'}</button>
       </div>
     </div>
@@ -2494,7 +2494,7 @@ function makeSingleCard(w){
     <div class="card-top">
       <div><div class="word">${hl(w.aln8ba)}</div>${cardPhonetic(w)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
-        <button class="ca audio" onclick="playAudio('${w.id}')" title="${hasAudio?'Écouter l’enregistrement':'Écouter le guide vocal approximatif'}">${hasAudio?'▶':'🔊'}</button>
+        ${hasAudio?`<button class="ca audio" onclick="playAudio('${w.id}')" title="Écouter l’enregistrement natif">▶</button>`:''}
         <button class="ca" onclick="toggleFav('${w.id}')" title="Favori" id="fav${w.id}">${isFav?'⭐':'☆'}</button>
       </div>
     </div>
@@ -2583,9 +2583,7 @@ async function playAudio(id){
   }
   if(w&&w.audio){
     try{await new Audio(w.audio).play();}catch(e){audioPlaybackBlocked();}
-    return;
   }
-  if(w) voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
 }
 function removeAudio(id){
   if(!confirm('Supprimer cet enregistrement audio?')) return;
@@ -2876,11 +2874,13 @@ function showFC(){
   document.getElementById('fcE').textContent=w.en||'';
   document.getElementById('fcProg').textContent=`Carte ${(S.fcIdx%S.fcWords.length)+1} / ${S.fcWords.length}`;
   document.getElementById('fcCard').classList.remove('flip');
+  const listenBtn=document.getElementById('fcListenBtn');
+  if(listenBtn) listenBtn.style.display=w.audio?'':'none';
 }
 function fcFlip(){ document.getElementById('fcCard').classList.toggle('flip'); }
 function fcListen(){
   const w=S.fcWords[S.fcIdx%S.fcWords.length]; if(!w) return;
-  if(w.audio) new Audio(w.audio).play(); else voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
+  if(w.audio) new Audio(w.audio).play();
 }
 function fcNext(){ S.fcIdx++; if(S.fcIdx>=S.fcWords.length){S.fcWords.sort(()=>Math.random()-.5);S.fcIdx=0;toast('🎉 Tour complet!');} showFC(); }
 
@@ -3963,6 +3963,7 @@ function stopRec(){
 // ══════════════════════════════════════════════════════════
 //  PRATIQUE VOCALE — écoute, micro et comparaison phonétique
 // ══════════════════════════════════════════════════════════
+const MODULE_VOICE_PUBLIC=true;
 let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
 let voiceRecognition=null, voiceRecognitionTimer=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceFallbackUrl=null, voiceFallbackDiscard=false, voiceSpeakTimer=null;
 
@@ -3975,7 +3976,9 @@ function voiceDocumentedCueForLabel(value){
     "nda nd'aln8ba8dwawi":'nda nd-al-non-ba-odwa-oué',
     'aln8ba8dwaw8gan':'al-non-ba-odwa-wongan',
     'alsig8ntegw':'al-sé-gonne-tègue',
-    'alsigôntegw':'al-sé-gonne-tègue'
+    'alsigôntegw':'al-sé-gonne-tègue',
+    'askwa':'as-kwa',
+    '8ka':'on-ka'
   };
   return cues[key]||'';
 }
@@ -4077,10 +4080,20 @@ function voiceAffirmativeToFrenchSpeech(value,label){
   return value;
 }
 function voiceDocumentedWordToFrenchSpeech(value,label){
+  const word=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase();
+  // French "quois" keeps SKWA continuous and prevents the synthetic voice
+  // from inserting the false release heard as "aska-gwa".
+  if(word==='askwa') return 'asquois';
+  // Masta's 8ka also appears with the rounded nasal spelling ôka. "onca"
+  // keeps 8 + K + A continuous instead of producing two hard syllables AN-KA.
+  if(word==='8ka') return 'onca';
+  // A final C is pronounced K by the French voice without adding the false
+  // final vowel heard when Aaok was sent as "aaoque".
+  if(word==='aaok') return 'aaoc';
   // Technical French spelling: keep Almos as one word with audible A, closed O and final S.
-  if((label||'').trim().toLowerCase()==='almos') return 'almôsse';
+  if(word==='almos') return 'almôsse';
   // French AU elicits the documented O while preserving one continuous word and final A.
-  if((label||'').trim().toLowerCase()==='kiona') return 'kiauna';
+  if(word==='kiona') return 'kiauna';
   // Reinforce only a documented ME syllable. Closed groups such as MEL, MEN,
   // MEK and MES keep their own cue instead of being guessed as an accented E.
   return value.replace(/(^|[-\s])me(?=$|[-\s])/gi,'$1mé');
@@ -4200,6 +4213,7 @@ function voiceAdvice(item,result){
   return `Réécoute le guide « ${item.cue} » et prononce une syllabe à la fois.`;
 }
 function voiceSpeak(label,cue,announce=true,slow=false){
+  if(!MODULE_VOICE_PUBLIC) return;
   if(!('speechSynthesis' in window)){
     audioPlaybackBlocked('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
     return;
@@ -4406,6 +4420,7 @@ function aprVoiceTargets(m,lecHtml){
     accepted:[w.phonetic||''].filter(Boolean),audio:w.audio||null}));
 }
 function aprVoiceStart(){
+  if(!MODULE_VOICE_PUBLIC) return;
   if(!APR_VOICE_READY.length){toast('Aucun exemple vocal actuel dans ce module.');return;}
   VOICE_ITEMS=APR_VOICE_READY.slice(); VOICE_INDEX=0; VOICE_RESULTS=[];
   aprVoiceRender();
@@ -6627,7 +6642,7 @@ function aprLecon(i){
       <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
         ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
       <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        ${APR_VOICE_READY.length?`<button class="aprbtn" style="background:var(--green)" onclick="aprVoiceStart()">
+        ${MODULE_VOICE_PUBLIC&&APR_VOICE_READY.length?`<button class="aprbtn" style="background:var(--green)" onclick="aprVoiceStart()">
           🎙️ Pratique vocale (${APR_VOICE_READY.length})</button>`:''}
         ${m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
           onclick="aprFC('${m.cat}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
@@ -7266,7 +7281,7 @@ function exVocab(){
   exCadre(`
     <div class="jprompt"><div class="q">${sens?'Que veut dire ce mot?':'Quel mot dit cela?'}</div>
       <div class="w">${sens?bon.aln8ba:bon.fr}</div>
-      ${sens?'<button class="voice-btn" style="margin-top:12px" onclick="voiceListenExercise()">🔊 Écouter</button>':''}</div>
+      ${sens&&MODULE_VOICE_PUBLIC?'<button class="voice-btn" style="margin-top:12px" onclick="voiceListenExercise()">🔊 Écouter</button>':''}</div>
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="exRepond(${ib},${i},exRetVocab())">${
       sens?w.fr:`<span class="al">${w.aln8ba}</span>`}</button>`).join('')}</div>`);
 }
