@@ -1159,7 +1159,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </section>
     <nav class="music-nav" aria-label="Sections des chansons">
       <button type="button" onclick="musicGoTo('musicListen')">🎧 Écouter les chansons</button>
-      <button type="button" onclick="musicGoTo('musicPractice')">🛠️ Suivre la reconstruction</button>
+      <button type="button" onclick="musicGoTo('musicPractice')">📝 Suivre les paroles sourcées</button>
     </nav>
     <div class="music-warning" role="note">
       <strong>À écouter comme des œuvres artistiques en évolution.</strong> Ces maquettes ne constituent ni une attestation linguistique, ni l'enregistrement d'une locutrice ou d'un locuteur, ni un modèle officiel de prononciation. Suno chante le texte qui lui est fourni : il ne le traduit pas et ne valide ni sa graphie ni sa grammaire. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
@@ -1168,14 +1168,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <strong>© 2026 Guillaum Labrecque-Houle — écoute seulement.</strong> Aucun téléchargement, aucune copie, aucune réutilisation, aucune modification et aucune redistribution ne sont autorisés. La mise en écoute sur ce site n'accorde aucune licence sur les paroles, les compositions, les enregistrements ou leur présentation.
     </div>
     <div class="music-warning" role="status">
-      <strong>Révision linguistique prioritaire en cours.</strong> Les cinq anciennes maquettes contenant de l'aln8ba ont été retirées de l'écoute et de la pratique le 25 août 2026. Elles seront remises en ligne une par une seulement après vérification des paroles, de la négation, des conjugaisons et de la prononciation. La chanson française demeure disponible.
+      <strong>Reconstructions du 25 août 2026.</strong> Les cinq anciennes maquettes contenant des formes douteuses ont été retirées. Les nouvelles versions emploient des phrases ou des mots documentés et séparent la graphie d'apprentissage du guide phonétique donné à la voix artificielle. Ce contrôle réduit les erreurs, mais ne transforme pas la voix Suno en modèle officiel de prononciation.
     </div>
     <div class="music-grid" id="musicListen">
-      <article class="music-card" hidden>
+      <article class="music-card">
         <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la maquette Askwa yudali">
         <h3>Askwa yudali</h3>
-        <span class="music-badge">Maquette IA · non studio</span>
+        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 2:59</span>
         <audio id="musicAskwa" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Askwa yudali" oncontextmenu="return false" onended="musicStopped('musicAskwa','Lecture terminée')">
+          <source src="audio/askwa-yudali-v2.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
         <div class="music-controls" aria-label="Commandes pour Askwa yudali">
@@ -1187,11 +1188,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceAskwa')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card" hidden>
+      <article class="music-card">
         <img class="music-cover" src="audio/nijia-gabriel.jpg" loading="lazy" alt="Pochette de la maquette Nijia Gabriel">
         <h3>Nijia Gabriel</h3>
-        <span class="music-badge">Maquette IA · non studio</span>
+        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 2:07</span>
         <audio id="musicNijia" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nijia Gabriel" oncontextmenu="return false" onended="musicStopped('musicNijia','Lecture terminée')">
+          <source src="audio/nijia-gabriel-v2.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
         <div class="music-controls" aria-label="Commandes pour Nijia Gabriel">
@@ -1203,14 +1205,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNijia')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card" hidden>
-        <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la maquette Nikwonbi N'Wonolonwzé">
-        <h3>Nikwonbi N'Wonolonwzé</h3>
-        <span class="music-badge">Maquette IA · non studio · 2:37</span>
-        <audio id="musicNikwonbi" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nikwonbi N'Wonolonwzé" oncontextmenu="return false" onended="musicStopped('musicNikwonbi','Lecture terminée')">
+      <article class="music-card">
+        <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la maquette Nikw8bi nd'aln8ba8dwa">
+        <h3>Nikw8bi nd'aln8ba8dwa</h3>
+        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 1:58</span>
+        <audio id="musicNikwonbi" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nikw8bi nd'aln8ba8dwa" oncontextmenu="return false" onended="musicStopped('musicNikwonbi','Lecture terminée')">
+          <source src="audio/nikw8bi-aln8ba8dwa-v2.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
-        <div class="music-controls" aria-label="Commandes pour Nikwonbi N'Wonolonwzé">
+        <div class="music-controls" aria-label="Commandes pour Nikw8bi nd'aln8ba8dwa">
           <button type="button" onclick="musicStart('musicNikwonbi')">▶ Démarrer</button>
           <button type="button" onclick="musicPause('musicNikwonbi')">Ⅱ Pause</button>
           <button type="button" onclick="musicStop('musicNikwonbi')">■ Arrêter</button>
@@ -1219,14 +1222,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNikwonbi')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card" hidden>
-        <img class="music-cover" src="audio/wla-won-gan-woban-kizoss.jpg" loading="lazy" alt="Pochette du mashup Wla Won Gan x Wô-ban Ki-zoss">
-        <h3>Wla Won Gan x Wô-ban Ki-zoss (Mashup)</h3>
-        <span class="music-badge">Mashup IA · non studio · 3:49</span>
-        <audio id="musicWlaWonGan" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter le mashup Wla Won Gan x Wô-ban Ki-zoss" oncontextmenu="return false" onended="musicStopped('musicWlaWonGan','Lecture terminée')">
+      <article class="music-card">
+        <img class="music-cover" src="audio/wla-won-gan-woban-kizoss.jpg" loading="lazy" alt="Pochette de la maquette Wig8damoda">
+        <h3>Wig8damoda</h3>
+        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 2:07</span>
+        <audio id="musicWlaWonGan" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Wig8damoda" oncontextmenu="return false" onended="musicStopped('musicWlaWonGan','Lecture terminée')">
+          <source src="audio/wig8damoda-v2.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
-        <div class="music-controls" aria-label="Commandes pour Wla Won Gan x Wô-ban Ki-zoss">
+        <div class="music-controls" aria-label="Commandes pour Wig8damoda">
           <button type="button" onclick="musicStart('musicWlaWonGan')">▶ Démarrer</button>
           <button type="button" onclick="musicPause('musicWlaWonGan')">Ⅱ Pause</button>
           <button type="button" onclick="musicStop('musicWlaWonGan')">■ Arrêter</button>
@@ -1235,14 +1239,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceWlaWonGan')">📝 Pratiquer avec les paroles</button>
         <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
       </article>
-      <article class="music-card" hidden>
-        <img class="music-cover" src="audio/kikas-mski-koua.jpg" loading="lazy" alt="Pochette de la maquette Kikas, version Mski Koua">
-        <h3>Kikas (Mski Koua Version)</h3>
-        <span class="music-badge">Maquette IA · non studio · 3:16</span>
-        <audio id="musicKikas" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Kikas, version Mski Koua" oncontextmenu="return false" onended="musicStopped('musicKikas','Lecture terminée')">
+      <article class="music-card">
+        <img class="music-cover" src="audio/kikas-mski-koua.jpg" loading="lazy" alt="Pochette de la maquette Kikas">
+        <h3>Kikas</h3>
+        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 1:19</span>
+        <audio id="musicKikas" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Kikas" oncontextmenu="return false" onended="musicStopped('musicKikas','Lecture terminée')">
+          <source src="audio/kikas-v2.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
-        <div class="music-controls" aria-label="Commandes pour Kikas, version Mski Koua">
+        <div class="music-controls" aria-label="Commandes pour Kikas">
           <button type="button" onclick="musicStart('musicKikas')">▶ Démarrer</button>
           <button type="button" onclick="musicPause('musicKikas')">Ⅱ Pause</button>
           <button type="button" onclick="musicStop('musicKikas')">■ Arrêter</button>
@@ -1271,12 +1276,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <section class="music-practice-section" id="musicPractice" aria-labelledby="musicPracticeTitle">
       <div class="music-practice-head">
-        <h3 id="musicPracticeTitle">🛠️ Reconstruction des chansons aln8ba</h3>
-        <p>Les anciens textes aln8ba ont été retirés de la pratique parce que plusieurs formes demandent une nouvelle vérification linguistique. Chaque chanson sera rétablie seulement avec une fiche de sources, une graphie d'apprentissage distincte du guide phonétique de la voix artificielle et un nouvel audio contrôlé. La pratique française reste accessible ci-dessous.</p>
+        <h3 id="musicPracticeTitle">📝 Textes sourcés des nouvelles maquettes</h3>
+        <p>Le texte affiché emploie la graphie du dictionnaire ou conserve explicitement la graphie de sa source. Suno reçoit un guide phonétique séparé qui n'est pas montré comme orthographe. Une juxtaposition poétique de mots attestés n'est pas une traduction littérale, et ces maquettes demeurent sujettes à la révision de personnes qualifiées.</p>
       </div>
 
-      <details class="song-lyrics" id="practiceAskwa" hidden>
-        <summary>Askwa yudali · texte de travail en aln8ba · non validé</summary>
+
+      <details class="song-lyrics" id="practiceAskwa">
+        <summary>Askwa yudali · paroles reconstruites et sourcées · audio IA à valider</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Askwa yudali">
             <strong>🎧 Askwa yudali</strong>
@@ -1287,35 +1293,34 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
             </div>
             <div class="music-status" id="musicAskwaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-sequence"><strong>Ordre d'écoute :</strong> Couplet 1 → Refrain → Couplet 2 → Refrain → Couplet 3 → Refrain → Pont.</div>
-          <div class="lyrics-note"><strong>Graphie de travail de l'auteur.</strong> La maquette corrigée emploie parfois une écriture phonétique différente uniquement pour guider la voix artificielle.</div>
+          <div class="lyrics-note"><strong>Statut du titre.</strong> « Askwa » et « Yudali » sont deux mots consultatifs de Masta (1932). Leur réunion est un titre poétique de l'auteur, pas une phrase retrouvée mot à mot.</div>
+          <div class="lyrics-note"><strong>Traçabilité.</strong> Les lignes actuelles viennent du Manuel et des notes du projet. « Niona W8banakiak » vient de Masta (1932) et « K'kezalmel » de Laurent (1884); ces formes historiques demeurent signalées.</div>
           <div class="lyrics-grid">
-            <div class="lyrics-part"><h4>Couplet 1</h4><p>N'wawaldamen talé kd-aï, awonsis.
-Askwa yudali kd-aï, wigwonmek.
-Nopaiwé n'alosa, kanwa n'mikwaldam.
-Nda n'wanaldamowen. Kalaata.</p></div>
-            <div class="lyrics-part"><h4>Refrain</h4><p>Païa, awonsis, païa.
-K'wlipaïon, k'wlipaïon.
-Kiona nikwonbi, kiona mina.
-Askwa yudali. Kalaata.</p></div>
-            <div class="lyrics-part"><h4>Couplet 2</h4><p>Kd'askawiho pita akwonbi, awonsis.
-Awani nda kd'aliwiziw, awani nda k'kloziw.
-Kanwa nikwonbi n'wadzonem kdakinna.
-Ta nikwonbi nd'alnonba-odwa.</p></div>
-            <div class="lyrics-part"><h4>Couplet 3</h4><p>Yudali skweda, yudali pakholigan.
-Yudali nidonbak, yudali kdakinna.
-Kd'aliwizé nikwonbi. Kd'alnonba.
-K'kezalmel, awonsis. K'kezalmel.</p></div>
-            <div class="lyrics-part"><h4>Pont</h4><p>Nda kd'alosaw mina, awonsis.
-Nda n'wanalmu madzimiwé.
-Wli nanawalmezé. N'nanawalmel.
-Askwa yudali nd-aïbena.</p></div>
+            <div class="lyrics-part"><h4>Intro</h4><p>Païa, aw8sis.
+Wligen, païa.</p></div>
+            <div class="lyrics-part"><h4>Couplet 1</h4><p>N'wigi W8linak.
+Nd'ai wigwomek.
+N'wal8wzin, wliwni.
+N'mikwaldam. Kalaata.</p></div>
+            <div class="lyrics-part"><h4>Refrain</h4><p>Païa, aw8sis, païa.
+Kiona. Kdakinna.
+Niona W8banakiak.
+Wig8damoda!</p></div>
+            <div class="lyrics-part"><h4>Couplet 2</h4><p>Nikw8bi nd'aln8ba8dwa.
+N'klozi. N'mikwaldam.
+Wôbanaki mikwalda.
+Mina ida! Kalaata.</p></div>
+            <div class="lyrics-part"><h4>Pont</h4><p>K'kezalmel.
+Wli nanawalmezi.
+Adio.
+Wli nanawalmezi.</p></div>
           </div>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceNijia" hidden>
-        <summary>Nijia Gabriel · texte de travail en aln8ba · non validé</summary>
+
+      <details class="song-lyrics" id="practiceNijia">
+        <summary>Nijia Gabriel · paroles reconstruites et sourcées · audio IA à valider</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nijia Gabriel">
             <strong>🎧 Nijia Gabriel</strong>
@@ -1326,61 +1331,37 @@ Askwa yudali nd-aïbena.</p></div>
             </div>
             <div class="music-status" id="musicNijiaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-sequence"><strong>Ordre d'écoute :</strong> Ouverture → Couplet 1 → Couplet 2 → Couplet 3 → Couplet 4 → Refrain → Couplet 5 → Appel et réponse → Refrain → Finale.</div>
-          <div class="lyrics-note"><strong>Graphie de travail affichée :</strong> « Nijia » et « W8banaki » sont conservés ici; la maquette Suno avait reçu « Nidzia » et « Wonbanaki » comme indications phonétiques pour la voix artificielle.</div>
+          <div class="lyrics-note"><strong>Sens du titre.</strong> « Nijia » est la forme documentée pour « mon frère » lorsqu'un homme parle de son frère.</div>
+          <div class="lyrics-note"><strong>Traçabilité.</strong> « K'milaloka », « K'milaloka kizi » et « K'pegwado » viennent des enseignements actuels consignés dans le projet. « K'kezalmel » vient de Laurent (1884). Aucun négatif n'est reconstruit.</div>
           <div class="lyrics-grid">
-            <div class="lyrics-part"><h4>Ouverture</h4><p>Nijia... Nijia...</p></div>
-            <div class="lyrics-part"><h4>Couplet 1</h4><p>Nijia! Nijia!
-Nokmes, Nmahom, Nmitongwes
-Alnonbak akwonbi
-Kd'alnonba-odwa, Nijia
-Kalaata</p></div>
-            <div class="lyrics-part"><h4>Couplet 2</h4><p>Nda n'kloziw, nda n'wawaldamowen
-Nda n'mikwaldamowen
-Wanaldamwongan, wanaldamwongan
-Ndakagwi n'wadzonem
-Nda... nda... nda...</p></div>
-            <div class="lyrics-part"><h4>Couplet 3</h4><p>Molian kd'aloka, Nijia
-Awikhiganal, klozwonganal
-Kd'agakimzo tebokw ta kizokw
-Sigwan, Niben, Tagwongo, Pebon
-Kd'aloka pita! Kalaata!</p></div>
-            <div class="lyrics-part"><h4>Couplet 4</h4><p>Kd'aliwizé, kd'alnonba-odwa
-Kmilaloka klozwongan
-Kmilaloka Alnonba-Odwawongan
-Nijia, kmilaloka nhaga
-Kalaata, kalaata</p></div>
-            <div class="lyrics-part"><h4>Refrain</h4><p>Nikwonbi n'klozé!
-Nikwonbi n'mikwaldam!
-Nikwonbi nd'aliwizé!
-Nikwonbi n'W8banaki!
-Meliki! Meliki! Kalaata!</p></div>
-            <div class="lyrics-part"><h4>Couplet 5</h4><p>Wliwné wdzi k'olidahawongan
-Ktsi wliwné, Nijia
-K'kezalmel, Nijia
-Nda n'wanaldamowen
-Kalaata</p></div>
-            <div class="lyrics-part"><h4>Appel et réponse</h4><p>Kiona alnonbak!
-Hon, hon, hon, hon
-Kiona W8banakiak!
-Hon, hon, hon, hon
-Odanak, Wôlinak!
-Hon, hon, hon, hon
-Kdakinna! Kdakinna!
-Hon, hon, hon, hon</p></div>
-            <div class="lyrics-part"><h4>Finale</h4><p>Askwa yudali nd-aïbena
-Wli agakimzowongan, Nijia
-Wli nanawalmezi
-Kalaata.</p></div>
+            <div class="lyrics-part"><h4>Intro</h4><p>Nijia Gabriel.
+Wliwni, nijia.</p></div>
+            <div class="lyrics-part"><h4>Couplet 1</h4><p>K'milaloka.
+K'milaloka kizi.
+K'pegwado.
+Wligen. Kalaata.</p></div>
+            <div class="lyrics-part"><h4>Refrain</h4><p>Nijia Gabriel.
+K'kezalmel.
+N'mikwaldam.
+Wli nanawalmezi.</p></div>
+            <div class="lyrics-part"><h4>Couplet 2</h4><p>Niona W8banakiak.
+Odanak. W8linak.
+Ndakina. Kdakinna.
+Wig8damoda!</p></div>
+            <div class="lyrics-part"><h4>Finale</h4><p>Wliwni, nijia.
+Kchi wliwni.
+Adio.
+Wli nanawalmezi.</p></div>
           </div>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceNikwonbi" hidden>
-        <summary>Nikwonbi N'Wonolonwzé · texte de travail en aln8ba · non validé</summary>
+
+      <details class="song-lyrics" id="practiceNikwonbi">
+        <summary>Nikw8bi nd'aln8ba8dwa · paroles pédagogiques reconstruites · audio IA à valider</summary>
         <div class="lyrics-body">
-          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nikwonbi N'Wonolonwzé">
-            <strong>🎧 Nikwonbi N'Wonolonwzé</strong>
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nikw8bi nd'aln8ba8dwa">
+            <strong>🎧 Nikw8bi nd'aln8ba8dwa</strong>
             <div class="lyrics-player-controls">
               <button type="button" onclick="musicStart('musicNikwonbi')">▶ Démarrer</button>
               <button type="button" onclick="musicPause('musicNikwonbi')">Ⅱ Pause</button>
@@ -1388,79 +1369,41 @@ Kalaata.</p></div>
             </div>
             <div class="music-status" id="musicNikwonbiPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-note"><strong>Texte de travail exact de la maquette.</strong> Il est reproduit pour suivre la chanson; il n'est pas présenté comme une validation linguistique professionnelle.</div>
-          <pre class="song-lyrics-raw">[Intro]
-Ôda n'kelozowé
-Ôda n'lintowé
-Ôda n'pemegonwé
-Ôda n'tagamonwé
-Ôda nd-aïw
-
-[Verse 1]
-N'kwilawato
-N'kwilawato
-N'kwilawatob Aki
-N'kwilawatob Sibo
-N'kwilawatob Wizowongan-al
-
-[Verse 2]
-N'masko!
-N'maskob Pakholigan
-N'maskob Alnonba-Odwawongan
-N'maskob Kdakinna
-Kalaata
-
-[Chorus]
-N'tagamon. N'tagamon.
-N'linto. N'kelozo.
-N'pemegon. N'namiho.
-N'nodam. N'tapsedo.
-Nikwonbi n'wonolonwzé
-Kalaata
-
-[Verse 3]
-Ôda n'wanaldamowen
-N'nanawaldam Wizowongan-al
-N'nanawaldam Kdakinna
-N'awikhon
-K'kezalmelba
-
-[Verse 4]
-N'kikadzi
-N'lintodzi
-N'agakidodzi Awonzsisak
-N'mildodzi Alnonbak
-N'wijokadzi Nidonbak
-
-[Chorus]
-N'tagamon. N'tagamon.
-N'linto. N'kelozo.
-N'pemegon. N'namiho.
-N'nodam. N'tapsedo.
-Nikwonbi n'wonolonwzé
-Kalaata
-
-[Verse 5]
-N'lintobna
-N'pemegonbna
-N'tagamonbna
-N'kikabna
-Askwa yudali nd-aïbena
-Kalaata
-
-[Outro]
-Kizé n'kwilawato
-Kizé n'masko
-Nikwonbi n'tagamon
-Adio, wli nanawalmezi</pre>
+          <div class="lyrics-note"><strong>Ancien titre abandonné.</strong> « Nikwonbi N'Wonolonwzé » n'avait pas de traçabilité suffisante. Le nouveau titre reprend l'exemple pédagogique « Maintenant je parle abénakis ».</div>
+          <div class="lyrics-note"><strong>Point de prudence.</strong> La paire « Nda nd'aln8ba8dwawi / Nikw8bi nd'aln8ba8dwa » reste une forme pédagogique du projet à faire confirmer. Les quatre phrases du deuxième couplet sont les exemples documentés du Manuel pour les objets animés et inanimés.</div>
+          <div class="lyrics-grid">
+            <div class="lyrics-part"><h4>Intro</h4><p>Nikw8bi.
+Mina ida!</p></div>
+            <div class="lyrics-part"><h4>Couplet 1</h4><p>Nda nd'aln8ba8dwawi.
+Nikw8bi nd'aln8ba8dwa.
+N'klozi.
+N'mikwaldam.</p></div>
+            <div class="lyrics-part"><h4>Refrain</h4><p>Aln8ba8dwaw8gan.
+Nikw8bi nd'aln8ba8dwa.
+Wli agakimzow8gan!
+Mina ida!</p></div>
+            <div class="lyrics-part"><h4>Animé et inanimé</h4><p>N'namih8 sips.
+N'namito awikhigan.
+N'mow8 aples.
+N'miji wasawas.</p></div>
+            <div class="lyrics-part"><h4>Couplet 3</h4><p>Nd'aliwizi Guillaum.
+N'wigi W8linak.
+Nd'ai wigwomek.
+N'wal8wzin.</p></div>
+            <div class="lyrics-part"><h4>Finale</h4><p>Wôbanaki mikwalda.
+N'mikwaldam.
+Wli nanawalmezi.
+Adio.</p></div>
+          </div>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceWlaWonGan" hidden>
-        <summary>Wla Won Gan x Wô-ban Ki-zoss · guide de la maquette</summary>
+
+      <details class="song-lyrics" id="practiceWlaWonGan">
+        <summary>Wig8damoda · paroles reconstruites et sourcées · audio IA à valider</summary>
         <div class="lyrics-body">
-          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Wla Won Gan x Wô-ban Ki-zoss">
-            <strong>🎧 Wla Won Gan x Wô-ban Ki-zoss</strong>
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Wig8damoda">
+            <strong>🎧 Wig8damoda</strong>
             <div class="lyrics-player-controls">
               <button type="button" onclick="musicStart('musicWlaWonGan')">▶ Démarrer</button>
               <button type="button" onclick="musicPause('musicWlaWonGan')">Ⅱ Pause</button>
@@ -1468,154 +1411,41 @@ Adio, wli nanawalmezi</pre>
             </div>
             <div class="music-status" id="musicWlaWonGanPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-note"><strong>Guide phonétique de la voix artificielle.</strong> Les traits d'union et certaines graphies servent uniquement à guider Suno; ils ne doivent pas être copiés comme graphie officielle.</div>
-          <pre class="song-lyrics-raw">[Intro]
-hand drum heartbeat alone, morning birds, distant river, voice slowly from silence
-
-Kwa-i…
-Kwa-i…
-Wô-ban…
-
-[Verse 1]
-Kwa-i, Ki-zoss —
-Wô-ban ki-zi
-Ki-zoss pa-mi-doo —
-Kiz-gad !
-Sip-sak lin-to —
-A-wan wli-gen
-Kze-lom-sen —
-So-glon —
-Ma-na-gwon !
-
-[Pre-Chorus]
-O-hoo ! O-hoo !
-Ka-la-ta !
-Cha-ga, Al-non-bak —
-cha-ga !
-
-[Chorus]
-Wla-won-gan ! Pak-ho-li-gan !
-Ki-o-na — mi-na — Nda-ki-na !
-Wla-won-gan ! Pak-ho-li-gan !
-Wli-gen mzé-wé — pam-kiz-gak !
-
-[Verse 2]
-Mge-so pa-mi-doo —
-Ka-ka-sakw
-Mol-sem —
-A-was-soss —
-T-ma-kwa —
-Tol-ba
-Se-no-mo-zi —
-Mas-kwa-mo-zi
-Mo-lo-dagw — ta
-K-tschi Ko-a !
-
-[Pre-Chorus 2]
-Mzé-wé ! Mzé-wé !
-A-ki mi-na !
-Ka-la-ta, Al-non-bak —
-Ka-la-ta !
-
-[Chorus]
-Wla-won-gan ! Pak-ho-li-gan !
-Ki-o-na — mi-na — Nda-ki-na !
-Wla-won-gan ! Pak-ho-li-gan !
-Wli-gen mzé-wé — pam-kiz-gak !
-
-[Verse 3]
-Wô-li-nak-tegw —
-Si-bo-bi
-Sol-gon-bi —
-Non-bi wli-gen !
-Wat-zo —
-So-bagw —
-O-da-nak
-Wig-wom wli-gen —
-Gok-tw !
-
-[Verse 4 — call and response, group answers]
-Ni-o-na Wa-Ban-A-ki-ak !
-Hon, hon, hon, hon
-Kda-kin-na !
-Hon, hon, hon, hon
-Wô-li-nak — O-da-nak !
-Hon, hon, hon, hon
-Ni-o-na ! Ni-o-na !
-Hon, hon, hon, hon
-
-[Bridge]
-Sig-wan… Ni-ben… Tag-no-go… Pe-bon…
-Wa-zon-li — So-glon — Pkwa-mi
-Ta mi-na Ki-zoss —
-mi-na Wô-ban
-Spem-ki — A-ki —
-Wa-Ban-A-ki !
-
-[Breakdown]
-drum stops, voice alone, almost whispered
-
-Nok-mess…
-Nma-houm…
-Ni-ga-wess…
-Nmi-tog-wes…
-
-Ô-da n'wa-nal-da-mo-wen…
-
-[Verse 5]
-drum returns, full force
-
-Nok-mess a-gaskw —
-Nma-houm
-Ni-ga-wess —
-Nmi-tog-wes —
-Ni-do-bem
-N-ki-ka pam-kiz-gak —
-sa-ba !
-Sig-na-ga —
-A-won-sis —
-mzé-wé !
-
-[Verse 6]
-K'ke-zal-mel-ba !
-K'ke-zal-mel-ba !
-Ni-don-bak — Al-non-bak —
-mzé-wé !
-Ki-o-na mi-na —
-As-kwa yu-da-li !
-Ka-la-ta ! Ka-la-ta !
-
-[Final Chorus]
-everything, group vocals, loudest
-
-Wla-won-gan ! Pak-ho-li-gan !
-Ki-o-na — mi-na — Nda-ki-na !
-Wla-won-gan ! Pak-ho-li-gan !
-Wli-gen mzé-wé — pam-kiz-gak !
-
-Wla-won-gan ! Pak-ho-li-gan !
-Kda-kin-na — mi-na — Nda-ki-na !
-Wô-ban — Ki-zoss — Wli-gen !
-Wa-Ban-A-ki-ak — Nda-ki-na !
-
-Hon, hon, hon, hon
-Hon, hon, hon, hon
-
-[Outro]
-drum slows, birds return
-
-Wli-gen mzé-wé…
-mi-na…
-mi-na…
-Wô-ban…</pre>
+          <div class="lyrics-note"><strong>Nouveau titre.</strong> L'ancien guide phonétique « Wla Won Gan x Wô-ban Ki-zoss » est abandonné. « Wig8damoda! » est l'impératif collectif documenté « Réjouissons-nous! ».</div>
+          <div class="lyrics-note"><strong>Construction poétique.</strong> Les noms de lieux, de saisons et de nature sont des appels indépendants; leur juxtaposition ne constitue pas une traduction littérale. « Lintow8gan », « Pemegaw8gan » et « N'pemeg8 » viennent de Laurent (1884).</div>
+          <div class="lyrics-grid">
+            <div class="lyrics-part"><h4>Intro</h4><p>Kwaï mziwi!
+Wligen, païa.</p></div>
+            <div class="lyrics-part"><h4>Couplet 1</h4><p>Pakholigan.
+Lintow8gan.
+Pemegaw8gan.
+N'pemeg8.</p></div>
+            <div class="lyrics-part"><h4>Refrain</h4><p>Wig8damoda!
+Niona W8banakiak.
+Odanak. W8linak.
+Ndakina. Kdakinna.</p></div>
+            <div class="lyrics-part"><h4>Couplet 2</h4><p>Sigwan. Niben.
+Tagw8gw. Pbon.
+Kizos. Kizosoo.
+Wligen.</p></div>
+            <div class="lyrics-part"><h4>Pont</h4><p>W8linaktegw.
+Sibo. Nebes.
+Kakasakw. Alakwsak.
+Kzelomsen.</p></div>
+            <div class="lyrics-part"><h4>Finale</h4><p>Kwaï mziwi!
+Wig8damoda!
+Wli nanawalmezi.
+Adio.</p></div>
+          </div>
         </div>
       </details>
 
-      <details class="song-lyrics" id="practiceKikas" hidden>
-        <summary>Kikas (Mski Koua Version) · texte de travail bilingue · non validé</summary>
+
+      <details class="song-lyrics" id="practiceKikas">
+        <summary>Kikas · paroles reconstruites et sourcées · audio IA à valider</summary>
         <div class="lyrics-body">
-          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Kikas, version Mski Koua">
-            <strong>🎧 Kikas (Mski Koua Version)</strong>
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Kikas">
+            <strong>🎧 Kikas</strong>
             <div class="lyrics-player-controls">
               <button type="button" onclick="musicStart('musicKikas')">▶ Démarrer</button>
               <button type="button" onclick="musicPause('musicKikas')">Ⅱ Pause</button>
@@ -1623,94 +1453,34 @@ Wô-ban…</pre>
             </div>
             <div class="music-status" id="musicKikasPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-note"><strong>Audit linguistique en cours : ce ne sont pas des traductions ligne à ligne.</strong> Les sections françaises sont des adaptations poétiques. Plusieurs formes aln8ba ci-dessous sont des guides phonétiques de la maquette ou ne correspondent pas à la graphie actuelle documentée, notamment « Mski Koua », « Soglonnoo », « Temaskikos », « Tagwongo », « Pebon » et « Wôlinaktegw ». Le refrain « Ôda n'wanaldam » n'est pas une négation actuelle complète validée. Ne copie pas ce texte comme modèle de langue.</div>
-          <pre class="song-lyrics-raw">[Appel]
-Kizos. Aki. Sibo.
-Mski Koua mina
-Ôda n'wanaldam
-
-[Sigwan]
-Sigwan mina, Sigwan
-Kikas — n'kika, n'kika
-Soglonnoo, Solgonbi
-Aki, Aki wligen
-Ôda n'wanaldam
-
-[Niben]
-Niben, Kizos, Wloda
-Mskikwimenak mkwi
-Temaskikos mina
-Mski Koua, Mski Koua
-Ôda n'wanaldam
-
-[Tagwongo]
-Tagwongo, Kzelomsen
-Skweda ta Pekeda
-Spemki, Nokmes, Nmahom
-Mski Koua, Kalaata
-Ôda n'wanaldam
-
-[Pebon]
-Pebon, Mzatanos
-Aki, Aki wligawi
-Kakasakw, Alakwsak
-Mski wligawi mina
-Ôda n'wanaldam
-
-[Signaga]
-Signaga! Signaga!
-Mski mina, Mski mina
-Wôlinaktegw, Ndakina
-Wligen, Wligen, Kalaata
-Ôda n'wanaldam
-
-[Fermeture]
-Kizos. Aki. Sibo.
-Mski Koua mina
-
-[Appel - adaptation française non littérale]
-Le soleil, la terre
-Le foin d'odeur revient
-On n'oublie pas
-
-[Sigwan - adaptation française non littérale]
-Kikas, le mois des mains
-Je sème, je sème encore
-La pluie vient du nord
-La terre est bonne, elle attend
-On n'oublie pas
-
-[Niben - adaptation française non littérale]
-L'été, les fraises rouges
-Les premières sont pour eux
-Le mois de la fenaison
-Le foin monte aux genoux
-On n'oublie pas
-
-[Tagwongo - adaptation française non littérale]
-Le vent tourne, l'herbe sèche
-Le feu et la fumée
-Ça monte droit vers vous
-Nokmes, Nmahom, en vérité
-On n'oublie pas
-
-[Pebon - adaptation française non littérale]
-L'hiver, la glace prend
-La terre dort, on la laisse
-Le ciel est plein d'étoiles
-L'herbe dort, elle tient bon
-On n'oublie pas
-
-[Signaga - adaptation française non littérale]
-Signaga, le printemps
-L'herbe revient chez elle
-Cent ans que ça manquait
-Plus maintenant. On est là.
-On n'oublie pas
-
-[Fermeture]
-Le soleil, la terre
-Le foin d'odeur revient</pre>
+          <div class="lyrics-note"><strong>Correction centrale.</strong> L'ancien refrain incomplet « Ôda n'wanaldam » est supprimé. Le sens poétique « on n'oublie pas » est remplacé par l'impératif attesté « Mikwalda! » : « Souviens-toi! ».</div>
+          <div class="lyrics-note"><strong>Traçabilité.</strong> Les saisons, les mois et les termes de nature ci-dessous figurent dans le corpus sourcé du projet. Les mots juxtaposés sont des appels poétiques, pas des phrases traduites.</div>
+          <div class="lyrics-grid">
+            <div class="lyrics-part"><h4>Appel</h4><p>Kizos. Aki. Sibo.
+Mskikois.
+Mikwalda!</p></div>
+            <div class="lyrics-part"><h4>Sigwan</h4><p>Sigwan.
+Kikas.
+Solgonbi.
+Mskiko. Wligen.
+Mikwalda!</p></div>
+            <div class="lyrics-part"><h4>Niben</h4><p>Niben. Kizos. Wloda.
+Mskikwimenak.
+Mskikois.
+Mikwalda!</p></div>
+            <div class="lyrics-part"><h4>Tagw8gw</h4><p>Tagw8gw. Kzelomsen.
+Skweda. Pekeda.
+Spemki. Alakwsak.
+Mikwalda!</p></div>
+            <div class="lyrics-part"><h4>Pbon</h4><p>Pbon. Mzatanos.
+Kakasakw.
+Pebon alakws.
+Mikwalda!</p></div>
+            <div class="lyrics-part"><h4>Finale</h4><p>W8linak. Ndakina.
+Wôbanaki mikwalda.
+N'mikwaldam.
+Wli nanawalmezi.</p></div>
+          </div>
         </div>
       </details>
 
@@ -2826,7 +2596,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-const MUSIC_TRACK_IDS=['musicEntends'];
+const MUSIC_TRACK_IDS=['musicAskwa','musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
 let activeMusicId='';
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{
