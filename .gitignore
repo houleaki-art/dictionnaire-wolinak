@@ -27,3 +27,13 @@ Thumbs.db
 
 # Dépendances (si ajoutées un jour)
 node_modules/
+
+# Reconnaissance vocale: les voix, consentements, modèles et jeux générés
+# restent locaux. Seuls le code, le schéma et les exemples fictifs sont suivis.
+speech-recognition/corpus/audio/
+speech-recognition/corpus/consents/
+speech-recognition/build/
+speech-recognition/models/
+speech-recognition/.venv/
+__pycache__/
+*.pyc

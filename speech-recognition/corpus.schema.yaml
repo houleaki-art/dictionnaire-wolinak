@@ -1,0 +1,53 @@
+schema_version: 1
+record:
+  required:
+    - clip
+    - transcript
+    - speaker_id
+    - consent_id
+    - consent_scope
+    - review_status
+    - reviewer_id
+    - source_status
+    - dialect
+    - recorded_at
+  properties:
+    clip:
+      type: string
+      description: Chemin relatif sous corpus; WAV mono PCM 16 kHz.
+    transcript:
+      type: string
+      description: Forme exacte présente dans le lexique vert courant.
+    speaker_id:
+      type: string
+      pattern: "^spk-[a-z0-9-]{3,40}$"
+      description: Identifiant pseudonyme stable; jamais un nom réel.
+    consent_id:
+      type: string
+      pattern: "^consent-[a-z0-9-]{3,60}$"
+    consent_scope:
+      type: array
+      contains: asr-training
+      allowed:
+        - asr-training
+        - evaluation
+        - public-playback
+    review_status:
+      const: approved
+    reviewer_id:
+      type: string
+      description: Identifiant de la personne ayant vérifié texte et audio.
+    source_status:
+      const: green-current
+    dialect:
+      allowed:
+        - Odanak
+        - Wolinak
+        - Odanak-Wolinak
+    recorded_at:
+      type: string
+      format: date-time
+    notes:
+      type: string
+      description: Notes techniques sans donnée personnelle.
+

@@ -110,6 +110,17 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Les phrases sans guide qui commencent par `T8ni` réutilisent maintenant le guide documenté `to-ni` de l'entrée isolée, au lieu du repli générique `tanné`.
 - `Kiona` reçoit une orthographe strictement technique continue utilisant le digramme français `au` pour faire entendre le `O` de « zéro » et le `A` final, sans changer la forme affichée ni la base.
 
+## Moteur de reconnaissance aln8ba
+
+- Création d'une filière séparée `speech-recognition/` pour entraîner un futur adaptateur ASR de langue `abe`, sans passer par un modèle français.
+- Audit de la base : aucune entrée active ne possède encore d'enregistrement natif relié au mot; le modèle public MMS-1B-all ne contient pas `abe` dans sa liste ASR publiée.
+- Export en lecture seule de 412 formes vertes actuelles; les formes historiques, orange, rouges, construites, en attente et `__version__` sont exclues du lexique vocal.
+- Validation obligatoire du consentement, de la révision humaine, du dialecte, du format WAV et de l'appartenance au lexique avant qu'un clip puisse entrer dans le corpus.
+- Séparation déterministe des ensembles par locuteur, jamais par clip, afin qu'une même voix ne puisse pas gonfler artificiellement les résultats de test.
+- Ajout d'un garde-fou lexical commun à JavaScript et Python : les formes courtes exigent une sortie exacte et toute ambiguïté reste non résolue.
+- Ajout d'un service d'inférence qui refuse de démarrer sans modèle entraîné, exige un consentement `one-shot`, supprime le fichier temporaire et ne produit aucun score de prononciation non calibré.
+- Treize tests automatisés couvrent les caractères aln8ba, les ambiguïtés, le consentement, le WAV, le vocabulaire CTC et l'absence de fuite de locuteur.
+
 ## Avertissement public
 
 - Ajout d'un avertissement obligatoire à chaque chargement du site.
