@@ -3978,7 +3978,7 @@ function voiceDocumentedCueForLabel(value){
     'alsig8ntegw':'al-sé-gonne-tègue',
     'alsigôntegw':'al-sé-gonne-tègue',
     'askwa':'as-kwa',
-    '8ka':'on-ka'
+    '8ka':'ôw-ka'
   };
   return cues[key]||'';
 }
@@ -4084,8 +4084,8 @@ function voiceDocumentedWordToFrenchSpeech(value,label){
   // French "quois" keeps SKWA continuous and prevents the synthetic voice
   // from inserting the false release heard as "aska-gwa".
   if(word==='askwa') return 'asquois';
-  // Masta's 8ka also appears with the rounded nasal spelling ôka. "onca"
-  // keeps 8 + K + A continuous instead of producing two hard syllables AN-KA.
+  // Masta's 8ka also appears with the rounded nasal spelling ôka. The visible
+  // guide keeps the user's rounded ôw-ka; "onca" is only the continuous TTS command.
   if(word==='8ka') return 'onca';
   // A final C is pronounced K by the French voice without adding the false
   // final vowel heard when Aaok was sent as "aaoque".
