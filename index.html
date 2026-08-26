@@ -1621,7 +1621,7 @@ Merci... merci de m'avoir entendu</pre>
     <div class="acards">
       <div class="acard"><h3>✍️ Le chiffre 8</h3><p>Le <strong>8</strong> représente une voyelle <strong>A nasale</strong>, approximativement entre le « an » et le « on » français. Ce n'est pas une succession de deux sons. Le <strong>o</strong> demeure un son distinct. Ex: <em>Aln8ba</em>, <em>j8n</em> (le nez).</p></div>
       <div class="acard"><h3>🔊 Règles de prononciation</h3>
-        <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; une consonne finale ne doit pas disparaître, sauf le <b>w final</b> qui est très doux et souvent absent</td></tr><tr><td>i</td><td>= un seul I intérieur reste I; le dernier I tend vers É s'il termine le mot ou si le mot contient plusieurs I. <b>Kizi</b> garde I.</td></tr><tr><td>o</td><td>= O comme dans « zéro »; <b>-on</b> final tend vers « oun » et <b>o</b> devant <b>z</b> vers « au »</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>glissement w</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= A nasal entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
+        <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; une consonne finale ne doit pas disparaître</td></tr><tr><td>i</td><td>= un seul I intérieur reste I; le dernier I tend vers É s'il termine le mot ou si le mot contient plusieurs I. <b>Kizi</b> garde I.</td></tr><tr><td>o</td><td>= O comme dans « zéro »; <b>-on</b> final tend vers « oun » et <b>o</b> devant <b>z</b> vers « au »</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>glissement w</b> devant une voyelle (W8linak = wanlinak) · <b>très doux à la fin</b>, sans former une syllabe « ou ». Après G ou K, il arrondit légèrement la consonne : <em>Alsig8ntegw</em> se termine comme « tègue », pas « té-gou ».</td></tr><tr><td>8</td><td>= A nasal entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
       <div class="acard"><h3>💰 Financement personnel</h3><p>Ce dictionnaire a été monté et financé entièrement avec l'argent personnel de <strong>Guillaum Labrecque-Houle</strong>. Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Ce financement personnel n'est ni une subvention, ni une commandite, ni une approbation institutionnelle du projet.</p></div>
@@ -1668,7 +1668,7 @@ Merci... merci de m'avoir entendu</pre>
         <div class="ling-rules">
           <span class="lr"><strong>i</strong> = se prononce é</span>
           <span class="lr"><strong>o</strong> = se prononce ou (ex: Awassos = awassouuss)</span>
-          <span class="lr"><strong>w</strong> = o doux devant consonne · wa devant voyelle · presque muet à la fin</span>
+          <span class="lr"><strong>w</strong> = o doux devant consonne · wa devant voyelle · très doux à la fin, sans syllabe « ou »</span>
           <span class="lr"><strong>8</strong> = « en » + « on » en même temps</span>
           <span class="lr"><strong>Ch</strong> = son ts</span>
           <span class="lr"><strong>J</strong> = son dz</span>
@@ -2004,7 +2004,7 @@ const LANG = {
     '8':  'A nasal, approximativement entre « an » et « on »',
     'i':  'un seul I intérieur reste I; le dernier I tend vers É en fin de mot ou lorsqu’il y en a plusieurs; Kizi garde I',
     'o':  'O comme dans « zéro »; -on final tend vers « oun » et O devant Z vers « au »',
-    'w':  'O doux devant une consonne (Wli = oli) · glissement W devant une voyelle (W8linak = wanlinak) · presque muet en fin de mot (Kizokw)',
+    'w':  'O doux devant une consonne · glissement W devant une voyelle · très doux en fin de mot, sans syllabe OU; après G/K, il arrondit la consonne (Alsig8ntegw finit comme « tègue »)',
     'Ch': 'son TS',
     'J':  'son DZ',
   },
@@ -2433,13 +2433,18 @@ function cardPhonetic(w){
   const documented=voiceDocumentedCueForLabel(w.aln8ba||'');
   const synthetic=/8w8/i.test(w.aln8ba||'')&&!w.phonetic
     ? `☼ ${alnToVoiceCue(w.aln8ba).replace(/an-?ou-?an/g,'an-ouan')} · guide synthétique approximatif` : '';
-  const guide=documented?`☼ ${documented}`:(w.phonetic||synthetic);
+  const rawGuide=documented?`☼ ${documented}`:(w.phonetic||synthetic);
+  const guide=voiceFinalClusterGuide(rawGuide,w.aln8ba||'');
   if(!guide) return '';
-  const softW=/w(?=[^aeiouyàâäéèêëîïôöùûü\s])/i.test(w.aln8ba||'')
+  const softW=/w(?=[^aeiouyàâäéèêëîïôöùûü8\s])/i.test(w.aln8ba||'')
     ? '<span title="Devant une consonne, le W se prononce comme un O doux."> · w : o doux devant consonne</span>' : '';
+  const glideW=/w(?=[aeiouyàâäéèêëîïôöùûü8])/i.test(w.aln8ba||'')
+    ? '<span title="Devant une voyelle ou le 8, le W forme un glissement continu."> · w : glissement devant voyelle</span>' : '';
   const nasal=/8/.test(w.aln8ba||'')
     ? '<span title="Le 8 est une voyelle nasale entre le français AN et ON."> · 8 : nasal entre AN et ON</span>' : '';
-  return `<div class="phonetic">${escH(guide)}${softW}${nasal}</div>`;
+  const finalCluster=/(?:g|k)w$/i.test((w.aln8ba||'').trim())
+    ? '<span title="Le W final ne crée pas une syllabe OU; après G ou K, il arrondit légèrement la consonne."> · w final : aucun « ou » séparé</span>' : '';
+  return `<div class="phonetic">${escH(guide)}${softW}${glideW}${nasal}${finalCluster}</div>`;
 }
 
 // Carte pour une famille de mots
@@ -3847,7 +3852,7 @@ function liveCheck(){
   if (/ch/i.test(v))                       phono.push('Ch = son TS');
   if (/[jJ]/.test(v))                      phono.push('J = son DZ');
   if (/[iI]/.test(v))                      phono.push('i = intérieur unique : I · dernier ou final : vers É · Kizi garde I');
-  if (/[wW]/.test(v))                      phono.push('w = o doux devant consonne · glissement W devant voyelle · presque muet à la fin');
+  if (/[wW]/.test(v))                      phono.push('w = o doux devant consonne · glissement W devant voyelle · très doux à la fin, jamais une syllabe OU séparée');
   if (phono.length) infos.push(`🔤 ${phono.join(' · ')}`);
 
   // ── Rendu ──
@@ -3964,13 +3969,24 @@ let voiceRecognition=null, voiceRecognitionTimer=null, voiceFallbackRecorder=nul
 function voiceDocumentedCueForLabel(value){
   const key=(value||'').trim().replace(/’/g,"'").replace(/[.!?]+$/,'').toLowerCase();
   const cues={
-    'aln8ba8dwa':'al-non-ba-on-doua',
-    "nd'aln8ba8dwa":'nd-al-non-ba-on-doua',
-    "kd'aln8ba8dwa":'kd-al-non-ba-on-doua',
-    "nda nd'aln8ba8dwawi":'nda nd-al-non-ba-on-doua-oué',
-    'aln8ba8dwaw8gan':'al-non-ba-on-doua-ouon-gan'
+    'aln8ba8dwa':'al-non-ba-odwa',
+    "nd'aln8ba8dwa":'nd-al-non-ba-odwa',
+    "kd'aln8ba8dwa":'kd-al-non-ba-odwa',
+    "nda nd'aln8ba8dwawi":'nda nd-al-non-ba-odwa-oué',
+    'aln8ba8dwaw8gan':'al-non-ba-odwa-wongan',
+    'alsig8ntegw':'al-sé-gonne-tègue',
+    'alsigôntegw':'al-sé-gonne-tègue'
   };
   return cues[key]||'';
+}
+function voiceFinalClusterGuide(value,label=''){
+  if(!value) return '';
+  const word=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase();
+  if(/tegw$/.test(word)) return value.replace(/te-?g-?w$/i,'tègue');
+  if(/tekw$/.test(word)) return value.replace(/te-?k-?w$/i,'tèque');
+  if(/gw$/.test(word)) return value.replace(/g-?w$/i,'gue');
+  if(/kw$/.test(word)) return value.replace(/k-?w$/i,'que');
+  return value;
 }
 function joinVoicePersonalPrefix(value){
   // N'/Nd', K'/Kd' and W'/Wd' stay attached to the stem; the apostrophe is not a pause.
@@ -4072,7 +4088,10 @@ function voiceDocumentedWordToFrenchSpeech(value,label){
 function voiceFinalConsonantToFrenchSpeech(value,label){
   // French synthesis often mutes these final consonants. The added E exists only
   // in the command sent to the voice; the Abenaki spelling shown to the learner is unchanged.
-  const normalizedLabel=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase().replace(/w$/,'');
+  const rawLabel=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase();
+  if(/tegw$/.test(rawLabel)) return value.replace(/te-?g$/i,'tègue');
+  if(/tekw$/.test(rawLabel)) return value.replace(/te-?k$/i,'tèque');
+  const normalizedLabel=rawLabel.replace(/w$/,'');
   const match=normalizedLabel.match(/([kspbdgz])$/);
   if(!match) return value;
   const commands={k:'que',s:'sse',p:'pe',b:'be',d:'de',g:'gue',z:'ze'};
@@ -5896,7 +5915,7 @@ const NIVEAUX=[
   <tr><td class="k">CH</td><td>se prononce <b>TS</b>, jamais comme dans « chien »</td></tr>
   <tr><td class="k">J</td><td>se prononce <b>DZ</b>, jamais comme en français</td></tr>
   <tr><td class="k">8</td><td>une voyelle nasale entre « an » et « on »</td></tr>
-  <tr><td class="k">W</td><td>devant une consonne, il sonne comme un <b>O doux</b> — <span class="al8">Wli</span> se dit « oli ». Devant une voyelle, il sonne <b>WA</b> — <span class="al8">W8linak</span> se dit « wanlinak ». À la fin d'un mot, il est <b>presque muet</b> — <span class="al8">Kizokw</span> se dit « kizok(w) »</td></tr>
+  <tr><td class="k">W</td><td>devant une consonne, il sonne comme un <b>O doux</b> — <span class="al8">Wli</span> se dit « oli ». Devant une voyelle, il sonne <b>WA</b> — <span class="al8">W8linak</span> se dit « wanlinak ». À la fin, il reste <b>très doux</b> et ne forme jamais une syllabe « ou » séparée. Après G ou K, il arrondit légèrement la consonne — <span class="al8">Alsig8ntegw</span> finit comme « tègue », pas « té-gou ».</td></tr>
   <tr><td class="k">I</td><td>un seul <b>I intérieur</b> reste I — <span class="al8">Agakimzo</span>. Le dernier I tend vers <b>É</b> s'il termine le mot ou si le mot contient plusieurs I — <span class="al8">Abazi</span> sonne « abazé » et <span class="al8">Mziwi</span> « mziwé ». Exception documentée : <span class="al8">Kizi</span> garde I.</td></tr></table>
   <div class="aprnote w"><b>Dis tout à voix haute, toujours</b>
    Une langue ne s'apprend pas des yeux. Chaque mot de ce parcours doit sortir de ta bouche,
@@ -7110,7 +7129,7 @@ const EXSONS=[
  {m:'CH',q:'Quel son représente CH?',o:['TS','Comme le CH français','Une voyelle nasale','Presque muet'],r:0,e:'CH se prononce TS.'},
  {m:'J',q:'Quel son représente J?',o:['DZ','Comme le J français','Une voyelle nasale','Presque muet'],r:0,e:'J se prononce DZ.'},
  {m:'8',q:'Comment prononcer 8?',o:['Une voyelle nasale entre AN et ON','Comme le chiffre huit','Comme OU','Comme É'],r:0,e:'8 note une voyelle nasale entre AN et ON.'},
- {m:'W',q:'Quel résumé décrit W?',o:['O doux devant une consonne, WA devant une voyelle, presque muet à la fin','Toujours comme V','Toujours muet','Toujours comme OU'],r:0,e:'La prononciation de W dépend de sa position dans le mot.'},
+ {m:'W',q:'Quel résumé décrit W?',o:['O doux devant une consonne, WA devant une voyelle, très doux à la fin sans syllabe OU','Toujours comme V','Toujours muet','Toujours comme OU'],r:0,e:'La prononciation de W dépend de sa position. Après G ou K en fin de mot, il ne crée pas une syllabe OU séparée.'},
  {m:'I',q:'Comment sonne souvent I, surtout en fin de mot?',o:['É','A','OU','AN'],r:0,e:'I sonne souvent É, surtout en fin de mot.'}
 ];
 let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exPoolOverride=null;
