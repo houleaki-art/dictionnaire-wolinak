@@ -87,11 +87,12 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 
 ## Pratique vocale
 
+- Retrait de la reconnaissance automatique et de ses pourcentages : Chrome interprétait l’aln8ba avec un modèle français et pouvait valoriser une transcription française sans rapport avec la prononciation. Le microphone sert désormais uniquement à un enregistrement local temporaire que la personne réécoute et compare au guide; aucun son, profil vocal, texte ou score n’est sauvegardé.
 - Les préfixes personnels `N'/Nd'`, `K'/Kd'` et `W'/Wd'` restent liés au mot dans le guide vocal : l'apostrophe ne provoque plus une pause ni l'épellation de lettres séparées, notamment dans `Nd'aliwizi`.
 - Correction générale du W devant consonne dans le guide synthétique : un O simple et continu est maintenant envoyé à la voix française afin qu'il reste perceptible dans Akwbi et les groupes comparables; les cartes rappellent la règle « W = O doux ».
 - Priorité donnée aux enregistrements natifs lorsqu'ils existent.
 - Ajout d'un guide synthétique explicitement présenté comme approximatif.
-- Ajout de la reconnaissance tolérante, de la transcription et d'un score pédagogique.
+- Le parcours compte les exemples réellement enregistrés sans prétendre reconnaître automatiquement la langue.
 - Arrêt automatique du microphone et absence de sauvegarde des enregistrements vocaux.
 - Application des repères CH vers TS, J vers DZ, 8 nasal, W et I au guide synthétique.
 - Fluidification des mots et protection du premier phonème contre les coupures audio.
@@ -102,11 +103,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Protection des 61 finales en -ak contre la coupure du K par la synthèse française; les cartes rappellent aussi que 8 est une voyelle nasale entre « an » et « on », et non un simple « an » français.
 - Protection de la suite 8w8 dans le repli synthétique : les deux voyelles nasales restent audibles et le W forme une liaison continue, sans pause ni syllabe « ou » autonome; le guide visible est explicitement qualifié d'approximatif lorsqu'aucune prononciation documentée n'est fournie.
 - Protection des finales en `t` contre leur disparition dans la synthèse française; le cas historique `Ali-paskuat` reçoit en plus une commande vocale ciblée qui conserve le groupe `kw` continu et le `t` audible, sans modifier sa graphie de 1884 ni présenter son guide approximatif comme une attestation.
-- Comparaison de dix hypothèses distinctes de reconnaissance afin de mieux couvrir les variations de voix et de transcription sans établir de profil vocal.
-- Séparation des tolérances d'écriture et des sons obligatoires : une transcription ambiguë de `CH` ou `J` ne confirme plus automatiquement `TS` ou `DZ`, et l'absence d'une consonne finale documentée empêche un résultat vert.
-- Les sons critiques proviennent toujours du guide affiché; une graphie secondaire plus permissive ne peut plus contourner cette exigence.
 - Arrêt manuel ou automatique fiabilisé, durée d'écoute adaptée à la longueur du mot et libération des enregistrements temporaires dès qu'ils ne servent plus à la réécoute locale.
-- Reformulation du résultat comme « transcription proposée par Chrome », avec nombre d'hypothèses comparées, diagnostic du son manquant et rappel qu'il ne s'agit pas d'une validation linguistique officielle.
 - Les exercices isolés `CH → TS` et `J → DZ` envoient désormais une syllabe technique continue à la voix française, afin d'éviter l'épellation lettre par lettre de `tsa` et `dza`; le guide visible demeure inchangé.
 - `Almos` conserve son guide documenté `al-mos`, mais reçoit une commande synthétique ciblée qui maintient le `A`, le `O` et le `S` final sans étendre cette exception aux autres mots en `-os`.
 - Le repli sans guide ne transforme plus tous les `O` en `OU` : le `O` ordinaire reste celui de « zéro », tandis que seules les exceptions documentées `-on` et `oz` deviennent respectivement `-oun` et `auz`.

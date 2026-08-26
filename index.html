@@ -3906,11 +3906,13 @@ function stopRec(){
 }
 
 // ══════════════════════════════════════════════════════════
-//  PRATIQUE VOCALE — écoute, micro et comparaison phonétique
+//  PRATIQUE VOCALE — écoute et réécoute locale
 // ══════════════════════════════════════════════════════════
 const MODULE_VOICE_PUBLIC=true;
+// Chrome ne possède pas de reconnaissance aln8ba fiable. Ne jamais noter une
+// prononciation à partir d'une transcription produite dans une autre langue.
 let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
-let voiceRecognition=null, voiceRecognitionTimer=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceFallbackUrl=null, voiceFallbackDiscard=false, voiceSpeakTimer=null;
+let voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceFallbackUrl=null, voiceFallbackDiscard=false, voiceSpeakTimer=null;
 
 function voiceDocumentedCueForLabel(value){
   const key=(value||'').trim().replace(/’/g,"'").replace(/[.!?]+$/,'').toLowerCase();
@@ -4078,85 +4080,6 @@ function voiceCueForWord(w){
   if(ph&&ph.length<80) return phoneticToVoiceCue(ph);
   return word?alnToVoiceCue(word):'';
 }
-function voiceKey(value,mode='expected'){
-  let key=(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/tch/g,'ts').replace(/dj/g,'dz');
-  if(mode==='heard'){
-    // A French CH or J transcription does not prove the documented TS or DZ sound.
-    key=key.replace(/\bca\b/g,'sa').replace(/ch/g,'x');
-  }else key=key.replace(/ch/g,'ts').replace(/j/g,'dz');
-  return key.replace(/8/g,'an').replace(/h/g,'')
-    .replace(/eau|au/g,'o').replace(/ou/g,'u').replace(/qu/g,'k').replace(/c/g,'k')
-    .replace(/an|en|on/g,'an')
-    .replace(/[^a-z0-9]/g,'').replace(/([bdgkptsz])\1+/g,'$1')
-    .replace(/([bdgkptsz])e$/,'$1');
-}
-function voiceEditDistance(a,b){
-  const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>Array(n+1).fill(0));
-  for(let i=0;i<=m;i++) d[i][0]=i;
-  for(let j=0;j<=n;j++) d[0][j]=j;
-  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
-    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
-  return d[m][n];
-}
-function voiceSimilarity(expected,heard){
-  if(!expected||!heard) return 0;
-  if(expected===heard) return 100;
-  const distance=voiceEditDistance(heard,expected);
-  let score=Math.max(0,Math.round(100*(1-distance/Math.max(heard.length,expected.length))));
-  if(Math.min(heard.length,expected.length)>=4&&(heard.includes(expected)||expected.includes(heard)))
-    score=Math.max(score,84);
-  return score;
-}
-function voiceCriticalIssue(expected,heard){
-  for(const sound of ['ts','dz']){
-    if(expected.includes(sound)&&!heard.includes(sound)) return `Le groupe ${sound.toUpperCase()} n'est pas confirmé par la transcription`;
-  }
-  const final=(expected.match(/(ts|dz|[bdgkptsz])$/)||[])[1];
-  if(final&&!heard.endsWith(final)) return `Le son final ${final.toUpperCase()} n'apparaît pas dans la transcription`;
-  return '';
-}
-function voiceExpectedCandidates(item){
-  const candidates=[];
-  const add=(raw,mode='expected',cap=100,ambiguous=false)=>{
-    const key=voiceKey(raw,mode); if(!key) return;
-    const old=candidates.find(c=>c.key===key);
-    if(!old) candidates.push({key,cap,ambiguous});
-    else if(cap>old.cap){old.cap=cap;old.ambiguous=ambiguous;}
-  };
-  add(item.text); add(item.cue);
-  (item.accepted||[]).forEach(v=>add(v,'heard'));
-  (item.uncertain||[]).forEach(v=>add(v,'heard',78,true));
-  return candidates;
-}
-function voiceScore(item,alternatives){
-  const expected=voiceExpectedCandidates(item), unique=[], seen=new Set();
-  const required=voiceKey(item.cue||item.text);
-  (alternatives||[]).forEach(raw=>{
-    const clean=(raw||'').trim(), key=voiceKey(clean,'heard');
-    if(clean&&key&&!seen.has(key)){seen.add(key);unique.push({raw:clean,key});}
-  });
-  let best={score:0,heard:'',issue:'',ambiguous:false};
-  unique.forEach(got=>{
-    expected.forEach(exp=>{
-      // Required sounds always come from the displayed guide, never from a looser spelling variant.
-      const issue=voiceCriticalIssue(required,got.key);
-      let score=Math.min(exp.cap,voiceSimilarity(exp.key,got.key));
-      if(issue) score=Math.min(score,58);
-      if(score>best.score||(score===best.score&&best.issue&&!issue))
-        best={score,heard:got.raw,issue,ambiguous:exp.ambiguous};
-    });
-  });
-  return {...best,heard:best.heard||(alternatives&&alternatives[0])||'',alternativesChecked:unique.length};
-}
-function voiceAdvice(item,result){
-  if(result.issue) return `${result.issue}. Réécoute la fin ou le groupe ciblé, puis refais un essai sans exagérer les syllabes.`;
-  if(result.ambiguous) return `La transcription de Chrome est compatible, mais trop ambiguë pour confirmer le son exact. Réécoute « ${item.cue} », puis réessaie.`;
-  if(result.score>=82) return item.focus?`Bon travail. Repère confirmé : ${item.focus}.`:'Le rythme général et les sons documentés ont été bien repérés.';
-  if(result.score>=62) return `C'est très proche. Réécoute « ${item.cue} », ralentis légèrement, puis recommence.`;
-  if(item.focus) return `Isole d'abord le son : ${item.focus}. Dis-le seul, puis reprends le mot complet.`;
-  return `Réécoute le guide « ${item.cue} » et prononce une syllabe à la fois.`;
-}
 function voiceSpeak(label,cue,announce=true,slow=false){
   if(!MODULE_VOICE_PUBLIC) return;
   if(!('speechSynthesis' in window)){
@@ -4207,7 +4130,7 @@ async function voiceListenCurrent(slow=false){
 }
 function voiceResetMic(){
   const btn=document.getElementById('voiceMic');
-  if(btn){btn.classList.remove('listening');btn.textContent='🎙️ Prononcer maintenant';}
+  if(btn){btn.classList.remove('listening');btn.textContent="🎙️ M'enregistrer";}
 }
 function voiceClearFallbackAudio(){
   if(voiceFallbackUrl){URL.revokeObjectURL(voiceFallbackUrl);voiceFallbackUrl=null;}
@@ -4216,8 +4139,6 @@ function voiceClearFallbackAudio(){
   if(player){player.removeAttribute('src');player.style.display='none';}
 }
 function voiceStopActive(){
-  if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
-  if(voiceRecognition){voiceRecognition._userCancelled=true;try{voiceRecognition.abort();}catch(e){} voiceRecognition=null;}
   if(voiceFallbackTimer){clearTimeout(voiceFallbackTimer);voiceFallbackTimer=null;}
   if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
   if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
@@ -4231,103 +4152,69 @@ function voiceStopActive(){
   if('speechSynthesis' in window) speechSynthesis.cancel();
   voiceResetMic();
 }
-function voiceRecognitionError(code){
-  if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
+function voiceMicrophoneError(code){
   const messages={
     'not-allowed':'Autorise le microphone dans Chrome, puis réessaie.',
-    'service-not-allowed':'La reconnaissance vocale est désactivée dans Chrome.',
-    'no-speech':'Aucune voix détectée. Rapproche-toi du micro et réessaie.',
-    'audio-capture':'Aucun microphone disponible.',
-    'network':'La reconnaissance vocale de Chrome a besoin d’une connexion réseau.'
+    'audio-capture':'Aucun microphone disponible.'
   };
-  voiceSetStatus(messages[code]||'La reconnaissance vocale a été interrompue. Réessaie.');
+  voiceSetStatus(messages[code]||'Le microphone n’a pas pu démarrer. Réessaie.');
   voiceResetMic();
 }
 function voiceStartListening(){
-  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!Recognition) return voiceStartFallback();
-  if(voiceRecognition){
-    if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
-    voiceRecognition._userCancelled=true; try{voiceRecognition.abort();}catch(e){}
-    voiceRecognition=null; voiceResetMic();
-    voiceSetStatus('Écoute arrêtée. Aucun enregistrement n’a été sauvegardé.'); return;
-  }
-  const item=VOICE_ITEMS[VOICE_INDEX]; if(!item) return;
-  const rec=new Recognition(); voiceRecognition=rec;
-  let gotResult=false, applied=false;
-  rec.lang='fr-CA'; rec.continuous=false; rec.interimResults=false; rec.maxAlternatives=10;
-  rec.onstart=()=>{
-    const btn=document.getElementById('voiceMic');
-    if(btn){btn.classList.add('listening');btn.textContent='⏹ Arrêter l’écoute';}
-    const limit=Math.min(12000,Math.max(7000,5000+(item.text||'').replace(/\s/g,'').length*220));
-    voiceRecognitionTimer=setTimeout(()=>{
-      voiceRecognitionTimer=null;
-      if(voiceRecognition===rec){try{rec.stop();}catch(e){}}
-    },limit);
-    voiceSetStatus('Parle naturellement. Chrome compare plusieurs transcriptions; le micro s’arrête automatiquement et aucun son n’est sauvegardé.');
-  };
-  rec.onresult=e=>{
-    gotResult=true; if(applied) return;
-    const alternatives=[];
-    for(let i=0;i<e.results.length;i++) for(let j=0;j<e.results[i].length;j++)
-      if(e.results[i][j].transcript) alternatives.push(e.results[i][j].transcript.trim());
-    if(alternatives.length){applied=true;voiceApplyResult(item,alternatives);}
-  };
-  rec.onnomatch=()=>{gotResult=true;voiceSetStatus('Chrome n’a pas trouvé de transcription assez claire. Réécoute le modèle, puis réessaie.');};
-  rec.onerror=e=>{gotResult=true;if(e.error!=='aborted') voiceRecognitionError(e.error);};
-  rec.onend=()=>{
-    if(voiceRecognitionTimer){clearTimeout(voiceRecognitionTimer);voiceRecognitionTimer=null;}
-    voiceRecognition=null; voiceResetMic();
-    if(!gotResult&&!rec._userCancelled) voiceSetStatus('Aucune parole reconnue cette fois. Rapproche-toi du micro et réessaie.');
-  };
-  try{rec.start();}catch(e){voiceRecognitionError('audio-capture');}
+  // Web Speech interprétait l'aln8ba comme du français canadien. Tant qu'un
+  // modèle aln8ba attesté n'est pas disponible, le micro sert uniquement à
+  // une réécoute locale et aucun pourcentage automatique n'est calculé.
+  return voiceStartFallback();
 }
-function voiceApplyResult(item,alternatives){
-  const result=voiceScore(item,alternatives);
+function voiceRememberPractice(item){
+  const result={practiced:true,date:Date.now()};
   VOICE_RESULTS[VOICE_INDEX]=result;
   try{
     const saved=JSON.parse(localStorage.getItem('aln_voice_progress')||'{}');
     const old=saved[item.text]||{};
-    saved[item.text]={best:Math.max(old.best||0,result.score),attempts:(old.attempts||0)+1,date:Date.now()};
+    saved[item.text]={...old,practices:(old.practices||0)+1,date:result.date};
     localStorage.setItem('aln_voice_progress',JSON.stringify(saved));
   }catch(e){}
-  voiceRenderResult(item,result);
-  voiceSetStatus(`Écoute terminée. ${result.alternativesChecked||1} transcription${result.alternativesChecked>1?'s ont':' a'} été comparée${result.alternativesChecked>1?'s':''}; aucun son n’a été sauvegardé.`);
-  aprVoiceDots();
+  return result;
 }
-function voiceRenderResult(item,result){
+function voiceRenderPractice(item){
   const box=document.getElementById('voiceResult'); if(!box) return;
-  const level=result.score>=82?'good':result.score>=62?'close':'retry';
-  const title=result.issue?'Son essentiel à vérifier':result.ambiguous?'Transcription ambiguë':result.score>=82?'Bien reconnu':result.score>=62?'Très proche':'À reprendre tranquillement';
-  const color=result.score>=82?'var(--green)':result.score>=62?'var(--gold)':'var(--red)';
-  box.className='voice-result '+level;
-  box.innerHTML=`<b>${title} · ${result.score}%</b>
-    <div style="font-size:.8rem;color:var(--text2);margin-top:5px">Meilleure transcription proposée par Chrome : « ${escH(result.heard||'—')} »</div>
-    <div style="font-size:.7rem;color:var(--text3);margin-top:3px">${result.alternativesChecked||1} hypothèse${result.alternativesChecked>1?'s':''} distincte${result.alternativesChecked>1?'s':''} comparée${result.alternativesChecked>1?'s':''}</div>
-    <div class="voice-meter" role="progressbar" aria-label="Correspondance phonétique" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${result.score}"><span style="width:${result.score}%;background:${color}"></span></div>
-    <div style="font-size:.8rem;line-height:1.5">${escH(voiceAdvice(item,result))}</div>`;
+  box.className='voice-result';
+  box.innerHTML=`<b>Enregistrement prêt pour la comparaison</b>
+    <div style="font-size:.8rem;line-height:1.5;margin-top:6px">Écoute ton essai, puis réécoute le guide « ${escH(item.cue)} ». Compare le rythme, les voyelles et les consonnes finales. Aucun score automatique n’est affiché, car Chrome ne sait pas reconnaître l’aln8ba de façon fiable.</div>`;
 }
 async function voiceStartFallback(){
   if(voiceFallbackRecorder&&voiceFallbackRecorder.state==='recording'){
     voiceFallbackRecorder.stop(); return;
   }
   if(!navigator.mediaDevices||!window.MediaRecorder){
-    voiceSetStatus('Ce navigateur ne permet ni reconnaissance ni enregistrement vocal. Utilise Chrome récent sur HTTPS.'); return;
+    voiceSetStatus('Ce navigateur ne permet pas l’enregistrement vocal local. Utilise Chrome ou Safari récent sur HTTPS.'); return;
   }
   try{
     voiceFallbackDiscard=false; voiceClearFallbackAudio();
     voiceFallbackStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    voiceFallbackChunks=[]; voiceFallbackRecorder=new MediaRecorder(voiceFallbackStream);
+    voiceFallbackChunks=[];
+    const supported=['audio/webm;codecs=opus','audio/mp4','audio/webm']
+      .find(type=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(type));
+    voiceFallbackRecorder=new MediaRecorder(voiceFallbackStream,supported?{mimeType:supported}:undefined);
     voiceFallbackRecorder.ondataavailable=e=>voiceFallbackChunks.push(e.data);
     voiceFallbackRecorder.onstop=()=>{
       if(voiceFallbackTimer){clearTimeout(voiceFallbackTimer);voiceFallbackTimer=null;}
       if(voiceFallbackStream) voiceFallbackStream.getTracks().forEach(t=>t.stop());
+      const mimeType=voiceFallbackRecorder&&voiceFallbackRecorder.mimeType
+        ||(voiceFallbackChunks.find(chunk=>chunk.type)||{}).type||'audio/webm';
       voiceFallbackStream=null; voiceFallbackRecorder=null;
       if(voiceFallbackDiscard){voiceFallbackDiscard=false;voiceClearFallbackAudio();return;}
-      voiceFallbackUrl=URL.createObjectURL(new Blob(voiceFallbackChunks,{type:'audio/webm'}));
+      voiceFallbackUrl=URL.createObjectURL(new Blob(voiceFallbackChunks,{type:mimeType}));
       const player=document.getElementById('voicePlayback');
-      if(player){player.src=voiceFallbackUrl;player.style.display='block';}
-      voiceSetStatus('Réécoute-toi et compare avec le guide. Le navigateur ne peut pas attribuer de score ici.');
+      if(player){
+        player.src=voiceFallbackUrl;
+        player.style.display='block';
+        player.load();
+      }
+      const item=VOICE_ITEMS[VOICE_INDEX];
+      if(item){voiceRememberPractice(item);voiceRenderPractice(item);aprVoiceDots();}
+      voiceSetStatus('Réécoute ton essai, puis relance le guide. Cet enregistrement reste temporairement dans cette page et n’est pas envoyé pour une transcription française.');
       voiceResetMic();
     };
     voiceFallbackRecorder.start();
@@ -4336,8 +4223,8 @@ async function voiceStartFallback(){
     },8000);
     const btn=document.getElementById('voiceMic');
     if(btn){btn.classList.add('listening');btn.textContent='⏹ Arrêter l’enregistrement';}
-    voiceSetStatus('Enregistrement local en cours. Il s’arrête automatiquement après huit secondes; tu peux aussi l’arrêter maintenant.');
-  }catch(e){voiceRecognitionError('not-allowed');}
+    voiceSetStatus('Enregistrement local en cours. Il s’arrête automatiquement après huit secondes; aucun service de transcription n’est utilisé.');
+  }catch(e){voiceMicrophoneError(e&&e.name==='NotFoundError'?'audio-capture':'not-allowed');}
 }
 function aprVoiceTargets(m,lecHtml){
   if(m.ex==='sons') return [
@@ -4385,19 +4272,19 @@ function aprVoiceRender(){
       <div class="voice-actions">
         <button class="voice-btn" onclick="voiceListenCurrent(false)">🔊 Écouter</button>
         <button class="voice-btn" onclick="voiceListenCurrent(true)">🐢 Lentement</button>
-        <button class="voice-btn mic" id="voiceMic" onclick="voiceStartListening()">🎙️ Prononcer maintenant</button>
+        <button class="voice-btn mic" id="voiceMic" onclick="voiceStartListening()">🎙️ M'enregistrer</button>
       </div>
-      <div class="voice-status" id="voiceStatus" aria-live="polite">Écoute le modèle, puis prononce le mot naturellement.</div>
-      <audio id="voicePlayback" controls style="display:none;width:100%;margin-top:10px"></audio>
+      <div class="voice-status" id="voiceStatus" aria-live="polite">Écoute le modèle, puis enregistre-toi pour comparer les deux écoutes.</div>
+      <audio id="voicePlayback" controls aria-label="Réécouter mon essai vocal temporaire" style="display:none;width:100%;margin-top:10px"></audio>
       <div id="voiceResult" aria-live="polite" aria-atomic="true"></div>
       <div class="voice-nav">
         <button class="voice-btn" onclick="aprVoiceMove(-1)" ${VOICE_INDEX===0?'disabled':''}>← Précédent</button>
         <div class="voice-dots" id="voiceDots"></div>
         <button class="voice-btn" onclick="aprVoiceMove(1)">${VOICE_INDEX===VOICE_ITEMS.length-1?'Terminer':'Suivant →'}</button>
       </div>
-      <div class="voice-privacy">Le site ne sauvegarde aucun enregistrement et ne crée aucun profil de voix. Chrome peut utiliser son service de reconnaissance vocale pour proposer plusieurs transcriptions; le site compare seulement leur texte aux sons documentés. Le score est une aide phonétique, pas une validation linguistique officielle.</div>
+      <div class="voice-privacy">Le site ne demande plus à Chrome d’interpréter l’aln8ba comme du français. Le micro crée seulement un enregistrement temporaire dans cette page afin que tu puisses te réécouter; il est supprimé lorsque tu changes d’exercice ou quittes la page. Aucun profil vocal, aucune transcription et aucun score automatique ne sont créés.</div>
     </div>`;
-  const old=VOICE_RESULTS[VOICE_INDEX]; if(old) voiceRenderResult(item,old);
+  const old=VOICE_RESULTS[VOICE_INDEX]; if(old&&old.practiced) voiceRenderPractice(item);
   aprVoiceDots(); window.scrollTo({top:0,behavior:'smooth'});
 }
 function aprVoiceDots(){
@@ -4407,14 +4294,14 @@ function aprVoiceDots(){
 function aprVoiceMove(delta){
   voiceStopActive();
   if(delta>0&&VOICE_INDEX===VOICE_ITEMS.length-1){
-    const tried=VOICE_RESULTS.filter(Boolean), good=tried.filter(r=>r.score>=82).length;
+    const practiced=VOICE_RESULTS.filter(r=>r&&r.practiced).length;
     document.getElementById('aprBody').innerHTML=`<div class="aprcard" style="text-align:center;padding:38px 24px">
-      <div style="font-size:2.8rem;font-weight:700;color:var(--green)">${good} / ${VOICE_ITEMS.length}</div>
-      <h3>Prononciations bien reconnues</h3>
-      <p class="aprlead">${tried.length<VOICE_ITEMS.length?'Tu peux reprendre les mots non essayés ou continuer tranquillement.':'Réécoute les mots plus faibles; une deuxième tentative est souvent meilleure.'}</p>
+      <div style="font-size:2.8rem;font-weight:700;color:var(--green)">${practiced} / ${VOICE_ITEMS.length}</div>
+      <h3>Mots pratiqués à voix haute</h3>
+      <p class="aprlead">${practiced<VOICE_ITEMS.length?'Tu peux reprendre les mots non enregistrés ou continuer tranquillement.':'Tu as écouté et enregistré chaque exemple. Recommence ceux que tu veux comparer une deuxième fois.'}</p>
       <button class="aprbtn" onclick="aprVoiceStart()">Recommencer</button>
       <button class="aprbtn" style="background:var(--surface2);color:var(--text);margin-left:8px" onclick="aprLecon(aprMod)">Retour à la leçon</button>
-      <div class="voice-privacy">Ce résultat reste sur cet appareil; aucun enregistrement vocal n’est conservé.</div></div>`;
+      <div class="voice-privacy">Seul le nombre de pratiques peut rester sur cet appareil. Aucun enregistrement vocal n’est conservé et aucun score automatique n’est calculé.</div></div>`;
     return;
   }
   VOICE_INDEX=Math.max(0,Math.min(VOICE_ITEMS.length-1,VOICE_INDEX+delta)); aprVoiceRender();
@@ -6573,7 +6460,7 @@ function aprLecon(i){
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
       ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${m.cat?'quatre':'trois'} temps</b>
-        1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🎙️ <b>Prononcer</b> — écoute, parle et vérifie ce que Chrome reconnaît.
+        1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🎙️ <b>Prononcer</b> — écoute le guide, enregistre-toi et compare les deux écoutes.
         3. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
         ${m.cat?'4. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. ':''}Puis reviens demain
         dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>`:
