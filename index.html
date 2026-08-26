@@ -1619,9 +1619,9 @@ Merci... merci de m'avoir entendu</pre>
         Abénakises d'Odanak et de Wôlinak. Chaque élément doit être vérifié avant d'être réutilisé.</p>
     </div>
     <div class="acards">
-      <div class="acard"><h3>✍️ Le chiffre 8</h3><p>Le <strong>8</strong> représente un son qui est « en » et « on » en même temps — une voyelle nasale unique à l'abenakis. Le <strong>o</strong> existe aussi comme son distinct dans la langue. Ex: <em>Aln8ba</em>, <em>j8n</em> (le nez).</p></div>
+      <div class="acard"><h3>✍️ Le chiffre 8</h3><p>Le <strong>8</strong> représente une voyelle <strong>A nasale</strong>, approximativement entre le « an » et le « on » français. Ce n'est pas une succession de deux sons. Le <strong>o</strong> demeure un son distinct. Ex: <em>Aln8ba</em>, <em>j8n</em> (le nez).</p></div>
       <div class="acard"><h3>🔊 Règles de prononciation</h3>
-        <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; un <b>k final</b> ne doit pas disparaître</td></tr><tr><td>i</td><td>= se prononce é</td></tr><tr><td>o</td><td>= se prononce ou (ex: Awassos = awassouuss)</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>wa</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= voyelle nasale entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
+        <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; une consonne finale ne doit pas disparaître, sauf le <b>w final</b> qui est très doux et souvent absent</td></tr><tr><td>i</td><td>= entre I et É; en fin de mot, il tend vers É</td></tr><tr><td>o</td><td>= O comme dans « zéro »; <b>-on</b> final tend vers « oun » et <b>o</b> devant <b>z</b> vers « au »</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>glissement w</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= A nasal entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
       <div class="acard"><h3>💰 Financement personnel</h3><p>Ce dictionnaire a été monté et financé entièrement avec l'argent personnel de <strong>Guillaum Labrecque-Houle</strong>. Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Ce financement personnel n'est ni une subvention, ni une commandite, ni une approbation institutionnelle du projet.</p></div>
@@ -2001,10 +2001,10 @@ const LANG = {
 
   // ── PHONOLOGIE (certaine — documentée dans À propos) ──
   PHONOLOGY: {
-    '8':  '« en » + « on » simultanément — voyelle nasale unique',
-    'i':  'se prononce É',
-    'o':  'se prononce OU (ex: Awassos = awassouuss)',
-    'w':  'O doux devant une consonne (Wli = oli) · WA devant une voyelle (W8linak = wanlinak) · presque muet en fin de mot (Kizokw)',
+    '8':  'A nasal, approximativement entre « an » et « on »',
+    'i':  'entre I et É; en fin de mot, il tend vers É',
+    'o':  'O comme dans « zéro »; -on final tend vers « oun » et O devant Z vers « au »',
+    'w':  'O doux devant une consonne (Wli = oli) · glissement W devant une voyelle (W8linak = wanlinak) · presque muet en fin de mot (Kizokw)',
     'Ch': 'son TS',
     'J':  'son DZ',
   },
@@ -3842,11 +3842,11 @@ function liveCheck(){
 
   // ── Phonologie (règles certaines documentées) ──
   const phono = [];
-  if (/8/.test(v))                         phono.push('8 = voyelle nasale (« en »+« on »)');
+  if (/8/.test(v))                         phono.push('8 = A nasal, entre « an » et « on »');
   if (/ch/i.test(v))                       phono.push('Ch = son TS');
   if (/[jJ]/.test(v))                      phono.push('J = son DZ');
-  if (/[iI]/.test(v))                      phono.push('i = se prononce É');
-  if (/[wW]/.test(v))                      phono.push('w = o doux devant consonne · wa devant voyelle · presque muet à la fin');
+  if (/[iI]/.test(v))                      phono.push('i = entre I et É; final, il tend vers É');
+  if (/[wW]/.test(v))                      phono.push('w = o doux devant consonne · glissement W devant voyelle · presque muet à la fin');
   if (phono.length) infos.push(`🔤 ${phono.join(' · ')}`);
 
   // ── Rendu ──
@@ -3964,33 +3964,34 @@ function joinVoicePersonalPrefix(value){
   // N'/Nd', K'/Kd' and W'/Wd' stay attached to the stem; the apostrophe is not a pause.
   return (value||'').replace(/\b([nkw]d?)[’']\s*-?\s*(?=[a-zà-ÿ8])/gi,'$1');
 }
+function markVoiceWContext(value){
+  // Mark W while the next original Abenaki character is still known. In particular,
+  // W before 8 is a glide; deciding after 8 becomes "an" used to create false OU syllables.
+  return (value||'')
+    .replace(/w(?=-*[aeiouyàâäéèêëîïôöùûü8])/g,'\uE000')
+    .replace(/w(?=$|[\s.,!?;:])/g,'\uE002')
+    .replace(/w(?=-*[^aeiouyàâäéèêëîïôöùûü8\s.,!?;:-])/g,'\uE001');
+}
 function alnToVoiceCue(value){
-  return joinVoicePersonalPrefix((value||'').toLowerCase())
+  return markVoiceWContext(joinVoicePersonalPrefix((value||'').toLowerCase()))
     .replace(/\b8h8\b/g,'zzaffirmativezz')
     // Reuse the documented isolated guide "to-ni" inside longer T8ni phrases.
     .replace(/\bt8ni\b/g,'zzquestionzz')
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
     // O stays O as in "zéro"; only documented final -on and O before Z change.
-    .replace(/on\b/g,'oun').replace(/o(?=z)/g,'au').replace(/i\b/g,'é')
-    .replace(/w(?=[aeiouyàâäéèêëîïôöùûü])/g,'zzglidezz')
-    .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s])/g,'o')
-    .replace(/w\b/g,'')
-    .replace(/ouzzglidezz/g,'ou').replace(/zzglidezz/g,'ou')
+    .replace(/on(?=$|[\s.,!?;:])/g,'oun').replace(/o(?=z)/g,'au').replace(/i(?=$|[\s.,!?;:])/g,'é')
+    .replace(/\uE000/g,'w').replace(/\uE001/g,'o').replace(/\uE002/g,'')
     .replace(/zzquestionzz/g,'to-ni')
     .replace(/zzaffirmativezz/g,'an-han')
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
     .replace(/\s+/g,' ').trim();
 }
 function phoneticToVoiceCue(value){
-  return joinVoicePersonalPrefix((value||'').toLowerCase().replace(/[☼·]/g,' '))
+  return markVoiceWContext(joinVoicePersonalPrefix((value||'').toLowerCase().replace(/[☼·]/g,' ')))
     .replace(/\b8h8\b/g,'an-han')
     .replace(/ch/g,'ts').replace(/j/g,'dz').replace(/8/g,'an')
-    // A visual syllable break does not change the sound that follows W.
-    .replace(/w(?=-+[aeiouyàâäéèêëîïôöùûü])/g,'ou')
-    .replace(/w(?=-+[^aeiouyàâäéèêëîïôöùûü\s-])/g,'o')
-    .replace(/w(?=[aeiouyàâäéèêëîïôöùûü])/g,'ou')
-    .replace(/w(?=[^aeiouyàâäéèêëîïôöùûü\s-])/g,'o')
-    .replace(/w(?=$|[\s-])/g,'')
+    // OU is only a French TTS command for one continuous W glide, never a new syllable.
+    .replace(/\uE000/g,'ou').replace(/\uE001/g,'o').replace(/\uE002/g,'')
     .replace(/[’']/g,' ').replace(/[^a-zà-ÿ\s-]/g,' ')
     .replace(/\s+/g,' ').trim();
 }
@@ -4006,23 +4007,23 @@ function voiceFinalAkToFrenchSpeech(value){
   return value.replace(/-?ak$/,'aque');
 }
 function voice8W8ToFrenchSpeech(value){
-  // The apostrophe asks French TTS to join the W glide to the second nasal
-  // without turning "ou" into a separate syllable or pausing inside the word.
-  return value.replace(/an-?ou-?an/g,"an'ouan");
+  // Keep the two nasals and their W glide in one token; an apostrophe caused
+  // some mobile voices to pause and exaggerate OU as a separate syllable.
+  return value.replace(/an-?(?:ou|w)-?an/g,'anouan');
 }
 function voiceKwatToFrenchSpeech(value){
   // French "couatte" keeps KW as one glide and makes the final T audible.
   // This command spelling is limited to the documented -kwat/-kuat ending.
-  return value.replace(/k-?ou-?at$/,'couatte');
+  return value.replace(/k-?(?:ou|u|w)-?at$/,'couatte');
 }
 function voiceFinalTToFrenchSpeech(value){
   // A final E is only a TTS command: it prevents French voices from muting T.
   return value.replace(/t$/,'tte');
 }
 function voiceSoundDrillToFrenchSpeech(value,label){
-  // A final silent H makes these short cues behave like one syllable instead of initials.
-  if((label||'').trim().toUpperCase()==='CH') return 'tsah';
-  if((label||'').trim().toUpperCase()==='J') return 'dzah';
+  // Doubled S keeps TSA in one spoken unit instead of the letters T-S-A.
+  if((label||'').trim().toUpperCase()==='CH') return 'tssa';
+  if((label||'').trim().toUpperCase()==='J') return 'dza';
   return value;
 }
 function voiceAffirmativeToFrenchSpeech(value,label){
@@ -4039,6 +4040,15 @@ function voiceDocumentedWordToFrenchSpeech(value,label){
   // MEK and MES keep their own cue instead of being guessed as an accented E.
   return value.replace(/(^|[-\s])me(?=$|[-\s])/gi,'$1mé');
 }
+function voiceFinalConsonantToFrenchSpeech(value,label){
+  // French synthesis often mutes these final consonants. The added E exists only
+  // in the command sent to the voice; the Abenaki spelling shown to the learner is unchanged.
+  const normalizedLabel=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase().replace(/w$/,'');
+  const match=normalizedLabel.match(/([kspbdgz])$/);
+  if(!match) return value;
+  const commands={k:'que',s:'sse',p:'pe',b:'be',d:'de',g:'gue',z:'ze'};
+  return value.replace(new RegExp(match[1]+'$'),commands[match[1]]);
+}
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
   if(/8w8/i.test(label)) speechCue=voice8W8ToFrenchSpeech(speechCue);
@@ -4049,6 +4059,7 @@ function voiceCueToSpeech(value,label=''){
   speechCue=voiceSoundDrillToFrenchSpeech(speechCue,label);
   speechCue=voiceAffirmativeToFrenchSpeech(speechCue,label);
   speechCue=voiceDocumentedWordToFrenchSpeech(speechCue,label);
+  speechCue=voiceFinalConsonantToFrenchSpeech(speechCue,label);
   return speechCue.replace(/-/g,'').replace(/\s+/g,' ').trim();
 }
 function voiceCueForWord(w){
@@ -4143,6 +4154,8 @@ function voiceSpeak(label,cue,announce=true,slow=false){
     return;
   }
   const displayCue=phoneticToVoiceCue(cue||alnToVoiceCue(label));
+  // Keep documented phonetic exceptions, then join their visual syllable breaks
+  // only in the command sent to synthesis so the voice still says one complete word.
   const spokenCue=voiceCueToSpeech(displayCue,label);
   if(!spokenCue) return;
   if(voiceSpeakTimer){clearTimeout(voiceSpeakTimer);voiceSpeakTimer=null;}
@@ -4153,7 +4166,7 @@ function voiceSpeak(label,cue,announce=true,slow=false){
   const voices=speechSynthesis.getVoices();
   u.voice=voices.find(v=>/^fr-CA$/i.test(v.lang))||voices.find(v=>/^fr/i.test(v.lang))||null;
   u.lang=u.voice?u.voice.lang:'fr-CA';
-  u.rate=slow?.6:.74; u.pitch=1; u.volume=1;
+  u.rate=slow?.56:.70; u.pitch=.98; u.volume=1;
   let started=false;
   u.onstart=()=>{started=true;};
   u.onerror=()=>audioPlaybackBlocked('Ce navigateur n’a pas réussi à démarrer le guide vocal. Ouvre la page dans Chrome et réessaie.');
