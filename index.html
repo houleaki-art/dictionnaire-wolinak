@@ -1621,7 +1621,7 @@ Merci... merci de m'avoir entendu</pre>
     <div class="acards">
       <div class="acard"><h3>✍️ Le chiffre 8</h3><p>Le <strong>8</strong> représente une voyelle <strong>A nasale</strong>, approximativement entre le « an » et le « on » français. Ce n'est pas une succession de deux sons. Le <strong>o</strong> demeure un son distinct. Ex: <em>Aln8ba</em>, <em>j8n</em> (le nez).</p></div>
       <div class="acard"><h3>🔊 Règles de prononciation</h3>
-        <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; une consonne finale ne doit pas disparaître, sauf le <b>w final</b> qui est très doux et souvent absent</td></tr><tr><td>i</td><td>= entre I et É; en fin de mot, il tend vers É</td></tr><tr><td>o</td><td>= O comme dans « zéro »; <b>-on</b> final tend vers « oun » et <b>o</b> devant <b>z</b> vers « au »</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>glissement w</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= A nasal entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
+        <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; une consonne finale ne doit pas disparaître, sauf le <b>w final</b> qui est très doux et souvent absent</td></tr><tr><td>i</td><td>= un seul I intérieur reste I; le dernier I tend vers É s'il termine le mot ou si le mot contient plusieurs I. <b>Kizi</b> garde I.</td></tr><tr><td>o</td><td>= O comme dans « zéro »; <b>-on</b> final tend vers « oun » et <b>o</b> devant <b>z</b> vers « au »</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>glissement w</b> devant une voyelle (W8linak = wanlinak) · <b>presque muet</b> à la fin (Kizokw = kizok(w))</td></tr><tr><td>8</td><td>= A nasal entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
       <div class="acard"><h3>💰 Financement personnel</h3><p>Ce dictionnaire a été monté et financé entièrement avec l'argent personnel de <strong>Guillaum Labrecque-Houle</strong>. Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Ce financement personnel n'est ni une subvention, ni une commandite, ni une approbation institutionnelle du projet.</p></div>
@@ -2002,7 +2002,7 @@ const LANG = {
   // ── PHONOLOGIE (certaine — documentée dans À propos) ──
   PHONOLOGY: {
     '8':  'A nasal, approximativement entre « an » et « on »',
-    'i':  'entre I et É; en fin de mot, il tend vers É',
+    'i':  'un seul I intérieur reste I; le dernier I tend vers É en fin de mot ou lorsqu’il y en a plusieurs; Kizi garde I',
     'o':  'O comme dans « zéro »; -on final tend vers « oun » et O devant Z vers « au »',
     'w':  'O doux devant une consonne (Wli = oli) · glissement W devant une voyelle (W8linak = wanlinak) · presque muet en fin de mot (Kizokw)',
     'Ch': 'son TS',
@@ -2430,9 +2430,10 @@ function buildDisplayItems(words){
 
 function cardPhonetic(w){
   if(!w) return '';
+  const documented=voiceDocumentedCueForLabel(w.aln8ba||'');
   const synthetic=/8w8/i.test(w.aln8ba||'')&&!w.phonetic
     ? `☼ ${alnToVoiceCue(w.aln8ba).replace(/an-?ou-?an/g,'an-ouan')} · guide synthétique approximatif` : '';
-  const guide=w.phonetic||synthetic;
+  const guide=documented?`☼ ${documented}`:(w.phonetic||synthetic);
   if(!guide) return '';
   const softW=/w(?=[^aeiouyàâäéèêëîïôöùûü\s])/i.test(w.aln8ba||'')
     ? '<span title="Devant une consonne, le W se prononce comme un O doux."> · w : o doux devant consonne</span>' : '';
@@ -3845,7 +3846,7 @@ function liveCheck(){
   if (/8/.test(v))                         phono.push('8 = A nasal, entre « an » et « on »');
   if (/ch/i.test(v))                       phono.push('Ch = son TS');
   if (/[jJ]/.test(v))                      phono.push('J = son DZ');
-  if (/[iI]/.test(v))                      phono.push('i = entre I et É; final, il tend vers É');
+  if (/[iI]/.test(v))                      phono.push('i = intérieur unique : I · dernier ou final : vers É · Kizi garde I');
   if (/[wW]/.test(v))                      phono.push('w = o doux devant consonne · glissement W devant voyelle · presque muet à la fin');
   if (phono.length) infos.push(`🔤 ${phono.join(' · ')}`);
 
@@ -3960,6 +3961,17 @@ function stopRec(){
 let APR_VOICE_READY=[], VOICE_ITEMS=[], VOICE_INDEX=0, VOICE_RESULTS=[];
 let voiceRecognition=null, voiceRecognitionTimer=null, voiceFallbackRecorder=null, voiceFallbackStream=null, voiceFallbackChunks=[], voiceFallbackTimer=null, voiceFallbackUrl=null, voiceFallbackDiscard=false, voiceSpeakTimer=null;
 
+function voiceDocumentedCueForLabel(value){
+  const key=(value||'').trim().replace(/’/g,"'").replace(/[.!?]+$/,'').toLowerCase();
+  const cues={
+    'aln8ba8dwa':'al-non-ba-on-doua',
+    "nd'aln8ba8dwa":'nd-al-non-ba-on-doua',
+    "kd'aln8ba8dwa":'kd-al-non-ba-on-doua',
+    "nda nd'aln8ba8dwawi":'nda nd-al-non-ba-on-doua-oué',
+    'aln8ba8dwaw8gan':'al-non-ba-on-doua-ouon-gan'
+  };
+  return cues[key]||'';
+}
 function joinVoicePersonalPrefix(value){
   // N'/Nd', K'/Kd' and W'/Wd' stay attached to the stem; the apostrophe is not a pause.
   return (value||'').replace(/\b([nkw]d?)[’']\s*-?\s*(?=[a-zà-ÿ8])/gi,'$1');
@@ -3971,6 +3983,22 @@ function markVoiceWContext(value){
     .replace(/w(?=-*[aeiouyàâäéèêëîïôöùûü8])/g,'\uE000')
     .replace(/w(?=$|[\s.,!?;:])/g,'\uE002')
     .replace(/w(?=-*[^aeiouyàâäéèêëîïôöùûü8\s.,!?;:-])/g,'\uE001');
+}
+function voiceApplyIRule(value,label=''){
+  const labelWords=joinVoicePersonalPrefix((label||'').toLowerCase())
+    .replace(/[.!?,;:]+/g,' ').trim().split(/\s+/).filter(Boolean);
+  let wordIndex=0;
+  return (value||'').split(/(\s+)/).map(part=>{
+    if(/^\s+$/.test(part)) return part;
+    const labelWord=(labelWords[wordIndex++]||'').replace(/[’']/g,'');
+    if(labelWord==='kizi') return part;
+    const positions=[];
+    for(let i=0;i<part.length;i++) if(part[i]==='i') positions.push(i);
+    if(!positions.length) return part;
+    const last=positions[positions.length-1];
+    if(positions.length<2 && last!==part.length-1) return part;
+    return part.slice(0,last)+'é'+part.slice(last+1);
+  }).join('');
 }
 function alnToVoiceCue(value){
   return markVoiceWContext(joinVoicePersonalPrefix((value||'').toLowerCase()))
@@ -4027,8 +4055,9 @@ function voiceSoundDrillToFrenchSpeech(value,label){
   return value;
 }
 function voiceAffirmativeToFrenchSpeech(value,label){
-  // One continuous token prevents French TTS from spelling the isolated A and N.
-  if((label||'').trim().replace(/[.!?]+$/,'').toLowerCase()==='8h8') return 'anhan';
+  // French voices mute H in "an-han" and collapse it into "anan". This command
+  // asks for two low nasal murmurs; it changes only the synthetic approximation.
+  if((label||'').trim().replace(/[.!?]+$/,'').toLowerCase()==='8h8') return 'hon, hon';
   return value;
 }
 function voiceDocumentedWordToFrenchSpeech(value,label){
@@ -4051,6 +4080,7 @@ function voiceFinalConsonantToFrenchSpeech(value,label){
 }
 function voiceCueToSpeech(value,label=''){
   let speechCue=phoneticToVoiceCue(value);
+  speechCue=voiceApplyIRule(speechCue,label);
   if(/8w8/i.test(label)) speechCue=voice8W8ToFrenchSpeech(speechCue);
   if(/8k/i.test(label)) speechCue=voice8KToFrenchSpeech(speechCue);
   if(/ak[.!?]*$/i.test((label||'').trim())) speechCue=voiceFinalAkToFrenchSpeech(speechCue);
@@ -4065,6 +4095,8 @@ function voiceCueToSpeech(value,label=''){
 function voiceCueForWord(w){
   const word=(w&&w.aln8ba||'').trim();
   if(word.toLowerCase()==='8h8') return 'an-han';
+  const documented=voiceDocumentedCueForLabel(word);
+  if(documented) return documented;
   const ph=(w&&w.phonetic||'').replace(/[☼·]/g,' ').replace(/\s+/g,' ').trim();
   if(ph&&ph.length<80) return phoneticToVoiceCue(ph);
   return word?alnToVoiceCue(word):'';
@@ -4153,7 +4185,7 @@ function voiceSpeak(label,cue,announce=true,slow=false){
     audioPlaybackBlocked('Le guide vocal synthétique n’est pas disponible dans ce navigateur.');
     return;
   }
-  const displayCue=phoneticToVoiceCue(cue||alnToVoiceCue(label));
+  const displayCue=phoneticToVoiceCue(voiceDocumentedCueForLabel(label)||cue||alnToVoiceCue(label));
   // Keep documented phonetic exceptions, then join their visual syllable breaks
   // only in the command sent to synthesis so the voice still says one complete word.
   const spokenCue=voiceCueToSpeech(displayCue,label);
@@ -4166,7 +4198,10 @@ function voiceSpeak(label,cue,announce=true,slow=false){
   const voices=speechSynthesis.getVoices();
   u.voice=voices.find(v=>/^fr-CA$/i.test(v.lang))||voices.find(v=>/^fr/i.test(v.lang))||null;
   u.lang=u.voice?u.voice.lang:'fr-CA';
-  u.rate=slow?.56:.70; u.pitch=.98; u.volume=1;
+  const murmuredAffirmative=(label||'').trim().replace(/[.!?]+$/,'').toLowerCase()==='8h8';
+  u.rate=murmuredAffirmative?(slow?.46:.54):(slow?.56:.70);
+  u.pitch=murmuredAffirmative?.72:.98;
+  u.volume=murmuredAffirmative?.86:1;
   let started=false;
   u.onstart=()=>{started=true;};
   u.onerror=()=>audioPlaybackBlocked('Ce navigateur n’a pas réussi à démarrer le guide vocal. Ouvre la page dans Chrome et réessaie.');
@@ -5862,7 +5897,7 @@ const NIVEAUX=[
   <tr><td class="k">J</td><td>se prononce <b>DZ</b>, jamais comme en français</td></tr>
   <tr><td class="k">8</td><td>une voyelle nasale entre « an » et « on »</td></tr>
   <tr><td class="k">W</td><td>devant une consonne, il sonne comme un <b>O doux</b> — <span class="al8">Wli</span> se dit « oli ». Devant une voyelle, il sonne <b>WA</b> — <span class="al8">W8linak</span> se dit « wanlinak ». À la fin d'un mot, il est <b>presque muet</b> — <span class="al8">Kizokw</span> se dit « kizok(w) »</td></tr>
-  <tr><td class="k">I</td><td>sonne souvent <b>É</b>, surtout en fin de mot — <span class="al8">Mziwi</span> se dit « mziwé »</td></tr></table>
+  <tr><td class="k">I</td><td>un seul <b>I intérieur</b> reste I — <span class="al8">Agakimzo</span>. Le dernier I tend vers <b>É</b> s'il termine le mot ou si le mot contient plusieurs I — <span class="al8">Abazi</span> sonne « abazé » et <span class="al8">Mziwi</span> « mziwé ». Exception documentée : <span class="al8">Kizi</span> garde I.</td></tr></table>
   <div class="aprnote w"><b>Dis tout à voix haute, toujours</b>
    Une langue ne s'apprend pas des yeux. Chaque mot de ce parcours doit sortir de ta bouche,
    même seul dans ton char.</div>`},
