@@ -49,3 +49,29 @@ test('une prise locale validee passe avant la synthese et affiche sa couverture'
   assert.match(voice, /playApprovedWordAudio/);
   assert.match(html, /mots enregistrés/);
 });
+
+test('la deuxieme personne interrogative est enseignee sans regle inventee', () => {
+  assert.match(html, /La deuxième personne interrogative/);
+  assert.match(html, /forme en <b>-an<\/b>/);
+  assert.match(html, /préfixe <b>kd'-<\/b> conservé/);
+  assert.match(html, /ex:'inter2'/);
+  assert.match(html, /inter2:exInter2/);
+  assert.match(html, /w\.id==='man_r02'/);
+  assert.match(html, /INTERROGATIVE_FORM_NOTES/);
+  assert.match(html, /deuxième personne interrogative',\s*notes:/);
+  const search = sourceBetween('function filtered()', "// ── Ordre d'affichage");
+  assert.match(search, /w\.grammar,w\.notes/);
+});
+
+test('le quiz interrogatif utilise seulement les contrastes documentes', () => {
+  const source = sourceBetween('const EXINTER2', 'function exInter2');
+  const questions = new Function(`${source}; return EXINTER2;`)();
+  assert.equal(questions.length, 7);
+  for (const form of ['T8ni aliwizian?', 'T8ni alosan?', 'T8ni wigian?',
+    "Kagwi k'michi?", "T8ni kd'al8wzin?", "K'kasigadma?"]) {
+    assert.ok(questions.some(question => question.p === form), `forme absente: ${form}`);
+  }
+  const nameQuestion = questions.find(question => question.p === "Comment t'appelles-tu?");
+  assert.equal(nameQuestion.o[nameQuestion.r], 'T8ni aliwizian?');
+  assert.ok(nameQuestion.o.includes("T8ni kd'aliwizian?"));
+});

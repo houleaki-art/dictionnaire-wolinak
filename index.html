@@ -2490,17 +2490,34 @@ const FAMILY_MAP = {
 const CURRENT_USAGE_OVERRIDES={
   kdakinna:{cat:'territoire',related:['Ndakina'],note:'Usage actuel signalé par Guillaum Labrecque-Houle.'}
 };
+const INTERROGATIVE_FORM_NOTES={
+  't8ni aliwizian':"Deuxième personne interrogative documentée : dans cette forme complète, -ian porte « tu ». Ne pas ajouter kd'. Manuel de l'étudiant 1, page 34.",
+  't8ni alosan':"Deuxième personne interrogative documentée : dans cette forme complète, -an porte « tu ». Ne pas ajouter automatiquement k'- ou kd'. Manuel de l'étudiant 1, page 34.",
+  't8ni wigian':"Deuxième personne interrogative documentée : dans cette forme complète, -ian porte « tu ». Ne pas ajouter automatiquement k'- ou kd'. Manuel de l'étudiant 1, page 34.",
+  "t8ni kd'al8wzin":"Question courante documentée qui conserve le préfixe de deuxième personne kd'-. Cette forme ne permet pas de conclure que toutes les questions gardent ce préfixe.",
+  "k'kasigadma":"Question courante documentée qui conserve le préfixe de deuxième personne k'- : quel âge as-tu?"
+};
+const INTERROGATIVE_RULE_NOTE="Deuxième personne dans les questions documentées : le Manuel présente des formes en -an ou -ian (T8ni alosan?, T8ni wigian?, T8ni aliwizian?) et d'autres formes qui conservent k'- ou kd'- (Kagwi k'michi?, T8ni kd'al8wzin?, K'kasigadma?). Ces modèles ne doivent pas être mélangés ni étendus à un verbe non documenté. Laurent 1884 décrit aussi l'interrogation par l'intonation ou le point d'interrogation dans sa grammaire historique; cette remarque ne remplace pas les formes actuelles du Manuel.";
 function applyCurrentUsageOverrides(words){
   return words.map(w=>{
-    const key=(w.aln8ba||'').toLowerCase();
+    const key=(w.aln8ba||'').toLowerCase().trim();
+    const interrogativeKey=key.replace(/\?+$/,'');
     const override=CURRENT_USAGE_OVERRIDES[key];
+    let next=w;
     if(override){
       const related=[...new Set([...(w.related||[]),...override.related])];
       const notes=(w.notes||'').includes(override.note)?w.notes:[w.notes,override.note].filter(Boolean).join(' · ');
-      return {...w,cat:override.cat,related,notes};
+      next={...w,cat:override.cat,related,notes};
     }
-    if(key==='ndakina') return {...w,related:[...new Set([...(w.related||[]),'Kdakinna'])]};
-    return w;
+    const interrogativeNote=INTERROGATIVE_FORM_NOTES[interrogativeKey];
+    if(interrogativeNote&&!((next.notes||'').includes(interrogativeNote)))
+      next={...next,notes:[next.notes,interrogativeNote].filter(Boolean).join(' · ')};
+    if(w.id==='man_r02'&&!((next.notes||'').includes(INTERROGATIVE_RULE_NOTE)))
+      next={...next,fr:'Les trois ordres de conjugaison · deuxième personne interrogative',
+        notes:[next.notes,INTERROGATIVE_RULE_NOTE].filter(Boolean).join(' · '),
+        related:[...new Set([...(next.related||[]),'T8ni aliwizian?','T8ni alosan?','T8ni wigian?',"T8ni kd'al8wzin?","Kagwi k'michi?"])]};
+    if(key==='ndakina') next={...next,related:[...new Set([...(next.related||[]),'Kdakinna'])]};
+    return next;
   });
 }
 async function fetchWordsFromSB(){
@@ -2700,11 +2717,8 @@ function filtered(){
   // La collecte vocale ne montre jamais une fiche sans statut vert actuel.
   if(S.corpusOnly) r = adminUnlocked ? r.filter(isCorpusEligible) : [];
   const q = S.q.trim().toLowerCase();
-  if(q) r = r.filter(w=>{
-    if(S.lang==='aln8ba') return w.aln8ba.toLowerCase().includes(q);
-    if(S.lang==='fr')     return w.fr.toLowerCase().includes(q);
-    if(S.lang==='en')     return w.en.toLowerCase().includes(q);
-  });
+  if(q) r = r.filter(w=>[w.aln8ba,w.fr,w.en,w.grammar,w.notes]
+    .filter(Boolean).join(' ').toLowerCase().includes(q));
   if(S.view==='favorites') r = r.filter(w=>FAVS.includes(w.id));
   if(S.cat) r = r.filter(w=>w.cat===S.cat);
   if(S.letter) r = r.filter(w=>w.aln8ba.toUpperCase().startsWith(S.letter));
@@ -7110,8 +7124,9 @@ const NIVEAUX=[
   coach:`N, K, W — moi, toi, lui. Une fois que tu l'as vu, tu le vois partout. Amuse-toi une semaine
    à lire le dictionnaire en chassant ces préfixes : tu devineras le sens des mots avant de lire
    la traduction, et c'est le jour où tu commences à <i>lire</i> la langue au lieu de la traduire.`},
- {t:"Les verbes au présent",d:"Un préfixe devant le verbe, et c'est tout.",ex:'conjp',lec:`
-  <p>Pour dire qui fait l'action, on colle un préfixe devant le verbe. Le même que pour les possessifs.</p>
+ {t:"Les verbes au présent",d:"Reconnaître la personne dans des formes indépendantes documentées.",ex:'conjp',lec:`
+  <p>Dans les <b>formes indépendantes montrées ici</b>, la personne se reconnaît notamment au préfixe.
+  Le même jeu de préfixes apparaît aussi avec les possessifs.</p>
   <table class="aprtab"><tr><th>Personne</th><th>Exemple</th></tr>
   <tr><td>je</td><td class="k">N'michi — je mange</td></tr>
   <tr><td>tu</td><td class="k">K'michi — tu manges</td></tr>
@@ -7122,28 +7137,41 @@ const NIVEAUX=[
   <div class="aprnote"><b>Quelques verbes utiles</b>
    <span class="al8">N'klozi</span> je parle · <span class="al8">N'wigi</span> j'habite ·
    <span class="al8">N'kawi</span> je dors · <span class="al8">Nd'aloka</span> je travaille ·
-   <span class="al8">N'pemeg8</span> je danse</div>`,
-  coach:`Conjuguer au présent, c'est du lego : le verbe garde sa forme, tu changes juste la tête.
-   Prends UN verbe que tu aimes et décline-le en marchant — je, tu, il. Demain, un autre.
-   En huit jours, les huit verbes du module sont à toi, sans une seule séance pénible.`},
- {t:"Poser une question",d:"Qui, quoi, où, quand, comment.",cat:'grammaire',ex:'vocab',lec:`
+   <span class="al8">N'pemeg8</span> je danse</div>
+  <div class="aprnote w"><b>Ce n'est pas toute la conjugaison.</b>
+   Une question peut employer un autre ordre et porter la deuxième personne dans une terminaison,
+   comme <span class="al8">T8ni wigian?</span>. On ne transforme donc pas mécaniquement chaque verbe
+   en changeant seulement son préfixe.</div>`,
+  coach:`Commence par reconnaître les préfixes dans ces formes indépendantes. Pour poser une question,
+   passe ensuite au module suivant : il montre pourquoi certaines formes gardent <span class="al8">k'-/kd'-</span>
+   et pourquoi d'autres portent « tu » dans <span class="al8">-an/-ian</span>.`},
+ {t:"La deuxième personne interrogative",d:"Où se trouve « tu » dans les questions documentées?",cat:'grammaire',ex:'inter2',lec:`
   <table class="aprtab">
   <tr><td class="k">Awani</td><td>qui</td></tr><tr><td class="k">Kagwi</td><td>quoi</td></tr>
   <tr><td class="k">Chiga</td><td>quand</td></tr>
   <tr><td class="k">T8ni</td><td>comment · où · combien</td></tr></table>
-  <h3>Les questions qu'on entend le plus</h3>
-  <table class="aprtab">
-  <tr><td class="k">T8ni kd'al8wzin?</td><td>Comment vas-tu?</td></tr>
-  <tr><td class="k">T8ni aliwizian?</td><td>Comment t'appelles-tu?</td></tr>
-  <tr><td class="k">T8ni wigian?</td><td>Où habites-tu?</td></tr>
-  <tr><td class="k">K'kasigadma?</td><td>Quel âge as-tu?</td></tr></table>
-  <div class="aprnote"><b>Pourquoi il n'y a pas <span class="al8">kd'</span> dans <span class="al8">T8ni aliwizian?</span></b>
-   Le Manuel de l'étudiant donne cette question complète avec <span class="al8">-ian</span>, sans préfixe ajouté.
-   Laurent (1884) documente une autre construction historique, <span class="al8">Kagwi k'd-eliwizi?</span>.
-   Les deux modèles sont documentés, mais <span class="al8">T8ni kd'aliwizian?</span> les mélangerait : on ne les assemble pas.</div>`,
-  coach:`<span class="al8">T8ni</span> est un couteau suisse : comment, où, combien. Apprends les quatre
-   questions types comme des chansons — répète-les jusqu'à ce qu'elles sortent sans réfléchir.
-   Poser une question sans hésiter, c'est le moment où tu passes d'élève à interlocuteur.`},
+  <h3>Deux modèles visibles dans les exemples du Manuel</h3>
+  <table class="aprtab"><tr><th>Question documentée</th><th>Où se lit la 2e personne?</th><th>Sens</th></tr>
+  <tr><td class="k">T8ni alosan?</td><td>forme en <b>-an</b></td><td>Où vas-tu?</td></tr>
+  <tr><td class="k">T8ni wigian?</td><td>forme en <b>-ian</b></td><td>Où habites-tu?</td></tr>
+  <tr><td class="k">T8ni aliwizian?</td><td>forme en <b>-ian</b></td><td>Comment t'appelles-tu?</td></tr>
+  <tr><td class="k">Kagwi k'michi?</td><td>préfixe <b>k'-</b> conservé</td><td>Que manges-tu?</td></tr>
+  <tr><td class="k">T8ni kd'al8wzin?</td><td>préfixe <b>kd'-</b> conservé</td><td>Comment vas-tu?</td></tr>
+  <tr><td class="k">K'kasigadma?</td><td>préfixe <b>k'-</b> conservé</td><td>Quel âge as-tu?</td></tr></table>
+  <div class="aprnote"><b>La règle sûre</b>
+   Il n'existe pas, dans ces exemples, une seule marque visible qu'on pourrait ajouter partout.
+   On apprend la <b>forme interrogative complète documentée</b>. Ainsi,
+   <span class="al8">T8ni aliwizian?</span> est complet : ajouter <span class="al8">kd'</span>
+   fabriquerait le mélange non documenté <span class="al8">T8ni kd'aliwizian?</span>.</div>
+  <div class="aprnote w"><b>Deux contextes de sources à ne pas confondre</b>
+   Le Manuel actuel présente l'ordre conjonctif avec les questions introduites par qui, quoi, où,
+   comment ou quand. Laurent (1884) explique aussi qu'une phrase affirmative ou négative peut devenir
+   interrogative par l'intonation et, à l'écrit, par <b>?</b>. Cette remarque historique ne permet pas
+   de fabriquer une forme actuelle absente du Manuel.</div>
+  <span class="aprsrc">Manuel de l'étudiant 1, pages 29 et 34 · Joseph Laurent, 1884, page 204</span>`,
+  coach:`Lis d'abord la question entière. Ensuite seulement, repère « tu » : parfois dans
+   <span class="al8">-an/-ian</span>, parfois dans <span class="al8">k'-/kd'-</span>.
+   Ne retire ni n'ajoute un préfixe par analogie : mémorise les six modèles attestés.`},
  {t:"Le temps qui passe",d:"Les jours, les mois, les saisons.",cat:'temps',ex:'vocab',lec:`
   <table class="aprtab">
   <tr><td class="k">Sigwan</td><td>le printemps</td></tr><tr><td class="k">Niben</td><td>l'été</td></tr>
@@ -7366,9 +7394,20 @@ const NIVEAUX=[
   <tr><td class="k">Indépendant</td><td>phrase ordinaire</td><td class="k">N'michi</td></tr>
   <tr><td class="k">Impératif</td><td>un ordre</td><td class="k">Michi!</td></tr>
   <tr><td class="k">Conjonctif</td><td>employé ici dans une question</td><td class="k">Kagwi k'michi?</td></tr></table>
+  <div class="aprnote"><b>Deuxième personne interrogative : relire la forme complète</b>
+   Dans les questions actuelles documentées, « tu » apparaît soit dans une forme en
+   <span class="al8">-an/-ian</span> — <span class="al8">alosan, wigian, aliwizian</span> —,
+   soit dans <span class="al8">k'-/kd'-</span> — <span class="al8">k'michi, kd'al8wzin</span>.
+   Ce sont des modèles attestés, pas une permission de déplacer ces marques d'un verbe à l'autre.</div>
+  <div class="aprnote w"><b>Interrogation historique par l'intonation</b>
+   Laurent (1884, p. 204) indique qu'une phrase affirmative ou négative peut aussi devenir une question
+   par l'intonation, ou par le point d'interrogation à l'écrit. Le Manuel actuel enseigne séparément
+   l'ordre conjonctif dans les questions d'information; le dictionnaire conserve les deux explications
+   avec leur source et leur époque.</div>
   <h3>L'impératif collectif</h3>
   <p>Le suffixe <code>-oda</code> dit ce qu'on se propose de faire ensemble.
-  <span class="al8">Wig8damoda!</span> réjouissons-nous · <span class="al8">Losada</span> allons.</p>`,
+  <span class="al8">Wig8damoda!</span> réjouissons-nous · <span class="al8">Losada</span> allons.</p>
+  <span class="aprsrc">Manuel de l'étudiant 1, page 29 · Joseph Laurent, 1884, page 204</span>`,
   coach:`Dans ces exemples, distingue la phrase indépendante, l'impératif et la forme
    conjonctive employée dans une question. Le suffixe <span class='al8'>-oda</span> marque ici
    une action proposée collectivement.`},
@@ -8139,7 +8178,7 @@ function aprEx(type,cat,titre,mode){
   const fixedCapacity={
     plur:()=>JPLUR.length, poss:()=>EXPOSS.length, conjp:()=>EXCONJ.length*2,
     negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length, aimuk:()=>EXAIMUK.length,
-    vta:()=>EXVTA.length*2, ordre:()=>EXORDRE.length,
+    vta:()=>EXVTA.length*2, inter2:()=>EXINTER2.length, ordre:()=>EXORDRE.length,
     neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
     trad:()=>EXTRAD.length
   }[type];
@@ -8218,7 +8257,7 @@ function exSuivant(){
   cancelAnswerAdvance();
   if(exQ>=exTot) return exFin();
   const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
-    negs:exNegs, classfx:exClassFx, structure:exStructure, aimuk:exAimuk, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
+    negs:exNegs, classfx:exClassFx, structure:exStructure, aimuk:exAimuk, vta:exVta, inter2:exInter2, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
     trad:exTrad})[exType];
   handler();
 }
@@ -8691,6 +8730,43 @@ function exRetVta(){
       <p><b>Statut :</b> ${object.exact?'cette phrase complète est documentée dans le Manuel.':'la paire verbale et la classe du nom sont documentées séparément; la phrase affichée est une construction pédagogique à faire valider.'}</p>
       <p><b>Méthode :</b> trouve l'objet, vérifie sa classe sur sa fiche, puis choisis la forme exacte de la paire.</p></div>
     <span class="aprsrc">Manuel de l'étudiant 1, page 33</span>`; }
+
+/* — secondaire : deuxième personne dans les questions documentées — */
+const EXINTER2=[
+ {p:'T8ni aliwizian?',f:"Comment t'appelles-tu?",q:'Où se trouve « tu » dans cette forme?',
+  o:['Dans la forme en -ian',"Dans un préfixe kd'-",'Dans un préfixe n’-','Aucune marque'],r:0,
+  e:"Le Manuel donne aliwizian avec -ian, sans kd'. La phrase complète doit être apprise telle quelle."},
+ {p:'T8ni alosan?',f:'Où vas-tu?',q:'Où se trouve « tu » dans cette forme?',
+  o:['Dans la forme en -an',"Dans un préfixe k'-",'Dans un préfixe w’-','Aucune marque'],r:0,
+  e:"Le Manuel donne alosan avec -an. On n'ajoute pas automatiquement k'- ou kd'."},
+ {p:'T8ni wigian?',f:'Où habites-tu?',q:'Où se trouve « tu » dans cette forme?',
+  o:['Dans la forme en -ian',"Dans un préfixe kd'-",'Dans T8ni seulement','Aucune marque'],r:0,
+  e:"Le Manuel donne wigian avec -ian. T8ni introduit la question; la forme verbale porte aussi l'information de personne."},
+ {p:"Kagwi k'michi?",f:'Que manges-tu?',q:'Quelle marque de deuxième personne est visible?',
+  o:["Le préfixe k'-",'La terminaison -ian','La terminaison -an',"Le préfixe n'-"],r:0,
+  e:"Cet exemple conjonctif du Manuel conserve k'-. Il montre qu'on ne peut pas supprimer le préfixe dans toutes les questions."},
+ {p:"T8ni kd'al8wzin?",f:'Comment vas-tu?',q:'Quelle marque de deuxième personne est visible?',
+  o:["Le préfixe kd'-",'La terminaison -ian','La terminaison -an',"Le préfixe n'-"],r:0,
+  e:"Cette question courante conserve kd'-. Elle doit être apprise comme forme complète documentée."},
+ {p:"K'kasigadma?",f:'Quel âge as-tu?',q:'Quelle marque de deuxième personne est visible?',
+  o:["Le préfixe k'-",'La terminaison -ian','La terminaison -an',"Le préfixe n'-"],r:0,
+  e:"Cette question courante conserve k'-. Elle ne permet pas de construire par analogie une autre question."},
+ {p:"Comment t'appelles-tu?",f:'Choisis uniquement la forme actuelle documentée.',q:'Quelle question donne le Manuel?',
+  o:['T8ni aliwizian?',"T8ni kd'aliwizian?","T8ni kd'aliwizi?",'T8ni aliwizi?'],r:0,
+  e:"T8ni aliwizian? est la forme actuelle complète du Manuel. Les trois autres choix mélangent ou retranchent des marques."}
+];
+function exInter2(){
+  const q=exPickUnique(EXINTER2,x=>x.p+'|'+x.q); window._ex=q;
+  const order=jShuf(q.o.map((_,i)=>i)), opts=order.map(i=>q.o[i]), correct=order.indexOf(q.r);
+  window._ex.interCorrect=q.o[q.r];
+  exCadre(`<div class="jprompt"><div class="q">${escH(q.q)}</div>
+      <div class="w" style="font-size:clamp(1.2rem,5vw,2rem)">${escH(q.p)}</div><div class="h">${escH(q.f)}</div></div>
+    <div class="jopts two">${opts.map((option,i)=>`<button class="jopt" onclick="exRepond(${correct},${i},exRetInter2())">${escH(option)}</button>`).join('')}</div>
+    <div class="jhint">Réponds à partir de la forme complète affichée, sans inventer une conjugaison manquante.</div>`);
+}
+function exRetInter2(){ const q=window._ex;
+  return `<b>${escH(q.interCorrect)}</b><em>${escH(q.e)}</em>
+    <span class="aprsrc">Manuel de l'étudiant 1, pages 29 et 34</span>`; }
 
 /* — cégep : les trois ordres — */
 const EXORDRE=[
