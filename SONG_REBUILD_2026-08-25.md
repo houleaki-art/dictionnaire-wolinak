@@ -15,45 +15,7 @@ Date de travail : 25 août 2026
 
 Retirée du dictionnaire public le 26 août 2026 en raison de problèmes importants de prononciation dans la maquette IA. Le fichier audio, la pochette, les paroles de pratique et le lien de génération ont été supprimés. Cette note conserve uniquement la trace de la décision dans le suivi d'amélioration continue; la chanson ne doit pas être republiée sans une nouvelle validation complète.
 
-## 2. Nijia Gabriel
-
-Statut du titre : `Nijia` est la forme documentée pour « mon frère », lorsqu'un homme parle de son frère.
-
-### Paroles d'apprentissage
-
-```text
-[Intro]
-Nijia Gabriel.
-Wliwni, nijia.
-
-[Couplet 1]
-K'milaloka.
-K'milaloka kizi.
-K'pegwado.
-Wligen. Kalaata.
-
-[Refrain]
-Nijia Gabriel.
-K'kezalmel.
-N'mikwaldam.
-Wli nanawalmezi.
-
-[Couplet 2]
-Niona W8banakiak.
-Odanak. W8linak.
-Ndakina. Kdakinna.
-Wig8damoda!
-
-[Finale]
-Wliwni, nijia.
-Kchi wliwni.
-Adio.
-Wli nanawalmezi.
-```
-
-Traçabilité : `Nijia`, `K'milaloka`, `K'milaloka kizi`, `K'pegwado`, `Kchi wliwni`, `Ndakina`, `Kdakinna` et les salutations sont documentés dans les sources actuelles du projet. `K'kezalmel` vient de Laurent (1884). `Niona W8banakiak` vient de Masta (1932). Aucune forme négative n'est utilisée.
-
-## 3. Nikw8bi nd'aln8ba8dwa
+## 2. Nikw8bi nd'aln8ba8dwa
 
 Nouveau titre : l'ancien `Nikwonbi N'Wonolonwzé` est abandonné. La nouvelle chanson prend pour titre l'exemple pédagogique documenté « Maintenant je parle abénakis ».
 
@@ -97,7 +59,7 @@ Adio.
 
 Traçabilité : les quatre paires du deuxième couplet sont les exemples VTA/VTI du Manuel. `Nda nd'aln8ba8dwawi` et `Nikw8bi nd'aln8ba8dwa` sont conservés ensemble comme paire pédagogique du projet et doivent rester signalés comme formes à confirmer. Le prénom après `Nd'aliwizi` est la substitution explicitement enseignée par le Manuel.
 
-## 4. Wig8damoda
+## 3. Wig8damoda
 
 Nouveau titre : l'ancien guide phonétique `Wla Won Gan x Wô-ban Ki-zoss` est abandonné. `Wig8damoda!` est l'impératif collectif documenté « Réjouissons-nous! ».
 
@@ -141,7 +103,7 @@ Adio.
 
 Traçabilité : `Kwaï mziwi`, `Wig8damoda`, les saisons, les lieux et les termes de nature sont des entrées documentées. `Lintow8gan`, `Pemegaw8gan` et `N'pemeg8` viennent de Laurent (1884). Les noms juxtaposés sont des appels poétiques, pas des phrases traduites.
 
-## 5. Kikas
+## 4. Kikas
 
 Le titre `Kikas` est conservé : il s'agit du mois de mai dans le Manuel. L'ancien refrain incomplet `Ôda n'wanaldam` est entièrement supprimé. Le sens poétique « on n'oublie pas » est remplacé par l'impératif attesté `Mikwalda!` (« Souviens-toi! »).
 
@@ -202,7 +164,6 @@ Pour chaque nouvelle génération :
 
 | Chanson | Durée du fichier publié | Génération Suno retenue |
 |---|---:|---|
-| Nijia Gabriel | 2:07 | https://suno.com/song/0d090de4-cc1f-47f7-a414-5f0400c0ee32 |
 | Nikw8bi nd'aln8ba8dwa | 1:58 | https://suno.com/song/27a8bff1-a867-4c0b-be9c-9d06e3a55e12 |
 | Wig8damoda | 2:47 | https://suno.com/song/7c394b39-e6ac-45c6-9c35-fd62ec0d61ba |
 | Kikas | 1:19 | https://suno.com/song/86979f10-61bb-459b-a5d2-d28ea9042fe4 |

@@ -1241,23 +1241,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <div class="music-grid" id="musicListen">
       <article class="music-card">
-        <img class="music-cover" src="audio/nijia-gabriel.jpg" loading="lazy" alt="Pochette de la maquette Nijia Gabriel">
-        <h3>Nijia Gabriel</h3>
-        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 2:07</span>
-        <audio id="musicNijia" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nijia Gabriel" oncontextmenu="return false" onended="musicStopped('musicNijia','Lecture terminée')">
-          <source src="audio/nijia-gabriel-v2.mp3" type="audio/mpeg">
-          Votre navigateur ne prend pas en charge la lecture audio.
-        </audio>
-        <div class="music-controls" aria-label="Commandes pour Nijia Gabriel">
-          <button type="button" onclick="musicStart('musicNijia')">▶ Démarrer</button>
-          <button type="button" onclick="musicPause('musicNijia')">Ⅱ Pause</button>
-          <button type="button" onclick="musicStop('musicNijia')">■ Arrêter</button>
-        </div>
-        <div class="music-status" id="musicNijiaStatus" role="status" aria-live="polite">Prête à écouter.</div>
-        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNijia')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
-      </article>
-      <article class="music-card">
         <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la maquette Nikw8bi nd'aln8ba8dwa">
         <h3>Nikw8bi nd'aln8ba8dwa</h3>
         <span class="music-badge">Reconstruction sourcée · audio IA à valider · 1:58</span>
@@ -1331,44 +1314,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <h3 id="musicPracticeTitle">📝 Textes sourcés des nouvelles maquettes</h3>
         <p>Le texte affiché emploie la graphie du dictionnaire ou conserve explicitement la graphie de sa source. Suno reçoit un guide phonétique séparé qui n'est pas montré comme orthographe. Une juxtaposition poétique de mots attestés n'est pas une traduction littérale, et ces maquettes demeurent sujettes à la révision de personnes qualifiées.</p>
       </div>
-
-
-      <details class="song-lyrics" id="practiceNijia">
-        <summary>Nijia Gabriel · paroles reconstruites et sourcées · audio IA à valider</summary>
-        <div class="lyrics-body">
-          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nijia Gabriel">
-            <strong>🎧 Nijia Gabriel</strong>
-            <div class="lyrics-player-controls">
-              <button type="button" onclick="musicStart('musicNijia')">▶ Démarrer</button>
-              <button type="button" onclick="musicPause('musicNijia')">Ⅱ Pause</button>
-              <button type="button" onclick="musicStop('musicNijia')">■ Arrêter</button>
-            </div>
-            <div class="music-status" id="musicNijiaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
-          </div>
-          <div class="lyrics-note"><strong>Sens du titre.</strong> « Nijia » est la forme documentée pour « mon frère » lorsqu'un homme parle de son frère.</div>
-          <div class="lyrics-note"><strong>Traçabilité.</strong> « K'milaloka », « K'milaloka kizi » et « K'pegwado » viennent des enseignements actuels consignés dans le projet. « K'kezalmel » vient de Laurent (1884). Aucun négatif n'est reconstruit.</div>
-          <div class="lyrics-grid">
-            <div class="lyrics-part"><h4>Intro</h4><p>Nijia Gabriel.
-Wliwni, nijia.</p></div>
-            <div class="lyrics-part"><h4>Couplet 1</h4><p>K'milaloka.
-K'milaloka kizi.
-K'pegwado.
-Wligen. Kalaata.</p></div>
-            <div class="lyrics-part"><h4>Refrain</h4><p>Nijia Gabriel.
-K'kezalmel.
-N'mikwaldam.
-Wli nanawalmezi.</p></div>
-            <div class="lyrics-part"><h4>Couplet 2</h4><p>Niona W8banakiak.
-Odanak. W8linak.
-Ndakina. Kdakinna.
-Wig8damoda!</p></div>
-            <div class="lyrics-part"><h4>Finale</h4><p>Wliwni, nijia.
-Kchi wliwni.
-Adio.
-Wli nanawalmezi.</p></div>
-          </div>
-        </div>
-      </details>
 
 
       <details class="song-lyrics" id="practiceNikwonbi">
@@ -2750,7 +2695,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-const MUSIC_TRACK_IDS=['musicNijia','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
+const MUSIC_TRACK_IDS=['musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
 let activeMusicId='';
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{
