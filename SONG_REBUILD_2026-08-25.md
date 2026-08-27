@@ -51,7 +51,7 @@ N'miji wasawas.
 [Couplet 3]
 Nd'aliwizi Guillaum.
 N'wigi W8linak.
-Nd'ai wigwomek.
+Nd'ai wigw8mek.
 N'wal8wzin.
 
 [Finale]

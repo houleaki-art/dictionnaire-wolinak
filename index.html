@@ -1504,7 +1504,7 @@ Ni mziwi</pre>
           <div class="lyrics-note"><strong>Passages concernés.</strong> Le début avec <span class="al8">N'wawaldamen</span>, la ligne <span class="al8">Kiona nikw8bi</span>, les deux premières lignes du deuxième couplet, <span class="al8">Kd'aliwizi nikw8bi</span> et <span class="al8">Nda n'wanalmu majimiwi</span> exigent une validation compétente avant tout usage d'apprentissage.</div>
           <pre class="song-lyrics-raw">[Couplet 1]
 N'wawaldamen tali kd'ai, Aw8sis.
-Askwa yudali kd'ai, wigwomek.
+Askwa yudali kd'ai, wigw8mek.
 Nopaiwi nd'alosa, kanwa n'mikwaldam.
 Nda n'wanaldamowen. Kalaata.
 
@@ -1577,7 +1577,7 @@ N'mow8 aples.
 N'miji wasawas.</p></div>
             <div class="lyrics-part"><h4>Couplet 3</h4><p>Nd'aliwizi Guillaum.
 N'wigi W8linak.
-Nd'ai wigwomek.
+Nd'ai wigw8mek.
 N'wal8wzin.</p></div>
             <div class="lyrics-part"><h4>Finale</h4><p>Wôbanaki mikwalda.
 N'mikwaldam.
@@ -2233,7 +2233,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-27-practice-levels-012';
+const APP_RESET_VERSION = '2026-08-27-wigw8mek-013';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -5592,7 +5592,7 @@ const DOCUMENTED_SENTENCES=[
   {fr:['Je ne me souviens pas'],aln8ba:"Nda n'mikwaldamowen"},
   {fr:["J'habite Wôlinak","J'habite Wolinak"],aln8ba:"N'wigi W8linak"},
   {fr:['Où habites-tu?'],aln8ba:'T8ni tali wigian?'},
-  {fr:['Je suis dans la maison'],aln8ba:"Nd'ai wigwomek",
+  {fr:['Je suis dans la maison'],aln8ba:"Nd'ai wigw8mek",
     source:"Manuel de l'étudiant 1 (2018)",
     note:"Phrase locative documentée. Nd'ai exprime ici la présence dans un lieu; ce n'est pas un auxiliaire ajouté à tous les emplois français de « être »."},
   {fr:['Nous sommes des Abénakis, toi inclus'],aln8ba:'Kiona W8banakiak'},
@@ -6541,7 +6541,7 @@ function traduire(){
   const verbFamilyChunks = chunks.filter(c=>c.type==='verbfamily');
   const lexicalChoiceChunks = chunks.filter(c=>c.type==='lexchoices');
   const essais = FR ? ["Je m'appelle Mali","Comment vas-tu ?","J'habite Wôlinak","Je suis dans la maison","Bonjour tout le monde"]
-                    : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Nd'ai wigwomek"];
+                    : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Nd'ai wigw8mek"];
   const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
@@ -7558,7 +7558,7 @@ const NIVEAUX=[
   <table class="aprtab"><tr><th>Forme</th><th>Sens documenté</th><th>Statut dans l'outil</th></tr>
    <tr><td class="k">Kizilla</td><td>peut-être</td><td>Manuel de l'étudiant 1</td></tr>
    <tr><td class="k">Yudali</td><td>ici</td><td>Masta 1932 — consultatif</td></tr>
-   <tr><td class="k">Nd'ai wigwomek</td><td>je suis dans la maison</td><td>Manuel de l'étudiant 1 — phrase actuelle documentée</td></tr>
+   <tr><td class="k">Nd'ai wigw8mek</td><td>je suis dans la maison</td><td>Manuel de l'étudiant 1 — phrase actuelle documentée</td></tr>
    <tr><td class="k">N'-d-ai wigwômek</td><td>I am in the house</td><td>Laurent 1884 — graphie historique consultative</td></tr></table>
   <div class="aprnote w"><b>Correction de source importante</b>
    Laurent atteste séparément <span class="al8">Odana</span> « village », <span class="al8">pasodawiwi</span>
@@ -7627,7 +7627,7 @@ const NIVEAUX=[
    qui suit « être » en français.</div>
   <h3>Trois idées françaises, trois analyses</h3>
   <table class="aprtab"><tr><th>Idée</th><th>Exemple documenté</th><th>Ce que fait le verbe</th></tr>
-   <tr><td>présence dans un lieu</td><td class="k">Nd'ai wigwomek</td><td>« je suis dans la maison » — Manuel 2018</td></tr>
+   <tr><td>présence dans un lieu</td><td class="k">Nd'ai wigw8mek</td><td>« je suis dans la maison » — Manuel 2018</td></tr>
    <tr><td>état du sujet</td><td class="k">Nd'akwamalsi</td><td>« je suis malade » — le verbe d'état porte déjà l'idée entière</td></tr>
    <tr><td>présence, 3e personne animée</td><td class="k">Ao</td><td>forme historique de Laurent; elle ne convient pas automatiquement à un sujet inanimé</td></tr></table>
   <div class="aprnote w"><b>Animé et inanimé changent la construction</b>
@@ -8906,7 +8906,7 @@ function grammarWritingPool(key){
     detail:"Le sujet et l'action restent les mêmes; la classe grammaticale de l'objet commande ici le choix documenté du verbe.",source:'Manuel de l’étudiant 1, page 33'}));
   if(key==='structure') return [
     {prompt:'Écris la phrase documentée « Je suis malade ».',answer:"Nd'akwamalsi",steps:['Idée entière : être malade','Le verbe d’état porte déjà le sujet et l’état',"Forme complète : Nd'akwamalsi"]},
-    {prompt:'Écris la phrase documentée « Je suis dans la maison ».',answer:"Nd'ai wigwomek",steps:['Idée : présence dans un lieu',"Nd'ai porte ici la présence de la première personne",'wigwomek indique la maison comme lieu']}
+    {prompt:'Écris la phrase documentée « Je suis dans la maison ».',answer:"Nd'ai wigw8mek",steps:['Idée : présence dans un lieu',"Nd'ai porte ici la présence de la première personne",'wigw8mek indique la maison comme lieu']}
   ].map(q=>({...q,context:"Ne traduis pas séparément chaque mot français.",detail:"La construction aln8ba complète porte l'idée; aucun auxiliaire français isolé n'est ajouté.",source:sourceManual}));
   if(key==='vta') return DOCUMENTED_OBJECT_CLASS_PAIRS.filter(pair=>pair.oa.exact&&pair.oi.exact).flatMap(pair=>[
     {pair,object:pair.oa,form:pair.a,anim:true},{pair,object:pair.oi,form:pair.i,anim:false}
@@ -8915,7 +8915,7 @@ function grammarWritingPool(key){
     steps:[`Sujet : je`,`Action : ${pair.verb}`,`Objet : ${object.aln8ba} · classe ${anim?'animée':'inanimée'}`,`Forme ${anim?'VTA':'VTI'} documentée : ${form}`],
     detail:"Avec un objet direct, la classe de cet objet détermine ici laquelle des deux formes documentées doit être employée.",source:'Manuel de l’étudiant 1, page 33'}));
   if(key==='aimuk') return [
-    {prompt:'Écris la phrase actuelle documentée « Je suis dans la maison ».',answer:"Nd'ai wigwomek",steps:['Sens : présence dans un lieu','Sujet : première personne',"Forme actuelle complète : Nd'ai wigwomek"]},
+    {prompt:'Écris la phrase actuelle documentée « Je suis dans la maison ».',answer:"Nd'ai wigw8mek",steps:['Sens : présence dans un lieu','Sujet : première personne',"Forme actuelle complète : Nd'ai wigw8mek"]},
     {prompt:'Écris la phrase actuelle documentée « Je suis malade ».',answer:"Nd'akwamalsi",steps:["Sens : état du sujet","Le verbe d'état porte déjà toute l'idée","Forme actuelle complète : Nd'akwamalsi"]}
   ].map(q=>({...q,context:"Distingue présence et état; n'ajoute jamais Ao automatiquement.",detail:"Aimuk n'est pas un auxiliaire universel. On choisit une construction complète selon le sens et la classe du sujet.",source:'Manuel de l’étudiant 1 (2018) · Laurent (1884), contexte historique'}));
   if(key==='ordre') return EXORDRE.map(q=>({prompt:`Écris la forme ${['affirmative indépendante','impérative','interrogative conjonctive'][q.r]} : ${q.f}`,
@@ -9170,8 +9170,8 @@ const EXSTRUCT=[
  {q:'Quel exemple documenté exprime « Je suis malade »?',o:["Nd'akwamalsi","Kizilla akwamalsi","Nia ao akwamalsi","Yudali akwamalsi"],r:0,
   e:"Nd'akwamalsi porte toute l’idée « je suis malade »; aucun mot séparé n’est ajouté pour « suis »."},
  {q:'Quelle phrase locative complète est documentée dans le Manuel de l’étudiant 1?',
-  o:["Nd'ai wigwomek","Odana yudali ao","Kizilla wigwomek","Yudali akwamalsi"],r:0,
-  e:"Nd'ai wigwomek signifie « Je suis dans la maison ». Nd'ai exprime ici la présence dans un lieu."},
+  o:["Nd'ai wigw8mek","Odana yudali ao","Kizilla wigw8mek","Yudali akwamalsi"],r:0,
+  e:"Nd'ai wigw8mek signifie « Je suis dans la maison ». Nd'ai exprime ici la présence dans un lieu."},
  {q:'Pourquoi « Odana pasodawiwi ao » ne doit-il pas être présenté comme une citation de Laurent?',
   o:['Les mots sont attestés séparément, mais pas cette phrase assemblée','Laurent interdit le mot Odana','Ao est un article','Pasodawiwi signifie maison'],r:0,
   e:'La vérification du texte original retrouve les éléments séparés, pas cette phrase. Une reconstruction ne doit jamais devenir une citation.'},
@@ -9196,8 +9196,8 @@ function exRetStructure(){ const q=window._ex;
 const EXAIMUK=[
  {q:'Quel sens central Laurent donne-t-il à Aimuk?',o:['Être présent ou demeurer quelque part','Être malade','Posséder un objet','Transformer un nom en pluriel'],r:0,
   e:'Laurent le décrit comme un verbe principal de présence ou de résidence, pas comme un auxiliaire universel.'},
- {q:"Que signifie la phrase actuelle documentée Nd'ai wigwomek?",o:['Je suis dans la maison','Je suis malade','Nous sommes dans la maison','La maison est ici'],r:0,
-  e:"Le Manuel de l'étudiant 1 documente Nd'ai wigwomek pour « Je suis dans la maison »."},
+ {q:"Que signifie la phrase actuelle documentée Nd'ai wigw8mek?",o:['Je suis dans la maison','Je suis malade','Nous sommes dans la maison','La maison est ici'],r:0,
+  e:"Le Manuel de l'étudiant 1 documente Nd'ai wigw8mek pour « Je suis dans la maison »."},
  {q:'Quelle est la 3e personne animée du présent chez Laurent?',o:['Ao','Aaok','Aoji','Aob'],r:0,
   e:'Ao est la 3e personne animée singulière du présent dans le tableau historique.'},
  {q:'Quelle est la 3e personne animée plurielle du présent chez Laurent?',o:['Aaok','Ao','Aobanik','Aidij'],r:0,
@@ -9413,7 +9413,7 @@ const EXTRAD=[
  {p:"Kiona W8banakiak",r:0,o:["Nous sommes des Abénakis, toi inclus","Nous sommes des Abénakis, pas toi","Vous êtes des Abénakis","Ils sont des Abénakis"]},
  {p:"N'wigi W8linak",r:1,o:["Je viens de Wôlinak","J'habite Wôlinak","Je vais à Wôlinak","Je suis né à Wôlinak"]},
  {p:"Nikw8bi n'klozi",r:2,o:["Je parlais","Je parlerai","Maintenant je parle","Je ne parle pas"]},
- {p:"Nd'ai wigwomek",r:1,o:["Je suis malade","Je suis dans la maison","Nous sommes dans la maison","La maison est ici"]}];
+ {p:"Nd'ai wigw8mek",r:1,o:["Je suis malade","Je suis dans la maison","Nous sommes dans la maison","La maison est ici"]}];
 function exTrad(){
   let choix=EXTRAD.filter(q=>!exAsked.includes(q.p));
   if(!choix.length){

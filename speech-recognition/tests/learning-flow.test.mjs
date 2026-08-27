@@ -182,3 +182,10 @@ test('le jeu du territoire relie observation et vocabulaire vert actuel', () => 
     assert.ok(fs.statSync(asset).size < 300_000, `image trop lourde pour le mobile: ${file}`);
   }
 });
+
+test('la forme locative wigw8mek reste coherente partout', () => {
+  assert.doesNotMatch(html, /wigwomek/i);
+  assert.match(html, /Askwa yudali kd'ai, wigw8mek\./);
+  assert.match(html, /Nd'ai wigw8mek/);
+  assert.match(html, /wigw8mek indique la maison comme lieu/);
+});
