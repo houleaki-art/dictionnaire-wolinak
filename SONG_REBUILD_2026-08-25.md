@@ -11,11 +11,15 @@ Date de travail : 25 août 2026
 - Aucun suffixe, pluriel, négatif ou paradigme n'est créé uniquement parce qu'il paraît plausible.
 - Un nouvel audio n'est publié qu'après comparaison audible avec le texte chanté.
 
-## 1. Askwa yudali — retirée
+## 1. Askwa yudali — réintégrée comme archive à valider
 
-Retirée du dictionnaire public le 26 août 2026 en raison de problèmes importants de prononciation dans la maquette IA. Le fichier audio, la pochette, les paroles de pratique et le lien de génération ont été supprimés. Cette note conserve uniquement la trace de la décision dans le suivi d'amélioration continue; la chanson ne doit pas être republiée sans une nouvelle validation complète.
+Retirée du dictionnaire public le 26 août 2026 en raison de problèmes importants de prononciation dans la maquette IA. Le 27 août, Guillaum a demandé la réintégration du fichier maître comme archive artistique. La page publique rétablit la graphie du dictionnaire dans les paroles, mais identifie clairement les six lignes dont la construction reste à corriger ou à confirmer. La chanson n'est ni une attestation linguistique, ni un modèle officiel de prononciation.
 
-## 2. Nikw8bi nd'aln8ba8dwa
+## 2. Skweda — création moderne à valider
+
+Ajoutée le 27 août 2026 à partir du fichier fourni par Guillaum. Les paroles publiques rétablissent la graphie aln8ba du corpus au lieu du guide phonétique Suno. `Kowanodana` est conservé exactement comme le vocable historique non traduit du refrain publié par Henry Lorne Masta en 1932; son emploi dans cette œuvre moderne n'en fait pas un chant historique ou cérémoniel. Les autres lignes sont présentées comme des constructions poétiques à valider.
+
+## 3. Nikw8bi nd'aln8ba8dwa
 
 Nouveau titre : l'ancien `Nikwonbi N'Wonolonwzé` est abandonné. La nouvelle chanson prend pour titre l'exemple pédagogique documenté « Maintenant je parle abénakis ».
 
@@ -59,7 +63,7 @@ Adio.
 
 Traçabilité : les quatre paires du deuxième couplet sont les exemples VTA/VTI du Manuel. `Nda nd'aln8ba8dwawi` et `Nikw8bi nd'aln8ba8dwa` sont conservés ensemble comme paire pédagogique du projet et doivent rester signalés comme formes à confirmer. Le prénom après `Nd'aliwizi` est la substitution explicitement enseignée par le Manuel.
 
-## 3. Wig8damoda
+## 4. Wig8damoda
 
 Nouveau titre : l'ancien guide phonétique `Wla Won Gan x Wô-ban Ki-zoss` est abandonné. `Wig8damoda!` est l'impératif collectif documenté « Réjouissons-nous! ».
 
@@ -103,7 +107,7 @@ Adio.
 
 Traçabilité : `Kwaï mziwi`, `Wig8damoda`, les saisons, les lieux et les termes de nature sont des entrées documentées. `Lintow8gan`, `Pemegaw8gan` et `N'pemeg8` viennent de Laurent (1884). Les noms juxtaposés sont des appels poétiques, pas des phrases traduites.
 
-## 4. Kikas
+## 5. Kikas
 
 Le titre `Kikas` est conservé : il s'agit du mois de mai dans le Manuel. L'ancien refrain incomplet `Ôda n'wanaldam` est entièrement supprimé. Le sens poétique « on n'oublie pas » est remplacé par l'impératif attesté `Mikwalda!` (« Souviens-toi! »).
 

@@ -133,6 +133,14 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Rappel que rien ne doit être tenu pour acquis et que chaque élément doit être vérifié auprès de sources fiables et de personnes compétentes.
 - Harmonisation de la page À propos avec le statut personnel, non officiel et non attesté du projet; retrait d'une instruction médicale concrète au profit d'une mise en garde de santé neutre.
 
+## Chansons ajoutées le 27 août 2026
+
+- Ajout des fichiers fournis `Skweda Le feux (1).mp3` et `Askwa yudali.mp3`, avec leurs pochettes intégrées, au lecteur musical persistant.
+- Affichage des paroles en graphie aln8ba du dictionnaire, séparée du guide phonétique contenu dans les fichiers Suno.
+- Classement de `Skweda` comme création moderne à valider; `Kowanodana` conserve sa graphie historique et son statut de vocable non traduit chez Masta (1932).
+- Réintégration d'`Askwa yudali` comme archive artistique demandée par l'auteur, avec avertissement visible sur les six lignes qui demeurent linguistiquement incertaines.
+- Vérification dans Chrome des deux lectures, du changement exclusif de piste, du lecteur persistant et de l'ouverture des paroles; contrôle statique des règles mobiles, des cibles tactiles, des fichiers audio et des identifiants HTML.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

@@ -1259,6 +1259,40 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <div class="music-grid" id="musicListen">
       <article class="music-card">
+        <img class="music-cover" src="audio/skweda.jpg" loading="lazy" alt="Pochette de la maquette Skweda">
+        <h3>Skweda</h3>
+        <span class="music-badge">Maquette IA · graphie aln8ba · à valider · 3:39</span>
+        <audio id="musicSkweda" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Skweda" oncontextmenu="return false" onended="musicStopped('musicSkweda','Lecture terminée')">
+          <source src="audio/skweda.mp3" type="audio/mpeg">
+          Votre navigateur ne prend pas en charge la lecture audio.
+        </audio>
+        <div class="music-controls" aria-label="Commandes pour Skweda">
+          <button type="button" onclick="musicStart('musicSkweda')">▶ Démarrer</button>
+          <button type="button" onclick="musicPause('musicSkweda')">Ⅱ Pause</button>
+          <button type="button" onclick="musicStop('musicSkweda')">■ Arrêter</button>
+        </div>
+        <div class="music-status" id="musicSkwedaStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceSkweda')">📝 Pratiquer avec les paroles</button>
+        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+      </article>
+      <article class="music-card">
+        <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la maquette Askwa yudali">
+        <h3>Askwa yudali</h3>
+        <span class="music-badge">Archive artistique · graphie aln8ba · à valider · 3:59</span>
+        <audio id="musicAskwa" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Askwa yudali" oncontextmenu="return false" onended="musicStopped('musicAskwa','Lecture terminée')">
+          <source src="audio/askwa-yudali.mp3" type="audio/mpeg">
+          Votre navigateur ne prend pas en charge la lecture audio.
+        </audio>
+        <div class="music-controls" aria-label="Commandes pour Askwa yudali">
+          <button type="button" onclick="musicStart('musicAskwa')">▶ Démarrer</button>
+          <button type="button" onclick="musicPause('musicAskwa')">Ⅱ Pause</button>
+          <button type="button" onclick="musicStop('musicAskwa')">■ Arrêter</button>
+        </div>
+        <div class="music-status" id="musicAskwaStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceAskwa')">📝 Pratiquer avec les paroles</button>
+        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+      </article>
+      <article class="music-card">
         <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la maquette Nikw8bi nd'aln8ba8dwa">
         <h3>Nikw8bi nd'aln8ba8dwa</h3>
         <span class="music-badge">Reconstruction sourcée · audio IA à valider · 1:58</span>
@@ -1333,6 +1367,162 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <p>Le texte affiché emploie la graphie du dictionnaire ou conserve explicitement la graphie de sa source. Suno reçoit un guide phonétique séparé qui n'est pas montré comme orthographe. Une juxtaposition poétique de mots attestés n'est pas une traduction littérale, et ces maquettes demeurent sujettes à la révision de personnes qualifiées.</p>
       </div>
 
+
+      <details class="song-lyrics" id="practiceSkweda">
+        <summary>Skweda · paroles chantées en graphie aln8ba · à valider</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Skweda">
+            <strong>🎧 Skweda</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicSkweda')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicSkweda')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicSkweda')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicSkwedaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-note"><strong>Graphie du dictionnaire.</strong> Le texte ci-dessous rétablit notamment le caractère 8 et les finales écrites que le guide phonétique de Suno modifie pour produire un son. Il ne reproduit donc pas l'orthographe phonétique contenue dans le fichier audio.</div>
+          <div class="lyrics-note"><strong>Kowanodana.</strong> Ce vocable est conservé exactement selon Henry Lorne Masta (1932, p. 110), où il sert de refrain et demeure sans traduction. Son emploi ici ne transforme pas cette création moderne en chant historique ou cérémoniel.</div>
+          <div class="lyrics-note"><strong>Construction poétique à valider.</strong> Les mots sont tirés du corpus de travail, mais plusieurs lignes les juxtaposent sans constituer une phrase complète attestée. Les formes historiques provenant de Laurent ou de Masta restent consultatives.</div>
+          <pre class="song-lyrics-raw">[Introduction]
+Kowanodana
+Kowanodana
+Skweda, Skweda
+
+[Couplet 1]
+Paml8gwik, Paml8gwik, Wl8gw pisga
+Nd'abi yudali, n'namito Skweda
+Paml8gwik, Paml8gwik, Wl8gw pisga
+Skweda, Skweda, wligen
+
+[Refrain]
+Skweda, Skweda, majimiwi
+Nanawald8zik, nanawald8zik
+Skweda, Skweda, majimiwi
+Kowanodana
+
+[Couplet 2]
+Tebokw, Tebokw, Mkazawigen
+P8guas, Alakwsak, Kakasakw
+Tebokw, Tebokw, Mkazawigen
+Pebon alakws, wligen
+
+[Refrain]
+Skweda, Skweda, majimiwi
+Nanawald8zik, nanawald8zik
+Skweda, Skweda, majimiwi
+Kowanodana
+
+[Couplet 3]
+N'ponem Awazon, n'ponem Awazon
+Pokwda, Mkaza, Pekeda
+N'ponem Awazon, n'ponem Awazon
+Skweda, Skweda, majimiwi
+
+[Refrain]
+Skweda, Skweda, majimiwi
+Nanawald8zik, nanawald8zik
+Skweda, Skweda, majimiwi
+Kowanodana
+
+[Pont]
+Nmahom, Nokmes, akw8bi
+Nmahom, Nokmes, akw8bi
+N'mikwaldam, n'mikwaldam
+Nda n'wanaldamowen, majimiwi
+N'mikwaldam, n'mikwaldam
+Nda n'wanaldamowen, majimiwi
+
+[Couplet 4]
+Sobhoban, Sobhoban, Waji-nahilot
+Kizoban, Kizosoo, wligen
+Sobhoban, Sobhoban, Waji-nahilot
+Skweda, Skweda, mina
+
+[Refrain]
+Skweda, Skweda, majimiwi
+Nanawald8zik, nanawald8zik
+Skweda, Skweda, majimiwi
+Kowanodana
+
+[Couplet 5]
+Paml8gwik, Tebokw, Sobhoban
+Kizoban, Kizosoo, wligen
+N'ponem Awazon, n'ponem Awazon
+Skweda, Skweda, mina
+
+[Refrain final]
+Skweda, Skweda, majimiwi
+Nanawald8zik, nanawald8zik
+Skweda, Skweda, majimiwi
+Skweda, Skweda, majimiwi
+
+[Finale]
+Kowanodana
+Kowanodana
+Skwedaipegui
+Skweda
+Ni mziwi</pre>
+        </div>
+      </details>
+
+      <details class="song-lyrics" id="practiceAskwa">
+        <summary>Askwa yudali · paroles chantées en graphie aln8ba · archive à valider</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Askwa yudali">
+            <strong>🎧 Askwa yudali</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicAskwa')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicAskwa')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicAskwa')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicAskwaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-note"><strong>Graphie du dictionnaire.</strong> Les formes phonétiques destinées à Suno ont été remises en graphie aln8ba, par exemple <span class="al8">Aw8sis</span>, <span class="al8">K'wlipai8</span>, <span class="al8">Nikw8bi</span>, <span class="al8">Nid8bak</span> et <span class="al8">Nd'aln8ba8dwa</span>.</div>
+          <div class="lyrics-note"><strong>Archive artistique, pas modèle linguistique.</strong> Six lignes de cette ancienne maquette restent à corriger ou à confirmer parce que leur assemblage ne porte pas sûrement le sens annoncé. Elles sont conservées ici pour suivre exactement l'audio demandé, sans être présentées comme des phrases attestées.</div>
+          <div class="lyrics-note"><strong>Passages concernés.</strong> Le début avec <span class="al8">N'wawaldamen</span>, la ligne <span class="al8">Kiona nikw8bi</span>, les deux premières lignes du deuxième couplet, <span class="al8">Kd'aliwizi nikw8bi</span> et <span class="al8">Nda n'wanalmu majimiwi</span> exigent une validation compétente avant tout usage d'apprentissage.</div>
+          <pre class="song-lyrics-raw">[Couplet 1]
+N'wawaldamen tali kd'ai, Aw8sis.
+Askwa yudali kd'ai, wigwomek.
+Nopaiwi nd'alosa, kanwa n'mikwaldam.
+Nda n'wanaldamowen. Kalaata.
+
+[Refrain]
+Paia, Aw8sis, paia.
+K'wlipai8, K'wlipai8.
+Kiona nikw8bi, Kiona mina.
+Askwa yudali. Kalaata.
+
+[Couplet 2]
+Kd'askawiho pita akw8bi, Aw8sis.
+Awani nda kd'aliwiziw, Awani nda k'kloziw.
+Kanwa nikw8bi n'waj8nem kdakinna.
+Ta nikw8bi nd'aln8ba8dwa.
+
+[Refrain]
+Paia, Aw8sis, paia.
+K'wlipai8, K'wlipai8.
+Kiona nikw8bi, Kiona mina.
+Askwa yudali. Kalaata.
+
+[Couplet 3]
+Yudali Skweda, yudali Pakholigan.
+Yudali Nid8bak, yudali Kdakinna.
+Kd'aliwizi nikw8bi. Kd'aln8ba.
+K'kezalmel, Aw8sis. K'kezalmel.
+
+[Refrain]
+Paia, Aw8sis, paia.
+K'wlipai8, K'wlipai8.
+Kiona nikw8bi, Kiona mina.
+Askwa yudali. Kalaata.
+
+[Pont]
+Nda kd'alosaw mina, Aw8sis.
+Nda n'wanalmu majimiwi.
+Wli nanawalmezi. N'nanawalmel.
+Askwa yudali nd'aibena.</pre>
+        </div>
+      </details>
 
       <details class="song-lyrics" id="practiceNikwonbi">
         <summary>Nikw8bi nd'aln8ba8dwa · paroles pédagogiques reconstruites · audio IA à valider</summary>
@@ -2713,7 +2903,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-const MUSIC_TRACK_IDS=['musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
+const MUSIC_TRACK_IDS=['musicSkweda','musicAskwa','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
 let activeMusicId='';
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{
