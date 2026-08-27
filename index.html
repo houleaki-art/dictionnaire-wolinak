@@ -212,7 +212,7 @@ textarea{resize:vertical;min-height:68px}
 .corpus-clip-main span{font-size:.68rem;color:var(--text3);margin-top:2px}
 .corpus-mini{padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text2);cursor:pointer;font:700 .7rem Georgia,serif}
 .corpus-mini:hover{border-color:var(--accent);color:var(--accent)}
-.form-rec-action{display:flex;justify-content:flex-end;align-items:center}
+.form-rec-action{display:flex;justify-content:flex-end;align-items:center;gap:5px}
 .corpus-quick-dock{display:none;position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:360;width:min(760px,calc(100vw - 32px));padding:12px 14px;border:1px solid rgba(184,92,42,.42);border-radius:14px;background:var(--surface);box-shadow:0 12px 38px rgba(30,18,10,.3);align-items:center;gap:12px}
 .corpus-quick-dock.open{display:flex}
 .corpus-quick-dot{width:11px;height:11px;border-radius:50%;background:var(--green);flex:0 0 auto}
@@ -807,6 +807,10 @@ body.music-dock-open .toast{bottom:116px}
 .jafter{margin-top:18px;padding:15px 17px;border-radius:9px;background:var(--surface2);
   border-left:3px solid var(--green);font-size:.84rem;line-height:1.6}
 .jafter b{font-size:1.05rem;display:block;margin-bottom:5px}
+.answer-auto-note{display:block;margin-top:9px;color:var(--green);font-size:.74rem;font-weight:700}
+.answer-auto-leaving{animation:answerLeave .18s ease forwards;pointer-events:none}
+@keyframes answerLeave{to{opacity:0;transform:translateY(-6px)}}
+@media(prefers-reduced-motion:reduce){.answer-auto-leaving{animation:none;opacity:1}}
 .jhint{font-size:.75rem;color:var(--text3);text-align:center;margin-top:14px;font-style:italic}
 .wsWrap{display:grid;grid-template-columns:1fr 180px;gap:20px;align-items:start}
 @media(max-width:700px){.wsWrap{grid-template-columns:1fr}.jopts.two{grid-template-columns:1fr}.voice-nav{justify-content:center}.voice-dots{order:-1;flex-basis:100%}}
@@ -1137,7 +1141,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <p>Complète les mots, retrouve les traductions, maîtrise la grammaire abenakise.</p>
       </div>
       <div class="prat-score" role="status" aria-live="polite" aria-atomic="true">
-        <div class="pscore"><div class="pscore-num" id="pScoreOk">0</div><div class="pscore-lbl">Correct</div></div>
+        <div class="pscore"><div class="pscore-num" id="pScoreOk">0 / 0</div><div class="pscore-lbl">Score</div></div>
         <div class="pscore"><div class="pscore-num" id="pScoreKo" style="color:#e07878">0</div><div class="pscore-lbl">Raté</div></div>
         <div class="pscore"><div class="pscore-num" id="pScoreStreak" style="color:#f0c060">🔥0</div><div class="pscore-lbl">Série</div></div>
       </div>
@@ -2766,13 +2770,13 @@ function makeFamilyCard(members){
     <span class="form-lbl">${escH(FORM_LABELS[m.formType]||m.formType)}</span>
     <span class="form-val">${hl(m.aln8ba)}</span>
     <span class="form-tr">${hl(m.fr)}</span>
-    <span class="form-rec-action">${adminUnlocked&&isCorpusEligible(m)?`<button class="ca corpus-rec${corpusRecordedIds.has(m.id)?' saved':''}" data-corpus-word="${escH(m.id)}" onclick="corpusQuickStart('${m.id}',event)" title="Enregistrer rapidement ${escH(m.aln8ba)}" aria-label="Enregistrer rapidement ${escH(m.aln8ba)}">${corpusRecordedIds.has(m.id)?'✓':'🎙️'}</button>`:''}</span>
+    <span class="form-rec-action">${corpusRecordedIds.has(m.id)?`<button class="ca audio" onclick="playAudio('${m.id}');event.stopPropagation()" title="Écouter ta prononciation validée" aria-label="Écouter ta prononciation validée de ${escH(m.aln8ba)}">▶</button>`:''}${adminUnlocked&&isCorpusEligible(m)?`<button class="ca corpus-rec${corpusRecordedIds.has(m.id)?' saved':''}" data-corpus-word="${escH(m.id)}" onclick="corpusQuickStart('${m.id}',event)" title="Enregistrer rapidement ${escH(m.aln8ba)}" aria-label="Enregistrer rapidement ${escH(m.aln8ba)}">${corpusRecordedIds.has(m.id)?'✓':'🎙️'}</button>`:''}</span>
   </div>`).join('');
   return `<div class="card${isExp?' exp':''}" id="c${id}" onclick="toggleCard('${id}',event)">
     <div class="card-top">
       <div><div class="word">${hl(base.aln8ba)}</div>${cardPhonetic(base)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
-        ${base.audio?`<button class="ca audio" onclick="playAudio('${id}')" title="Écouter l’enregistrement natif">▶</button>`:''}
+        ${base.audio||corpusRecordedIds.has(id)?`<button class="ca audio" onclick="playAudio('${id}')" title="Écouter la prononciation de référence">▶</button>`:''}
         <button class="ca" onclick="toggleFav('${id}')" title="Favori" id="fav${id}">${isFav?'⭐':'☆'}</button>
       </div>
     </div>
@@ -2798,13 +2802,13 @@ function makeSingleCard(w){
   const isFav=FAVS.includes(w.id);
   const isExp=S.expanded.has(w.id);
   const hasCorrBadge=w.corrections&&w.corrections.length>0;
-  const hasAudio=w.audio;
+  const hasAudio=w.audio||corpusRecordedIds.has(w.id);
   const related=(w.related||[]).filter(Boolean).map(r=>`<span class="rchip" onclick="searchBy('${escH(escQ(r))}');event.stopPropagation()">${escH(r)}</span>`).join('');
   return `<div class="card${isExp?' exp':''}" id="c${w.id}" onclick="toggleCard('${w.id}',event)">
     <div class="card-top">
       <div><div class="word">${hl(w.aln8ba)}</div>${cardPhonetic(w)}</div>
       <div class="cacts" onclick="event.stopPropagation()">
-        ${hasAudio?`<button class="ca audio" onclick="playAudio('${w.id}')" title="Écouter l’enregistrement natif">▶</button>`:''}
+        ${hasAudio?`<button class="ca audio" onclick="playAudio('${w.id}')" title="Écouter la prononciation de référence">▶</button>`:''}
         ${adminUnlocked&&isCorpusEligible(w)?`<button class="ca corpus-rec${corpusRecordedIds.has(w.id)?' saved':''}" data-corpus-word="${escH(w.id)}" onclick="corpusQuickStart('${w.id}',event)" title="Enregistrer rapidement ${escH(w.aln8ba)}" aria-label="Enregistrer rapidement ${escH(w.aln8ba)}">${corpusRecordedIds.has(w.id)?'✓':'🎙️'}</button>`:''}
         <button class="ca" onclick="toggleFav('${w.id}')" title="Favori" id="fav${w.id}">${isFav?'⭐':'☆'}</button>
       </div>
@@ -2822,7 +2826,7 @@ function makeSingleCard(w){
       ${w.notes?`<div class="dr"><span class="dl">Note</span><span class="dv">${escH(w.notes)}</span></div>`:''}
       ${related?`<div class="dr"><span class="dl">Voir aussi</span><div class="dv"><div class="rwords">${related}</div></div></div>`:''}
       ${w.source?`<div class="dr"><span class="dl">Source</span><span class="dv" style="font-size:.78rem">${escH(w.source)}</span></div>`:''}
-      ${hasAudio?`<div class="audio-bar"><audio id="aud${w.id}" src="${w.audio}" controls></audio><button class="adel" onclick="removeAudio('${w.id}');event.stopPropagation()" title="Supprimer audio">🗑</button></div>`:''}
+      ${w.audio?`<div class="audio-bar"><audio id="aud${w.id}" src="${w.audio}" controls></audio><button class="adel" onclick="removeAudio('${w.id}');event.stopPropagation()" title="Supprimer audio">🗑</button></div>`:''}
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
         <button class="btn" style="font-size:.72rem;padding:5px 12px;background:var(--surface2);color:var(--text3);border:1px solid var(--border)" onclick="openSuggestion('${w.id}','${escQ(w.aln8ba)}','${escQ(w.fr)}');event.stopPropagation()">💡 Suggérer une correction</button>
       </div>
@@ -2838,7 +2842,10 @@ function renderWords(){
   const banner=document.getElementById('corpusModeBanner');
   if(banner) banner.hidden=!corpusMode;
   const corpusCount=document.getElementById('corpusModeCount');
-  if(corpusCount&&corpusMode) corpusCount.textContent=`${r.length} forme${r.length!==1?'s':''} verte${r.length!==1?'s':''} enregistrable${r.length!==1?'s':''}. La recherche reste limitée à cette liste sûre.`;
+  if(corpusCount&&corpusMode){
+    const coverage=corpusCoverageStats();
+    corpusCount.textContent=`${coverage.recorded} / ${coverage.total} formes vertes enregistrées · ${r.length} affichée${r.length!==1?'s':''}. La recherche reste limitée à cette liste sûre.`;
+  }
   if(corpusMode) document.getElementById('viewTitle').textContent='Collecte vocale';
   const renderKey=[S.view,S.cat,S.letter,S.q,S.lang,S.layout,sv,S.corpusOnly,adminUnlocked].join('\u0001');
   if(renderKey!==WORD_RENDER_KEY){
@@ -2900,9 +2907,11 @@ async function playAudio(id){
     try{await a.play();}catch(e){audioPlaybackBlocked();}
     return;
   }
-  if(w&&w.audio){
-    try{await new Audio(w.audio).play();}catch(e){audioPlaybackBlocked();}
-  }
+  if(!w) return;
+  try{
+    const source=await playApprovedWordAudio(w);
+    if(!source) toast('Aucune prononciation enregistrée pour ce mot sur cet appareil.');
+  }catch(e){audioPlaybackBlocked();}
 }
 function removeAudio(id){
   if(!confirm('Supprimer cet enregistrement audio?')) return;
@@ -3059,6 +3068,7 @@ function initMusicPlayers(){
   });
 }
 function setView(v,keepGameContext=false){
+  cancelAnswerAdvance();
   if(v==='jeux'&&!keepGameContext){ jCtx=null; jCat='toutes'; }
   S.view=v; S.cat=''; S.letter=''; S.corpusOnly=false;
   document.body.classList.toggle('compact-mobile-header',!['all','favorites'].includes(v));
@@ -3234,6 +3244,7 @@ function selectLevel(n){
 }
 
 function buildQueue(){
+  cancelAnswerAdvance();
   // Base : mots confirmés uniquement, pas de notation spéciale
   const confirmed = WORDS.filter(w =>
     isExerciseSafe(w) &&
@@ -3321,28 +3332,63 @@ function scrollInstant(top){
   requestAnimationFrame(()=>{ root.style.scrollBehavior=previous; });
 }
 
+function fixedBottomInset(){
+  const dock=document.getElementById('musicDock');
+  if(!dock||dock.hidden||!document.body.classList.contains('music-dock-open')) return 16;
+  const rect=dock.getBoundingClientRect();
+  return Math.ceil(rect.height+Math.max(0,window.innerHeight-rect.bottom)+18);
+}
+
 function scrollToNextAction(scopeSelector){
   const bringIntoView=()=>{
     const scope=document.querySelector(scopeSelector); if(!scope) return;
     const next=[...scope.querySelectorAll('button')].find(btn=>
-      /^(Suivant|Voir le résultat)/i.test((btn.textContent||'').trim()) && btn.getClientRects().length);
+      /^(Suivant|Voir le résultat|Question suivante|Résultat automatique)/i.test((btn.textContent||'').trim()) && btn.getClientRects().length);
     if(!next) return;
     // Stop a previous smooth return to the top before positioning the new action.
     scrollInstant(window.scrollY);
-    const rect=next.getBoundingClientRect(), viewportH=window.visualViewport?.height||window.innerHeight;
-    if(rect.top>=16 && rect.bottom<=viewportH-16) return;
+    const rect=next.getBoundingClientRect(), viewport=window.visualViewport;
+    const viewportTop=viewport?.offsetTop||0, viewportH=viewport?.height||window.innerHeight;
+    const viewportBottom=viewportTop+viewportH-fixedBottomInset();
+    if(rect.top>=viewportTop+16 && rect.bottom<=viewportBottom) return;
     let spacer=scope.querySelector('.next-action-spacer');
     if(!spacer){
       spacer=document.createElement('div'); spacer.className='next-action-spacer';
       spacer.setAttribute('aria-hidden','true'); scope.appendChild(spacer);
     }
-    spacer.style.height=Math.min(220,Math.max(80,Math.round(viewportH*.3)))+'px';
-    const target=Math.max(0,window.scrollY+rect.top-(viewportH-rect.height)/2);
+    const usableHeight=Math.max(120,viewportBottom-viewportTop-16);
+    spacer.style.height=Math.min(260,Math.max(100,Math.round(fixedBottomInset()+viewportH*.18)))+'px';
+    const target=Math.max(0,window.scrollY+rect.top-(viewportTop+16)-(usableHeight-rect.height)/2);
     scrollInstant(target);
   };
   bringIntoView();
   requestAnimationFrame(bringIntoView);
   setTimeout(bringIntoView,250);
+}
+
+let answerAdvanceTimer=null, answerFadeTimer=null;
+function cancelAnswerAdvance(){
+  if(answerAdvanceTimer){clearTimeout(answerAdvanceTimer);answerAdvanceTimer=null;}
+  if(answerFadeTimer){clearTimeout(answerFadeTimer);answerFadeTimer=null;}
+  document.querySelectorAll('.answer-auto-leaving').forEach(el=>el.classList.remove('answer-auto-leaving'));
+}
+function finishAnsweredStep(correct,scopeSelector,nextAction){
+  cancelAnswerAdvance();
+  if(!correct){scrollToNextAction(scopeSelector);return;}
+  const scope=document.querySelector(scopeSelector); if(!scope) return;
+  const feedback=scope.querySelector('[role="status"],.prat-feedback,.jafter');
+  if(feedback&&!feedback.querySelector('.answer-auto-note'))
+    feedback.insertAdjacentHTML('beforeend','<span class="answer-auto-note">Bonne réponse. Question suivante automatiquement…</span>');
+  const next=[...scope.querySelectorAll('button')].find(btn=>/^(Suivant|Voir le résultat)/i.test((btn.textContent||'').trim()));
+  if(next) next.textContent=/Voir le résultat/i.test(next.textContent)?'Résultat automatique…':'Question suivante…';
+  scrollToNextAction(scopeSelector);
+  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  answerAdvanceTimer=setTimeout(()=>{
+    answerAdvanceTimer=null;
+    const current=document.querySelector(scopeSelector); if(!current) return;
+    if(!reduce) current.classList.add('answer-auto-leaving');
+    answerFadeTimer=setTimeout(()=>{answerFadeTimer=null;nextAction();},reduce?0:180);
+  },reduce?650:1150);
 }
 
 // ── NIVEAU 1 : Tu vois le mot abenakis → reconnais la traduction ──
@@ -3377,7 +3423,7 @@ function checkLvl1QCM(chosenId, correctId){
   document.getElementById('pratFb').outerHTML = richFeedback(w, correct);
   recordAnswer(correct, w.fr);
   document.getElementById('pratNav').style.display='flex';
-  scrollToNextAction('#pratArena');
+  finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
 // ── NIVEAU 2 : Tu vois la traduction → choisis le mot abenakis (QCM) ──
@@ -3412,7 +3458,7 @@ function checkLvl2(chosenId, correctId){
   document.getElementById('pratFb').outerHTML = richFeedback(w, correct);
   recordAnswer(correct, w.aln8ba);
   document.getElementById('pratNav').style.display='flex';
-  scrollToNextAction('#pratArena');
+  finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
 // ── NIVEAU 3 : Tu vois traduction + indice grammatical → écris le mot ──
@@ -3450,7 +3496,7 @@ function checkLvl3Write(answer, wid){
   if(fb) fb.outerHTML = richFeedback(w, correct);
   const nav = document.querySelector('.prat-nav');
   if(nav){ const v=nav.querySelector('.btn-primary'); if(v){v.textContent='Suivant →';v.onclick=nextQ;} }
-  scrollToNextAction('#pratArena');
+  finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
 // ── PLURIELS DOCUMENTÉS ──
@@ -3538,7 +3584,7 @@ function checkLvl4A(answer){
   PS.answered=true; recordAnswer(correct,answer);
   const fb=document.getElementById('pratFb'); if(fb) fb.outerHTML=richFeedback(w,correct);
   const nav=document.querySelector('.prat-nav'); if(nav){const v=nav.querySelector('.btn-primary');if(v){v.textContent='Suivant →';v.onclick=nextQ;}}
-  scrollToNextAction('#pratArena');
+  finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
 function normFrenchExerciseAnswer(value){
@@ -3567,7 +3613,7 @@ function checkLvl4B(frAnswer, aln8baWord){
   PS.answered=true; recordAnswer(correct,frAnswer);
   const fb=document.getElementById('pratFb'); if(fb) fb.outerHTML=richFeedback(w,correct);
   const nav=document.querySelector('.prat-nav'); if(nav){const v=nav.querySelector('.btn-primary');if(v){v.textContent='Suivant →';v.onclick=nextQ;}}
-  scrollToNextAction('#pratArena');
+  finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
 function checkLvl4C(answer, type){
@@ -3583,7 +3629,7 @@ function checkLvl4C(answer, type){
     ? `<div class="prat-feedback ok">✓ Parfait ! ${answer} (${type})</div>`
     : `<div class="prat-feedback ko">✗ Réponse : <strong>${answer}</strong> (${type})</div>`;
   const nav=document.querySelector('.prat-nav'); if(nav){const v=nav.querySelector('.btn-primary');if(v){v.textContent='Suivant →';v.onclick=nextQ;}}
-  scrollToNextAction('#pratArena');
+  finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
 // ── HELPERS ──
@@ -3604,7 +3650,7 @@ function markAnswer(correct, inp, displayAnswer, fullAnswer){
     const verif = nav.querySelector('.btn-primary');
     if(verif){ verif.textContent='Suivant →'; verif.onclick=nextQ; }
   }
-  scrollToNextAction('#pratArena');
+  finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
 function recordAnswer(correct, answer){
@@ -3614,12 +3660,12 @@ function recordAnswer(correct, answer){
 }
 
 function updatePratScoreDisplay(){
-  document.getElementById('pScoreOk').textContent = PS.ok;
+  document.getElementById('pScoreOk').textContent = `${PS.ok} / ${PS.ok+PS.ko}`;
   document.getElementById('pScoreKo').textContent = PS.ko;
   document.getElementById('pScoreStreak').textContent = '🔥'+PS.streak;
 }
 
-function nextQ(){ PS.idx++; PS.answered=false; showQuestion(); }
+function nextQ(){ cancelAnswerAdvance(); PS.idx++; PS.answered=false; showQuestion(); }
 function skipQ(){
   if(!PS.answered){ PS.ko++; PS.streak=0; updatePratScoreDisplay(); }
   nextQ();
@@ -4351,6 +4397,23 @@ function stopRec(){
 const CORPUS_DB_NAME='aln8ba-voice-corpus-v1';
 const CORPUS_STORE='clips';
 let corpusSavedAudioUrl='';
+let corpusReferenceAudio=null, corpusReferenceAudioUrl='';
+
+function corpusCoverageStats(){
+  const eligible=WORDS.filter(isCorpusEligible);
+  return {recorded:eligible.filter(word=>corpusRecordedIds.has(word.id)).length,total:eligible.length};
+}
+function corpusCoverageLabel(){
+  const coverage=corpusCoverageStats();
+  return `${coverage.recorded} / ${coverage.total} mots enregistrés`;
+}
+function corpusUpdateCoverage(){
+  const modeCount=document.getElementById('corpusModeCount');
+  if(modeCount&&S.corpusOnly){
+    const shown=filtered().length;
+    modeCount.textContent=`${corpusCoverageLabel()} · ${shown} forme${shown!==1?'s':''} affichée${shown!==1?'s':''}. La recherche reste limitée à cette liste sûre.`;
+  }
+}
 
 function corpusOpenDictionary(){
   S.q=''; S.cat=''; S.letter='';
@@ -4359,7 +4422,7 @@ function corpusOpenDictionary(){
   S.corpusOnly=true;
   renderWords();
   setTimeout(()=>document.getElementById('corpusModeBanner')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
-  toast(`🎙️ ${filtered().length} formes vertes prêtes à enregistrer.`);
+  toast(`🎙️ ${corpusCoverageLabel()}.`);
 }
 function corpusExitDictionary(){
   S.corpusOnly=false;
@@ -4459,14 +4522,15 @@ async function corpusQuickStart(id,e){
           try{await corpusDbDelete(corpusQuickReplaceRecord.id);}catch(error){}
           corpusQuickReplaceRecord=null;
         }
-        corpusRecordedIds.add(word.id); corpusQuickMarkWord(word.id,true);
+        corpusRecordedIds.add(word.id); corpusQuickMarkWord(word.id,true); corpusUpdateCoverage();
         corpusQuickUrl=URL.createObjectURL(wav);
         const player=document.getElementById('corpusQuickPlayback');
         player.src=corpusQuickUrl; player.style.display='block';
         document.getElementById('corpusQuickRedo').style.display='';
         document.getElementById('corpusQuickManage').style.display='';
-        document.getElementById('corpusQuickStatus').textContent='✓ Enregistré et validé. Passe au mot suivant.';
-        toast(`✓ « ${word.aln8ba} » enregistré.`);
+        document.getElementById('corpusQuickStatus').textContent=`✓ Enregistré et validé · ${corpusCoverageLabel()}. Passe au mot suivant.`;
+        renderWords();
+        toast(`✓ « ${word.aln8ba} » enregistré · ${corpusCoverageLabel()}.`);
       }catch(error){
         document.getElementById('corpusQuickStatus').textContent=`Prise refusée : ${error.message}`;
         document.getElementById('corpusQuickRedo').style.display='';
@@ -4522,6 +4586,7 @@ async function corpusRefreshRecordedIds(){
     const records=await corpusDbAll(); corpusRecordedIds.clear();
     records.forEach(record=>{if(record.word_id) corpusRecordedIds.add(record.word_id);});
     document.querySelectorAll('.corpus-rec').forEach(button=>corpusQuickMarkWord(button.dataset.corpusWord,corpusRecordedIds.has(button.dataset.corpusWord)));
+    corpusUpdateCoverage();
   }catch(error){}
 }
 function corpusSetStatus(message,state=''){
@@ -4720,6 +4785,34 @@ async function corpusDbAll(){
   const db=await corpusOpenDb();
   return new Promise((resolve,reject)=>{const tx=db.transaction(CORPUS_STORE,'readonly'),request=tx.objectStore(CORPUS_STORE).getAll();request.onsuccess=()=>resolve(request.result||[]);request.onerror=()=>reject(request.error);tx.oncomplete=()=>db.close();});
 }
+async function corpusLatestRecordForWord(wordId){
+  if(!wordId) return null;
+  const records=(await corpusDbAll()).filter(record=>record.word_id===wordId&&record.wav);
+  return records.sort((a,b)=>{
+    const date=record=>Date.parse(record.stored_at||record.meta?.recorded_at||'')||0;
+    return date(b)-date(a);
+  })[0]||null;
+}
+async function playApprovedWordAudio(word,slow=false){
+  if(!word) return '';
+  let record=null;
+  try{record=await corpusLatestRecordForWord(word.id);}catch(error){}
+  let source='', url='';
+  if(record){
+    if(corpusReferenceAudio){corpusReferenceAudio.pause();corpusReferenceAudio=null;}
+    if(corpusReferenceAudioUrl) URL.revokeObjectURL(corpusReferenceAudioUrl);
+    corpusReferenceAudioUrl=URL.createObjectURL(record.wav); url=corpusReferenceAudioUrl; source='local';
+  }else if(word.audio){url=word.audio;source='published';}
+  if(!url) return '';
+  const audio=new Audio(url); corpusReferenceAudio=audio;
+  audio.playbackRate=slow?.78:1;
+  audio.addEventListener('ended',()=>{
+    if(corpusReferenceAudio===audio) corpusReferenceAudio=null;
+    if(source==='local'&&corpusReferenceAudioUrl===url){URL.revokeObjectURL(url);corpusReferenceAudioUrl='';}
+  },{once:true});
+  await audio.play();
+  return source;
+}
 async function corpusDbGet(id){
   const db=await corpusOpenDb();
   return new Promise((resolve,reject)=>{const tx=db.transaction(CORPUS_STORE,'readonly'),request=tx.objectStore(CORPUS_STORE).get(id);request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);tx.oncomplete=()=>db.close();});
@@ -4734,12 +4827,13 @@ async function corpusSaveLocal(){
     corpusDraftMeta=corpusDraftMeta||corpusBuildMeta();
     const record={...corpusDraftMeta,wav:corpusDraftBlob,stored_at:new Date().toISOString()};
     await corpusDbPut(record);
-    if(record.word_id){corpusRecordedIds.add(record.word_id);corpusQuickMarkWord(record.word_id,true);}
+    if(record.word_id){corpusRecordedIds.add(record.word_id);corpusQuickMarkWord(record.word_id,true);corpusUpdateCoverage();}
     corpusRemember('aln8ba_corpus_speaker',record.meta.speaker_id);
     corpusRemember('aln8ba_corpus_dialect',record.meta.dialect);
     corpusRemember('aln8ba_corpus_consent',record.meta.consent_id);
     corpusSetStatus('Prise conservée et validée par toi comme prononciation de référence.','ready');
     await corpusRenderSaved();
+    renderWords();
   }catch(error){corpusSetStatus(error.message||'Impossible de conserver cette prise.','error');}
 }
 function corpusDownloadBlob(blob,filename){
@@ -4767,7 +4861,7 @@ async function corpusPlaySaved(id){
 }
 async function corpusDeleteSaved(id){
   if(!confirm('Supprimer définitivement cette prise locale?')) return;
-  try{await corpusDbDelete(id);await corpusRefreshRecordedIds();await corpusRenderSaved();toast('Prise locale supprimée.');}
+  try{await corpusDbDelete(id);await corpusRefreshRecordedIds();await corpusRenderSaved();renderWords();toast('Prise locale supprimée.');}
   catch(error){toast('Suppression impossible.');}
 }
 async function corpusExportManifest(){
@@ -4784,7 +4878,10 @@ async function corpusRenderSaved(){
   if(!count||!list) return;
   try{
     const records=(await corpusDbAll()).sort((a,b)=>b.meta.recorded_at.localeCompare(a.meta.recorded_at));
-    count.textContent=`${records.length} prise${records.length>1?'s':''} locale${records.length>1?'s':''}`;
+    const currentIds=new Set(records.map(record=>record.word_id).filter(Boolean));
+    const total=WORDS.filter(isCorpusEligible).length;
+    const recorded=WORDS.filter(word=>isCorpusEligible(word)&&currentIds.has(word.id)).length;
+    count.textContent=`${recorded} / ${total} mots enregistrés · ${records.length} prise${records.length>1?'s':''}`;
     list.innerHTML=records.length?records.map(record=>`<div class="corpus-clip">
       <div class="corpus-clip-main"><strong>${escH(record.meta.transcript)}</strong><span>${escH(record.meta.speaker_id)} · ${escH(record.meta.dialect)} · validée par le locuteur</span></div>
       <button class="corpus-mini" onclick="corpusPlaySaved('${escQ(record.id)}')">Écouter</button>
@@ -5009,13 +5106,18 @@ function voiceSetStatus(message){
 }
 async function voiceListenCurrent(slow=false){
   const item=VOICE_ITEMS[VOICE_INDEX]; if(!item) return;
-  if(item.audio){
-    const audio=new Audio(item.audio); audio.playbackRate=slow?.75:1;
-    try{
-      await audio.play();
-      voiceSetStatus('Enregistrement natif du dictionnaire. Écoute, puis répète.');
-    }catch(e){audioPlaybackBlocked();}
-  }else voiceSpeak(item.text,item.cue,true,slow);
+  const word=WORDS.find(candidate=>candidate.id===item.wordId)
+    ||WORDS.find(candidate=>(candidate.aln8ba||'').trim().toLowerCase()===(item.text||'').trim().toLowerCase());
+  try{
+    const source=await playApprovedWordAudio(word||{id:item.wordId||'',audio:item.audio||null},slow);
+    if(source){
+      voiceSetStatus(source==='local'
+        ?'Ta prononciation validée sur cet appareil. Écoute, puis répète.'
+        :'Enregistrement natif publié. Écoute, puis répète.');
+      return;
+    }
+  }catch(e){audioPlaybackBlocked();return;}
+  voiceSpeak(item.text,item.cue,true,slow);
 }
 function voiceResetMic(){
   const btn=document.getElementById('voiceMic');
@@ -5137,7 +5239,7 @@ function aprVoiceTargets(m,lecHtml){
       if(w&&!seen.has(w.aln8ba)){seen.add(w.aln8ba);pool.push(w);}
     });
   }
-  return pool.slice(0,7).map(w=>({text:w.aln8ba,cue:voiceCueForWord(w),meaning:w.fr,
+  return pool.slice(0,7).map(w=>({text:w.aln8ba,cue:voiceCueForWord(w),meaning:w.fr,wordId:w.id,
     accepted:[w.phonetic||''].filter(Boolean),audio:w.audio||null}));
 }
 function aprVoiceStart(){
@@ -6671,7 +6773,7 @@ function aprPool(){ return WORDS.filter(w=>w.aln8ba&&!APR_META.test(w.aln8ba)&&w
 function aprSur(){ return aprPool().filter(isExerciseSafe); }
 /* un mot porte-t-il une réserve ? */
 function aprReserve(w){ return APR_DOUTE.test((w&&w.notes)||''); }
-function aprNorm(s){ return (s||'').toLowerCase().replace(/['’\-\s]/g,'').replace(/8/g,'o')
+function aprNorm(s){ return (s||'').toLowerCase().replace(/['’\-\s.,!?;:«»"()[\]]/g,'')
   .normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 function aprSrc(s){ if(!s) return '';
   if(s.includes('Charland')) return "Manuel de l'étudiant 1 — Native Montreal";
@@ -7034,7 +7136,11 @@ const NIVEAUX=[
   <tr><td class="k">T8ni kd'al8wzin?</td><td>Comment vas-tu?</td></tr>
   <tr><td class="k">T8ni aliwizian?</td><td>Comment t'appelles-tu?</td></tr>
   <tr><td class="k">T8ni wigian?</td><td>Où habites-tu?</td></tr>
-  <tr><td class="k">K'kasigadma?</td><td>Quel âge as-tu?</td></tr></table>`,
+  <tr><td class="k">K'kasigadma?</td><td>Quel âge as-tu?</td></tr></table>
+  <div class="aprnote"><b>Pourquoi il n'y a pas <span class="al8">kd'</span> dans <span class="al8">T8ni aliwizian?</span></b>
+   Le Manuel de l'étudiant donne cette question complète avec <span class="al8">-ian</span>, sans préfixe ajouté.
+   Laurent (1884) documente une autre construction historique, <span class="al8">Kagwi k'd-eliwizi?</span>.
+   Les deux modèles sont documentés, mais <span class="al8">T8ni kd'aliwizian?</span> les mélangerait : on ne les assemble pas.</div>`,
   coach:`<span class="al8">T8ni</span> est un couteau suisse : comment, où, combien. Apprends les quatre
    questions types comme des chansons — répète-les jusqu'à ce qu'elles sortent sans réfléchir.
    Poser une question sans hésiter, c'est le moment où tu passes d'élève à interlocuteur.`},
@@ -7752,23 +7858,34 @@ function jeuInit(){
        consultables au dictionnaire, dans Archives ou au décortiqueur.</div>`);
 }
 function jFrame(t,body,ctrl){
+  cancelAnswerAdvance();
   document.getElementById('jStage').innerHTML=`<div class="jbar"><h3>${t}</h3>
     <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">${ctrl||''}
-    <span class="jscore" role="status" aria-live="polite" aria-atomic="true">✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s></span></div></div>
+    <span class="jscore" role="status" aria-live="polite" aria-atomic="true">${jScoreMarkup()}</span></div></div>
     <div id="jBody">${body}</div>`;
+}
+function jScoreMarkup(){
+  const answered=jSc.ok+jSc.no;
+  return `Score <b>${jSc.ok} / ${answered}</b> &nbsp;·&nbsp; ✗ <s>${jSc.no}</s>`;
+}
+function jNext(){
+  cancelAnswerAdvance();
+  const handler=({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})[jCur];
+  if(handler) handler();
 }
 function jAns(bon,i,retour){
   const btns=[...document.querySelectorAll('#jBody .jopt')];
   btns.forEach(b=>b.disabled=true);
   btns[i].classList.add(i===bon?'ok':'no');
   if(i!==bon) btns[bon].classList.add('ok');
-  jSc[i===bon?'ok':'no']++;
-  document.querySelector('.jscore').innerHTML=`✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s>`;
+  const correct=i===bon;
+  jSc[correct?'ok':'no']++;
+  document.querySelector('.jscore').innerHTML=jScoreMarkup();
   document.getElementById('jBody').insertAdjacentHTML('beforeend',
     `<div class="jafter" role="status" aria-live="polite" aria-atomic="true">${retour}</div>
      <div style="text-align:center;margin-top:16px">
-       <button class="aprbtn" onclick="({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})['${jCur}']()">Suivant →</button></div>`);
-  scrollToNextAction('#jBody');
+       <button class="aprbtn" onclick="jNext()">Suivant →</button></div>`);
+  finishAnsweredStep(correct,'#jBody',jNext);
 }
 function jGenre(){
   const pool=jPoolSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
@@ -7974,11 +8091,11 @@ function jCaches(){
       pl.cells.forEach(p=>{const c=document.querySelector('#jBody [data-p="'+p+'"]');
         c.classList.add('found'); c.classList.remove('sel');});
       const e=document.getElementById('wm'+i); if(e) e.classList.add('got');
-      jSc.ok++; document.querySelector('.jscore').innerHTML=`✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s>`;
+      jSc.ok++; document.querySelector('.jscore').innerHTML=jScoreMarkup();
       if(PL.every(p=>p.found)) document.getElementById('jBody').insertAdjacentHTML('beforeend',
         '<div class="jafter"><b>Grille terminée.</b> Tous les mots ont été trouvés.</div>');
     }else if(sel.length>1){
-      jSc.no++; document.querySelector('.jscore').innerHTML=`✓ <b>${jSc.ok}</b> &nbsp; ✗ <s>${jSc.no}</s>`;
+      jSc.no++; document.querySelector('.jscore').innerHTML=jScoreMarkup();
     }
     cl();
   };
@@ -8031,13 +8148,14 @@ function aprEx(type,cat,titre,mode){
   exSuivant();
 }
 function exCadre(corps){
+  cancelAnswerAdvance();
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="aprLecon(aprMod)">← Revenir à la leçon</button>
     <div class="aprcard">
       <div class="jbar"><h3>${exTitre}</h3>
         <span class="jscore" role="status" aria-live="polite" aria-atomic="true">Question ${Math.min(exQ+1,exTot)} sur ${exTot} &nbsp;·&nbsp;
-          ✓ <b>${exOk}</b></span></div>
+          Score <b>${exOk} / ${exQ}</b></span></div>
       <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:20px">
         <div style="height:100%;width:${(exQ/exTot)*100}%;background:${n.c};border-radius:2px;transition:.3s"></div>
       </div>
@@ -8048,24 +8166,26 @@ function exCadre(corps){
 function exSyncScore(){
   const score=document.querySelector('#aprBody .jscore');
   if(!score) return;
-  score.innerHTML=`Question ${Math.min(Math.max(exQ,1),exTot)} sur ${exTot} &nbsp;·&nbsp; ✓ <b>${exOk}</b>`;
+  score.innerHTML=`Question ${Math.min(Math.max(exQ,1),exTot)} sur ${exTot} &nbsp;·&nbsp; Score <b>${exOk} / ${exQ}</b>`;
 }
 function exRepond(bon,i,retour){
   const btns=[...document.querySelectorAll('#exBody .jopt')];
   btns.forEach(b=>b.disabled=true);
   btns[i].classList.add(i===bon?'ok':'no');
   if(i!==bon) btns[bon].classList.add('ok');
-  if(i===bon) exOk++;
-  if(window._ex && window._ex.aln8ba) revNote(window._ex.aln8ba, i===bon);
+  const correct=i===bon;
+  if(correct) exOk++;
+  if(window._ex && window._ex.aln8ba) revNote(window._ex.aln8ba,correct);
   exQ++;
   exSyncScore();
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
     `<div class="jafter" role="status" aria-live="polite" aria-atomic="true">${retour}</div>
      <div style="text-align:center;margin-top:16px">
        <button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
-  scrollToNextAction('#exBody');
+  finishAnsweredStep(correct,'#exBody',exSuivant);
 }
 function exFin(){
+  cancelAnswerAdvance();
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   const pc=Math.round(exOk/exTot*100);
   const canUse=exMode==='retenir' && !!exCat;
@@ -8095,6 +8215,7 @@ function exFin(){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function exSuivant(){
+  cancelAnswerAdvance();
   if(exQ>=exTot) return exFin();
   const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
     negs:exNegs, classfx:exClassFx, structure:exStructure, aimuk:exAimuk, vta:exVta, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
@@ -8144,9 +8265,10 @@ function exVocab(){
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="exRepond(${ib},${i},exRetVocab())">${
       sens?w.fr:`<span class="al">${w.aln8ba}</span>`}</button>`).join('')}</div>`);
 }
-function voiceListenExercise(){
+async function voiceListenExercise(){
   const w=window._ex; if(!w||!w.aln8ba) return;
-  if(w.audio) new Audio(w.audio).play(); else voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
+  try{if(await playApprovedWordAudio(w)) return;}catch(error){audioPlaybackBlocked();return;}
+  voiceSpeak(w.aln8ba,voiceCueForWord(w),false);
 }
 function exRetVocab(){ const b=window._ex;
   return `<b>${b.aln8ba} — ${b.fr}</b>${b.grammar?`<em>${b.grammar}</em>`:''}
@@ -8222,8 +8344,8 @@ function exEcris(){
     <div class="aprtool"><input id="exIn" autocomplete="off" autocapitalize="off"
         placeholder="Écris le mot ici…">
       <button class="aprbtn" onclick="exVerif()">Vérifier</button></div>
-    <div class="jhint">Pas de stress sur les apostrophes, les espaces ni le 8 —
-      l'important, ce sont les lettres.</div>`);
+    <div class="jhint">Pas de stress sur la casse, les apostrophes, les espaces ni la ponctuation.
+      Le <b>8 est une lettre importante</b> et doit être écrit.</div>`);
   const inp=document.getElementById('exIn');
   if(inp){ inp.focus(); inp.onkeydown=e=>{ if(e.key==='Enter') exVerif(); }; }
 }
@@ -8236,13 +8358,18 @@ function exVerif(){
   exQ++;
   exSyncScore();
   inp.disabled=true;
+  const mixedNameQuestion=aprNorm(bon.aln8ba)==='t8nialiwizian'
+    &&aprNorm(inp.value).includes('t8nikdaliwizian');
+  const specificNote=mixedNameQuestion?`<div class="aprnote" style="margin-top:10px"><b>Tu as reconnu le « tu », mais deux constructions ont été mélangées.</b>
+    Forme actuelle du Manuel : <span class="al8">T8ni aliwizian?</span> · forme historique de Laurent (1884) :
+    <span class="al8">Kagwi k'd-eliwizi?</span>. Le <span class="al8">kd'</span> ne s'ajoute pas devant <span class="al8">aliwizian</span>.</div>`:'';
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
     `<div class="jafter" role="status" aria-live="polite" aria-atomic="true">${ok?'✓ Exact — de mémoire!':'✗ Pas encore. La bonne orthographe :'}
        <b><span class="al8">${bon.aln8ba}</span></b> — ${bon.fr}
-       <span class="aprsrc">${aprSrc(bon.source)}</span></div>
+       <span class="aprsrc">${aprSrc(bon.source)}</span>${specificNote}</div>
      <div style="text-align:center;margin-top:16px">
        <button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
-  scrollToNextAction('#exBody');
+  finishAnsweredStep(ok,'#exBody',exSuivant);
 }
 /* — révision espacée : les mots ratés et les mots qui datent passent en premier — */
 function aprRevView(){
