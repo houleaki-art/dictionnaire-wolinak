@@ -1113,7 +1113,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <button type="button" onclick="corpusExitDictionary()">Voir tous les mots</button>
     </div>
     <button class="music-promo" type="button" onclick="setView('musique')">
-      <span><strong>🎵 Chansons du projet</strong><small>Écouter les maquettes, voir les crédits et pratiquer avec les paroles.</small></span>
+      <span><strong>🎵 Chansons du projet</strong><small>Écouter les chansons, voir les crédits et pratiquer avec les paroles.</small></span>
       <span class="music-promo-go">Écouter et pratiquer →</span>
     </button>
     <div class="toolbar">
@@ -1262,29 +1262,29 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <!-- MUSIC VIEW -->
   <div class="music-view" id="musiqueView">
     <section class="music-hero" aria-labelledby="musicTitle">
-      <div class="music-kicker">Créations personnelles · Maquettes musicales</div>
+      <div class="music-kicker">Créations musicales personnelles</div>
       <h2 id="musicTitle">🎵 Chansons du projet</h2>
-      <p>Paroles et conception de <strong>Guillaum Labrecque-Houle</strong>. Les voix et les arrangements sont reproduits avec une intelligence artificielle afin de servir de maquettes au dictionnaire, en attendant de possibles enregistrements en studio.</p>
+      <p><strong>Créées et pensées par Guillaum Labrecque-Houle.</strong> Toute reproduction identique est illégale.</p>
     </section>
     <nav class="music-nav" aria-label="Sections des chansons">
       <button type="button" onclick="musicGoTo('musicListen')">🎧 Écouter les chansons</button>
       <button type="button" onclick="musicGoTo('musicPractice')">📝 Suivre les paroles sourcées</button>
     </nav>
     <div class="music-warning" role="note">
-      <strong>À écouter comme des œuvres artistiques en évolution.</strong> Ces maquettes ne constituent ni une attestation linguistique, ni l'enregistrement d'une locutrice ou d'un locuteur, ni un modèle officiel de prononciation. Suno chante le texte qui lui est fourni : il ne le traduit pas et ne valide ni sa graphie ni sa grammaire. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
+      <strong>Œuvres artistiques en évolution.</strong> Ces chansons ne constituent pas une attestation linguistique ni un modèle officiel de prononciation. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
     </div>
     <div class="music-warning music-rights" role="note">
       <strong>© 2026 Guillaum Labrecque-Houle — écoute seulement.</strong> Aucun téléchargement, aucune copie, aucune réutilisation, aucune modification et aucune redistribution ne sont autorisés. La mise en écoute sur ce site n'accorde aucune licence sur les paroles, les compositions, les enregistrements ou leur présentation.
     </div>
     <div class="music-warning" role="status">
-      <strong>Reconstructions du 25 août 2026.</strong> Les anciennes maquettes contenant des formes douteuses ont été retirées. Les versions conservées emploient des phrases ou des mots documentés et séparent la graphie d'apprentissage du guide phonétique donné à la voix artificielle. Ce contrôle réduit les erreurs, mais ne transforme pas la voix Suno en modèle officiel de prononciation.
+      <strong>Révisions du 25 août 2026.</strong> Les anciennes versions contenant des formes douteuses ont été retirées. Les versions conservées emploient des phrases ou des mots documentés et demeurent sujettes à révision.
     </div>
     <div class="music-grid" id="musicListen">
       <article class="music-card">
-        <img class="music-cover" src="audio/skweda.jpg" loading="lazy" alt="Pochette de la maquette Skweda">
+        <img class="music-cover" src="audio/skweda.jpg" loading="lazy" alt="Pochette de la chanson Skweda">
         <h3>Skweda</h3>
-        <span class="music-badge">Maquette IA · graphie aln8ba · à valider · 3:39</span>
-        <audio id="musicSkweda" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Skweda" oncontextmenu="return false" onended="musicStopped('musicSkweda','Lecture terminée')">
+        <span class="music-badge">Chanson · 3:39</span>
+        <audio id="musicSkweda" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la chanson Skweda" oncontextmenu="return false" onended="musicStopped('musicSkweda','Lecture terminée')">
           <source src="audio/skweda.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1295,13 +1295,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         </div>
         <div class="music-status" id="musicSkwedaStatus" role="status" aria-live="polite">Prête à écouter.</div>
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceSkweda')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+        <p class="music-credit"><strong>Créée et pensée par Guillaum Labrecque-Houle.</strong><br>Toute reproduction identique est illégale.</p>
       </article>
       <article class="music-card">
-        <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la maquette Askwa yudali">
+        <img class="music-cover" src="audio/askwa-yudali.jpg" loading="lazy" alt="Pochette de la chanson Askwa yudali">
         <h3>Askwa yudali</h3>
         <span class="music-badge">Archive artistique · graphie aln8ba · à valider · 3:59</span>
-        <audio id="musicAskwa" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Askwa yudali" oncontextmenu="return false" onended="musicStopped('musicAskwa','Lecture terminée')">
+        <audio id="musicAskwa" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la chanson Askwa yudali" oncontextmenu="return false" onended="musicStopped('musicAskwa','Lecture terminée')">
           <source src="audio/askwa-yudali.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1312,13 +1312,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         </div>
         <div class="music-status" id="musicAskwaStatus" role="status" aria-live="polite">Prête à écouter.</div>
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceAskwa')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+        <p class="music-credit"><strong>Créée et pensée par Guillaum Labrecque-Houle.</strong><br>Toute reproduction identique est illégale.</p>
       </article>
       <article class="music-card">
-        <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la maquette Nikw8bi nd'aln8ba8dwa">
+        <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la chanson Nikw8bi nd'aln8ba8dwa">
         <h3>Nikw8bi nd'aln8ba8dwa</h3>
-        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 1:58</span>
-        <audio id="musicNikwonbi" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Nikw8bi nd'aln8ba8dwa" oncontextmenu="return false" onended="musicStopped('musicNikwonbi','Lecture terminée')">
+        <span class="music-badge">Chanson · 1:58</span>
+        <audio id="musicNikwonbi" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la chanson Nikw8bi nd'aln8ba8dwa" oncontextmenu="return false" onended="musicStopped('musicNikwonbi','Lecture terminée')">
           <source src="audio/nikw8bi-aln8ba8dwa-v2.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1329,13 +1329,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         </div>
         <div class="music-status" id="musicNikwonbiStatus" role="status" aria-live="polite">Prête à écouter.</div>
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceNikwonbi')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+        <p class="music-credit"><strong>Créée et pensée par Guillaum Labrecque-Houle.</strong><br>Toute reproduction identique est illégale.</p>
       </article>
       <article class="music-card">
-        <img class="music-cover" src="audio/wla-won-gan-woban-kizoss.jpg" loading="lazy" alt="Pochette de la maquette Wig8damoda">
+        <img class="music-cover" src="audio/wla-won-gan-woban-kizoss.jpg" loading="lazy" alt="Pochette de la chanson Wig8damoda">
         <h3>Wig8damoda</h3>
-        <span class="music-badge">Reconstruction sourcée · correction Kwaï · audio IA à valider · 2:47</span>
-        <audio id="musicWlaWonGan" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Wig8damoda" oncontextmenu="return false" onended="musicStopped('musicWlaWonGan','Lecture terminée')">
+        <span class="music-badge">Chanson · 2:47</span>
+        <audio id="musicWlaWonGan" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la chanson Wig8damoda" oncontextmenu="return false" onended="musicStopped('musicWlaWonGan','Lecture terminée')">
           <source src="audio/wig8damoda-kwa-v3.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1346,13 +1346,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         </div>
         <div class="music-status" id="musicWlaWonGanStatus" role="status" aria-live="polite">Prête à écouter.</div>
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceWlaWonGan')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+        <p class="music-credit"><strong>Créée et pensée par Guillaum Labrecque-Houle.</strong><br>Toute reproduction identique est illégale.</p>
       </article>
       <article class="music-card">
-        <img class="music-cover" src="audio/kikas-mski-koua.jpg" loading="lazy" alt="Pochette de la maquette Kikas">
+        <img class="music-cover" src="audio/kikas-mski-koua.jpg" loading="lazy" alt="Pochette de la chanson Kikas">
         <h3>Kikas</h3>
-        <span class="music-badge">Reconstruction sourcée · audio IA à valider · 1:19</span>
-        <audio id="musicKikas" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Kikas" oncontextmenu="return false" onended="musicStopped('musicKikas','Lecture terminée')">
+        <span class="music-badge">Chanson · 1:19</span>
+        <audio id="musicKikas" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la chanson Kikas" oncontextmenu="return false" onended="musicStopped('musicKikas','Lecture terminée')">
           <source src="audio/kikas-v2.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1363,13 +1363,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         </div>
         <div class="music-status" id="musicKikasStatus" role="status" aria-live="polite">Prête à écouter.</div>
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceKikas')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+        <p class="music-credit"><strong>Créée et pensée par Guillaum Labrecque-Houle.</strong><br>Toute reproduction identique est illégale.</p>
       </article>
       <article class="music-card">
-        <img class="music-cover" src="audio/est-ce-que-tu-mentends.jpg" loading="lazy" alt="Pochette de la maquette Est-ce que tu m'entends, version Rock Anthem">
+        <img class="music-cover" src="audio/est-ce-que-tu-mentends.jpg" loading="lazy" alt="Pochette de la chanson Est-ce que tu m'entends, version Rock Anthem">
         <h3>Est-ce que tu m'entends (Rock Anthem)</h3>
-        <span class="music-badge">Maquette IA · non studio · 4:32</span>
-        <audio id="musicEntends" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la maquette Est-ce que tu m'entends, version Rock Anthem" oncontextmenu="return false" onended="musicStopped('musicEntends','Lecture terminée')">
+        <span class="music-badge">Chanson · 4:32</span>
+        <audio id="musicEntends" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la chanson Est-ce que tu m'entends, version Rock Anthem" oncontextmenu="return false" onended="musicStopped('musicEntends','Lecture terminée')">
           <source src="audio/est-ce-que-tu-mentends.mp3" type="audio/mpeg">
           Votre navigateur ne prend pas en charge la lecture audio.
         </audio>
@@ -1380,13 +1380,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         </div>
         <div class="music-status" id="musicEntendsStatus" role="status" aria-live="polite">Prête à écouter.</div>
         <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceEntends')">📝 Pratiquer avec les paroles</button>
-        <p class="music-credit"><strong>Création :</strong> Guillaum Labrecque-Houle<br><strong>Voix et arrangement :</strong> génération assistée par IA (Suno)</p>
+        <p class="music-credit"><strong>Créée et pensée par Guillaum Labrecque-Houle.</strong><br>Toute reproduction identique est illégale.</p>
       </article>
     </div>
     <section class="music-practice-section" id="musicPractice" aria-labelledby="musicPracticeTitle">
       <div class="music-practice-head">
-        <h3 id="musicPracticeTitle">📝 Textes sourcés des nouvelles maquettes</h3>
-        <p>Le texte affiché emploie la graphie du dictionnaire ou conserve explicitement la graphie de sa source. Suno reçoit un guide phonétique séparé qui n'est pas montré comme orthographe. Une juxtaposition poétique de mots attestés n'est pas une traduction littérale, et ces maquettes demeurent sujettes à la révision de personnes qualifiées.</p>
+        <h3 id="musicPracticeTitle">📝 Textes sourcés des chansons</h3>
+        <p>Le texte affiché emploie la graphie du dictionnaire ou conserve explicitement la graphie de sa source. Une juxtaposition poétique de mots attestés n'est pas une traduction littérale, et ces chansons demeurent sujettes à la révision de personnes qualifiées.</p>
       </div>
 
 
@@ -1402,7 +1402,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
             </div>
             <div class="music-status" id="musicSkwedaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-note"><strong>Graphie du dictionnaire.</strong> Le texte ci-dessous rétablit notamment le caractère 8 et les finales écrites que le guide phonétique de Suno modifie pour produire un son. Il ne reproduit donc pas l'orthographe phonétique contenue dans le fichier audio.</div>
+          <div class="lyrics-note"><strong>Graphie du dictionnaire.</strong> Le texte ci-dessous emploie notamment le caractère 8 et conserve les finales écrites selon la graphie aln8ba du dictionnaire.</div>
           <div class="lyrics-note"><strong>Kowanodana.</strong> Ce vocable est conservé exactement selon Henry Lorne Masta (1932, p. 110), où il sert de refrain et demeure sans traduction. Son emploi ici ne transforme pas cette création moderne en chant historique ou cérémoniel.</div>
           <div class="lyrics-note"><strong>Construction poétique à valider.</strong> Les mots sont tirés du corpus de travail, mais plusieurs lignes les juxtaposent sans constituer une phrase complète attestée. Les formes historiques provenant de Laurent ou de Masta restent consultatives.</div>
           <pre class="song-lyrics-raw">[Introduction]
@@ -1499,8 +1499,8 @@ Ni mziwi</pre>
             </div>
             <div class="music-status" id="musicAskwaPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-note"><strong>Graphie du dictionnaire.</strong> Les formes phonétiques destinées à Suno ont été remises en graphie aln8ba, par exemple <span class="al8">Aw8sis</span>, <span class="al8">K'wlipai8</span>, <span class="al8">Nikw8bi</span>, <span class="al8">Nid8bak</span> et <span class="al8">Nd'aln8ba8dwa</span>.</div>
-          <div class="lyrics-note"><strong>Archive artistique, pas modèle linguistique.</strong> Six lignes de cette ancienne maquette restent à corriger ou à confirmer parce que leur assemblage ne porte pas sûrement le sens annoncé. Elles sont conservées ici pour suivre exactement l'audio demandé, sans être présentées comme des phrases attestées.</div>
+          <div class="lyrics-note"><strong>Graphie du dictionnaire.</strong> Les paroles sont affichées en graphie aln8ba, par exemple <span class="al8">Aw8sis</span>, <span class="al8">K'wlipai8</span>, <span class="al8">Nikw8bi</span>, <span class="al8">Nid8bak</span> et <span class="al8">Nd'aln8ba8dwa</span>.</div>
+          <div class="lyrics-note"><strong>Archive artistique, pas modèle linguistique.</strong> Six lignes de cette ancienne version restent à corriger ou à confirmer parce que leur assemblage ne porte pas sûrement le sens annoncé. Elles sont conservées ici pour suivre exactement l'audio demandé, sans être présentées comme des phrases attestées.</div>
           <div class="lyrics-note"><strong>Passages concernés.</strong> Le début avec <span class="al8">N'wawaldamen</span>, la ligne <span class="al8">Kiona nikw8bi</span>, les deux premières lignes du deuxième couplet, <span class="al8">Kd'aliwizi nikw8bi</span> et <span class="al8">Nda n'wanalmu majimiwi</span> exigent une validation compétente avant tout usage d'apprentissage.</div>
           <pre class="song-lyrics-raw">[Couplet 1]
 N'wawaldamen tali kd'ai, Aw8sis.
@@ -1547,7 +1547,7 @@ Askwa yudali nd'aibena.</pre>
       </details>
 
       <details class="song-lyrics" id="practiceNikwonbi">
-        <summary>Nikw8bi nd'aln8ba8dwa · paroles pédagogiques reconstruites · audio IA à valider</summary>
+        <summary>Nikw8bi nd'aln8ba8dwa · paroles pédagogiques reconstruites</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Nikw8bi nd'aln8ba8dwa">
             <strong>🎧 Nikw8bi nd'aln8ba8dwa</strong>
@@ -1589,7 +1589,7 @@ Adio.</p></div>
 
 
       <details class="song-lyrics" id="practiceWlaWonGan">
-        <summary>Wig8damoda · paroles reconstruites et sourcées · audio IA à valider</summary>
+        <summary>Wig8damoda · paroles reconstruites et sourcées</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Wig8damoda">
             <strong>🎧 Wig8damoda</strong>
@@ -1601,7 +1601,7 @@ Adio.</p></div>
             <div class="music-status" id="musicWlaWonGanPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
           <div class="lyrics-note"><strong>Nouveau titre.</strong> L'ancien guide phonétique « Wla Won Gan x Wô-ban Ki-zoss » est abandonné. « Wig8damoda! » est l'impératif collectif documenté « Réjouissons-nous! ».</div>
-          <div class="lyrics-note"><strong>Correction vocale.</strong> La graphie d'apprentissage demeure « Kwaï mziwi! ». Dans le guide réservé à Suno, les deux mots sont placés sur deux attaques séparées afin d'empêcher la voix artificielle d'avaler « Kwaï ».</div>
+          <div class="lyrics-note"><strong>Prononciation.</strong> La graphie d'apprentissage demeure « Kwaï mziwi! ». Les deux mots doivent être prononcés distinctement afin que « Kwaï » reste clairement audible.</div>
           <div class="lyrics-note"><strong>Construction poétique.</strong> Les noms de lieux, de saisons et de nature sont des appels indépendants; leur juxtaposition ne constitue pas une traduction littérale. « Lintow8gan », « Pemegaw8gan » et « N'pemeg8 » viennent de Laurent (1884).</div>
           <div class="lyrics-grid">
             <div class="lyrics-part"><h4>Intro</h4><p>Kwaï mziwi!
@@ -1632,7 +1632,7 @@ Adio.</p></div>
 
 
       <details class="song-lyrics" id="practiceKikas">
-        <summary>Kikas · paroles reconstruites et sourcées · audio IA à valider</summary>
+        <summary>Kikas · paroles reconstruites et sourcées</summary>
         <div class="lyrics-body">
           <div class="lyrics-player" role="group" aria-label="Lecteur de pratique Kikas">
             <strong>🎧 Kikas</strong>
@@ -1686,7 +1686,7 @@ Wli nanawalmezi.</p></div>
             </div>
             <div class="music-status" id="musicEntendsPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
           </div>
-          <div class="lyrics-note"><strong>Paroles françaises de la maquette.</strong> Texte exact utilisé pour cette version rock.</div>
+          <div class="lyrics-note"><strong>Paroles françaises de la chanson.</strong> Texte exact utilisé pour cette version rock.</div>
           <pre class="song-lyrics-raw">[Intro]
 Je marche dans le noir depuis trop longtemps
 Cherchant une lumière, un signe, un vent
