@@ -135,3 +135,20 @@ test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
   assert.ok(path.indexOf('Phrase affirmative') < path.indexOf('Interrogation'));
   assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
 });
+
+test('le module des couleurs apprend par limage sans inventer detymologie', () => {
+  const colors = sourceBetween('{t:"Les couleurs"', '{t:"Décrire le monde"');
+  assert.match(colors, /Six formes verbales/);
+  assert.match(colors, /assets\/learning\/couleurs-territoire\.webp/);
+  assert.match(colors, /Mkwigen[\s\S]*Mskikwimen/);
+  assert.match(colors, /pas une preuve d'étymologie/);
+  assert.match(colors, /Observe → pointe → dis → retrouve/);
+  assert.doesNotMatch(colors, /Dix couleurs/);
+  for (const word of ['Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen']) {
+    assert.match(colors, new RegExp(word));
+  }
+
+  const asset = path.resolve(here, '..', '..', 'assets', 'learning', 'couleurs-territoire.webp');
+  assert.ok(fs.existsSync(asset), 'image pédagogique absente');
+  assert.ok(fs.statSync(asset).size < 400_000, 'image trop lourde pour le mobile');
+});

@@ -707,6 +707,22 @@ body.music-dock-open .toast{bottom:116px}
 .aprlead{font-size:.85rem;color:var(--text2);margin-bottom:16px}
 .al8{font-size:1.15em;font-weight:700;color:var(--text)}
 .aprcard code{font-family:Georgia,serif;font-size:1.05em;font-weight:700;color:var(--accent);background:none}
+.color-land-hero{position:relative;margin:16px 0 18px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface2);box-shadow:var(--shadow)}
+.color-land-hero img{display:block;width:100%;aspect-ratio:3/2;max-height:430px;object-fit:cover}
+.color-land-hero figcaption{position:absolute;left:0;right:0;bottom:0;padding:28px 16px 13px;color:#fff;font-size:.78rem;line-height:1.45;background:linear-gradient(transparent,rgba(18,12,7,.86))}
+.color-learning-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.color-learning-card{position:relative;min-width:0;overflow:hidden;border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--surface);box-shadow:0 2px 8px rgba(44,36,22,.07)}
+.color-learning-card::before{content:'';position:absolute;inset:0 auto 0 0;width:6px;background:var(--color-anchor)}
+.color-learning-visual{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.color-learning-symbol{width:48px;height:48px;display:grid;place-items:center;flex:0 0 48px;border-radius:50%;font-size:1.55rem;background:color-mix(in srgb,var(--color-anchor) 18%,var(--surface));border:2px solid color-mix(in srgb,var(--color-anchor) 50%,var(--border))}
+.color-learning-nature{font-size:.7rem;line-height:1.35;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.color-learning-word{font-size:1.18rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.color-learning-meaning{font-size:.82rem;color:var(--text2);font-style:italic}
+.color-learning-action{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.72rem;line-height:1.45;color:var(--text3)}
+.color-observe{margin:16px 0;padding:15px 17px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--green) 9%,var(--surface)),var(--surface))}
+.color-observe h4{font-size:1rem;color:var(--green);margin-bottom:8px}
+.color-observe ol{padding-left:20px;font-size:.82rem;line-height:1.65;color:var(--text2)}
+.color-summary caption{text-align:left;padding:0 0 8px;color:var(--text2);font-size:.75rem;font-style:italic}
 .lzgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px}
 .lz{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 15px;
   cursor:pointer;transition:var(--tr);text-align:left;font-family:inherit;color:var(--text)}
@@ -917,6 +933,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .aprnav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible}
   .aprnav button{width:100%;min-height:44px;padding:8px 6px;border-radius:10px;font-size:.78rem;white-space:normal}
   .aprcard{padding:16px}
+  .color-learning-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .color-land-hero figcaption{position:static;padding:10px 12px;background:var(--surface2);color:var(--text2)}
   .aprtab{table-layout:fixed}
   .aprtab th,.aprtab td{overflow-wrap:anywhere;word-break:normal;padding-right:6px}
   .aprtab td.k{width:44%;white-space:normal}
@@ -962,6 +980,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   main{padding:11px}
   .music-hero{padding:20px 16px}
   .music-card,.aprcard{padding:14px}
+  .color-learning-grid{grid-template-columns:1fr}
+  .color-land-hero img{aspect-ratio:4/3;max-height:320px}
   .prat-levels{grid-template-columns:1fr}
   .trad-direction-bar{grid-template-columns:1fr}
   .jstage{padding:13px}
@@ -2214,7 +2234,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-27-search-only-006';
+const APP_RESET_VERSION = '2026-08-27-learning-colors-007';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -7135,16 +7155,76 @@ const NIVEAUX=[
    1. Dis chaque phrase en lisant. 2. Redis-la en regardant seulement le français.
    3. Redis-la sans rien regarder. Si ça bloque, recommence — c'est normal, c'est comme ça
    que la mémoire se construit.</div>`},
- {t:"Les couleurs",d:"Dix couleurs, toutes bâties de la même façon.",cat:'couleur',ex:'vocab',lec:`
-  <p>En abénakis, la couleur se dit avec un verbe : pas « rouge » mais <i>c'est rouge</i>.
-  Toutes ces formes finissent par <code>-igen</code>.</p>
-  <table class="aprtab">
-  <tr><td class="k">Mkwigen</td><td>c'est rouge</td></tr>
-  <tr><td class="k">W8bigen</td><td>c'est blanc</td></tr>
-  <tr><td class="k">Mkazawigen</td><td>c'est noir</td></tr>
-  <tr><td class="k">Wl8wigen</td><td>c'est bleu</td></tr>
-  <tr><td class="k">Wiz8wigen</td><td>c'est jaune</td></tr>
-  <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>`},
+ {t:"Les couleurs",d:"Six formes verbales à observer dans la terre, l'eau et les plantes.",cat:'couleur',ex:'vocab',lec:`
+  <p>En aln8ba, les formes de cette leçon expriment un <b>état</b> : on n'apprend pas seulement
+  « rouge », mais <i>c'est rouge</i>. Les mots ne restent pas détachés du monde : on les retient
+  en regardant la terre, l'eau, les plantes, la lumière et les saisons qui donnent un contexte vivant.</p>
+
+  <figure class="color-land-hero">
+    <img src="assets/learning/couleurs-territoire.webp" loading="lazy" decoding="async"
+      alt="Fraises rouges, écorce de bouleau et neige blanches, terre et pierres noires, rivière bleue, lumière et fleurs jaunes, sapin et fougère verts">
+    <figcaption>Observe avant de lire : trouve le rouge, le blanc, le noir, le bleu, le jaune et le vert dans cette scène du territoire.</figcaption>
+  </figure>
+
+  <div class="color-learning-grid" aria-label="Six repères visuels pour apprendre les couleurs">
+    <article class="color-learning-card" style="--color-anchor:#b72f2b">
+      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🍓</span><span class="color-learning-nature">Fraise sauvage<br>baie mûre</span></div>
+      <div class="color-learning-word">Mkwigen</div><div class="color-learning-meaning">c'est rouge</div>
+      <span class="color-learning-action">Pointe les fraises, puis dis la forme complète à voix haute.</span>
+    </article>
+    <article class="color-learning-card" style="--color-anchor:#d8d3c7">
+      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">❄️</span><span class="color-learning-nature">Neige<br>bouleau</span></div>
+      <div class="color-learning-word">W8bigen</div><div class="color-learning-meaning">c'est blanc</div>
+      <span class="color-learning-action">Cherche la neige et l'écorce claire, puis prononce.</span>
+    </article>
+    <article class="color-learning-card" style="--color-anchor:#25221f">
+      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🪨</span><span class="color-learning-nature">Terre humide<br>pierre sombre</span></div>
+      <div class="color-learning-word">Mkazawigen</div><div class="color-learning-meaning">c'est noir</div>
+      <span class="color-learning-action">Observe le sol et les pierres mouillées avant de dire le mot.</span>
+    </article>
+    <article class="color-learning-card" style="--color-anchor:#2876a7">
+      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🌊</span><span class="color-learning-nature">Rivière<br>ciel réfléchi</span></div>
+      <div class="color-learning-word">Wl8wigen</div><div class="color-learning-meaning">c'est bleu</div>
+      <span class="color-learning-action">Suis l'eau du regard, puis dis la forme sans lire le français.</span>
+    </article>
+    <article class="color-learning-card" style="--color-anchor:#d6a713">
+      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">☀️</span><span class="color-learning-nature">Lumière<br>verge d'or</span></div>
+      <div class="color-learning-word">Wiz8wigen</div><div class="color-learning-meaning">c'est jaune</div>
+      <span class="color-learning-action">Repère la lumière et les fleurs, ferme les yeux, puis rappelle le mot.</span>
+    </article>
+    <article class="color-learning-card" style="--color-anchor:#3f7b3a">
+      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🌿</span><span class="color-learning-nature">Sapin<br>fougère</span></div>
+      <div class="color-learning-word">Askaskwigen</div><div class="color-learning-meaning">c'est vert</div>
+      <span class="color-learning-action">Compare les verts du sapin et de la fougère, puis prononce.</span>
+    </article>
+  </div>
+
+  <div class="aprnote"><b><span class="al8">Mkwigen</span> et <span class="al8">Mskikwimen</span> : un pont pour la mémoire</b>
+    <span class="al8">Mskikwimen</span> signifie « fraise ». Sa couleur et sa ressemblance visible avec
+    <span class="al8">Mkwigen</span> donnent un excellent repère pour retenir « c'est rouge ».
+    C'est une association pédagogique entre deux formes documentées, <b>pas une preuve d'étymologie</b>
+    ni l'affirmation automatique d'une racine commune.</div>
+
+  <div class="aprnote w"><b>Le patron écrit <span class="al8">-igen</span></b>
+    Les six formes enseignées ici se terminent par <span class="al8">-igen</span>. Observe ce patron pour
+    comparer les mots, mais ne l'utilise pas pour fabriquer une couleur absente du dictionnaire.</div>
+
+  <div class="color-observe">
+    <h4>Observe → pointe → dis → retrouve</h4>
+    <ol><li>Choisis un élément de l'image et pointe-le.</li>
+      <li>Dis la forme aln8ba complète deux fois à voix haute.</li>
+      <li>Cache le mot, nomme la couleur de mémoire, puis trouve dehors ou dans la maison un second exemple.</li></ol>
+  </div>
+
+  <table class="aprtab color-summary">
+    <caption>Vue de synthèse — relis-la seulement après l'exercice d'observation.</caption>
+    <tr><th>Forme aln8ba</th><th>État exprimé</th></tr>
+    <tr><td class="k">Mkwigen</td><td>c'est rouge</td></tr>
+    <tr><td class="k">W8bigen</td><td>c'est blanc</td></tr>
+    <tr><td class="k">Mkazawigen</td><td>c'est noir</td></tr>
+    <tr><td class="k">Wl8wigen</td><td>c'est bleu</td></tr>
+    <tr><td class="k">Wiz8wigen</td><td>c'est jaune</td></tr>
+    <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>`},
  {t:"Décrire le monde",d:"Grand, petit, beau — les mots qui décrivent tout ce qui t'entoure.",cat:'description',ex:'vocab',lec:aprAutoLec(`
   <p>Avec les couleurs, tu sais déjà dire <i>comment</i> sont les choses. Voici le reste de la
   famille des descriptions — les mots les plus courts d'abord, c'est plus facile pour la mémoire.</p>`,'description',16,`
