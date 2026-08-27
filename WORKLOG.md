@@ -165,6 +165,14 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Ajout d'exercices de reconnaissance et d'écriture qui demandent d'identifier le paradigme, la personne, le nombre et le temps avant de reproduire une forme historique exacte.
 - Le nombre et l'ordre des modules restent inchangés afin de préserver la progression locale déjà enregistrée par chaque visiteur.
 
+## Nombres expliqués par étapes
+
+- Remplacement du tableau condensé par cinq étapes repliables : bases 0 à 10, nombres 11 à 19, dizaines et `taba`, centaines et milliers, puis accord avec un nom.
+- « Un mot propre » est remplacé par « une forme entière à mémoriser » afin d'éviter la confusion avec un nom propre.
+- Le calculateur montre désormais chaque bloc, sa valeur et la règle employée; il distingue une forme complète documentée d'une construction guidée par une règle documentée.
+- Correction d'une faille où les nombres supérieurs à 9 999 pouvaient produire `undefined`. Les valeurs de 10 000 à 999 999 sont refusées tant qu'une construction complète n'est pas documentée; `Kchi ngwed8mkwaki` demeure disponible comme forme complète de 1 000 000.
+- Ajout d'exemples rapides et d'un résultat annoncé aux technologies d'assistance, avec une disposition mobile en une seule colonne.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

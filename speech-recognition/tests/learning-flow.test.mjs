@@ -172,6 +172,31 @@ test('les exercices de temps restent dans les tableaux attestes', () => {
   assert.doesNotMatch(writing, /N'namihôji|N'-d-aiji|K'-d-aibob/);
 });
 
+test('le calculateur de nombres decompose les blocs sans inventer les grands multiplicateurs', () => {
+  const source = sourceBetween('const NU=', 'function aprNombView');
+  const tools = new Function(`${source}; return {aprChiffre,aprNombreAnalyse};`)();
+  assert.equal(tools.aprChiffre(11), 'Ngwed8kaw');
+  assert.equal(tools.aprChiffre(16), 'Ngwed8s kas8kaw');
+  assert.equal(tools.aprChiffre(25), 'Nisinska taba N8lan');
+  assert.equal(tools.aprChiffre(126), 'Ngwedatgwa Nisinska taba Ngwed8s');
+  assert.equal(tools.aprChiffre(2026), 'Nis8mkwaki Nisinska taba Ngwed8s');
+  assert.equal(tools.aprChiffre(1000000), 'Kchi ngwed8mkwaki');
+  assert.equal(tools.aprChiffre(15000), '—');
+  assert.equal(tools.aprNombreAnalyse(15000).safe, false);
+  for (const n of [0, 9, 19, 99, 999, 9999]) assert.doesNotMatch(tools.aprChiffre(n), /undefined/);
+});
+
+test('le module des nombres enseigne une seule etape a la fois', () => {
+  const lesson = sourceBetween('function aprNombView', 'function aprGramView');
+  for (const step of ['Étape 1 · Les mots de base','Étape 2 · De 11 à 19',
+    'Étape 3 · Les dizaines et le lien taba','Étape 4 · Centaines, milliers et limite du module',
+    'Étape 5 · Compter seul ou compter un nom']) assert.match(lesson, new RegExp(step));
+  assert.match(lesson, /il ne s'agit pas de noms propres/);
+  assert.match(lesson, /aria-live="polite"/);
+  assert.match(html, /construction guidée par une règle documentée/);
+  assert.match(lesson, /refuse donc 10 000 à 999 999 au lieu d'inventer/);
+});
+
 test('le module des couleurs est revenu a sa forme simple sans ancien enrichissement', () => {
   const colors = sourceBetween('{t:"Les couleurs"', '{t:"Décrire le monde"');
   assert.match(colors, /Six formes verbales documentées/);

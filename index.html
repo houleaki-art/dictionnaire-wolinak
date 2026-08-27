@@ -742,8 +742,36 @@ body.music-dock-open .toast{bottom:116px}
 .mp.rac{background:var(--surface2);color:var(--text);border:1.5px solid var(--gold)}
 .mp.suf{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
 .mp.plus{background:none;font-size:1.2rem;color:var(--text3);padding:11px 2px;align-self:center;min-width:0}
-.aprres{background:var(--surface2);border-radius:9px;padding:16px;font-size:.85rem;line-height:1.65}
+.aprres{display:block;width:100%;box-sizing:border-box;background:var(--surface2);border-radius:9px;padding:16px;font-size:.85rem;line-height:1.65}
 .aprres .big{font-size:1.7rem;font-weight:700;text-align:center;margin:6px 0 12px;color:var(--accent)}
+.num-quick{display:flex;gap:7px;flex-wrap:wrap;margin:-6px 0 16px}
+.num-quick button{border:1px solid var(--border);border-radius:999px;background:var(--surface2);color:var(--text);font:700 .76rem Georgia,serif;padding:7px 11px;cursor:pointer}
+.num-quick button:hover,.num-quick button:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+.num-result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.num-result-head .big{text-align:left;margin:0;overflow-wrap:anywhere}
+.num-badge{display:inline-flex;border-radius:999px;padding:5px 9px;background:color-mix(in srgb,var(--green) 13%,transparent);color:var(--green);font-size:.68rem;font-weight:700;line-height:1.3;text-align:center}
+.num-badge.rule{background:color-mix(in srgb,var(--gold) 16%,transparent);color:var(--gold)}
+.num-path{display:grid;gap:8px;margin-top:12px}
+.num-step{display:grid;grid-template-columns:minmax(64px,.35fr) minmax(130px,1fr) minmax(150px,1.2fr);gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--bg)}
+.num-step-value{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700}
+.num-step-form{font-size:1.02rem;color:var(--accent);font-weight:700;overflow-wrap:anywhere}
+.num-step-rule{font-size:.76rem;color:var(--text2);line-height:1.45}
+.num-stage{border:1px solid var(--border);border-radius:11px;background:var(--surface2);margin:10px 0;overflow:hidden}
+.num-stage summary{cursor:pointer;list-style:none;padding:14px 16px;font-weight:700;color:var(--text)}
+.num-stage summary::-webkit-details-marker{display:none}
+.num-stage summary::before{content:'+';display:inline-grid;place-items:center;width:22px;height:22px;margin-right:9px;border-radius:50%;background:var(--bg);color:var(--accent)}
+.num-stage[open] summary::before{content:'−'}
+.num-stage-body{padding:0 16px 16px;line-height:1.6;font-size:.84rem}
+.num-stage-body>p:first-child{margin-top:0}
+.num-equation{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:9px 0;padding:10px;border-radius:8px;background:var(--bg)}
+.num-equation .piece{font-weight:700;color:var(--accent)}
+.num-equation .meaning{font-size:.72rem;color:var(--text3)}
+.num-memory{border-left:3px solid var(--gold);padding:9px 11px;background:var(--bg);margin:10px 0;border-radius:0 8px 8px 0}
+@media(max-width:680px){
+  .num-result-head{display:block}.num-result-head .num-badge{margin-top:8px}
+  .num-step{grid-template-columns:1fr;gap:3px}.num-step-rule{margin-top:3px}
+  .num-stage summary{padding:13px 12px}.num-stage-body{padding:0 12px 14px}
+}
 .voice-lab{max-width:720px;margin:0 auto}
 .voice-kicker{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);font-weight:700;text-align:center}
 .voice-target{text-align:center;padding:24px 16px 18px}
@@ -8105,49 +8133,139 @@ const NT5=['','Ngwed8kaw','Nis8kaw','Nas8kaw','Iaw8kaw','N8nn8kaw'];
 const NDZ={2:'Nisinska',3:'Nasinska',4:'Iawinska',5:'N8nninska'};
 const NCE={1:'Ngwedatgwa',2:'Nisatgwa',3:'Nasatgwa',4:'Iawatgwa',5:'N8nnatgwa'};
 const NMI={1:'Ngwed8mkwaki',2:'Nis8mkwaki',3:'Nas8mkwaki',4:'Iaw8mkwaki',5:'N8nn8mkwaki'};
+const APR_NUMBER_EXACT=new Set([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,20,21,25,30,33,40,50,100,1000,1000000]);
+function aprNombreAnalyse(value){
+  const n=Math.floor(Number(value));
+  if(!Number.isFinite(n)||n<0||n>1000000){
+    return {n,form:'—',parts:[],safe:false,note:'Entre un nombre entier de 0 à 1 000 000.'};
+  }
+  if(n===1000000){
+    return {n,form:'Kchi ngwed8mkwaki',safe:true,exact:true,
+      parts:[{value:'1 000 000',form:'Kchi ngwed8mkwaki',rule:'forme complète donnée par le Manuel'}]};
+  }
+  /* Le module documente seulement les multiplicateurs simples jusqu'à neuf. */
+  if(n>9999){
+    return {n,form:'Forme non établie dans ce module',parts:[],safe:false,
+      note:'Les règles disponibles ici ne suffisent pas à construire sûrement les nombres de 10 000 à 999 999.'};
+  }
+  if(n===0){
+    return {n,form:NU[0],safe:true,exact:true,
+      parts:[{value:'0',form:NU[0],rule:'mot de base : signifie aussi « rien »'}]};
+  }
+  const parts=[],mil=Math.floor(n/1000),cen=Math.floor((n%1000)/100),
+        diz=Math.floor((n%100)/10),uni=n%10;
+  if(mil){
+    const form=mil<=5?NMI[mil]:NU[mil]+' kas8mkwaki';
+    parts.push({value:(mil*1000).toLocaleString('fr-CA'),form,
+      rule:mil<=5?'forme de millier à mémoriser':'nombre de 6 à 9 + kas8mkwaki'});
+  }
+  if(cen){
+    const form=cen<=5?NCE[cen]:NU[cen]+' kasatgwa';
+    parts.push({value:String(cen*100),form,
+      rule:cen<=5?'forme de centaine à mémoriser':'nombre de 6 à 9 + kasatgwa'});
+  }
+  if(diz===1){
+    let form,rule;
+    if(uni===0){form='Mdala';rule='mot de base pour dix';}
+    else if(uni<=5){form=NT5[uni];rule='forme entière de 11 à 15 à mémoriser';}
+    else{form=NU[uni]+' kas8kaw';rule='nombre de 6 à 9 + kas8kaw';}
+    parts.push({value:String(10+uni),form,rule});
+  }else if(diz>=2){
+    const form=diz<=5?NDZ[diz]:NU[diz]+' kasinska';
+    parts.push({value:String(diz*10),form,
+      rule:diz<=5?'forme de dizaine à mémoriser':'nombre de 6 à 9 + kasinska'});
+    if(uni) parts.push({value:'+'+uni,form:'taba '+NU[uni],rule:'taba relie la dizaine et l’unité'});
+  }else if(uni){
+    parts.push({value:String(uni),form:NU[uni],rule:'mot de base'});
+  }
+  return {n,form:parts.map(part=>part.form).join(' '),parts,safe:true,exact:APR_NUMBER_EXACT.has(n)};
+}
 function aprChiffre(n){
-  n=Math.floor(n); if(isNaN(n)||n<0||n>1000000) return '—';
-  if(n===0) return NU[0]; if(n===1000000) return 'Kchi ngwed8mkwaki';
-  const out=[], mil=Math.floor(n/1000), cen=Math.floor((n%1000)/100),
-        diz=Math.floor((n%100)/10), uni=n%10;
-  if(mil) out.push(mil<=5?NMI[mil]:NU[mil]+' kas8mkwaki');
-  if(cen) out.push(cen<=5?NCE[cen]:NU[cen]+' kasatgwa');
-  if(diz===1) out.push(uni===0?'Mdala':(uni<=5?NT5[uni]:NU[uni]+' kas8kaw'));
-  else if(diz>=2){ out.push(diz<=5?NDZ[diz]:NU[diz]+' kasinska'); if(uni) out.push('taba '+NU[uni]); }
-  else if(uni) out.push(NU[uni]);
-  return out.join(' ');
+  const analysis=aprNombreAnalyse(n);
+  return analysis.safe?analysis.form:'—';
+}
+function aprNombRender(value){
+  const out=document.getElementById('nOut'); if(!out)return;
+  const analysis=aprNombreAnalyse(value);
+  if(!analysis.safe){
+    out.innerHTML=`<div class="num-result-head"><div class="big">${escH(analysis.form)}</div>
+      <span class="num-badge rule">limite documentaire</span></div>
+      <div class="aprnote w"><b>Le dictionnaire ne complète pas ce nombre</b>${escH(analysis.note)}</div>`;
+    return;
+  }
+  const badge=analysis.exact?'forme complète documentée':'construction guidée par une règle documentée';
+  out.innerHTML=`<div class="num-result-head"><div><div class="big">${escH(analysis.form)}</div>
+      <div style="color:var(--text2);font-size:.8rem">${analysis.n.toLocaleString('fr-CA')}</div></div>
+      <span class="num-badge ${analysis.exact?'':'rule'}">${badge}</span></div>
+    <div class="num-path">${analysis.parts.map((part,index)=>`<div class="num-step">
+      <div class="num-step-value">Bloc ${index+1} · ${escH(part.value)}</div>
+      <div class="num-step-form">${escH(part.form)}</div>
+      <div class="num-step-rule">${escH(part.rule)}</div></div>`).join('')}</div>`;
 }
 function aprNombView(){
-  document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Chiffres</h3>
-    <p class="aprlead">Le système fonctionne par blocs de cinq. Il suffit d'apprendre jusqu'à 21
-      pour comprendre le modèle, puis les mots des dizaines, des centaines et des milliers.</p>
+  document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Atelier des nombres</h3>
+    <p class="aprlead">N'apprends pas tout le tableau d'un coup. Lis le nombre de gauche à droite,
+      repère ses blocs, puis applique une seule règle à la fois.</p>
+    <div class="aprnote"><b>La stratégie en trois questions</b>
+      1. Est-ce une forme entière à mémoriser? 2. Est-ce une base suivie de <span class="al8">kas-</span>?
+      3. Faut-il ajouter une unité avec <span class="al8">taba</span>?</div>
+    <label for="nIn" style="font-weight:700;font-size:.8rem;display:block;margin-bottom:7px">Essaie un nombre</label>
     <div class="aprtool"><input id="nIn" type="number" min="0" max="1000000" value="25"
-      oninput="document.getElementById('nOut').innerHTML='<div class=\\'big\\'>'+aprChiffre(this.value)+'</div><div style=\\'text-align:center;color:var(--text2);font-size:.8rem\\'>'+Number(this.value||0).toLocaleString('fr-CA')+'</div>'"></div>
-    <div class="aprres" id="nOut"></div>
-    <h3>Les dix premiers</h3>
-    <table class="aprtab">${NU.map((u,i)=>`<tr><td class="k" style="width:52px">${i}</td><td class="k">${u}</td></tr>`).join('')}</table>
-    <h3>Comment ça se construit</h3>
-    <table class="aprtab">
-      <tr><td class="k">11 à 15</td><td>un mot propre : Ngwed8kaw, Nis8kaw, Nas8kaw, Iaw8kaw, N8nn8kaw</td></tr>
-      <tr><td class="k">16 à 19</td><td>le chiffre + <b>kas8kaw</b></td></tr>
-      <tr><td class="k">20 à 50</td><td>un mot propre en <b>-inska</b></td></tr>
-      <tr><td class="k">60 à 90</td><td>le chiffre + <b>kasinska</b></td></tr>
-      <tr><td class="k">et …</td><td><b>taba</b> — Nisinska <b>taba</b> n8lan = vingt-cinq</td></tr>
-      <tr><td class="k">centaines</td><td><b>-atgwa</b> · au-delà de 500, le chiffre + <b>kasatgwa</b></td></tr>
-      <tr><td class="k">milliers</td><td><b>-8mkwaki</b> · au-delà de 5000, le chiffre + <b>kas8mkwaki</b></td></tr>
-      <tr><td class="k">1 000 000</td><td><b>Kchi ngwed8mkwaki</b> — un gros mille</td></tr></table>
-    <div class="aprnote w"><b>De un à cinq, le chiffre s'accorde</b>
-      <table class="aprtab"><tr><th></th><th>Animé</th><th>Inanimé</th></tr>
-      <tr><td>1</td><td class="k">Pazgo</td><td class="k">Pazgwen</td></tr>
-      <tr><td>2</td><td class="k">Niswak</td><td class="k">Nisnol</td></tr>
-      <tr><td>3</td><td class="k">Nlhoak</td><td class="k">Nhenol</td></tr>
-      <tr><td>4</td><td class="k">Iawak</td><td class="k">Iawnol</td></tr>
-      <tr><td>5</td><td class="k">N8nnoak</td><td class="k">N8nnenol</td></tr></table>
-      <i>Niswak almosak</i> deux chiens · <i>Nisnol tasakwabonal</i> deux chaises.<br>
-      Au-delà de cinq, plus besoin : <i>Ngwed8s almosak</i> six chiens.
-      <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 26</span></div></div>`;
-  document.getElementById('nOut').innerHTML=`<div class="big">${aprChiffre(25)}</div>
-    <div style="text-align:center;color:var(--text2);font-size:.8rem">25</div>`;
+      inputmode="numeric" aria-describedby="numberHelp" oninput="aprNombRender(this.value)"></div>
+    <div id="numberHelp" style="font-size:.74rem;color:var(--text2);margin:-9px 0 14px">
+      Les constructions guidées vont jusqu'à 9 999; la forme complète de 1 000 000 est aussi documentée.</div>
+    <div class="num-quick" aria-label="Exemples de nombres">
+      ${[11,16,21,25,60,126,2026,1000000].map(n=>`<button type="button" onclick="document.getElementById('nIn').value=${n};aprNombRender(${n})">${n.toLocaleString('fr-CA')}</button>`).join('')}
+    </div>
+    <output class="aprres" id="nOut" aria-live="polite"></output>
+    <h3>Apprendre par étapes</h3>
+    <details class="num-stage" open><summary>Étape 1 · Les mots de base, de 0 à 10</summary>
+      <div class="num-stage-body"><p>Ces onze formes sont la fondation. Elles servent seules et reviennent au début des constructions plus longues.</p>
+        <table class="aprtab">${NU.map((u,i)=>`<tr><td class="k" style="width:52px">${i}</td><td class="k">${u}</td></tr>`).join('')}
+          <tr><td class="k">10</td><td class="k">Mdala</td></tr></table>
+        <div class="num-memory"><b>À retenir maintenant :</b> apprends d'abord 0 à 10. Ne passe à l'étape 2 que lorsque tu peux reconnaître ces mots sans regarder le français.</div></div></details>
+    <details class="num-stage"><summary>Étape 2 · De 11 à 19</summary><div class="num-stage-body">
+      <p><b>11 à 15 sont des formes entières à mémoriser.</b> L'ancien texte disait « un mot propre », ce qui prêtait à confusion : il ne s'agit pas de noms propres.</p>
+      <table class="aprtab">${NT5.slice(1).map((form,i)=>`<tr><td class="k">${i+11}</td><td class="k">${form}</td><td><small>forme entière</small></td></tr>`).join('')}</table>
+      <p><b>16 à 19 suivent une règle :</b> le mot de 6, 7, 8 ou 9 est suivi de <span class="al8">kas8kaw</span>.</p>
+      <div class="num-equation"><span class="meaning">16</span><span class="piece">Ngwed8s</span><span>+</span><span class="piece">kas8kaw</span><span>→</span><b>Ngwed8s kas8kaw</b></div>
+      <div class="num-equation"><span class="meaning">19</span><span class="piece">Noliwi</span><span>+</span><span class="piece">kas8kaw</span><span>→</span><b>Noliwi kas8kaw</b></div>
+    </div></details>
+    <details class="num-stage"><summary>Étape 3 · Les dizaines et le lien taba</summary><div class="num-stage-body">
+      <p><b>20, 30, 40 et 50 ont chacun une forme entière.</b></p>
+      <table class="aprtab">${Object.entries(NDZ).map(([n,form])=>`<tr><td class="k">${Number(n)*10}</td><td class="k">${form}</td><td><small>à mémoriser</small></td></tr>`).join('')}</table>
+      <p><b>60 à 90 :</b> le mot de 6 à 9 est suivi de <span class="al8">kasinska</span>.</p>
+      <div class="num-equation"><span class="meaning">60</span><span class="piece">Ngwed8s</span><span>+</span><span class="piece">kasinska</span><span>→</span><b>Ngwed8s kasinska</b></div>
+      <p><b>Pour ajouter une unité, taba fait le lien.</b> Il se place après la dizaine.</p>
+      <div class="num-equation"><span class="meaning">25</span><span class="piece">Nisinska</span><span class="piece">taba</span><span class="piece">N8lan</span><span>→</span><b>Nisinska taba n8lan</b></div>
+      <div class="num-memory"><b>Ordre à suivre :</b> dizaine + <span class="al8">taba</span> + unité. Le Manuel documente notamment 21, 25 et 33 avec cet ordre.</div>
+    </div></details>
+    <details class="num-stage"><summary>Étape 4 · Centaines, milliers et limite du module</summary><div class="num-stage-body">
+      <p>De 100 à 500 et de 1 000 à 5 000, les formes du tableau sont à mémoriser.</p>
+      <table class="aprtab"><tr><th>Valeur</th><th>Centaines</th><th>Valeur</th><th>Milliers</th></tr>
+        ${[1,2,3,4,5].map(n=>`<tr><td>${n*100}</td><td class="k">${NCE[n]}</td><td>${(n*1000).toLocaleString('fr-CA')}</td><td class="k">${NMI[n]}</td></tr>`).join('')}</table>
+      <p>Pour 600 à 900, le mot de 6 à 9 précède <span class="al8">kasatgwa</span>. Pour 6 000 à 9 000, il précède <span class="al8">kas8mkwaki</span>.</p>
+      <div class="num-equation"><span class="meaning">600</span><span class="piece">Ngwed8s</span><span>+</span><span class="piece">kasatgwa</span></div>
+      <div class="num-equation"><span class="meaning">6 000</span><span class="piece">Ngwed8s</span><span>+</span><span class="piece">kas8mkwaki</span></div>
+      <div class="aprnote w"><b>Pourquoi le calculateur s'arrête à 9 999</b>
+        Le module ne possède pas une règle complète attestée pour employer un multiplicateur à plusieurs chiffres. Il refuse donc 10 000 à 999 999 au lieu d'inventer. La forme complète documentée de 1 000 000 est <span class="al8">Kchi ngwed8mkwaki</span>.</div>
+    </div></details>
+    <details class="num-stage"><summary>Étape 5 · Compter seul ou compter un nom</summary><div class="num-stage-body">
+      <p><span class="al8">Pazokw, Nis, Nas, Iaw, N8lan</span> servent à réciter ou nommer un nombre. Devant un nom, de un à cinq, la forme dépend de la classe grammaticale du nom.</p>
+      <div class="aprnote w"><b>De un à cinq, le nombre s'accorde avec le nom</b>
+        <table class="aprtab"><tr><th></th><th>Animé</th><th>Inanimé</th></tr>
+        <tr><td>1</td><td class="k">Pazgo</td><td class="k">Pazgwen</td></tr>
+        <tr><td>2</td><td class="k">Niswak</td><td class="k">Nisnol</td></tr>
+        <tr><td>3</td><td class="k">Nlhoak</td><td class="k">Nhenol</td></tr>
+        <tr><td>4</td><td class="k">Iawak</td><td class="k">Iawnol</td></tr>
+        <tr><td>5</td><td class="k">N8nnoak</td><td class="k">N8nnenol</td></tr></table>
+        <i>Niswak almosak</i> deux chiens · <i>Nisnol tasakwabonal</i> deux chaises.<br>Au-delà de cinq : <i>Ngwed8s almosak</i> six chiens.
+        <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 26</span></div>
+      <div class="num-memory"><b>La bonne question :</b> est-ce que je récite le nombre, ou est-ce que je compte un nom? Si je compte un nom de un à cinq, je dois d'abord connaître sa classe.</div>
+    </div></details>
+    <span class="aprsrc">Formes et règles : Manuel de l'étudiant 1, pages 24 à 26. Les constructions calculées sont signalées comme telles.</span>
+  </div>`;
+  aprNombRender(25);
 }
 function aprGramView(){
   const R=WORDS.filter(w=>/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba||''));
