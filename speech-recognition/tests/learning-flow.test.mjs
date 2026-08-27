@@ -136,21 +136,15 @@ test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
   assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
 });
 
-test('le module des couleurs apprend par limage sans inventer detymologie', () => {
+test('le module des couleurs est revenu a sa forme simple sans ancien enrichissement', () => {
   const colors = sourceBetween('{t:"Les couleurs"', '{t:"Décrire le monde"');
-  assert.match(colors, /Six formes verbales/);
-  assert.match(colors, /assets\/learning\/couleurs-territoire\.webp/);
-  assert.match(colors, /Mkwigen[\s\S]*Mskikwimen/);
-  assert.match(colors, /pas une preuve d'étymologie/);
-  assert.match(colors, /Observe → pointe → dis → retrouve/);
+  assert.match(colors, /Six formes verbales documentées/);
+  assert.match(colors, /Les six formes documentées de ce module finissent/);
+  assert.doesNotMatch(colors, /couleurs-territoire|color-learning|color-observe|Mskikwimen|Observe →/);
   assert.doesNotMatch(colors, /Dix couleurs/);
   for (const word of ['Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen']) {
     assert.match(colors, new RegExp(word));
   }
-
-  const asset = path.resolve(here, '..', '..', 'assets', 'learning', 'couleurs-territoire.webp');
-  assert.ok(fs.existsSync(asset), 'image pédagogique absente');
-  assert.ok(fs.statSync(asset).size < 400_000, 'image trop lourde pour le mobile');
 });
 
 test('le jeu du territoire relie observation et vocabulaire vert actuel', () => {
@@ -178,6 +172,7 @@ test('le jeu du territoire relie observation et vocabulaire vert actuel', () => 
   assert.match(html, /c:\['territoire','negat','fam'\]/);
 
   for (const file of [
+    'couleurs-territoire.webp',
     'territoire-riviere.webp',
     'territoire-pin-chevreuil.webp',
     'territoire-feu-etoiles.webp'
