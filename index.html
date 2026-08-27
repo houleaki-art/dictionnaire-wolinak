@@ -657,11 +657,29 @@ body.music-dock-open .toast{bottom:116px}
 .trad-analysis-row{display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border)}
 .trad-analysis-row>span:first-child{font-size:.85rem;color:var(--text2);min-width:120px}
 .trad-analysis-note{font-size:.73rem;color:var(--text2);padding:0 0 5px 130px}
+.trad-partial-card{background:var(--surface2);border:1px solid var(--gold);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:14px 16px;margin-bottom:12px}
+.trad-partial-status{color:var(--gold);font-size:.73rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
+.trad-partial-title{font-size:1.05rem;font-weight:800;line-height:1.35;margin-bottom:5px}
+.trad-partial-card p{font-size:.82rem;color:var(--text2);line-height:1.55;margin:0}
+.trad-near-card{background:var(--surface2);border:1px solid var(--green);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.trad-near-card.is-consultative{border-color:var(--gold)}
+.trad-near-label{color:var(--green);font-size:.73rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.trad-near-card.is-consultative .trad-near-label{color:var(--gold)}
+.trad-near-word{font-size:1.12rem;font-weight:800;color:var(--accent);line-height:1.35;overflow-wrap:anywhere}
+.trad-near-gloss{font-weight:700;margin-top:3px}
+.trad-near-note{font-size:.76rem;color:var(--text2);line-height:1.5;margin-top:8px}
+.trad-details{border:1px solid var(--border);border-radius:10px;background:var(--surface2);margin-top:10px;overflow:hidden}
+.trad-details summary{cursor:pointer;padding:11px 13px;font-size:.8rem;font-weight:700;color:var(--text2);list-style-position:inside}
+.trad-details summary:hover,.trad-details summary:focus-visible{color:var(--accent)}
+.trad-details-body{border-top:1px solid var(--border);padding:12px 13px;background:var(--surface)}
 @media(max-width:600px){
   .trad-output{overflow-wrap:anywhere}
   .trad-analysis-row{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;align-items:start}
   .trad-analysis-row>span:first-child{min-width:0}
   .trad-analysis-note{padding-left:0}
+  .trad-partial-card,.trad-near-card{padding:12px}
+  .trad-near-word{font-size:1rem}
+  .trad-details-body{padding:10px}
 }
 .trad-placeholder{color:var(--text2);font-style:italic;font-size:.88rem}
 .trad-meta{font-size:.72rem;color:var(--text2);line-height:1.5;border-top:1px solid var(--border);padding-top:8px}
@@ -5214,7 +5232,15 @@ const DOCUMENTED_INTENT_ALTERNATIVES=[
   {id:'parler-aln8ba',required:[['reve','reves','rever'],['parle','parler'],['aln8ba8dwaw8gan','abenakis']],
     fr:'Je parle abénakis',aln8ba:"Nd'aln8ba8dwa",
     source:"Manuel de l'étudiant 1 (2018)",
-    note:"Cette reformulation exprime l'objectif central avec une phrase complète documentée. Legwasi (« rêver ») et Sipki (« longtemps ») sont reconnus séparément, mais aucune source vérifiée du projet ne fournit leur construction à la première personne dans cette phrase; les éléments ne sont donc pas assemblés automatiquement."}
+    note:"Cette reformulation exprime l'objectif central avec une phrase complète documentée. Legwasi (« rêver ») et Sipki (« longtemps ») sont reconnus séparément, mais aucune source vérifiée du projet ne fournit leur construction à la première personne dans cette phrase; les éléments ne sont donc pas assemblés automatiquement."},
+  {id:'venir-te-voir',required:[['aimerais'],['venir'],['te'],['voir']],
+    fr:'Je suis content de te voir',aln8ba:'Paakuin8gwzian',consultative:true,
+    source:'Jos. Laurent, New Familiar Abenakis and English Dialogues (1884)',
+    note:"Cette phrase complète historique parle du fait de voir l'autre. Elle ne traduit pas l'intention future « j'aimerais venir » et son usage actuel reste à valider."},
+  {id:'vouloir-danser',required:[['veux','vouloir','aimerais'],['danser','danse']],
+    fr:'Je danse',aln8ba:"N'pemeg8",consultative:true,
+    source:'Jos. Laurent, New Familiar Abenakis and English Dialogues (1884)',
+    note:"Cette phrase complète historique conserve seulement l'action de danser. Elle ne traduit ni « je veux » ni « au pow-wow »; aucun terme vérifié pour « pow-wow » n'est actuellement disponible dans le corpus."}
 ];
 
 // Paires VTA/VTI et objets dont la classe est documentée dans le Manuel de
@@ -6208,6 +6234,7 @@ function traduire(){
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
 
+  const partialOutput=!completeTranslation&&!completeRule&&confidence!==TRANSLATION_CONFIDENCE.objectClass;
   let html = completeTranslation
     ? '<div style="background:var(--surface2);border:1px solid '+(completeIsCaution?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
       + '<div style="font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1.5;white-space:pre-line">' + escH(sortie) + '</div>'
@@ -6222,6 +6249,11 @@ function traduire(){
         + '<div style="margin-top:8px;color:var(--gold);font-size:.75rem;font-weight:700">⚙ Construction grammaticale documentée — phrase non retrouvée mot pour mot</div></div>'
         + '<div class="aprnote w" style="margin-bottom:12px"><b>Proposition à faire valider</b>'
         + ' La forme ci-dessus applique une règle documentée à une base actuelle du dictionnaire. La phrase complète n’a pas été retrouvée mot pour mot dans les sources du projet et ne constitue pas une attestation de l’Office de la langue abénakise.</div>'
+    : partialOutput
+      ? '<div class="trad-partial-card" role="status">'
+        + '<div class="trad-partial-status">Structure incomplète · sous 80 %</div>'
+        + '<div class="trad-partial-title">Traduction complète non disponible</div>'
+        + '<p>Le dictionnaire reconnaît une partie de la saisie, mais pas encore la construction qui relie tous ses éléments. Il refuse donc de fabriquer une phrase. Les mots et les sources reconnus restent accessibles dans l’analyse.</p></div>'
     : documentedPassages.length
       ? '<div style="background:var(--surface2);border:1px solid '+(passageIsCaution?'var(--gold)':'var(--green)')+';border-radius:12px;padding:14px 16px;margin-bottom:12px">'
         + '<div style="color:'+(passageIsCaution?'var(--gold)':'var(--green)')+';font-size:.78rem;font-weight:700;margin-bottom:9px">'
@@ -6241,7 +6273,7 @@ function traduire(){
       : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
         + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
 
-  if(!completeTranslation&&!completeRule&&continuousProposal){
+  if(!completeTranslation&&!completeRule&&!partialOutput&&continuousProposal){
     html='<div style="background:var(--surface2);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px">'
       + '<div style="color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">'
       + (previewHasGaps?'Aperçu ordonné — passages non traduits conservés'
@@ -6260,26 +6292,29 @@ function traduire(){
   }
 
   if(intentAlternative){
-    html='<div style="background:var(--surface2);border:2px solid var(--green);border-radius:12px;padding:16px 18px;margin-bottom:14px">'
-      + '<div style="color:var(--green);font-size:.76rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">Reformulation documentée proche</div>'
-      + '<div style="font-size:1.35rem;font-weight:700;color:var(--accent);line-height:1.45">'+escH(intentAlternative.aln8ba)+'</div>'
-      + '<div style="font-weight:700;margin-top:4px">'+escH(intentAlternative.fr)+'</div>'
-      + '<div style="font-size:.78rem;color:var(--text2);margin-top:9px">'+escH(intentAlternative.note)
+    html+='<div class="trad-near-card'+(intentAlternative.consultative?' is-consultative':'')+'">'
+      + '<div class="trad-near-label">'+(intentAlternative.consultative?'Formulation historique proche · à valider':'Reformulation documentée proche')+'</div>'
+      + '<div class="trad-near-word">'+escH(intentAlternative.aln8ba)+'</div>'
+      + '<div class="trad-near-gloss">'+escH(intentAlternative.fr)+'</div>'
+      + '<div class="trad-near-note">'+escH(intentAlternative.note)
       + '<br><b>Source :</b> '+escH(intentAlternative.source)+'</div>'
-      + '<button type="button" class="btn btn-secondary" style="margin-top:11px;padding:7px 12px;font-size:.76rem" onclick="tradEssayer(\''+escQ(intentAlternative.fr)+'\')">Utiliser cette phrase connue</button>'
-      + '</div>'+html;
+      + (intentAlternative.consultative?'':'<button type="button" class="btn btn-secondary" style="margin-top:11px;padding:7px 12px;font-size:.76rem" onclick="tradEssayer(\''+escQ(intentAlternative.fr)+'\')">Utiliser cette phrase connue</button>')
+      + '</div>';
   }
 
-  html='<div style="border:1px solid '+confidence.tone+';border-left:4px solid '+confidence.tone+';border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:14px;background:var(--surface2)">'
-    + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">'
-    + '<b style="color:'+confidence.tone+'">Confiance structurelle : '+confidence.score+' %</b>'
-    + '<span style="font-size:.74rem;font-weight:800;color:'+confidence.tone+'">'
-    + confidenceStatus+'</span></div>'
-    + '<div style="font-size:.78rem;color:var(--text2);margin-top:5px"><b>'+escH(confidence.label)+'.</b> '
-    + escH(confidenceExplanation)+'</div></div>'+html;
+  if(!partialOutput){
+    html='<div style="border:1px solid '+confidence.tone+';border-left:4px solid '+confidence.tone+';border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:14px;background:var(--surface2)">'
+      + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">'
+      + '<b style="color:'+confidence.tone+'">Confiance structurelle : '+confidence.score+' %</b>'
+      + '<span style="font-size:.74rem;font-weight:800;color:'+confidence.tone+'">'
+      + confidenceStatus+'</span></div>'
+      + '<div style="font-size:.78rem;color:var(--text2);margin-top:5px"><b>'+escH(confidence.label)+'.</b> '
+      + escH(confidenceExplanation)+'</div></div>'+html;
+  }
 
   // Détail morceau par morceau
-  html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">'
+  const summaryHtml=html;
+  html = '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">'
     + (completeTranslation ? '🧩 Détail de la correspondance :'
       : completeRule ? '⚙ Détail de la construction grammaticale :'
       : confidence===TRANSLATION_CONFIDENCE.objectClass ? '⚙ Détail de la structure complète :'
@@ -6372,6 +6407,10 @@ function traduire(){
   });
   if(!completeTranslation && !completeRule) html += essaisHtml;
 
+  html=partialOutput
+    ? summaryHtml+'<details class="trad-details"><summary>Voir l’analyse grammaticale et les mots reconnus</summary><div class="trad-details-body">'+html+'</div></details>'
+    : summaryHtml+html;
+
   outEl.innerHTML = html;
   document.getElementById('tradCopyBtn').style.display = TRAD_LAST_OUTPUT ? 'block' : 'none';
   document.getElementById('tradMeta').textContent = hasConsultative
@@ -6387,10 +6426,10 @@ function traduire(){
           ? '⚙ Proposition contemporaine complète : le traducteur choisit VTA ou VTI seulement lorsque la fiche active de l’objet indique sa classe, explique chaque choix et permet la copie parce que l’indice structurel atteint 85 %.'
           : '⚠ Le verbe exige un objet dont la classe grammaticale est connue. Aucune forme VTA ou VTI n’a été choisie; ajoute un objet documenté pour obtenir une proposition complète.'
       : intentAlternative
-        ? '💡 Une reformulation complète documentée est proposée pour l’intention centrale. Les nuances non couvertes restent explicitement exclues; la copie de la saisie originale demeure désactivée.'
+        ? 'Une formulation proche est proposée sans être confondue avec une traduction complète. La copie demeure désactivée.'
       : documentedPassages.length
         ? documentedPassages.length+' passage'+(documentedPassages.length>1?'s ont':' a')+' été reconnu'+(documentedPassages.length>1?'s':'')+(passageHasCorrection?' après une correction affichée':'')+(passageHasConstruction?'; les formes construites sont signalées et restent à valider':'')+'. Le texte entier n’est pas traduit et la copie reste désactivée.'
-      : '⚠️ Analyse de fragments seulement. Aucun ordre grammatical ni aucune phrase n\'est construit; la copie reste désactivée. Pour un usage officiel ou cérémoniel, valide avec un aîné ou une aînée de la Nation.';
+      : 'Traduction complète indisponible. Ouvre l’analyse seulement si tu veux consulter les mots reconnus et leurs sources.';
   document.getElementById('tradBtnTxt').textContent = 'Traduire →';
 }
 

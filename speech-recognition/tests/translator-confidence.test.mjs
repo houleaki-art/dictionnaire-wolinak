@@ -36,3 +36,19 @@ test('le visiteur voit le statut contemporain sans confusion avec une citation',
   assert.match(source, /non une citation ancienne/);
   assert.match(source, /SOUS LE SEUIL DE 80 %/);
 });
+
+test('un résultat partiel reste compact et replie son analyse technique', () => {
+  const source = sourceBetween('const partialOutput', 'function tradEssayer');
+  assert.match(source, /Traduction complète non disponible/);
+  assert.match(source, /<details class="trad-details">/);
+  assert.match(source, /Voir l’analyse grammaticale et les mots reconnus/);
+  assert.match(source, /!partialOutput&&continuousProposal/);
+});
+
+test('les intentions fréquentes proposent seulement des phrases proches documentées', () => {
+  const source = sourceBetween('const DOCUMENTED_INTENT_ALTERNATIVES', 'const DOCUMENTED_OBJECT_CLASS_PAIRS');
+  assert.match(source, /id:'venir-te-voir'[\s\S]*aln8ba:'Paakuin8gwzian',consultative:true/);
+  assert.match(source, /id:'vouloir-danser'[\s\S]*aln8ba:"N'pemeg8",consultative:true/);
+  assert.match(source, /Elle ne traduit pas l'intention future/);
+  assert.match(source, /Elle ne traduit ni « je veux » ni « au pow-wow »/);
+});
