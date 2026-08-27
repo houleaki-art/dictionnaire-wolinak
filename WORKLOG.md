@@ -149,7 +149,10 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Toutes les cartes historiques de sens connu montrent désormais leur catégorie grammaticale et leur source; les rapprochements automatiques sont qualifiés d'autres entrées de sens proche, jamais de formes modernes équivalentes.
 - La présentation précise que les formes de Laurent et Masta ne sont pas automatiquement abandonnées : une grande partie de leurs mots et de leurs constructions demeure pertinente aujourd'hui.
 - Sur les fiches ordinaires, l'étiquette automatique « forme 1884, à valider dans l'usage actuel » devient « source 1884 »; son aide précise que la date seule ne prouve jamais qu'une forme n'est plus utilisée.
-- `Kdakinna` porte la mention « usage actuel signalé par Guillaum Labrecque-Houle » et enseigne directement la distinction entre le préfixe inclusif `k-` et le `n-` exclusif de `Ndakina`, telle qu'elle est consignée dans la note de travail.
+- `Kdakinna` est promue à l'affichage actif comme forme actuelle signalée par Guillaum Labrecque-Houle, sans écriture dans Supabase; elle est reliée à `Ndakina` et enseigne la distinction entre le `k-` inclusif et le `n-` exclusif.
+- Le Décortiqueur relie fortement `Nodab8nkad` (Masta), `Nodab8nkat` (Manuel actuel) et `Ab8n` : `nod-` celui qui fait habituellement, `ab8n` le pain, `-kad / -kat` celui qui produit par métier.
+- Les paradigmes `Kdakinna / Ndakina` et `Nodab8nkad / Nodab8nkat / Ab8n` possèdent une décomposition explicite et sourcée. Pour tout autre mot, une suite de lettres commune est désormais présentée comme ressemblance graphique à vérifier, jamais automatiquement comme « même racine ».
+- Une forme d'archive dont le sens est directement cité n'est plus décrite comme « sens non pleinement attesté » dans le Décortiqueur; l'outil distingue désormais attestation de source et confirmation d'un usage particulier.
 
 ## Principe pour la suite
 
