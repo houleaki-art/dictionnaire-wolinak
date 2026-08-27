@@ -1168,26 +1168,26 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <button class="plvl lvl-1 on" type="button" data-lvl="1" onclick="selectLevel(1)">
         <div class="plvl-icon">🌱</div>
         <div class="plvl-name">Débutant — Reconnaissance</div>
-        <div class="plvl-desc">Mots courts du quotidien : salutations, nombres, couleurs, famille et corps.</div>
-        <span class="plvl-badge">Niveau 1</span>
+        <div class="plvl-desc">Salutations et nombres de 1 à 10. Trois choix seulement, sans possessif ni pluriel.</div>
+        <span class="plvl-badge">Niveau 1 · 10 questions</span>
       </button>
       <button class="plvl lvl-2" type="button" data-lvl="2" onclick="selectLevel(2)">
         <div class="plvl-icon">🌿</div>
         <div class="plvl-name">Intermédiaire — Identification</div>
-        <div class="plvl-desc">Animaux, plantes, nature et descriptions : retrouve le mot abenakis.</div>
-        <span class="plvl-badge">Niveau 2</span>
+        <div class="plvl-desc">Vocabulaire concret déjà rencontré : couleurs, animaux, plantes, saisons et territoire.</div>
+        <span class="plvl-badge">Niveau 2 · 12 questions</span>
       </button>
       <button class="plvl lvl-3" type="button" data-lvl="3" onclick="selectLevel(3)">
         <div class="plvl-icon">🦌</div>
         <div class="plvl-name">Avancé — Production</div>
-        <div class="plvl-desc">Actions, temps, territoire et grammaire : écris le mot de mémoire.</div>
-        <span class="plvl-badge">Niveau 3</span>
+        <div class="plvl-desc">Actions, temps, territoire et grammaire : produis une forme complète de mémoire.</div>
+        <span class="plvl-badge">Niveau 3 · 15 questions</span>
       </button>
       <button class="plvl lvl-4" type="button" data-lvl="4" onclick="selectLevel(4)">
         <div class="plvl-icon">🪶</div>
         <div class="plvl-name">Expert — Maîtrise totale</div>
-        <div class="plvl-desc">3 types de questions mixtes : écris le mot, traduis et donne un pluriel documenté.</div>
-        <span class="plvl-badge">Niveau 4</span>
+        <div class="plvl-desc">Trois tâches alternées : écrire, traduire et rappeler uniquement un pluriel documenté.</div>
+        <span class="plvl-badge">Niveau 4 · 18 questions</span>
       </button>
     </div>
     <div class="prat-arena" id="pratArena">
@@ -2233,7 +2233,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-27-simple-colors-011';
+const APP_RESET_VERSION = '2026-08-27-practice-levels-012';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -3250,10 +3250,20 @@ function fcNext(){ S.fcIdx++; if(S.fcIdx>=S.fcWords.length){S.fcWords.sort(()=>M
 //  PRATIQUE GRAMMAIRE
 // ══════════════════════════════════════════════════════════
 const PS = { level:1, queue:[], idx:0, ok:0, ko:0, streak:0, bestStreak:0, answered:false };
+const PRACTICE_BEGINNER_WORDS=new Set([
+  '8h8','adio','kwai','nda','wliwni','païa!',
+  'pazokw','nis','nas','iaw','n8lan','ngwed8s','t8baw8s','ns8zek','noliwi','mdala'
+]);
+const PRACTICE_INTERMEDIATE_WORDS=new Set([
+  'mkwigen','w8bigen','mkazawigen','wl8wigen','wiz8wigen','askaskwigen',
+  'aw8sis','almos','m8lsem','awassos','tolba','sips','namas','agaskw',
+  'aki','skweda','kizos','kizokw','niben','sigwan','koa','mskikwimen','sata','abazi','aples'
+]);
 const PRACTICE_LEVELS={
-  1:{cats:new Set(['salut','nombre','couleur','famille','corps']),maxLetters:10,maxFrench:28},
-  2:{cats:new Set(['animal','plante','nature','description']),maxLetters:14,maxFrench:38},
-  3:{cats:new Set(['action','temps','territoire','toponymie','grammaire']),maxLetters:20,maxFrench:50}
+  1:{total:10},
+  2:{total:12},
+  3:{total:15,cats:new Set(['action','temps','territoire','toponymie','grammaire']),maxLetters:20,maxFrench:50},
+  4:{total:18}
 };
 
 function practiceFrenchLabel(w){
@@ -3262,6 +3272,51 @@ function practiceFrenchLabel(w){
 function practiceLetterCount(w){
   return ((w&&w.aln8ba)||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[^a-z8]/gi,'').length;
+}
+function practiceWordKey(w){ return ((w&&w.aln8ba)||'').trim().toLowerCase(); }
+function practiceIsSingleEntry(w){
+  const word=((w&&w.aln8ba)||'').trim();
+  return !!word && !/\s/.test(word) && !/[()[\]{}]/.test(word) && !word.startsWith('-')
+    && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/i.test(word);
+}
+function practiceHasAdvancedGrammar(w){
+  const grammar=(w&&w.grammar)||'', french=(w&&w.fr)||'';
+  return /possédé|possessif|dépendant|pluriel|accusatif|génitif|participe|\b[123](?:re|e) pers/i.test(grammar)
+    || /\b(?:mon|ma|mes|ton|ta|tes|son|sa|ses|notre|nos|votre|vos|leur|leurs)\b/i.test(french);
+}
+function practiceConfirmedEntries(words){
+  return words.filter(w=>isExerciseSafe(w) && w.aln8ba && w.aln8ba.length>1 && w.fr
+    && practiceFrenchLabel(w).length>1 && practiceIsSingleEntry(w));
+}
+function practicePoolForLevel(level,words){
+  const confirmed=practiceConfirmedEntries(words);
+  if(level===1) return confirmed.filter(w=>PRACTICE_BEGINNER_WORDS.has(practiceWordKey(w))
+    && !practiceHasAdvancedGrammar(w));
+  if(level===2) return confirmed.filter(w=>PRACTICE_INTERMEDIATE_WORDS.has(practiceWordKey(w))
+    && !practiceHasAdvancedGrammar(w));
+  if(level===3){
+    const spec=PRACTICE_LEVELS[3];
+    return confirmed.filter(w=>spec.cats.has(w.cat) && practiceLetterCount(w)<=spec.maxLetters
+      && practiceFrenchLabel(w).length<=spec.maxFrench);
+  }
+  return confirmed;
+}
+function practiceBeginnerQueue(pool,total){
+  const greetings=shuffle(pool.filter(w=>w.cat==='salut')).slice(0,4);
+  const numbers=shuffle(pool.filter(w=>w.cat==='nombre')).slice(0,Math.max(0,total-greetings.length));
+  return [...greetings,...numbers].slice(0,total);
+}
+function practiceExpertQueue(pool,total){
+  const plurals=shuffle(pool.filter(w=>DOCUMENTED_PLURALS[w.aln8ba]));
+  const general=shuffle(pool.filter(w=>!DOCUMENTED_PLURAL_FORMS.has(practiceWordKey(w))));
+  const cycles=Math.min(Math.floor(total/3),plurals.length,Math.floor(general.length/2));
+  const queue=[];
+  for(let i=0;i<cycles;i++){
+    queue.push({...general[i*2],practiceType:'writeAln8ba'});
+    queue.push({...general[i*2+1],practiceType:'translateFrench'});
+    queue.push({...plurals[i],practiceType:'plural'});
+  }
+  return queue;
 }
 
 function initPratique(){
@@ -3278,30 +3333,19 @@ function selectLevel(n){
 
 function buildQueue(){
   cancelAnswerAdvance();
-  // Base : mots confirmés uniquement, pas de notation spéciale
-  const confirmed = WORDS.filter(w =>
-    isExerciseSafe(w) &&
-    w.aln8ba && w.aln8ba.length > 1 && w.fr &&
-    !/[()[\]{}'"]/.test(w.aln8ba) &&
-    !w.aln8ba.startsWith('-') &&
-    !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba)
-  );
-  let pool;
-  if(PS.level >= 1 && PS.level <= 3){
-    const spec=PRACTICE_LEVELS[PS.level];
-    const singleWords=confirmed.filter(w=>!w.aln8ba.includes(' '));
-    pool=singleWords.filter(w=>spec.cats.has(w.cat) && practiceLetterCount(w)<=spec.maxLetters
-      && practiceFrenchLabel(w).length>1 && practiceFrenchLabel(w).length<=spec.maxFrench);
-    // A small fallback keeps the level usable if a category is temporarily under review.
-    if(pool.length<4) pool=singleWords.filter(w=>practiceLetterCount(w)<=spec.maxLetters
-      && practiceFrenchLabel(w).length>1 && practiceFrenchLabel(w).length<=spec.maxFrench);
-  } else {
-    // Ces sept paires ont été approuvées explicitement pour l'apprentissage actif.
-    pool = WORDS.filter(w => w.aln8ba && w.fr && DOCUMENTED_PLURALS[w.aln8ba]
-      && !enAttente(w) && !w.aln8ba.includes(' '));
+  const spec=PRACTICE_LEVELS[PS.level];
+  const pool=practicePoolForLevel(PS.level,WORDS);
+  if(pool.length<4){
+    toast('Pas assez de mots verts dans la banque pédagogique de ce niveau.');
+    return;
   }
-  if(pool.length < 2){ toast('Pas assez de mots confirmés pour ce niveau. Confirme d\'abord des mots en admin.'); return; }
-  PS.queue = shuffle([...pool]).slice(0, Math.min(pool.length, 20));
+  if(PS.level===1) PS.queue=practiceBeginnerQueue(pool,spec.total);
+  else if(PS.level===4) PS.queue=practiceExpertQueue(pool,spec.total);
+  else PS.queue=shuffle([...pool]).slice(0,Math.min(pool.length,spec.total));
+  if(PS.queue.length<4){
+    toast('Ce niveau attend encore assez de formes vertes documentées.');
+    return;
+  }
   PS.idx = 0; PS.ok = 0; PS.ko = 0; PS.streak = 0; PS.bestStreak = 0; PS.answered = false;
   updatePratScoreDisplay();
   showQuestion();
@@ -3309,9 +3353,8 @@ function buildQueue(){
 
 // Meilleurs distracteurs : même catégorie en priorité, sinon autres
 function getBestDistractors(w, n, field){
-  const base=(PS.queue.length>=n+1?PS.queue:WORDS).filter(x=>x.id!==w.id && isExerciseSafe(x)
-    && x.aln8ba && x.fr && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(x.aln8ba)
-    && !/[()[\]{}]/.test(x.aln8ba) && !x.aln8ba.startsWith('-'));
+  const base=PS.queue.filter(x=>x.id!==w.id && isExerciseSafe(x) && x.aln8ba && x.fr
+    && practiceIsSingleEntry(x));
   const samecat = shuffle(base.filter(x => x.cat === w.cat));
   const others  = shuffle(base.filter(x => x.cat !== w.cat));
   const fieldValue=x=>field==='fr'?practiceFrenchLabel(x):(x[field]||'').trim();
@@ -3426,7 +3469,7 @@ function finishAnsweredStep(correct,scopeSelector,nextAction,delayMs){
 
 // ── NIVEAU 1 : Tu vois le mot abenakis → reconnais la traduction ──
 function renderLvl1(arena, w, idx, total, pct){
-  const others = getBestDistractors(w, 3, 'fr');
+  const others = getBestDistractors(w, 2, 'fr');
   const choices = shuffle([w, ...others]);
   const choiceHTML = choices.map(c=>`
     <button class="prat-choice" onclick="checkLvl1QCM('${escQ(c.id)}','${escQ(w.id)}')" id="pch-${c.id}">${practiceFrenchLabel(c)}</button>
@@ -3434,6 +3477,7 @@ function renderLvl1(arena, w, idx, total, pct){
   arena.innerHTML = `
     ${progressBar(pct)}
     <div class="prat-question-lbl">Question ${idx+1} / ${total} · Que signifie ce mot ?</div>
+    <div class="prat-hint">Débutant · ${w.cat==='nombre'?'nombre de 1 à 10':'salutation courante'} · choisis simplement le sens</div>
     <div class="prat-word" style="font-size:2rem;font-weight:700;color:var(--accent);font-family:Georgia,serif">${w.aln8ba}</div>
     ${w.phonetic?`<div style="font-size:.8rem;color:var(--text3);margin-top:-8px">[${w.phonetic}]</div>`:''}
     <div class="prat-choices">${choiceHTML}</div>
@@ -3551,8 +3595,8 @@ function resolvePlural(w){
 // ── NIVEAU 4 : EXPERT — questions mixtes, aucune aide ──
 // Types alternés : A) écrire le mot abenakis (sans indice) · B) écrire la traduction · C) pluriel
 function renderLvl4(arena, w, idx, total, pct){
-  const qtype = idx % 3; // 0=abenakis depuis fr · 1=fr depuis abenakis · 2=pluriel
-  if(qtype === 0){
+  const qtype=w.practiceType||['writeAln8ba','translateFrench','plural'][idx%3];
+  if(qtype==='writeAln8ba'){
     // Type A : traduction → abenakis, AUCUN indice
     arena.innerHTML = `
       ${progressBar(pct)}
@@ -3569,7 +3613,7 @@ function renderLvl4(arena, w, idx, total, pct){
       </div>`;
     const inp=document.getElementById('pratIn');
     if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl4A(w.aln8ba);});}
-  } else if(qtype === 1){
+  } else if(qtype==='translateFrench'){
     // Type B : mot abenakis → traduction française, écris de mémoire
     arena.innerHTML = `
       ${progressBar(pct)}
