@@ -75,3 +75,21 @@ test('le quiz interrogatif utilise seulement les contrastes documentes', () => {
   assert.equal(nameQuestion.o[nameQuestion.r], 'T8ni aliwizian?');
   assert.ok(nameQuestion.o.includes("T8ni kd'aliwizian?"));
 });
+
+test("l'ecriture explique aliwizian avant de passer a la suite", () => {
+  const normSource = sourceBetween('function aprNorm', 'function aprSrc');
+  const analysisSource = sourceBetween('const APR_WRITING_ANALYSES', 'const APR_PREF');
+  const analyses = new Function(`${normSource}; ${analysisSource}; return APR_WRITING_ANALYSES;`)();
+  const aliwizian = analyses.get('t8nialiwizian');
+  assert.equal(analyses.size, 6);
+  assert.equal(aliwizian.equation, 'aliwizi + -an → aliwizian');
+  assert.equal(aliwizian.parts.at(-1).form, '-an');
+  assert.match(aliwizian.explanation, /i \+ an donne ian/);
+  assert.match(html, /Pourquoi <span class="al8">aliwizian<\/span> finit par/);
+  const writing = sourceBetween('function exWritingGenericNote', '/* — révision espacée');
+  assert.match(writing, /APR_WRITING_ANALYSES\.get/);
+  assert.match(writing, /exWritingAnalysisAnswer/);
+  assert.match(writing, /state\.writingOk&&correct/);
+  assert.match(writing, /finishAnsweredStep\(ok,'#exBody',exSuivant,4500\)/);
+  assert.match(writing, /Aucun découpage n'est affiché sans analyse documentée/);
+});

@@ -2491,9 +2491,9 @@ const CURRENT_USAGE_OVERRIDES={
   kdakinna:{cat:'territoire',related:['Ndakina'],note:'Usage actuel signalé par Guillaum Labrecque-Houle.'}
 };
 const INTERROGATIVE_FORM_NOTES={
-  't8ni aliwizian':"Deuxième personne interrogative documentée : dans cette forme complète, -ian porte « tu ». Ne pas ajouter kd'. Manuel de l'étudiant 1, page 34.",
+  't8ni aliwizian':"Deuxième personne interrogative documentée : la finale écrite -ian réunit le i final de aliwizi et la terminaison -an qui porte ici « tu ». Ne pas ajouter kd'. Manuel de l'étudiant 1, page 34.",
   't8ni alosan':"Deuxième personne interrogative documentée : dans cette forme complète, -an porte « tu ». Ne pas ajouter automatiquement k'- ou kd'. Manuel de l'étudiant 1, page 34.",
-  't8ni wigian':"Deuxième personne interrogative documentée : dans cette forme complète, -ian porte « tu ». Ne pas ajouter automatiquement k'- ou kd'. Manuel de l'étudiant 1, page 34.",
+  't8ni wigian':"Deuxième personne interrogative documentée : la finale écrite -ian réunit le i final de wigi et la terminaison -an qui porte ici « tu ». Ne pas ajouter automatiquement k'- ou kd'. Manuel de l'étudiant 1, page 34.",
   "t8ni kd'al8wzin":"Question courante documentée qui conserve le préfixe de deuxième personne kd'-. Cette forme ne permet pas de conclure que toutes les questions gardent ce préfixe.",
   "k'kasigadma":"Question courante documentée qui conserve le préfixe de deuxième personne k'- : quel âge as-tu?"
 };
@@ -3386,7 +3386,7 @@ function cancelAnswerAdvance(){
   if(answerFadeTimer){clearTimeout(answerFadeTimer);answerFadeTimer=null;}
   document.querySelectorAll('.answer-auto-leaving').forEach(el=>el.classList.remove('answer-auto-leaving'));
 }
-function finishAnsweredStep(correct,scopeSelector,nextAction){
+function finishAnsweredStep(correct,scopeSelector,nextAction,delayMs){
   cancelAnswerAdvance();
   if(!correct){scrollToNextAction(scopeSelector);return;}
   const scope=document.querySelector(scopeSelector); if(!scope) return;
@@ -3402,7 +3402,7 @@ function finishAnsweredStep(correct,scopeSelector,nextAction){
     const current=document.querySelector(scopeSelector); if(!current) return;
     if(!reduce) current.classList.add('answer-auto-leaving');
     answerFadeTimer=setTimeout(()=>{answerFadeTimer=null;nextAction();},reduce?0:180);
-  },reduce?650:1150);
+  },reduce?650:(Number.isFinite(delayMs)?delayMs:1150));
 }
 
 // ── NIVEAU 1 : Tu vois le mot abenakis → reconnais la traduction ──
@@ -6838,6 +6838,103 @@ const APR_DOCUMENTED_ANALYSES=new Map([
   }]
 ]);
 
+/* Analyses courtes reservees aux formes completes documentees. Elles servent a
+   enseigner l'ecriture sans transformer une observation en regle productive. */
+const APR_WRITING_ANALYSES=new Map([
+  [aprNorm('T8ni aliwizian?'),{
+    title:'Pourquoi aliwizian finit par -ian?',
+    equation:'aliwizi + -an → aliwizian',
+    parts:[
+      {form:'T8ni',role:'mot interrogatif',meaning:'comment'},
+      {form:'aliwizi',role:'forme de départ documentée',meaning:"se nommer · s'appeler"},
+      {form:'-an',role:'terminaison de deuxième personne dans cette question',meaning:'tu'}
+    ],
+    question:'D’où vient la suite finale -ian dans aliwizian?',
+    options:[
+      'Le i final de aliwizi est suivi de -an.',
+      "Le préfixe kd' est caché dans -ian.",
+      'T8ni remplace automatiquement la fin de tous les verbes.'
+    ],
+    answer:0,
+    explanation:"Le i appartient à aliwizi; la terminaison -an le suit. À l'écrit, i + an donne ian. La forme complète attestée est T8ni aliwizian?, sans kd'.",
+    limit:"C'est l'analyse de cette forme documentée, pas une permission d'ajouter -an à n'importe quel verbe.",
+    source:"Manuel de l'étudiant 1, pages 28, 29 et 34"
+  }],
+  [aprNorm('T8ni wigian?'),{
+    title:'Pourquoi wigian finit par -ian?',
+    equation:'wigi + -an → wigian',
+    parts:[
+      {form:'T8ni',role:'mot interrogatif',meaning:'où · comment, selon la phrase'},
+      {form:'wigi',role:'forme de départ visible',meaning:'habiter'},
+      {form:'-an',role:'terminaison de deuxième personne dans cette question',meaning:'tu'}
+    ],
+    question:'Quelle combinaison produit ici la finale écrite -ian?',
+    options:['wigi + -an',"wigi + kd'",'T8ni + -ian pour tous les verbes'],
+    answer:0,
+    explanation:"Le i final de wigi demeure devant -an : wigi + an s'écrit wigian dans cette forme complète documentée.",
+    limit:"On retient cette forme complète; on ne généralise pas ce montage à un verbe absent des sources.",
+    source:"Manuel de l'étudiant 1, page 34"
+  }],
+  [aprNorm('T8ni alosan?'),{
+    title:'Où la deuxième personne apparaît-elle?',
+    equation:'forme complète documentée : T8ni alosan?',
+    parts:[
+      {form:'T8ni',role:'mot interrogatif',meaning:'où · comment, selon la phrase'},
+      {form:'alosan',role:'forme verbale documentée en -an',meaning:'vas-tu'}
+    ],
+    question:"Dans cette question, faut-il ajouter kd' devant alosan?",
+    options:["Non : alosan est déjà la forme complète documentée.","Oui : il faut toujours écrire kd'alosan.",'Seulement après T8ni.'],
+    answer:0,
+    explanation:"T8ni alosan? est donné comme une phrase complète. La deuxième personne est portée par la forme verbale en -an; aucun kd' supplémentaire n'est ajouté.",
+    limit:"La source atteste le résultat complet. Le découpage interne n'est pas étendu à d'autres verbes.",
+    source:"Manuel de l'étudiant 1, page 34"
+  }],
+  [aprNorm("Kagwi k'michi?"),{
+    title:"Le tu est visible dans k'-",
+    equation:"k'- + michi → k'michi",
+    parts:[
+      {form:'Kagwi',role:'mot interrogatif',meaning:'quoi · que'},
+      {form:"k'-",role:'préfixe de deuxième personne',meaning:'tu'},
+      {form:'michi',role:'verbe documenté',meaning:'manger'}
+    ],
+    question:"Quel morceau porte la deuxième personne dans k'michi?",
+    options:["k'-",'-an','Kagwi'],
+    answer:0,
+    explanation:"Ici, contrairement à aliwizian, la deuxième personne reste visible au début du verbe sous la forme k'-.",
+    limit:'Les deux modèles sont attestés, mais ils ne sont pas interchangeables.',
+    source:"Manuel de l'étudiant 1, pages 28 et 29"
+  }],
+  [aprNorm("T8ni kd'al8wzin?"),{
+    title:"Le tu est visible dans kd'-",
+    equation:"T8ni + kd'- + al8wzin",
+    parts:[
+      {form:'T8ni',role:'mot interrogatif',meaning:'comment'},
+      {form:"kd'-",role:'préfixe de deuxième personne',meaning:'tu'},
+      {form:'al8wzin',role:'forme verbale documentée',meaning:'aller · se porter'}
+    ],
+    question:"Pourquoi kd' reste-t-il écrit dans cette question?",
+    options:["Parce qu'il porte ici la deuxième personne.","Parce que toute question commence par kd'.","Parce que le 8 exige kd'."],
+    answer:0,
+    explanation:"Dans T8ni kd'al8wzin?, la source conserve explicitement kd' devant la forme verbale. Ce modèle ne doit pas être mélangé avec T8ni aliwizian?.",
+    limit:'On apprend chaque construction complète avec son propre modèle attesté.',
+    source:"Manuel de l'étudiant 1, pages 29 et 34"
+  }],
+  [aprNorm("K'kasigadma?"),{
+    title:"Le tu est visible dans k'-",
+    equation:"k'- + kasigadma → k'kasigadma?",
+    parts:[
+      {form:"k'-",role:'préfixe de deuxième personne',meaning:'tu'},
+      {form:'kasigadma',role:'forme interrogative documentée',meaning:'quel âge avoir'}
+    ],
+    question:"Quel morceau indique la personne à qui l'on demande l'âge?",
+    options:["k'-",'-ian','-an'],
+    answer:0,
+    explanation:"Le préfixe k'- porte ici la deuxième personne. La forme complète documentée est K'kasigadma?.",
+    limit:"On conserve l'apostrophe dans le modèle enseigné, même si l'exercice ne la compte pas comme une faute.",
+    source:"Manuel de l'étudiant 1, page 34"
+  }]
+]);
+
 const APR_PREF=[["nd'","je · mon (devant voyelle)"],["kd'","tu · ton (devant voyelle)"],
  ["wd'","il · son (devant voyelle)"],["n'","je · mon"],["k'","tu · ton"],["w'","il · son"],
  ["noji","celui qui fait habituellement"],["nod","celui qui fait habituellement"],
@@ -6875,7 +6972,7 @@ function aprInit(){
   if(box && !box.innerHTML.trim()) aprParcours();
 }
 const NIVEAUX=[
-{id:'p',t:'Primaire',d:"La fondation complète : vingt modules, des sons jusqu'à ta première conversation. Aucun mécanisme de grammaire — on nomme, on répète, on retient, on utilise.",
+{id:'p',t:'Primaire',d:"La fondation complète : vingt modules, des sons jusqu'à ta première conversation. On nomme, on répète, puis on commence à comprendre comment les formes documentées se construisent.",
  c:'var(--green)',mods:[
  {t:"Les sons d'abord",d:"Cinq repères de prononciation : CH, J, 8, W et I.",ex:'sons',lec:`
   <p>L'aln8ba s'écrit presque comme il se prononce. Avant le premier mot, deux minutes pour l'alphabet.</p>
@@ -6919,6 +7016,12 @@ const NIVEAUX=[
   <tr><td class="k">T8ni kd'al8wzin?</td><td>Comment vas-tu?</td></tr>
   <tr><td class="k">N'wal8wzi, wliwni.</td><td>Je vais bien, merci.</td></tr>
   <tr><td class="k">Adio!</td><td>Au revoir!</td></tr></table>
+  <div class="aprnote"><b>Pourquoi <span class="al8">aliwizian</span> finit par <span class="al8">-ian</span>?</b>
+   La forme de départ <span class="al8">aliwizi</span> finit déjà par <b>i</b>. Dans cette question documentée,
+   la terminaison de deuxième personne <b>-an</b> suit cette forme :
+   <span class="al8">aliwizi + -an → aliwizian</span>. Le résultat visible finit donc par <b>-ian</b>.
+   On écrit <span class="al8">T8ni aliwizian?</span>, sans ajouter <span class="al8">kd'</span>.
+   Cette explication vaut pour cette forme attestée; elle ne permet pas de fabriquer la question d'un autre verbe.</div>
   <div class="aprnote"><b>La méthode des trois voix</b>
    1. Dis chaque phrase en lisant. 2. Redis-la en regardant seulement le français.
    3. Redis-la sans rien regarder. Si ça bloque, recommence — c'est normal, c'est comme ça
@@ -8388,6 +8491,46 @@ function exEcris(){
   const inp=document.getElementById('exIn');
   if(inp){ inp.focus(); inp.onkeydown=e=>{ if(e.key==='Enter') exVerif(); }; }
 }
+function exWritingGenericNote(bon){
+  const grammar=(bon.grammar||'').trim(), source=aprSrc(bon.source)||(bon.source||'').trim();
+  const spelling=[];
+  if((bon.aln8ba||'').includes('8')) spelling.push('Le 8 est une lettre de la forme et doit rester écrit.');
+  if(/[\'’]/.test(bon.aln8ba||'')) spelling.push("L'apostrophe montre une jonction dans la graphie enseignée.");
+  return `<div class="aprnote writing-anchor" style="margin-top:12px"><b>Fiche d'ancrage</b>
+    ${grammar?`<div><strong>Fonction :</strong> ${escH(grammar)}</div>`:''}
+    ${spelling.map(note=>`<div><strong>Repère d'écriture :</strong> ${escH(note)}</div>`).join('')}
+    ${source?`<div><strong>Source :</strong> ${escH(source)}</div>`:''}
+    <div style="margin-top:6px"><em>Aucun découpage n'est affiché sans analyse documentée : cette forme s'apprend ici comme un tout.</em></div></div>`;
+}
+function exWritingAnalysisHtml(analysis){
+  return `<div class="aprnote writing-analysis" style="margin-top:12px;border-left-color:var(--gold)">
+    <b>Comprendre la forme avant de continuer</b>
+    <h4 style="margin:8px 0 4px">${escH(analysis.title)}</h4>
+    <div class="al8" style="font-size:1.2rem;margin-bottom:10px">${escH(analysis.equation)}</div>
+    <div style="display:grid;gap:6px;margin-bottom:12px">${analysis.parts.map(part=>`<div style="display:grid;grid-template-columns:minmax(70px,auto) 1fr;gap:10px;align-items:start">
+      <strong class="al8">${escH(part.form)}</strong><span><b>${escH(part.role)}</b> · ${escH(part.meaning)}</span></div>`).join('')}</div>
+    <div class="jprompt" style="padding:0;text-align:left"><div class="q">Question de structure</div><div style="font-weight:700">${escH(analysis.question)}</div></div>
+    <div class="jopts writing-analysis-options">${analysis.options.map((option,index)=>`<button class="jopt" onclick="exWritingAnalysisAnswer(${index})">${escH(option)}</button>`).join('')}</div>
+    <div id="exWritingAnalysisFeedback"></div>
+    <div class="aprsrc" style="margin-top:10px">${escH(analysis.source)}</div>
+    <div style="margin-top:7px;font-size:.9rem"><em>${escH(analysis.limit)}</em></div></div>`;
+}
+function exWritingAnalysisAnswer(index){
+  const state=window._exWritingState;
+  if(!state||!state.analysis||state.analysisAnswered) return;
+  state.analysisAnswered=true;
+  const analysis=state.analysis, correct=index===analysis.answer;
+  const buttons=[...document.querySelectorAll('.writing-analysis-options .jopt')];
+  buttons.forEach(button=>button.disabled=true);
+  if(buttons[index]) buttons[index].classList.add(correct?'ok':'no');
+  if(!correct&&buttons[analysis.answer]) buttons[analysis.answer].classList.add('ok');
+  const feedback=document.getElementById('exWritingAnalysisFeedback');
+  if(feedback) feedback.innerHTML=`<div class="jafter" role="status" aria-live="polite" aria-atomic="true" style="margin-top:12px">
+    <b>${correct?'✓ Structure comprise.':'À retenir :'}</b> ${escH(analysis.explanation)}</div>`;
+  document.getElementById('exBody').insertAdjacentHTML('beforeend',`<div style="text-align:center;margin-top:16px">
+    <button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
+  finishAnsweredStep(state.writingOk&&correct,'#exBody',exSuivant);
+}
 function exVerif(){
   const bon=window._ex, inp=document.getElementById('exIn');
   if(!inp||inp.disabled) return;
@@ -8402,13 +8545,19 @@ function exVerif(){
   const specificNote=mixedNameQuestion?`<div class="aprnote" style="margin-top:10px"><b>Tu as reconnu le « tu », mais deux constructions ont été mélangées.</b>
     Forme actuelle du Manuel : <span class="al8">T8ni aliwizian?</span> · forme historique de Laurent (1884) :
     <span class="al8">Kagwi k'd-eliwizi?</span>. Le <span class="al8">kd'</span> ne s'ajoute pas devant <span class="al8">aliwizian</span>.</div>`:'';
+  const analysis=APR_WRITING_ANALYSES.get(aprNorm(bon.aln8ba));
+  window._exWritingState={writingOk:ok,analysis,analysisAnswered:false};
   document.getElementById('exBody').insertAdjacentHTML('beforeend',
     `<div class="jafter" role="status" aria-live="polite" aria-atomic="true">${ok?'✓ Exact — de mémoire!':'✗ Pas encore. La bonne orthographe :'}
        <b><span class="al8">${bon.aln8ba}</span></b> — ${bon.fr}
        <span class="aprsrc">${aprSrc(bon.source)}</span>${specificNote}</div>
-     <div style="text-align:center;margin-top:16px">
-       <button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
-  finishAnsweredStep(ok,'#exBody',exSuivant);
+     ${analysis?exWritingAnalysisHtml(analysis):exWritingGenericNote(bon)}
+     ${analysis?'':`<div style="text-align:center;margin-top:16px"><button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`}`);
+  if(analysis){
+    requestAnimationFrame(()=>document.querySelector('.writing-analysis')?.scrollIntoView({behavior:'smooth',block:'center'}));
+    return;
+  }
+  finishAnsweredStep(ok,'#exBody',exSuivant,4500);
 }
 /* — révision espacée : les mots ratés et les mots qui datent passent en premier — */
 function aprRevView(){
