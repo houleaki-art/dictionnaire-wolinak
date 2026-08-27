@@ -828,6 +828,25 @@ body.music-dock-open .toast{bottom:116px}
 @keyframes answerLeave{to{opacity:0;transform:translateY(-6px)}}
 @media(prefers-reduced-motion:reduce){.answer-auto-leaving{animation:none;opacity:1}}
 .jhint{font-size:.75rem;color:var(--text3);text-align:center;margin-top:14px;font-style:italic}
+.territory-path{display:flex;align-items:center;justify-content:center;gap:5px;margin:4px auto 14px;max-width:520px}
+.territory-path span{width:11px;height:11px;border-radius:50%;background:var(--border);box-shadow:0 0 0 3px var(--surface)}
+.territory-path span.done{background:var(--green)}
+.territory-path span.now{background:var(--gold);transform:scale(1.25)}
+.territory-path i{height:2px;flex:1;max-width:42px;background:var(--border)}
+.territory-path i.done{background:var(--green)}
+.territory-scene{position:relative;max-width:760px;margin:0 auto 17px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface2);box-shadow:var(--shadow)}
+.territory-scene img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.territory-scene-label{position:absolute;left:12px;bottom:12px;padding:7px 10px;border-radius:999px;background:rgba(22,15,8,.82);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.04em;backdrop-filter:blur(4px)}
+.territory-question{max-width:620px;margin:0 auto 16px;text-align:center}
+.territory-question .step{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:700}
+.territory-question h4{font-size:clamp(1.25rem,4vw,1.8rem);line-height:1.2;margin:7px 0 5px}
+.territory-question p{font-size:.82rem;color:var(--text2);line-height:1.5}
+.territory-field-action{margin-top:10px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--border));border-radius:9px;background:color-mix(in srgb,var(--green) 8%,var(--surface));color:var(--text2)}
+.territory-field-action strong{display:block;color:var(--green);font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.territory-complete{text-align:center;max-width:650px;margin:20px auto;padding:24px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,color-mix(in srgb,var(--green) 10%,var(--surface)),var(--surface))}
+.territory-complete .mark{font-size:3rem;line-height:1;margin-bottom:10px}
+.territory-complete h4{font-size:1.45rem;margin-bottom:7px}
+.territory-complete p{font-size:.85rem;line-height:1.6;color:var(--text2)}
 .wsWrap{display:grid;grid-template-columns:1fr 180px;gap:20px;align-items:start}
 @media(max-width:700px){.wsWrap{grid-template-columns:1fr}.jopts.two{grid-template-columns:1fr}.voice-nav{justify-content:center}.voice-dots{order:-1;flex-basis:100%}}
 .wsgrid{display:grid;gap:2px;user-select:none;touch-action:none}
@@ -2234,7 +2253,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-27-learning-colors-007';
+const APP_RESET_VERSION = '2026-08-27-territory-game-008';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -7925,7 +7944,7 @@ function aprParcours(){
 /* Lance les jeux limités aux catégories de mots d'un niveau du parcours */
 function aprJeux(nivId){
   const n=NIVEAUX.find(x=>x.id===nivId);
-  const games={p:['sens','caches'],s:['genre','sens','negat','plur','caches'],c:['negat','fam']};
+  const games={p:['territoire','sens','caches'],s:['territoire','genre','sens','negat','plur','caches'],c:['territoire','negat','fam']};
   jCtx={label:n.t,cats:[...new Set(n.mods.map(m=>m.cat).filter(Boolean))],games:games[nivId]||[]};
   jCat='toutes';
   setView('jeux',true);
@@ -8192,7 +8211,40 @@ function jUniqueBy(pool,key,n,used=[]){
   }
   return out;
 }
+const TERRITORY_TRAIL=[
+ {id:'terre',target:'Aki',options:['Aki','W8linaktegw','Skweda','Alakws'],image:'assets/learning/couleurs-territoire.webp',
+  alt:'Terre sombre au bord d’une rivière, avec plantes et pierres',label:'Au sol',
+  prompt:'Quel mot nomme la terre?',observe:'Regarde d’abord le sol sous les plantes et les pierres.',
+  field:'Pose la main près du sol sans l’arracher ni le déplacer, puis dis Aki deux fois.'},
+ {id:'riviere',target:'W8linaktegw',options:['W8linaktegw','Aki','Skweda','Alakws'],image:'assets/learning/territoire-riviere.webp',
+  alt:'Cours d’eau entre des rives boisées; illustration non géographique',label:'Repère d’eau',
+  prompt:'Quelle forme documentée nomme la rivière Bécancour dans son nom original?',
+  observe:'Suis le courant du regard. L’image est un repère visuel, pas une représentation de cette rivière précise.',
+  field:'Quand tu vois ou évoques la rivière Bécancour, dis W8linaktegw; garde toujours une distance sécuritaire de l’eau.'},
+ {id:'pin',target:'Koa',options:['Koa','Mskikwimen','Skweda','Aki'],image:'assets/learning/territoire-pin-chevreuil.webp',
+  alt:'Grand pin dans une clairière avec un chevreuil',label:'Dans la forêt',
+  prompt:'Quel mot nomme le pin?',observe:'Observe le grand arbre au centre, pas encore l’animal.',
+  field:'Trouve un pin, observe ses aiguilles sans les cueillir, puis dis Koa.'},
+ {id:'chevreuil',target:'Nolka',options:['Nolka','M8lsem','Mgezo','Awassos'],image:'assets/learning/territoire-pin-chevreuil.webp',
+  alt:'Grand pin dans une clairière avec un chevreuil',label:'Dans la clairière',
+  prompt:'Quel mot nomme le chevreuil?',observe:'Cette fois, porte ton regard vers l’animal à droite.',
+  field:'Si tu vois une trace ou un chevreuil, garde tes distances et dis Nolka doucement.'},
+ {id:'fraise',target:'Mskikwimen',options:['Mskikwimen','Koa','Skweda','Aki'],image:'assets/learning/couleurs-territoire.webp',
+  alt:'Fraises sauvages rouges près du sol, avec rivière et végétation',label:'Près des plantes',
+  prompt:'Quel mot nomme la fraise?',observe:'Cherche les petits fruits rouges à gauche de l’image.',
+  field:'Observe la plante avant le fruit; si tu la reconnais avec certitude, dis Mskikwimen.'},
+ {id:'feu',target:'Skweda',options:['Skweda','W8linaktegw','Aki','Alakws'],image:'assets/learning/territoire-feu-etoiles.webp',
+  alt:'Petit feu contrôlé sur la terre sous un ciel rempli d’étoiles',label:'Quand la nuit arrive',
+  prompt:'Quel mot nomme le feu?',observe:'Regarde la lumière au sol avant de lever les yeux.',
+  field:'Près d’un feu surveillé par un adulte responsable, ressens la chaleur à distance et dis Skweda.'},
+ {id:'etoile',target:'Alakws',options:['Alakws','Skweda','W8linaktegw','Aki'],image:'assets/learning/territoire-feu-etoiles.webp',
+  alt:'Petit feu contrôlé sous un ciel nocturne rempli d’étoiles',label:'Sous le ciel nocturne',
+  prompt:'Quel mot nomme une étoile?',observe:'Lève maintenant le regard vers les points lumineux du ciel.',
+  field:'Choisis une étoile visible, garde-la du regard et dis Alakws sans ajouter de syllabe finale.'}
+];
+let jTrailStep=0;
 const JEUX_L=[
+ {id:'territoire',t:'Marche sur le territoire',d:'Sept haltes visuelles : observe, choisis le mot documenté, puis refais le geste dehors.',n:'Observation'},
  {id:'genre',t:'Animé ou inanimé?',d:"Retrouve la classe grammaticale indiquée dans le dictionnaire.",n:'Grammaire'},
  {id:'sens',t:'Devinette',d:"Un mot, quatre sens. Ou l'inverse. Filtrable par catégorie.",n:'Vocabulaire'},
  {id:'negat',t:'La négation',d:"Nda plus quel suffixe? Trois règles selon la voyelle du radical.",n:'Grammaire'},
@@ -8212,7 +8264,8 @@ function jeuInit(){
   document.querySelectorAll('#jMenu .gcard').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('#jMenu .gcard').forEach(x=>x.classList.remove('on'));
     b.classList.add('on'); jCur=b.dataset.j; jSc={ok:0,no:0}; jAsked[jCur]=[];
-    ({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam,caches:jCaches})[jCur]();
+    if(jCur==='territoire') jTrailStep=0;
+    ({territoire:jTerritory,genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam,caches:jCaches})[jCur]();
   });
   const st=document.getElementById('jStage');
   jCur=null; jSc={ok:0,no:0};
@@ -8240,7 +8293,8 @@ function jScoreMarkup(){
 }
 function jNext(){
   cancelAnswerAdvance();
-  const handler=({genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})[jCur];
+  if(jCur==='territoire') jTrailStep++;
+  const handler=({territoire:jTerritory,genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})[jCur];
   if(handler) handler();
 }
 function jAns(bon,i,retour){
@@ -8256,6 +8310,56 @@ function jAns(bon,i,retour){
      <div style="text-align:center;margin-top:16px">
        <button class="aprbtn" onclick="jNext()">Suivant →</button></div>`);
   finishAnsweredStep(correct,'#jBody',jNext);
+}
+function jTerritoryStops(){
+  const byName=new Map(aprSur().map(w=>[w.aln8ba.toLowerCase(),w]));
+  return TERRITORY_TRAIL.map(stop=>{
+    const target=byName.get(stop.target.toLowerCase());
+    const options=stop.options.map(name=>byName.get(name.toLowerCase())).filter(Boolean);
+    return {...stop,target,words:options};
+  }).filter(stop=>stop.target&&stop.words.length===4&&new Set(stop.words.map(w=>w.aln8ba)).size===4);
+}
+function jTerritoryPath(total,index){
+  const parts=[];
+  for(let i=0;i<total;i++){
+    if(i) parts.push(`<i class="${i<=index?'done':''}"></i>`);
+    parts.push(`<span class="${i<index?'done':i===index?'now':''}"></span>`);
+  }
+  return `<div class="territory-path" role="img" aria-label="Halte ${index+1} sur ${total}">${parts.join('')}</div>`;
+}
+function jTerritory(){
+  const stops=jTerritoryStops();
+  if(stops.length!==TERRITORY_TRAIL.length) return jFrame('Marche sur le territoire',
+    '<p style="text-align:center;color:var(--text2)">Une entrée verte nécessaire au parcours n’est pas disponible. Le jeu refuse de la remplacer ou de construire un mot.</p>');
+  if(jTrailStep>=stops.length){
+    const total=jSc.ok+jSc.no;
+    return jFrame('Marche sur le territoire',`<div class="territory-complete">
+      <div class="mark">🌲</div><h4>La marche est terminée</h4>
+      <p>Tu as traversé ${stops.length} haltes et reconnu ${jSc.ok} réponse${jSc.ok!==1?'s':''} correctement sur ${total}.
+      Le prochain passage se fait dehors : retrouve au moins trois de ces repères sans regarder l’écran.</p>
+      <button class="aprbtn" style="margin-top:15px" onclick="jTerritoryRestart()">Recommencer la marche</button></div>`);
+  }
+  const stop=stops[jTrailStep], options=jShuf([...stop.words]), good=options.indexOf(stop.target);
+  window._jt={stop,target:stop.target};
+  jFrame('Marche sur le territoire',`
+    ${jTerritoryPath(stops.length,jTrailStep)}
+    <figure class="territory-scene"><img src="${escH(stop.image)}" alt="${escH(stop.alt)}" loading="eager" decoding="async">
+      <figcaption class="territory-scene-label">${escH(stop.label)}</figcaption></figure>
+    <div class="territory-question"><div class="step">Halte ${jTrailStep+1} sur ${stops.length}</div>
+      <h4>${escH(stop.prompt)}</h4><p>${escH(stop.observe)}</p></div>
+    <div class="jopts two">${options.map((word,i)=>`<button class="jopt" onclick="jAns(${good},${i},jRetTerritory())" style="text-align:center">
+      <span class="al">${escH(word.aln8ba)}</span></button>`).join('')}</div>
+    <div class="jhint">Toutes les réponses proposées sont des entrées vertes actuelles. Observe avant de lire les choix.</div>`);
+}
+function jRetTerritory(){
+  const {stop,target}=window._jt;
+  return `<b>${escH(target.aln8ba)} — ${escH(target.fr)}</b>
+    ${target.grammar?`<em>${escH(target.grammar)}</em>`:''}
+    <div class="territory-field-action"><strong>À refaire sur le territoire</strong>${escH(stop.field)}</div>
+    <span class="aprsrc">${escH(aprSrc(target.source))}</span>`;
+}
+function jTerritoryRestart(){
+  cancelAnswerAdvance(); jTrailStep=0; jSc={ok:0,no:0}; jAsked.territoire=[]; jTerritory();
 }
 function jGenre(){
   const pool=jPoolSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));

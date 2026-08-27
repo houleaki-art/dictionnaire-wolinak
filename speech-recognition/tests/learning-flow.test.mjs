@@ -152,3 +152,38 @@ test('le module des couleurs apprend par limage sans inventer detymologie', () =
   assert.ok(fs.existsSync(asset), 'image pédagogique absente');
   assert.ok(fs.statSync(asset).size < 400_000, 'image trop lourde pour le mobile');
 });
+
+test('le jeu du territoire relie observation et vocabulaire vert actuel', () => {
+  const trailSource = sourceBetween('const TERRITORY_TRAIL', 'let jTrailStep');
+  const trail = new Function(`${trailSource}; return TERRITORY_TRAIL;`)();
+  assert.equal(trail.length, 7);
+  assert.deepEqual(trail.map(stop => stop.target), [
+    'Aki', 'W8linaktegw', 'Koa', 'Nolka', 'Mskikwimen', 'Skweda', 'Alakws'
+  ]);
+  for (const stop of trail) {
+    assert.equal(stop.options.length, 4, `quatre choix requis: ${stop.id}`);
+    assert.equal(new Set(stop.options).size, 4, `choix distincts requis: ${stop.id}`);
+    assert.ok(stop.options.includes(stop.target), `bonne réponse absente: ${stop.id}`);
+    assert.match(stop.field, /\S/);
+  }
+  assert.doesNotMatch(trailSource, /\b(?:Sibo|Sata|Tmakwa)\b/);
+
+  const gameSource = sourceBetween('function jTerritoryStops', 'function jGenre');
+  assert.match(gameSource, /new Map\(aprSur\(\)/);
+  assert.match(gameSource, /stop\.words\.length===4/);
+  assert.match(gameSource, /stops\.length!==TERRITORY_TRAIL\.length/);
+  assert.match(gameSource, /Toutes les réponses proposées sont des entrées vertes actuelles/);
+  assert.match(html, /p:\['territoire','sens','caches'\]/);
+  assert.match(html, /s:\['territoire','genre','sens','negat','plur','caches'\]/);
+  assert.match(html, /c:\['territoire','negat','fam'\]/);
+
+  for (const file of [
+    'territoire-riviere.webp',
+    'territoire-pin-chevreuil.webp',
+    'territoire-feu-etoiles.webp'
+  ]) {
+    const asset = path.resolve(here, '..', '..', 'assets', 'learning', file);
+    assert.ok(fs.existsSync(asset), `image pédagogique absente: ${file}`);
+    assert.ok(fs.statSync(asset).size < 300_000, `image trop lourde pour le mobile: ${file}`);
+  }
+});
