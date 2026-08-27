@@ -104,6 +104,7 @@ test('les modules grammaticaux exigent une production ecrite', () => {
     'ex:\'negs\',use:\'neg\'',
     'ex:\'classfx\',use:\'classfx\'',
     'ex:\'vta\',use:\'vta\'',
+    'ex:\'temps\',use:\'temps\'',
     'ex:\'ordre\',use:\'ordre\'',
     'ex:\'suf\',use:\'suf\''
   ]) assert.ok(html.includes(marker), `phase Utiliser absente: ${marker}`);
@@ -117,7 +118,7 @@ test('les modules grammaticaux exigent une production ecrite', () => {
 
 test('la production grammaticale suit une procedure documentee', () => {
   const writing = sourceBetween('function grammarWritingPool', '/* — révision espacée');
-  for (const key of ['genre','plur','poss','conjp','inter2','neg','classfx','structure','vta','aimuk','ordre','suf','fam','trad']) {
+  for (const key of ['genre','plur','poss','conjp','inter2','neg','classfx','structure','vta','temps','ordre','suf','fam','trad']) {
     assert.match(writing, new RegExp(`key==='${key}'`), `banque absente: ${key}`);
   }
   assert.match(writing, /DOCUMENTED_NEGATION_PARADIGMS\.map/);
@@ -129,11 +130,41 @@ test('la production grammaticale suit une procedure documentee', () => {
 
 test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
   const path = sourceBetween('const APR_LEVEL_PATHS', 'function aprModulePerfect');
-  for (const phase of ['Nom et classe','Phrase affirmative','Interrogation','Négation','Structure verbale','Ordres de conjugaison','Morphologie','Production']) {
+  for (const phase of ['Nom et classe','Phrase affirmative','Interrogation','Négation','Structure verbale','Temps verbaux','Ordres de conjugaison','Morphologie','Production']) {
     assert.match(path, new RegExp(phase));
   }
   assert.ok(path.indexOf('Phrase affirmative') < path.indexOf('Interrogation'));
   assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
+});
+
+test('le repertoire verbal affiche seulement des paradigmes documentes', () => {
+  const source = sourceBetween('const APR_CONJ_PARADIGMS', 'const NU=');
+  const paradigms = new Function(`${source}; return APR_CONJ_PARADIGMS;`)();
+  assert.equal(paradigms.length, 3);
+  assert.deepEqual(paradigms.map(paradigm => paradigm.columns), [
+    ['Personne', 'Présent'],
+    ['Personne', 'Présent', 'Imparfait', 'Futur'],
+    ['Personne', 'Présent', 'Imparfait', 'Futur']
+  ]);
+  assert.ok(paradigms[0].rows.some(row => row.includes("N'michi")));
+  assert.ok(paradigms[1].rows.some(row => row.includes("N'-d-aibenaji")));
+  assert.ok(paradigms[2].rows.some(row => row.includes("N'namihôbenaji")));
+  assert.ok(paradigms[2].rows.some(row => row.includes("K'namihôbôb")));
+  assert.match(paradigms[2].title, /Namihôimuk/);
+  assert.match(source, /Cet outil ne calcule aucune forme/);
+  assert.match(source, /Aucune forme passée ou future de Michi n'est construite ici/);
+  assert.doesNotMatch(source, /APR_VERBES|const F=|applications de règle/);
+});
+
+test('les exercices de temps restent dans les tableaux attestes', () => {
+  const source = sourceBetween('const EXTEMPS', 'function exTemps');
+  const questions = new Function(`${source}; return EXTEMPS;`)();
+  assert.ok(questions.length >= 16);
+  for (const form of ["N'-d-aib", "N'-d-aibenaji", "'Aoakji", "N'namihôji", "N'namihôbenaji"]) {
+    assert.ok(questions.some(question => question.o.includes(form)), `forme absente: ${form}`);
+  }
+  assert.match(html, /temps:exTemps/);
+  assert.match(html, /key==='temps'/);
 });
 
 test('le module des couleurs est revenu a sa forme simple sans ancien enrichissement', () => {

@@ -154,6 +154,15 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Les paradigmes `Kdakinna / Ndakina` et `Nodab8nkad / Nodab8nkat / Ab8n` possèdent une décomposition explicite et sourcée. Pour tout autre mot, une suite de lettres commune est désormais présentée comme ressemblance graphique à vérifier, jamais automatiquement comme « même racine ».
 - Une forme d'archive dont le sens est directement cité n'est plus décrite comme « sens non pleinement attesté » dans le Décortiqueur; l'outil distingue désormais attestation de source et confirmation d'un usage particulier.
 
+## Verbes et temps documentés
+
+- Retrait du conjugueur génératif qui ajoutait automatiquement préfixes, passé, futur, conditionnel, négation et impératif à 17 radicaux; aucune de ces formes calculées n'est encore présentée au public.
+- Remplacement par trois tableaux fermés : le présent actuel documenté de `Michi`, puis les paradigmes historiques présent-imparfait-futur de `Aimuk` et `Namihôimuk` recopiés de Laurent (1884).
+- Lorsqu'un temps n'est pas documenté dans le module, l'interface montre explicitement le manque au lieu de compléter la case par analogie.
+- La leçon de cégep compare la personne, le nombre et le temps dans deux classes verbales; elle explique que `-b` et `-ji` sont des contrastes lisibles dans ces tableaux, pas des recettes universelles.
+- Ajout d'exercices de reconnaissance et d'écriture qui demandent d'identifier le paradigme, la personne, le nombre et le temps avant de reproduire une forme historique exacte.
+- Le nombre et l'ordre des modules restent inchangés afin de préserver la progression locale déjà enregistrée par chaque visiteur.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix
