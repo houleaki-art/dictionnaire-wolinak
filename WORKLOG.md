@@ -173,6 +173,17 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Correction d'une faille où les nombres supérieurs à 9 999 pouvaient produire `undefined`. Les valeurs de 10 000 à 999 999 sont refusées tant qu'une construction complète n'est pas documentée; `Kchi ngwed8mkwaki` demeure disponible comme forme complète de 1 000 000.
 - Ajout d'exemples rapides et d'un résultat annoncé aux technologies d'assistance, avec une disposition mobile en une seule colonne.
 
+## Questions de sens clarifiées
+
+- Les niveaux intermédiaire et avancé ne mélangent plus automatiquement la traduction anglaise à la consigne française.
+- « Quel est ce mot en abenakis ? » devient une demande directe de choisir ou d'écrire la forme `aln8ba` correspondant à un sens précis.
+- `Kizos` (mois) et `Kizokw` (jour), auparavant accompagnés du même indice vague « division du temps », possèdent maintenant des indices distincts et une comparaison pédagogique après la réponse.
+- Les expressions documentées `Pazgo kizos` (un mois) et `Pazgwen kizokw` (un jour) servent de rappel sans modifier les entrées linguistiques.
+- Les séances passent de 10/12/15/18 à un maximum de 15/30/50/60 questions selon le niveau, sans répéter une entrée au cours de la même séance.
+- Le niveau expert n'est plus limité par le nombre de pluriels attestés : ceux-ci restent strictement documentés, mais sont entremêlés à davantage d'exercices d'écriture et de traduction.
+- Chaque carte de niveau affiche après chargement le nombre réel de questions uniques disponibles.
+- La déduplication se fait par graphie aln8ba, pas seulement par identifiant de fiche, afin qu'une variante du même enregistrement ne réapparaisse pas dans la séance.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

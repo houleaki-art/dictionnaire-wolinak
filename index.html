@@ -610,7 +610,10 @@ body.music-dock-open .toast{bottom:116px}
 .prat-prog-bar{height:100%;border-radius:10px;background:var(--accent);transition:width .4s ease}
 .prat-question-lbl{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em}
 .prat-word{font-size:2.2rem;font-weight:700;color:var(--accent);font-style:italic;text-align:center;line-height:1.2}
-.prat-hint{font-size:.88rem;color:var(--text3);font-style:italic}
+.prat-word-question{display:block;margin-bottom:6px;font-size:.84rem;color:var(--text2);font-style:normal;font-weight:600}
+.prat-hint{font-size:.88rem;color:var(--text3);font-style:italic;text-align:center;line-height:1.45}
+.prat-meaning-note{margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--surface2);color:var(--text2);font-size:.85rem;font-weight:400;line-height:1.45}
+.prat-feedback.ok .prat-meaning-note,.prat-feedback.ko .prat-meaning-note{color:var(--text2)}
 .prat-blank{display:flex;align-items:center;gap:4px;font-size:2rem;font-weight:700;color:var(--accent);font-style:italic;flex-wrap:wrap;justify-content:center}
 .prat-known{color:var(--accent)}
 .prat-input-wrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
@@ -1197,25 +1200,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <div class="plvl-icon">🌱</div>
         <div class="plvl-name">Débutant — Reconnaissance</div>
         <div class="plvl-desc">Salutations et nombres de 1 à 10. Trois choix seulement, sans possessif ni pluriel.</div>
-        <span class="plvl-badge">Niveau 1 · 10 questions</span>
+        <span class="plvl-badge">Niveau 1 · jusqu'à 15 questions</span>
       </button>
       <button class="plvl lvl-2" type="button" data-lvl="2" onclick="selectLevel(2)">
         <div class="plvl-icon">🌿</div>
         <div class="plvl-name">Intermédiaire — Identification</div>
         <div class="plvl-desc">Vocabulaire concret déjà rencontré : couleurs, animaux, plantes, saisons et territoire.</div>
-        <span class="plvl-badge">Niveau 2 · 12 questions</span>
+        <span class="plvl-badge">Niveau 2 · jusqu'à 30 questions</span>
       </button>
       <button class="plvl lvl-3" type="button" data-lvl="3" onclick="selectLevel(3)">
         <div class="plvl-icon">🦌</div>
         <div class="plvl-name">Avancé — Production</div>
         <div class="plvl-desc">Actions, temps, territoire et grammaire : produis une forme complète de mémoire.</div>
-        <span class="plvl-badge">Niveau 3 · 15 questions</span>
+        <span class="plvl-badge">Niveau 3 · jusqu'à 50 questions</span>
       </button>
       <button class="plvl lvl-4" type="button" data-lvl="4" onclick="selectLevel(4)">
         <div class="plvl-icon">🪶</div>
         <div class="plvl-name">Expert — Maîtrise totale</div>
-        <div class="plvl-desc">Trois tâches alternées : écrire, traduire et rappeler uniquement un pluriel documenté.</div>
-        <span class="plvl-badge">Niveau 4 · 18 questions</span>
+        <div class="plvl-desc">Trois tâches entremêlées : écrire, traduire et rappeler uniquement un pluriel documenté.</div>
+        <span class="plvl-badge">Niveau 4 · jusqu'à 60 questions</span>
       </button>
     </div>
     <div class="prat-arena" id="pratArena">
@@ -3288,10 +3291,10 @@ const PRACTICE_INTERMEDIATE_WORDS=new Set([
   'aki','skweda','kizos','kizokw','niben','sigwan','koa','mskikwimen','sata','abazi','aples'
 ]);
 const PRACTICE_LEVELS={
-  1:{total:10},
-  2:{total:12},
-  3:{total:15,cats:new Set(['action','temps','territoire','toponymie','grammaire']),maxLetters:20,maxFrench:50},
-  4:{total:18}
+  1:{total:15},
+  2:{total:30},
+  3:{total:50,cats:new Set(['action','temps','territoire','toponymie','grammaire']),maxLetters:20,maxFrench:50},
+  4:{total:60}
 };
 
 function practiceFrenchLabel(w){
@@ -3302,6 +3305,23 @@ function practiceLetterCount(w){
     .replace(/[^a-z8]/gi,'').length;
 }
 function practiceWordKey(w){ return ((w&&w.aln8ba)||'').trim().toLowerCase(); }
+const PRACTICE_MEANING_GUIDES={
+  kizos:'une division du temps : le mois, et non le jour',
+  kizokw:'une division du temps : le jour, et non le mois'
+};
+function practiceMeaningHint(w){
+  const specific=PRACTICE_MEANING_GUIDES[practiceWordKey(w)];
+  if(specific) return specific;
+  const parts=((w&&w.grammar)||'').split('·').map(part=>part.trim()).filter(Boolean);
+  const grammarDetail=parts.length>1?parts.slice(1).join(' · '):parts[0]||'';
+  return [w&&w.cat?catLabel(w.cat):'',grammarDetail].filter(Boolean).join(' · ');
+}
+function practiceMeaningNote(w){
+  const key=practiceWordKey(w);
+  if(key==='kizos') return '<div class="prat-meaning-note"><strong>À distinguer :</strong> <b>Kizos</b> = mois; <b>Kizokw</b> = jour.<br><span>Expression documentée : <b>Pazgo kizos</b> = un mois.</span></div>';
+  if(key==='kizokw') return '<div class="prat-meaning-note"><strong>À distinguer :</strong> <b>Kizokw</b> = jour; <b>Kizos</b> = mois.<br><span>Expression documentée : <b>Pazgwen kizokw</b> = un jour.</span></div>';
+  return '';
+}
 function practiceIsSingleEntry(w){
   const word=((w&&w.aln8ba)||'').trim();
   return !!word && !/\s/.test(word) && !/[()[\]{}]/.test(word) && !word.startsWith('-')
@@ -3313,8 +3333,14 @@ function practiceHasAdvancedGrammar(w){
     || /\b(?:mon|ma|mes|ton|ta|tes|son|sa|ses|notre|nos|votre|vos|leur|leurs)\b/i.test(french);
 }
 function practiceConfirmedEntries(words){
-  return words.filter(w=>isExerciseSafe(w) && w.aln8ba && w.aln8ba.length>1 && w.fr
-    && practiceFrenchLabel(w).length>1 && practiceIsSingleEntry(w));
+  const seenForms=new Set();
+  return words.filter(w=>{
+    const key=practiceWordKey(w);
+    if(!isExerciseSafe(w) || !key || w.aln8ba.length<=1 || !w.fr
+      || practiceFrenchLabel(w).length<=1 || !practiceIsSingleEntry(w) || seenForms.has(key)) return false;
+    seenForms.add(key);
+    return true;
+  });
 }
 function practicePoolForLevel(level,words){
   const confirmed=practiceConfirmedEntries(words);
@@ -3337,14 +3363,18 @@ function practiceBeginnerQueue(pool,total){
 function practiceExpertQueue(pool,total){
   const plurals=shuffle(pool.filter(w=>DOCUMENTED_PLURALS[w.aln8ba]));
   const general=shuffle(pool.filter(w=>!DOCUMENTED_PLURAL_FORMS.has(practiceWordKey(w))));
-  const cycles=Math.min(Math.floor(total/3),plurals.length,Math.floor(general.length/2));
-  const queue=[];
-  for(let i=0;i<cycles;i++){
-    queue.push({...general[i*2],practiceType:'writeAln8ba'});
-    queue.push({...general[i*2+1],practiceType:'translateFrench'});
-    queue.push({...plurals[i],practiceType:'plural'});
-  }
-  return queue;
+  const pluralCount=Math.min(plurals.length,Math.floor(total/5));
+  const pluralTasks=plurals.slice(0,pluralCount).map(w=>({...w,practiceType:'plural'}));
+  const generalTasks=general.slice(0,Math.max(0,total-pluralTasks.length)).map((w,index)=>({
+    ...w,
+    practiceType:index%2===0?'writeAln8ba':'translateFrench'
+  }));
+  return shuffle([...generalTasks,...pluralTasks]).slice(0,total);
+}
+
+function updatePracticeLevelBadge(level,count){
+  const badge=document.querySelector(`.plvl[data-lvl="${level}"] .plvl-badge`);
+  if(badge) badge.textContent=`Niveau ${level} · ${count} questions sans répétition`;
 }
 
 function initPratique(){
@@ -3374,6 +3404,7 @@ function buildQueue(){
     toast('Ce niveau attend encore assez de formes vertes documentées.');
     return;
   }
+  updatePracticeLevelBadge(PS.level,PS.queue.length);
   PS.idx = 0; PS.ok = 0; PS.ko = 0; PS.streak = 0; PS.bestStreak = 0; PS.answered = false;
   updatePratScoreDisplay();
   showQuestion();
@@ -3423,8 +3454,9 @@ function richFeedback(w, correct){
   const pl = /nom (animé|inanimé)/i.test(w.grammar||'') ? (()=>{ const p=resolvePlural(w);
     return `<div style="margin-top:6px;font-size:.88rem">Pluriel : <b>${p.form}</b> <span style="font-size:.72rem;opacity:.75">(${p.type})</span></div>`; })() : '';
   const ex = w.example_a ? `<div style="margin-top:8px;font-size:.8rem;font-style:italic;opacity:.8">"${w.example_a}" — ${w.example_f||''}</div>` : '';
-  if(correct) return `<div class="prat-feedback ok" role="status" aria-live="polite" aria-atomic="true">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
-  return `<div class="prat-feedback ko" role="status" aria-live="polite" aria-atomic="true">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${pl}${ex}</div>`;
+  const meaningNote=practiceMeaningNote(w);
+  if(correct) return `<div class="prat-feedback ok" role="status" aria-live="polite" aria-atomic="true">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${pl}${ex}</div>`;
+  return `<div class="prat-feedback ko" role="status" aria-live="polite" aria-atomic="true">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${pl}${ex}</div>`;
 }
 
 function scrollInstant(top){
@@ -3531,7 +3563,7 @@ function checkLvl1QCM(chosenId, correctId){
   finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
-// ── NIVEAU 2 : Tu vois la traduction → choisis le mot abenakis (QCM) ──
+// ── NIVEAU 2 : Tu vois le sens précis → choisis la forme aln8ba (QCM) ──
 function renderLvl2(arena, w, idx, total, pct){
   const others = getBestDistractors(w, 3, 'aln8ba');
   const choices = shuffle([w, ...others]);
@@ -3540,9 +3572,9 @@ function renderLvl2(arena, w, idx, total, pct){
   `).join('');
   arena.innerHTML = `
     ${progressBar(pct)}
-    <div class="prat-question-lbl">Question ${idx+1} / ${total} · Quel est ce mot en abenakis ?</div>
-    <div class="prat-word">${practiceFrenchLabel(w)}${w.en?` <span style="font-size:.8rem;color:var(--text3)">· ${w.en}</span>`:''}</div>
-    ${w.grammar?`<div class="prat-hint">${w.grammar}</div>`:''}
+    <div class="prat-question-lbl">Question ${idx+1} / ${total} · Choisis la forme aln8ba</div>
+    <div class="prat-word"><span class="prat-word-question">Quel mot signifie</span>« ${practiceFrenchLabel(w)} » ?</div>
+    ${practiceMeaningHint(w)?`<div class="prat-hint">Indice de sens : ${practiceMeaningHint(w)}</div>`:''}
     <div class="prat-choices">${choiceHTML}</div>
     <div class="prat-feedback" id="pratFb"></div>
     <div class="prat-nav" id="pratNav" style="display:none">
@@ -3566,16 +3598,15 @@ function checkLvl2(chosenId, correctId){
   finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
-// ── NIVEAU 3 : Tu vois traduction + indice grammatical → écris le mot ──
+// ── NIVEAU 3 : Tu vois le sens précis → écris la forme aln8ba ──
 function renderLvl3(arena, w, idx, total, pct){
   arena.innerHTML = `
     ${progressBar(pct)}
-    <div class="prat-question-lbl">Question ${idx+1} / ${total} · Écris le mot en abenakis</div>
-    <div class="prat-word">${practiceFrenchLabel(w)}${w.en?` <span style="font-size:.8rem;color:var(--text3)">· ${w.en}</span>`:''}</div>
-    ${w.grammar?`<div class="prat-hint">📌 ${w.grammar}</div>`:''}
-    ${w.cat?`<div style="font-size:.72rem;color:var(--text3);margin-top:4px">Catégorie : ${catLabel(w.cat)}</div>`:''}
+    <div class="prat-question-lbl">Question ${idx+1} / ${total} · Écris la forme aln8ba</div>
+    <div class="prat-word"><span class="prat-word-question">Écris le mot qui signifie</span>« ${practiceFrenchLabel(w)} »</div>
+    ${practiceMeaningHint(w)?`<div class="prat-hint">Indice de sens : ${practiceMeaningHint(w)}</div>`:''}
     <div class="prat-input-wrap">
-      <input class="prat-input" id="pratIn" placeholder="Mot abenakis…" autocomplete="off" spellcheck="false">
+      <input class="prat-input" id="pratIn" placeholder="Forme aln8ba…" autocomplete="off" spellcheck="false">
     </div>
     <div class="prat-feedback" id="pratFb"></div>
     <div class="prat-nav">
