@@ -148,9 +148,10 @@ test('le repertoire verbal affiche seulement des paradigmes documentes', () => {
   ]);
   assert.ok(paradigms[0].rows.some(row => row.includes("N'michi")));
   assert.ok(paradigms[1].rows.some(row => row.includes("N'-d-aibenaji")));
-  assert.ok(paradigms[2].rows.some(row => row.includes("N'namihôbenaji")));
-  assert.ok(paradigms[2].rows.some(row => row.includes("K'namihôbôb")));
-  assert.match(paradigms[2].title, /Namihôimuk/);
+  assert.ok(paradigms[2].rows.some(row => row.includes("N'namih8benaji")));
+  assert.ok(paradigms[2].rows.some(row => row.includes("K'namih8bôb")));
+  assert.match(paradigms[2].title, /N'namih8/);
+  assert.match(paradigms[2].note, /original 1884 K'namihôbôb/);
   assert.match(source, /Cet outil ne calcule aucune forme/);
   assert.match(source, /Aucune forme passée ou future de Michi n'est construite ici/);
   assert.doesNotMatch(source, /APR_VERBES|const F=|applications de règle/);
@@ -160,11 +161,15 @@ test('les exercices de temps restent dans les tableaux attestes', () => {
   const source = sourceBetween('const EXTEMPS', 'function exTemps');
   const questions = new Function(`${source}; return EXTEMPS;`)();
   assert.ok(questions.length >= 16);
-  for (const form of ["N'-d-aib", "N'-d-aibenaji", "'Aoakji", "N'namihôji", "N'namihôbenaji"]) {
+  for (const form of ["N'-d-aib", "N'-d-aibenaji", "'Aoakji", "N'namih8ji", "N'namih8benaji"]) {
     assert.ok(questions.some(question => question.o.includes(form)), `forme absente: ${form}`);
   }
   assert.match(html, /temps:exTemps/);
   assert.match(html, /key==='temps'/);
+  const writing = sourceBetween("if(key==='temps')", "if(key==='ordre')");
+  assert.match(writing, /N'namih8 sips/);
+  assert.match(writing, /N'namito awikhigan/);
+  assert.doesNotMatch(writing, /N'namihôji|N'-d-aiji|K'-d-aibob/);
 });
 
 test('le module des couleurs est revenu a sa forme simple sans ancien enrichissement', () => {

@@ -157,7 +157,9 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 ## Verbes et temps documentés
 
 - Retrait du conjugueur génératif qui ajoutait automatiquement préfixes, passé, futur, conditionnel, négation et impératif à 17 radicaux; aucune de ces formes calculées n'est encore présentée au public.
-- Remplacement par trois tableaux fermés : le présent actuel documenté de `Michi`, puis les paradigmes historiques présent-imparfait-futur de `Aimuk` et `Namihôimuk` recopiés de Laurent (1884).
+- Remplacement par trois tableaux fermés : le présent actuel documenté de `Michi`, le paradigme historique de `Aimuk`, puis une comparaison entre `N'namih8` et `Namihômuk` chez Laurent (1884).
+- Le Manuel actuel confirme `N'namih8 sips`. Dans le tableau comparatif, la racine historique `namihô-` est donc écrite `namih8-`, mais les terminaisons de Laurent restent intactes : `K'namih8bôb`, par exemple, conserve le `ô` de `-bôb`. La graphie originale `K'namihôbôb` demeure indiquée dans la note de source.
+- Les formes historiques restent dans les exercices de reconnaissance; la production écrite exige uniquement des formes actuelles documentées par le Manuel.
 - Lorsqu'un temps n'est pas documenté dans le module, l'interface montre explicitement le manque au lieu de compléter la case par analogie.
 - La leçon de cégep compare la personne, le nombre et le temps dans deux classes verbales; elle explique que `-b` et `-ji` sont des contrastes lisibles dans ces tableaux, pas des recettes universelles.
 - Ajout d'exercices de reconnaissance et d'écriture qui demandent d'identifier le paradigme, la personne, le nombre et le temps avant de reproduire une forme historique exacte.
