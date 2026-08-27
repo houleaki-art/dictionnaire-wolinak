@@ -149,6 +149,7 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Toutes les cartes historiques de sens connu montrent désormais leur catégorie grammaticale et leur source; les rapprochements automatiques sont qualifiés d'autres entrées de sens proche, jamais de formes modernes équivalentes.
 - La présentation précise que les formes de Laurent et Masta ne sont pas automatiquement abandonnées : une grande partie de leurs mots et de leurs constructions demeure pertinente aujourd'hui.
 - Sur les fiches ordinaires, l'étiquette automatique « forme 1884, à valider dans l'usage actuel » devient « source 1884 »; son aide précise que la date seule ne prouve jamais qu'une forme n'est plus utilisée.
+- `Kdakinna` porte la mention « usage actuel signalé par Guillaum Labrecque-Houle » et enseigne directement la distinction entre le préfixe inclusif `k-` et le `n-` exclusif de `Ndakina`, telle qu'elle est consignée dans la note de travail.
 
 ## Principe pour la suite
 

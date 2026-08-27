@@ -8633,6 +8633,12 @@ function renderArchives(){
     [normS('Wanald8zik')]:{famille:'-aldam-',actuelle:"N'wanaldam"},
     [normS('Wanalmomuk')]:{famille:'-aldam-',actuelle:"N'wanaldam"}
   };
+  const usagesActuelsSignales={
+    [normS('Kdakinna')]:{
+      note:'signalé par Guillaum Labrecque-Houle',
+      lecon:'Le préfixe k- marque ici le nous inclusif; à comparer avec Ndakina, donné comme nous exclusif dans la note de travail.'
+    }
+  };
 
   const connus=arch.filter(w=>w.fr&&!w.fr.startsWith('⚠'));
   const inconnus=arch.filter(w=>!w.fr||w.fr.startsWith('⚠'));
@@ -8666,6 +8672,7 @@ function renderArchives(){
 
   const chipMot=w=>{
     const relation=relationsHistoriques[normS(w.aln8ba)];
+    const usageActuel=usagesActuelsSignales[normS(w.aln8ba)];
     const rapprochement=relation?null:parFr[normFr(w.fr)];
     const actuelle=relation?actifs.find(a=>normS(a.aln8ba)===normS(relation.actuelle)):null;
     return `<span style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:6px 12px;display:inline-flex;flex-direction:column;gap:1px;max-width:100%">
@@ -8673,6 +8680,8 @@ function renderArchives(){
       <span style="font-size:.74rem;color:var(--text2)">${escH(w.fr)}</span>
       ${w.grammar?`<span style="font-size:.7rem;color:var(--green)"><b>Fonction grammaticale documentée :</b> ${escH(w.grammar)}</span>`:''}
       <span style="font-size:.66rem;color:var(--text3)">Source : ${srcTag(w)}</span>
+      ${usageActuel?`<span style="font-size:.7rem;color:var(--green)"><b>Usage actuel :</b> ${escH(usageActuel.note)}</span>
+        <span style="font-size:.68rem;color:var(--text2)">${escH(usageActuel.lecon)}</span>`:''}
       ${relation?`<span style="font-size:.7rem;color:var(--accent)"><b>Famille radicale commune :</b> ${relation.famille}</span>
         <span style="font-size:.7rem;color:var(--text2)"><b>Autre entrée apparentée :</b> ${escH(relation.actuelle)}${actuelle&&actuelle.grammar?` · ${escH(actuelle.grammar)}`:''}</span>
         <span style="font-size:.68rem;color:var(--text3)">Cette autre entrée n'est pas l'équivalent direct de la forme documentée. Le projet ne possède pas encore une entrée portant exactement la même fonction grammaticale; cela ne signifie pas que cette manière de parler n'est plus utilisée.</span>`
@@ -8696,7 +8705,7 @@ function renderArchives(){
     </div>
 
     ${mots.length?`<div class="aprcard" style="margin-top:14px">
-      <h3 style="font-size:1rem">🔤 Formes historiques dont le sens est connu <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${mots.length}</span></h3>
+      <h3 style="font-size:1rem">🔤 Formes documentées dont le sens est connu <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${mots.length}</span></h3>
       <p style="font-size:.78rem;color:var(--text2);margin:6px 0 0">La fonction grammaticale documentée reste visible pour apprendre ce que la forme exprime. Une autre entrée du dictionnaire peut servir de comparaison, mais elle ne remplace jamais la forme de la source et ne permet pas de conclure que celle-ci n'est plus utilisée.</p>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">${mots.map(chipMot).join('')}</div>
     </div>`:''}
