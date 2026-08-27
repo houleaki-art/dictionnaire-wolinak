@@ -5601,6 +5601,20 @@ const DOCUMENTED_CONSULTATIVE_FRAGMENTS=[
   {fr:'ici',aln8ba:'Yudali',source:'Henry Lorne Masta, 1932 — forme documentée, à valider dans l’usage actuel.'}
 ];
 
+// Une forme verbale française isolée ne donne pas automatiquement la personne,
+// le temps ni la nuance. Le traducteur montre les formes documentées de la
+// famille sans en choisir une à la place du visiteur.
+const DOCUMENTED_VERB_FAMILY_GUIDES=[
+  {id:'travailler',pattern:/^travaill(?:e|es|er|ee|ees|ait|aient|ons|ez|ant)$/,
+   title:'Famille documentée du travail',
+   note:'Kikas est le nom du mois de mai. Son explication étymologique parle du travail de la terre, mais Kikas ne traduit jamais le verbe « travailler ».',
+   forms:[
+    {aln8ba:"Nd'aloka",fr:'je travaille',source:"Manuel de l'étudiant 1 — forme actuelle, 1re personne du singulier"},
+    {aln8ba:"K'milaloka",fr:'tu travailles · tu mets des efforts',source:"Hélène O'Bomsawin — forme documentée, 2e personne du singulier"},
+    {aln8ba:"K'milaloka kizi",fr:'tu as déjà beaucoup travaillé · tu travailles tellement',source:"Synthèse des corrections d'Hélène O'Bomsawin — expression documentée"}
+   ]}
+];
+
 // Paradigmes fermés déjà enseignés dans les exercices. Ces sorties sont des
 // constructions grammaticales traçables, jamais des phrases déclarées attestées.
 const DOCUMENTED_NEGATION_PARADIGMS=[
@@ -5624,6 +5638,13 @@ const TRANSLATION_CONFIDENCE={
   reformulation:{score:65,label:'Intention reformulée, phrase originale non couverte',tone:'var(--gold)'},
   fragments:{score:35,label:'Analyse lexicale seulement',tone:'#c0392b'}
 };
+
+function tradFrenchSenses(value){
+  return String(value||'').split(/[·;]/)
+    .flatMap(part=>part.split(/\s+\/\s+/))
+    .map(part=>part.split(/\s+[—–]\s+/)[0].trim())
+    .filter(Boolean);
+}
 
 function traduire(){
   const input = document.getElementById('tradInput').value.trim();
@@ -5747,7 +5768,7 @@ function traduire(){
   const idx = new Map(), tokIdx = new Map(), consultIdx = new Map();
   const pushIdx=(map,key,ent)=>{ if(!key) return; if(!map.has(key)) map.set(key,[]); map.get(key).push(ent); };
   pool.forEach(w => {
-    const sensList = FR ? (w.fr||'').split(/[·;]/) : [w.aln8ba];
+    const sensList = FR ? tradFrenchSenses(w.fr) : [w.aln8ba];
     sensList.forEach(sens0 => {
       let s = norm(sens0.replace(/\([^)]*\)/g,' ')).replace(/[^a-z0-9\s'8]/g,' ').replace(/\s+/g,' ').trim();
       if(FR) s = elargirFr(s);
@@ -5761,7 +5782,7 @@ function traduire(){
   });
   idx.forEach(lst => lst.sort((a,b)=>b.toks.length-a.toks.length));
   consultativePool.forEach(w=>{
-    const sensList=FR?(w.fr||'').split(/[·;]/):[w.aln8ba];
+    const sensList=FR?tradFrenchSenses(w.fr):[w.aln8ba];
     sensList.forEach(sens0=>{
       let s=norm(sens0.replace(/\([^)]*\)/g,' ')).replace(/[^a-z0-9\s'8]/g,' ').replace(/\s+/g,' ').trim();
       if(FR) s=elargirFr(s);
@@ -5818,7 +5839,7 @@ function traduire(){
   const CONJ = new Map(), NEG = new Map();
   if(FR){
     pool.forEach(w=>{
-      (w.fr||'').split(/[·;]/).forEach(sens0=>{
+      tradFrenchSenses(w.fr).forEach(sens0=>{
         let s = norm(sens0.replace(/\([^)]*\)/g,' ')).replace(/[^a-z0-9\s'8]/g,' ').trim();
         s = elargirFr(s);
         const toks = s.split(' ').filter(Boolean);
@@ -6111,7 +6132,7 @@ function traduire(){
   // Un verbe transitif documenté ne peut pas être choisi sans la classe de
   // son objet. La classe vient uniquement de la fiche verte actuelle du nom.
   const classNouns=FR?pool.filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''))
-    .flatMap(w=>(w.fr||'').split(/[·;]/).map(sens=>{
+    .flatMap(w=>tradFrenchSenses(w.fr).map(sens=>{
       let toks=phraseTokens(sens.replace(/\([^)]*\)/g,' '),true);
       while(toks.length&&ARTICLES.has(toks[0])) toks.shift();
       return toks.length?{w,toks,animate:/nom animé/i.test(w.grammar||'')}:null;
@@ -6181,6 +6202,15 @@ function traduire(){
       if(connector){
         chunks.push({type:'connector',toks:[T],out:connector.aln8ba.toLowerCase(),
           consultative:true,note:connector.source});
+        i++;
+        continue;
+      }
+    }
+    if(FR){
+      const family=DOCUMENTED_VERB_FAMILY_GUIDES.find(item=>item.pattern.test(t));
+      if(family){
+        chunks.push({type:'verbfamily',toks:[T],family});
+        lastPron=null;
         i++;
         continue;
       }
@@ -6407,13 +6437,14 @@ function traduire(){
   const classChunks = chunks.filter(c=>c.type==='classrule');
   const connectorChunks = chunks.filter(c=>c.type==='connector');
   const consultativeChunks = chunks.filter(c=>c.type==='consultative');
+  const verbFamilyChunks = chunks.filter(c=>c.type==='verbfamily');
   const essais = FR ? ["Je m'appelle Mali","Comment vas-tu ?","J'habite Wôlinak","Je suis dans la maison","Bonjour tout le monde"]
                     : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Nd'ai wigwomek"];
   const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
 
-  if(!hits.length && !gramChunks.length && !patChunks.length && !ruleChunks.length && !classChunks.length && !connectorChunks.length && !consultativeChunks.length){
+  if(!hits.length && !gramChunks.length && !patChunks.length && !ruleChunks.length && !classChunks.length && !connectorChunks.length && !consultativeChunks.length && !verbFamilyChunks.length){
     outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples, ou propose le mot manquant avec le bouton ＋ en bas à droite.</span>' + essaisHtml;
     document.getElementById('tradBtnTxt').textContent = 'Traduire →';
     TRAD_LAST_OUTPUT = '';
@@ -6510,6 +6541,8 @@ function traduire(){
     else if(c.type==='gram') previewCandidates.push({source,
       out:'⟦'+source+' — '+(c.preview||c.titre||'relation grammaticale')+'⟧',
       gap:true,consultative:false});
+    else if(c.type==='verbfamily') previewCandidates.push({source,
+      out:'⟦'+source+' — personne et nuance à préciser⟧',gap:true,consultative:false});
     else previewCandidates.push({source,out:'⟦'+source+' — non traduit⟧',gap:true,consultative:false});
   });
   previewCandidates.forEach((item,index)=>{
@@ -6595,6 +6628,17 @@ function traduire(){
           : ' Les passages attestés et les constructions signalées sont conservés séparément. Les autres éléments sont analysés sans fabriquer les liens grammaticaux manquants.')+'</div>'
       : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
         + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
+
+  if(verbFamilyChunks.length){
+    html+=verbFamilyChunks.map(c=>'<div class="trad-near-card">'
+      + '<div class="trad-near-label">Verbe français sans personne ou nuance complète</div>'
+      + '<div class="trad-near-word">'+escH(c.family.title)+'</div>'
+      + '<div class="trad-near-note">'+escH(c.family.note)+'</div>'
+      + c.family.forms.map(form=>'<div style="padding:8px 0;border-top:1px solid var(--border);line-height:1.4">'
+        + '<b style="color:var(--accent)">'+lnk(form.aln8ba,'aln8ba')+'</b> — '+escH(form.fr)
+        + '<div style="font-size:.72rem;color:var(--text2)">'+escH(form.source)+'</div></div>').join('')
+      + '<div style="font-size:.75rem;color:var(--gold);margin-top:8px"><b>Aucune forme n’est sélectionnée automatiquement.</b> Ajoute le sujet et la nuance voulue.</div></div>').join('');
+  }
 
   if(!completeTranslation&&!completeRule&&!partialOutput&&continuousProposal){
     html='<div style="background:var(--surface2);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px">'
@@ -6718,6 +6762,11 @@ function traduire(){
       html += ligne(gaucheBase, '<b style="color:#7b5ea7">'+escH(c.titre)+'</b>',
         ' <span style="color:#7b5ea7;font-size:.75rem">🗣️ grammaire</span>')
         + '<div class="trad-analysis-note" style="font-style:italic">'+escH(c.note)+'</div>';
+    } else if(c.type==='verbfamily'){
+      html += ligne(gaucheBase,'<b style="color:var(--gold)">'+escH(c.family.title)+'</b>',
+        ' <span style="color:var(--gold);font-size:.75rem">formes à distinguer</span>')
+        + '<div class="trad-analysis-note">'+escH(c.family.note)+'<br>'
+        + c.family.forms.map(form=>'<b>'+escH(form.aln8ba)+'</b> — '+escH(form.fr)).join('<br>')+'</div>';
     } else if(c.type==='skip'){
       html += '<div style="display:flex;gap:10px;align-items:baseline;padding:3px 0;border-bottom:1px dashed var(--border)">'
         + '<span style="font-size:.8rem;color:var(--text3);min-width:120px">' + gaucheBase + '</span>'
@@ -7288,7 +7337,9 @@ const NIVEAUX=[
   <div class="aprnote"><b>Les mois racontent ce qui se passe dehors</b>
    <span class="al8">Kikas</span> mai, quand on travaille la terre ·
    <span class="al8">Skamonkas</span> septembre, la récolte du maïs ·
-   <span class="al8">Pnibagos</span> octobre, quand les feuilles tombent.</div>`,
+   <span class="al8">Pnibagos</span> octobre, quand les feuilles tombent.<br>
+   <b>Attention :</b> ces descriptions expliquent le nom des mois; elles ne traduisent pas isolément
+   les verbes français « travailler », « récolter » ou « tomber ».</div>`,
   coach:`Les saisons se collent au territoire : apprends-les en regardant dehors, pas dans l'écran.
    Quand les feuilles tomberont, pense <span class="al8">Pnibagos</span>. Une langue qui colle
    au pays s'apprend dans le pays — c'est ta grand-force à Wôlinak.`},
@@ -7327,7 +7378,7 @@ const NIVEAUX=[
   <tr><td>Février</td><td class="k">Pia8dagos</td><td>le petit bourgeon d'arbre</td></tr>
   <tr><td>Mars</td><td class="k">Mozokas</td><td>la chasse à l'orignal</td></tr>
   <tr><td>Avril</td><td class="k">Sogalikas</td><td>la récolte du sucre</td></tr>
-  <tr><td>Mai</td><td class="k">Kikas</td><td>on travaille la terre</td></tr>
+  <tr><td>Mai</td><td class="k">Kikas</td><td>étymologie enseignée : travail de la terre</td></tr>
   <tr><td>Juin</td><td class="k">Nokahigas</td><td>la binette, le sarclage</td></tr>
   <tr><td>Juillet</td><td class="k">Tmaskikos</td><td>on coupe l'herbage — la fenaison</td></tr>
   <tr><td>Août</td><td class="k">Tmez8was</td><td>la récolte</td></tr>
@@ -7338,7 +7389,8 @@ const NIVEAUX=[
   <div class="aprnote w"><b>Deux graphies se côtoient</b>
    Chez Laurent (1884), février s'écrit <i>Piaddagos</i>, juillet <i>Temaskikos</i>,
    août <i>Temezdwas</i>. Mêmes mots, deux époques d'écriture. Les explications des mois
-   viennent des notes de cours du Manuel — à faire valider comme tout le reste.</div>`,
+   viennent des notes de cours du Manuel — à faire valider comme tout le reste.
+   Elles donnent le contexte ou l'étymologie du mois, jamais une traduction autonome de chaque verbe français.</div>`,
   coach:`Apprends le mois présent, pas les douze d'un coup. On est en août : dis
    <span class="al8">Tmez8was</span> en regardant dehors, la saison de la récolte.
    Le mois prochain, <span class="al8">Skamonkas</span>. En un an, tu les connais tous —

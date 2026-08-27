@@ -52,3 +52,34 @@ test('les intentions fréquentes proposent seulement des phrases proches documen
   assert.match(source, /Elle ne traduit pas l'intention future/);
   assert.match(source, /Elle ne traduit ni « je veux » ni « au pow-wow »/);
 });
+
+test('une explication étymologique ne devient jamais un sens lexical', () => {
+  const match = html.match(/function tradFrenchSenses\(value\)\{[\s\S]*?\r?\n\}/);
+  assert.ok(match, 'fonction de séparation des sens introuvable');
+  const splitSenses = Function(`return (${match[0]});`)();
+
+  assert.deepEqual(
+    splitSenses('Mai — on travaille la terre (de kik, la terre)'),
+    ['Mai']
+  );
+  assert.deepEqual(
+    splitSenses('Tu mets des efforts / Tu travailles'),
+    ['Tu mets des efforts', 'Tu travailles']
+  );
+});
+
+test('travaillé sans personne présente la famille documentée sans choisir Kikas', () => {
+  const family = sourceBetween('const DOCUMENTED_VERB_FAMILY_GUIDES', 'const DOCUMENTED_NEGATION_PARADIGMS');
+  assert.match(family, /title:'Famille documentée du travail'/);
+  assert.match(family, /aln8ba:"Nd'aloka",fr:'je travaille'/);
+  assert.match(family, /aln8ba:"K'milaloka",fr:'tu travailles/);
+  assert.match(family, /aln8ba:"K'milaloka kizi",fr:'tu as déjà beaucoup travaillé/);
+  assert.match(family, /Kikas ne traduit jamais le verbe « travailler »/);
+
+  const translator = sourceBetween('function traduire', 'function tradEssayer');
+  assert.ok(
+    translator.indexOf("DOCUMENTED_VERB_FAMILY_GUIDES.find") < translator.indexOf('// 1) expression'),
+    'la famille verbale doit bloquer le repli lexical avant tout faux appariement'
+  );
+  assert.match(translator, /Aucune forme n’est sélectionnée automatiquement/);
+});
