@@ -1030,7 +1030,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="hdr-search">
     <div class="sw">
       <span class="si">🔍</span>
-      <input type="text" id="searchIn" placeholder="Chercher en aln8ba ou en français…" autocomplete="off" spellcheck="false">
+      <input type="text" id="searchIn" placeholder="Recherche prédictive : aln8ba ou français…" aria-label="Recherche prédictive dans le dictionnaire" autocomplete="off" spellcheck="false">
       <button class="sx" id="searchX">✕</button>
     </div>
     <div class="ltog" id="ltog">
@@ -1049,7 +1049,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <button class="sb on" data-view="all" onclick="setView('all')"><span class="ic">📖</span>Tous les mots<span class="cn" id="cn-all">0</span></button>
     <button class="sb" data-view="favorites" onclick="setView('favorites')"><span class="ic">⭐</span>Favoris<span class="cn" id="cn-fav">0</span></button>
     <button class="sb" data-view="stats" onclick="setView('stats')"><span class="ic">📊</span>Statistiques</button>
-    <button class="sb" data-view="traducteur" onclick="setView('traducteur')"><span class="ic">🪶</span>Traducteur</button>
     <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
     <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique</button>
     <button class="sb" data-view="musique" onclick="setView('musique')"><span class="ic">🎵</span>Musique</button>
@@ -2170,7 +2169,6 @@ Merci... merci de m'avoir entendu</pre>
       <button class="sb" onclick="mobileNav('all')"><span class="ic">📖</span>Tous les mots</button>
       <button class="sb" onclick="mobileNav('favorites')"><span class="ic">⭐</span>Favoris</button>
       <button class="sb" onclick="mobileNav('stats')"><span class="ic">📊</span>Statistiques</button>
-      <button class="sb" onclick="mobileNav('traducteur')"><span class="ic">🪶</span>Traducteur</button>
       <button class="sb" onclick="mobileNav('apprendre')"><span class="ic">🎓</span>Apprendre</button>
       <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique</button>
       <button class="sb" onclick="mobileNav('musique')"><span class="ic">🎵</span>Musique</button>
@@ -2216,7 +2214,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-27-translator-005';
+const APP_RESET_VERSION = '2026-08-27-search-only-006';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -3083,6 +3081,8 @@ function initMusicPlayers(){
 }
 function setView(v,keepGameContext=false){
   cancelAnswerAdvance();
+  // Le traducteur reste en chantier dans le code, mais n'est plus une vue publique.
+  if(v==='traducteur') v='all';
   if(v==='jeux'&&!keepGameContext){ jCtx=null; jCat='toutes'; }
   S.view=v; S.cat=''; S.letter=''; S.corpusOnly=false;
   document.body.classList.toggle('compact-mobile-header',!['all','favorites'].includes(v));
@@ -3096,12 +3096,12 @@ function setView(v,keepGameContext=false){
   document.getElementById('adminView').className     = 'admin-panel'+(v==='admin'?' open':'');
   document.getElementById('aboutView').className     = 'about-open'+(v==='about'?' show':'');
   document.getElementById('pratiqueView').className  = 'pratique-view'+(v==='pratique'?' show':'');
-  document.getElementById('traducteurView').style.display = v==='traducteur'?'block':'none';
+  document.getElementById('traducteurView').style.display = 'none';
   document.getElementById('apprendreView').className = 'apr'+(v==='apprendre'?' show':'');
   document.getElementById('jeuxView').className      = 'jeu'+(v==='jeux'?' show':'');
   document.getElementById('musiqueView').className   = 'music-view'+(v==='musique'?' show':'');
   document.getElementById('archivesView').style.display = v==='archives'?'block':'none';
-  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',traducteur:'Traducteur',apprendre:'Apprendre la langue',jeux:'Jeux',musique:'Musique',archives:'Archives — les mots des ancêtres'}[v]||'';
+  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',apprendre:'Apprendre la langue',jeux:'Jeux',musique:'Musique',archives:'Archives — les mots des ancêtres'}[v]||'';
   if(['all','favorites'].includes(v)) renderWords();
   if(v==='flashcard') initFC();
   if(v==='stats') renderStats();
