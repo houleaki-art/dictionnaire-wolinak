@@ -136,17 +136,36 @@ test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
   assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
 });
 
-test('le module des couleurs apprend par limage sans inventer detymologie', () => {
+test('le module des couleurs apprend par une exploration tactile du territoire', () => {
   const colors = sourceBetween('{t:"Les couleurs"', '{t:"Décrire le monde"');
   assert.match(colors, /Six formes verbales/);
   assert.match(colors, /assets\/learning\/couleurs-territoire\.webp/);
   assert.match(colors, /Mkwigen[\s\S]*Mskikwimen/);
   assert.match(colors, /pas une preuve d'étymologie/);
-  assert.match(colors, /Observe → pointe → dis → retrouve/);
+  assert.match(colors, /Exploration interactive · touche l'image/);
+  assert.equal((colors.match(/data-color-id=/g) || []).length, 6);
+  assert.equal((colors.match(/onclick="colorHuntTap/g) || []).length, 6);
+  assert.match(colors, /role="status" aria-live="polite"/);
+  assert.doesNotMatch(colors, /color-learning-grid/);
   assert.doesNotMatch(colors, /Dix couleurs/);
   for (const word of ['Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen']) {
     assert.match(colors, new RegExp(word));
   }
+
+  const interaction = sourceBetween('const COLOR_HUNT_STEPS', 'const COACH_TIPS');
+  const steps = new Function(`${interaction}; return COLOR_HUNT_STEPS;`)();
+  assert.deepEqual(steps.map(step => step.word), [
+    'Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen'
+  ]);
+  assert.match(interaction, /state\.missed\.add\(step\.id\)/);
+  assert.match(interaction, /state\.firstTry\+\+/);
+  assert.match(interaction, /route\.hidden=false/);
+  assert.match(interaction, /Le mot reste caché/);
+
+  const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
+  assert.match(lesson, /const isColorLesson=aprNiv==='p'&&m\.t==='Les couleurs'/);
+  assert.match(lesson, /isColorLesson\?colorLessonRouteHtml\(APR_VOICE_READY\.length\)/);
+  assert.match(lesson, /if\(isColorLesson\) colorHuntStart\(\)/);
 
   const asset = path.resolve(here, '..', '..', 'assets', 'learning', 'couleurs-territoire.webp');
   assert.ok(fs.existsSync(asset), 'image pédagogique absente');

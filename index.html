@@ -723,6 +723,38 @@ body.music-dock-open .toast{bottom:116px}
 .color-observe h4{font-size:1rem;color:var(--green);margin-bottom:8px}
 .color-observe ol{padding-left:20px;font-size:.82rem;line-height:1.65;color:var(--text2)}
 .color-summary caption{text-align:left;padding:0 0 8px;color:var(--text2);font-size:.75rem;font-style:italic}
+.color-hunt{margin:18px 0 20px;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface2);box-shadow:var(--shadow)}
+.color-hunt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px;background:linear-gradient(135deg,color-mix(in srgb,var(--green) 12%,var(--surface)),var(--surface))}
+.color-hunt-kicker{font-size:.62rem;line-height:1.3;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:800}
+.color-hunt-head h4{font-size:clamp(1.15rem,3vw,1.55rem);line-height:1.25;margin:5px 0 3px;color:var(--text)}
+.color-hunt-head p{font-size:.78rem;line-height:1.45;color:var(--text2);margin:0}
+.color-hunt-count{flex:0 0 auto;padding:8px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface);font-size:.74rem;font-weight:800;color:var(--text2)}
+.color-hunt-progress{display:flex;gap:6px;padding:0 18px 13px;background:var(--surface)}
+.color-hunt-progress span{height:5px;flex:1;border-radius:999px;background:var(--border);transition:background .25s,transform .25s}
+.color-hunt-progress span.done{background:var(--green)}
+.color-hunt-progress span.now{background:var(--gold);transform:scaleY(1.45)}
+.color-hunt-scene{position:relative;background:#1c2418;isolation:isolate}
+.color-hunt-scene>img{display:block;width:100%;aspect-ratio:3/2;max-height:520px;object-fit:cover}
+.color-hotspot{position:absolute;left:var(--x);top:var(--y);width:clamp(48px,8vw,82px);height:clamp(48px,8vw,82px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.94);border-radius:50%;background:rgba(20,14,8,.18);box-shadow:0 0 0 5px rgba(20,14,8,.28),0 3px 16px rgba(0,0,0,.32);cursor:pointer;transition:transform .18s,background .18s,box-shadow .18s;touch-action:manipulation;z-index:2}
+.color-hotspot::after{content:'';position:absolute;inset:30%;border-radius:50%;background:rgba(255,255,255,.9)}
+.color-hotspot:hover,.color-hotspot:focus-visible{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 0 0 7px rgba(255,255,255,.25),0 4px 18px rgba(0,0,0,.4);outline:3px solid var(--gold);outline-offset:3px}
+.color-hotspot.found{border-color:#fff;background:var(--green);box-shadow:0 0 0 6px rgba(50,130,76,.3)}
+.color-hotspot.found::after{content:'✓';inset:0;display:grid;place-items:center;background:transparent;color:#fff;font-size:1.5rem;font-weight:900}
+.color-hotspot.wrong{animation:colorWrong .35s ease;background:#a93226}
+@keyframes colorWrong{25%{transform:translate(-56%,-50%)}75%{transform:translate(-44%,-50%)}}
+.color-hunt-feedback{min-height:78px;padding:14px 18px;background:var(--surface);border-top:1px solid var(--border);font-size:.82rem;line-height:1.5;color:var(--text2)}
+.color-hunt-feedback strong{display:block;font-size:1.25rem;color:var(--accent);margin-bottom:2px}
+.color-hunt-feedback .score{display:inline-flex;margin-top:7px;padding:5px 9px;border-radius:999px;background:color-mix(in srgb,var(--green) 10%,var(--surface2));color:var(--green);font-size:.7rem;font-weight:800}
+.color-route{margin-top:20px;padding:20px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--border));border-radius:15px;background:linear-gradient(145deg,color-mix(in srgb,var(--green) 10%,var(--surface)),var(--surface))}
+.color-route[hidden]{display:none}
+.color-route h4{font-size:1.3rem;color:var(--green);margin-bottom:4px}
+.color-route>p{font-size:.8rem;color:var(--text2);margin-bottom:14px}
+.color-route-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.color-route-step{min-height:112px;padding:13px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--text);font-family:inherit;text-align:left;cursor:pointer;transition:var(--tr)}
+.color-route-step:hover,.color-route-step:focus-visible{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.color-route-step b{display:block;font-size:.95rem;margin:5px 0 3px}
+.color-route-step span{display:block;font-size:.72rem;line-height:1.4;color:var(--text2)}
+.color-route-step .num{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:800}
 .lzgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px}
 .lz{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 15px;
   cursor:pointer;transition:var(--tr);text-align:left;font-family:inherit;color:var(--text)}
@@ -954,6 +986,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .aprcard{padding:16px}
   .color-learning-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .color-land-hero figcaption{position:static;padding:10px 12px;background:var(--surface2);color:var(--text2)}
+  .color-route-steps{grid-template-columns:1fr}
+  .color-route-step{min-height:88px}
   .aprtab{table-layout:fixed}
   .aprtab th,.aprtab td{overflow-wrap:anywhere;word-break:normal;padding-right:6px}
   .aprtab td.k{width:44%;white-space:normal}
@@ -1001,6 +1035,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .music-card,.aprcard{padding:14px}
   .color-learning-grid{grid-template-columns:1fr}
   .color-land-hero img{aspect-ratio:4/3;max-height:320px}
+  .color-hunt-head{padding:14px;gap:9px}
+  .color-hunt-scene>img{aspect-ratio:4/3;max-height:360px}
+  .color-hotspot{width:48px;height:48px;border-width:2px}
+  .color-hunt-feedback{padding:12px 14px}
+  .color-route{padding:14px}
   .prat-levels{grid-template-columns:1fr}
   .trad-direction-bar{grid-template-columns:1fr}
   .jstage{padding:13px}
@@ -2253,7 +2292,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-27-territory-game-008';
+const APP_RESET_VERSION = '2026-08-27-color-hunt-009';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -7179,44 +7218,28 @@ const NIVEAUX=[
   « rouge », mais <i>c'est rouge</i>. Les mots ne restent pas détachés du monde : on les retient
   en regardant la terre, l'eau, les plantes, la lumière et les saisons qui donnent un contexte vivant.</p>
 
-  <figure class="color-land-hero">
-    <img src="assets/learning/couleurs-territoire.webp" loading="lazy" decoding="async"
-      alt="Fraises rouges, écorce de bouleau et neige blanches, terre et pierres noires, rivière bleue, lumière et fleurs jaunes, sapin et fougère verts">
-    <figcaption>Observe avant de lire : trouve le rouge, le blanc, le noir, le bleu, le jaune et le vert dans cette scène du territoire.</figcaption>
-  </figure>
-
-  <div class="color-learning-grid" aria-label="Six repères visuels pour apprendre les couleurs">
-    <article class="color-learning-card" style="--color-anchor:#b72f2b">
-      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🍓</span><span class="color-learning-nature">Fraise sauvage<br>baie mûre</span></div>
-      <div class="color-learning-word">Mkwigen</div><div class="color-learning-meaning">c'est rouge</div>
-      <span class="color-learning-action">Pointe les fraises, puis dis la forme complète à voix haute.</span>
-    </article>
-    <article class="color-learning-card" style="--color-anchor:#d8d3c7">
-      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">❄️</span><span class="color-learning-nature">Neige<br>bouleau</span></div>
-      <div class="color-learning-word">W8bigen</div><div class="color-learning-meaning">c'est blanc</div>
-      <span class="color-learning-action">Cherche la neige et l'écorce claire, puis prononce.</span>
-    </article>
-    <article class="color-learning-card" style="--color-anchor:#25221f">
-      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🪨</span><span class="color-learning-nature">Terre humide<br>pierre sombre</span></div>
-      <div class="color-learning-word">Mkazawigen</div><div class="color-learning-meaning">c'est noir</div>
-      <span class="color-learning-action">Observe le sol et les pierres mouillées avant de dire le mot.</span>
-    </article>
-    <article class="color-learning-card" style="--color-anchor:#2876a7">
-      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🌊</span><span class="color-learning-nature">Rivière<br>ciel réfléchi</span></div>
-      <div class="color-learning-word">Wl8wigen</div><div class="color-learning-meaning">c'est bleu</div>
-      <span class="color-learning-action">Suis l'eau du regard, puis dis la forme sans lire le français.</span>
-    </article>
-    <article class="color-learning-card" style="--color-anchor:#d6a713">
-      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">☀️</span><span class="color-learning-nature">Lumière<br>verge d'or</span></div>
-      <div class="color-learning-word">Wiz8wigen</div><div class="color-learning-meaning">c'est jaune</div>
-      <span class="color-learning-action">Repère la lumière et les fleurs, ferme les yeux, puis rappelle le mot.</span>
-    </article>
-    <article class="color-learning-card" style="--color-anchor:#3f7b3a">
-      <div class="color-learning-visual"><span class="color-learning-symbol" aria-hidden="true">🌿</span><span class="color-learning-nature">Sapin<br>fougère</span></div>
-      <div class="color-learning-word">Askaskwigen</div><div class="color-learning-meaning">c'est vert</div>
-      <span class="color-learning-action">Compare les verts du sapin et de la fougère, puis prononce.</span>
-    </article>
-  </div>
+  <section class="color-hunt" id="colorHunt" aria-labelledby="colorHuntPrompt">
+    <div class="color-hunt-head">
+      <div><div class="color-hunt-kicker">Exploration interactive · touche l'image</div>
+        <h4 id="colorHuntPrompt">Préparation du territoire…</h4>
+        <p id="colorHuntClue">Les mots restent cachés jusqu'à la bonne découverte.</p></div>
+      <div class="color-hunt-count" id="colorHuntCount">0 / 6</div>
+    </div>
+    <div class="color-hunt-progress" id="colorHuntProgress" aria-label="Progression dans les six couleurs"></div>
+    <div class="color-hunt-scene">
+      <img src="assets/learning/couleurs-territoire.webp" loading="eager" decoding="async"
+        alt="Fraises rouges, écorce de bouleau blanche, terre et pierres noires, rivière bleue, fleurs jaunes et conifère vert">
+      <button type="button" class="color-hotspot" style="--x:10%;--y:39%" data-color-id="rouge" onclick="colorHuntTap('rouge',this)" aria-label="Toucher les fraises rouges"></button>
+      <button type="button" class="color-hotspot" style="--x:25%;--y:38%" data-color-id="blanc" onclick="colorHuntTap('blanc',this)" aria-label="Toucher l'écorce de bouleau blanche"></button>
+      <button type="button" class="color-hotspot" style="--x:49%;--y:72%" data-color-id="noir" onclick="colorHuntTap('noir',this)" aria-label="Toucher la terre et les pierres sombres"></button>
+      <button type="button" class="color-hotspot" style="--x:63%;--y:27%" data-color-id="bleu" onclick="colorHuntTap('bleu',this)" aria-label="Toucher l'eau bleue de la rivière"></button>
+      <button type="button" class="color-hotspot" style="--x:88%;--y:27%" data-color-id="jaune" onclick="colorHuntTap('jaune',this)" aria-label="Toucher les fleurs jaunes"></button>
+      <button type="button" class="color-hotspot" style="--x:88%;--y:73%" data-color-id="vert" onclick="colorHuntTap('vert',this)" aria-label="Toucher les aiguilles vertes du conifère"></button>
+    </div>
+    <div class="color-hunt-feedback" id="colorHuntFeedback" role="status" aria-live="polite">
+      Observe la scène, puis touche directement le bon élément.
+    </div>
+  </section>
 
   <div class="aprnote"><b><span class="al8">Mkwigen</span> et <span class="al8">Mskikwimen</span> : un pont pour la mémoire</b>
     <span class="al8">Mskikwimen</span> signifie « fraise ». Sa couleur et sa ressemblance visible avec
@@ -7227,13 +7250,6 @@ const NIVEAUX=[
   <div class="aprnote w"><b>Le patron écrit <span class="al8">-igen</span></b>
     Les six formes enseignées ici se terminent par <span class="al8">-igen</span>. Observe ce patron pour
     comparer les mots, mais ne l'utilise pas pour fabriquer une couleur absente du dictionnaire.</div>
-
-  <div class="color-observe">
-    <h4>Observe → pointe → dis → retrouve</h4>
-    <ol><li>Choisis un élément de l'image et pointe-le.</li>
-      <li>Dis la forme aln8ba complète deux fois à voix haute.</li>
-      <li>Cache le mot, nomme la couleur de mémoire, puis trouve dehors ou dans la maison un second exemple.</li></ol>
-  </div>
 
   <table class="aprtab color-summary">
     <caption>Vue de synthèse — relis-la seulement après l'exercice d'observation.</caption>
@@ -7898,6 +7914,94 @@ function aprOpenModule(i){
   aprLecon(i);
 }
 
+const COLOR_HUNT_STEPS=[
+ {id:'rouge',word:'Mkwigen',meaning:"c'est rouge",prompt:'Touche les fraises mûres.',
+  clue:'Cherche les petites baies rouges près du sol.',action:'Dis Mkwigen deux fois en regardant les fraises.'},
+ {id:'blanc',word:'W8bigen',meaning:"c'est blanc",prompt:"Touche l'écorce blanche du bouleau.",
+  clue:"Repère la grande surface claire à gauche de l'eau.",action:"Dis W8bigen, puis cherche une autre surface blanche autour de toi."},
+ {id:'noir',word:'Mkazawigen',meaning:"c'est noir",prompt:'Touche la terre ou une pierre sombre.',
+  clue:"Regarde sous les plantes, là où le sol est humide.",action:'Dis Mkazawigen en gardant les yeux sur la terre sombre.'},
+ {id:'bleu',word:'Wl8wigen',meaning:"c'est bleu",prompt:"Touche l'eau bleue de la rivière.",
+  clue:'Suis le reflet du ciel entre les deux rives.',action:"Dis Wl8wigen, puis suis le courant de l'eau du regard."},
+ {id:'jaune',word:'Wiz8wigen',meaning:"c'est jaune",prompt:'Touche les fleurs jaunes.',
+  clue:"Cherche la lumière dorée sur la rive droite.",action:'Dis Wiz8wigen en pointant les fleurs, sans cueillir la plante.'},
+ {id:'vert',word:'Askaskwigen',meaning:"c'est vert",prompt:'Touche les aiguilles vertes du conifère.',
+  clue:"Descends ton regard vers les branches au premier plan.",action:'Dis Askaskwigen, puis compare deux verts différents dans la scène.'}
+];
+let colorHuntState={index:0,firstTry:0,missed:new Set(),locked:false,found:new Set()};
+let colorHuntTimer=null;
+function colorHuntStart(){
+  clearTimeout(colorHuntTimer);
+  colorHuntState={index:0,firstTry:0,missed:new Set(),locked:false,found:new Set()};
+  document.querySelectorAll('#colorHunt .color-hotspot').forEach(button=>{
+    button.classList.remove('found','wrong'); button.disabled=false;
+  });
+  const route=document.getElementById('colorLessonRoute');
+  if(route) route.hidden=true;
+  colorHuntRender();
+}
+function colorHuntRender(){
+  const prompt=document.getElementById('colorHuntPrompt'), clue=document.getElementById('colorHuntClue');
+  const count=document.getElementById('colorHuntCount'), progress=document.getElementById('colorHuntProgress');
+  const feedback=document.getElementById('colorHuntFeedback');
+  if(!prompt||!clue||!count||!progress||!feedback) return;
+  const state=colorHuntState, total=COLOR_HUNT_STEPS.length;
+  progress.innerHTML=COLOR_HUNT_STEPS.map((step,index)=>
+    `<span class="${state.found.has(step.id)?'done':index===state.index?'now':''}"></span>`).join('');
+  if(state.index>=total){
+    prompt.textContent='Territoire exploré';
+    clue.textContent='Tu as relié les six formes à des éléments visibles.';
+    count.textContent=`${total} / ${total}`;
+    feedback.innerHTML=`<strong>Les six couleurs sont retrouvées.</strong>
+      <span>Dis maintenant les six formes sans regarder le tableau.</span><br>
+      <span class="score">Premier essai : ${state.firstTry} / ${total}</span>
+      <button type="button" class="chip" style="margin-left:8px" onclick="colorHuntStart()">Recommencer l'exploration</button>`;
+    document.querySelectorAll('#colorHunt .color-hotspot').forEach(button=>button.disabled=true);
+    const route=document.getElementById('colorLessonRoute');
+    if(route){route.hidden=false;setTimeout(()=>route.scrollIntoView({behavior:'smooth',block:'center'}),350);}
+    return;
+  }
+  const step=COLOR_HUNT_STEPS[state.index];
+  prompt.textContent=step.prompt;
+  clue.textContent=step.clue;
+  count.textContent=`${state.index+1} / ${total}`;
+  feedback.textContent="Observe la scène, puis touche directement le bon élément. Le mot reste caché jusqu'à ta réponse.";
+  document.querySelectorAll('#colorHunt .color-hotspot').forEach(button=>{
+    button.disabled=state.found.has(button.dataset.colorId);
+  });
+}
+function colorHuntTap(id,button){
+  const state=colorHuntState, step=COLOR_HUNT_STEPS[state.index];
+  if(!step||state.locked||state.found.has(id)) return;
+  const feedback=document.getElementById('colorHuntFeedback');
+  if(id!==step.id){
+    state.missed.add(step.id);
+    button.classList.remove('wrong'); void button.offsetWidth; button.classList.add('wrong');
+    feedback.innerHTML=`<b>Observe encore.</b> Cette zone ne répond pas à la consigne « ${escH(step.prompt)} ».`;
+    setTimeout(()=>button.classList.remove('wrong'),500);
+    return;
+  }
+  state.locked=true; state.found.add(id);
+  if(!state.missed.has(step.id)) state.firstTry++;
+  button.classList.add('found'); button.disabled=true;
+  feedback.innerHTML=`<strong>${escH(step.word)} — ${escH(step.meaning)}</strong>
+    <span>${escH(step.action)}</span><br><span class="score">${state.index+1} découverte${state.index?'s':''} sur ${COLOR_HUNT_STEPS.length}</span>`;
+  colorHuntTimer=setTimeout(()=>{state.index++;state.locked=false;colorHuntRender();},1700);
+}
+function colorLessonRouteHtml(voiceCount){
+  return `<section class="color-route" id="colorLessonRoute" hidden>
+    <h4>Exploration réussie : fais maintenant vivre les mots</h4>
+    <p>La suite avance dans un seul ordre. Tu peux revenir à l'image entre chaque étape.</p>
+    <div class="color-route-steps">
+      ${MODULE_VOICE_PUBLIC&&voiceCount?`<button class="color-route-step" onclick="aprVoiceStart()">
+        <span class="num">Étape 1</span><b>🎙️ Écouter et prononcer</b><span>Compare ta voix aux six guides du module.</span></button>`:''}
+      <button class="color-route-step" onclick="aprEx('vocab','couleur','Les couleurs','retenir')">
+        <span class="num">Étape ${MODULE_VOICE_PUBLIC&&voiceCount?2:1}</span><b>🧠 Reconnaître sans l'image</b><span>Retrouve la forme à partir de son état exprimé.</span></button>
+      <button class="color-route-step" onclick="aprEx('ecris','couleur','Les couleurs','utiliser')">
+        <span class="num">Étape ${MODULE_VOICE_PUBLIC&&voiceCount?3:2}</span><b>✍️ Écrire les six formes</b><span>Produis chaque mot de mémoire, avec son 8 lorsqu'il est présent.</span></button>
+    </div></section>`;
+}
+
 const COACH_TIPS=[
  "Un mot dit à voix haute vaut dix lectures silencieuses. Toujours, toujours à voix haute.",
  "Si un mot long te bloque, découpe-le : l'onglet Décortiqueur est fait exactement pour ça.",
@@ -7957,13 +8061,17 @@ function aprLecon(i){
   const lecHtml = typeof m.lec==='function' ? m.lec() : m.lec;
   APR_VOICE_READY=aprVoiceTargets(m,lecHtml);
   const st=progGet(aprNiv+'.'+i), tt=m.t.replace(/'/g,"\\'"), canWrite=aprModuleNeedsUse(m);
+  const isColorLesson=aprNiv==='p'&&m.t==='Les couleurs';
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="aprParcours()">← ${n.t}</button>
     <div class="aprcard">
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
-      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${canWrite?'quatre':'trois'} temps</b>
+      ${isColorLesson?`<div class="aprnote" style="border-left-color:${n.c}"><b>Ce module commence dans l'image</b>
+        Les six mots sont cachés. Touche les éléments du territoire dans l'ordre demandé; une mauvaise zone
+        te laisse observer encore et une bonne découverte révèle la forme aln8ba. Les exercices suivants
+        apparaissent seulement après les six découvertes.</div>`:m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${canWrite?'quatre':'trois'} temps</b>
         1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🎙️ <b>Prononcer</b> — écoute le guide, enregistre-toi et compare les deux écoutes.
         3. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
         ${canWrite?`4. ✍️ <b>Utiliser</b> — tu produis ${m.use?'la forme grammaticale':'le mot'} toi-même, de mémoire. `:''}Puis reviens demain
@@ -7977,7 +8085,7 @@ function aprLecon(i){
         ✍️ Utiliser : ${st.utiliser!=null?st.utiliser+'%':'pas encore fait'}</div>`:''}
       <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
         ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
-      <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      ${isColorLesson?colorLessonRouteHtml(APR_VOICE_READY.length):`<div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         ${MODULE_VOICE_PUBLIC&&APR_VOICE_READY.length?`<button class="aprbtn" style="background:var(--green)" onclick="aprVoiceStart()">
           🎙️ Pratique vocale (${APR_VOICE_READY.length})</button>`:''}
         ${m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
@@ -7987,8 +8095,9 @@ function aprLecon(i){
         ${canWrite?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
           onclick="aprEx('${m.use?'ecrisgram':'ecris'}','${m.use||m.cat}','${tt}','utiliser')">
           ✍️ Utiliser — ${m.use?'produis la forme':'écris le mot'}</button>`:''}
-      </div>
+      </div>`}
     </div>`;
+  if(isColorLesson) colorHuntStart();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function aprDecorView(){
