@@ -93,3 +93,45 @@ test("l'ecriture explique aliwizian avant de passer a la suite", () => {
   assert.match(writing, /finishAnsweredStep\(ok,'#exBody',exSuivant,4500\)/);
   assert.match(writing, /Aucun découpage n'est affiché sans analyse documentée/);
 });
+
+test('les modules grammaticaux exigent une production ecrite', () => {
+  for (const marker of [
+    'ex:\'genre\',use:\'genre\'',
+    'ex:\'plur\',use:\'plur\'',
+    'ex:\'poss\',use:\'poss\'',
+    'ex:\'conjp\',use:\'conjp\'',
+    'ex:\'inter2\',use:\'inter2\'',
+    'ex:\'negs\',use:\'neg\'',
+    'ex:\'classfx\',use:\'classfx\'',
+    'ex:\'vta\',use:\'vta\'',
+    'ex:\'ordre\',use:\'ordre\'',
+    'ex:\'suf\',use:\'suf\''
+  ]) assert.ok(html.includes(marker), `phase Utiliser absente: ${marker}`);
+  const mastery = sourceBetween('const APR_LEVEL_PATHS', 'const COACH_TIPS');
+  assert.match(mastery, /function aprModuleNeedsUse/);
+  assert.match(mastery, /state\.utiliser>=100/);
+  const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
+  assert.match(lesson, /produis la forme/);
+  assert.match(lesson, /ecrisgram/);
+});
+
+test('la production grammaticale suit une procedure documentee', () => {
+  const writing = sourceBetween('function grammarWritingPool', '/* — révision espacée');
+  for (const key of ['genre','plur','poss','conjp','inter2','neg','classfx','structure','vta','aimuk','ordre','suf','fam','trad']) {
+    assert.match(writing, new RegExp(`key==='${key}'`), `banque absente: ${key}`);
+  }
+  assert.match(writing, /DOCUMENTED_NEGATION_PARADIGMS\.map/);
+  assert.match(writing, /pair=>pair\.oa\.exact&&pair\.oi\.exact/);
+  assert.match(writing, /APR_WRITING_ANALYSES\.get/);
+  assert.match(writing, /Raisonnement complet/);
+  assert.match(writing, /finishAnsweredStep\(ok,'#exBody',exSuivant,6500\)/);
+});
+
+test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
+  const path = sourceBetween('const APR_LEVEL_PATHS', 'function aprModulePerfect');
+  for (const phase of ['Nom et classe','Phrase affirmative','Interrogation','Négation','Structure verbale','Ordres de conjugaison','Morphologie','Production']) {
+    assert.match(path, new RegExp(phase));
+  }
+  assert.ok(path.indexOf('Phrase affirmative') < path.indexOf('Interrogation'));
+  assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
+});

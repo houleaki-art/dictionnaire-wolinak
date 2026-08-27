@@ -7151,9 +7151,9 @@ const NIVEAUX=[
    Garde l'habitude : cinq minutes de <b>🔁 Révision</b> par jour pendant que tu montes
    de niveau. C'est ce qui transforme des mots appris en mots acquis.</div>`}]},
 
-{id:'s',t:'Secondaire',d:"Comprendre comment les mots changent. Le genre, le pluriel, les verbes.",
+{id:'s',t:'Secondaire',d:"Comprendre comment les formes changent : classe grammaticale, pluriel, possession, affirmation, interrogation et négation.",
  c:'var(--gold)',mods:[
- {t:"Animé ou inanimé",d:"Comprendre une distinction qui agit sur toute la phrase.",ex:'genre',lec:`
+ {t:"Animé ou inanimé",d:"Comprendre une distinction qui agit sur toute la phrase.",ex:'genre',use:'genre',lec:`
   <p>En aln8ba, chaque nom appartient à une de deux <b>classes grammaticales</b> : animée ou inanimée.
   Ce n'est ni le masculin et le féminin du français, ni une interprétation philosophique. C'est une
   information de grammaire attachée au mot.</p>
@@ -7181,7 +7181,7 @@ const NIVEAUX=[
   coach:`Répète toujours le mot avec sa classe : « Aples, animé », « Wasawas, inanimé ».
    Ensuite seulement, observe ce que la classe fait changer. Ce petit réflexe évite une erreur qui
    peut se propager au pluriel, au nombre et au verbe.`},
- {t:"Le pluriel",d:"Des paires documentées à retenir sans rien inventer.",ex:'plur',lec:`
+ {t:"Le pluriel",d:"Des paires documentées à retenir sans rien inventer.",ex:'plur',use:'plur',lec:`
   <h3>Si le mot est animé</h3>
   <table class="aprtab">
   <tr><td class="k">-ak</td><td>paire documentée — Alakws → <b>Alakwsak</b></td></tr>
@@ -7214,7 +7214,7 @@ const NIVEAUX=[
   coach:`Pour Niona et Kiona, pose une seule question : est-ce que la personne à qui tu parles
    fait partie du « nous »? Kiona l'inclut; Niona ne l'inclut pas. Vérifie cette distinction
    grammaticale dans chaque exemple.`},
- {t:"Mon, ton, son",d:"Des mots qui ne peuvent jamais rester seuls.",ex:'poss',lec:`
+ {t:"Mon, ton, son",d:"Des mots qui ne peuvent jamais rester seuls.",ex:'poss',use:'poss',lec:`
   <p>Certains mots doivent <b>toujours</b> porter un possesseur. On ne peut pas dire « ami »
   tout court, ni « tête ».</p>
   <table class="aprtab"><tr><th>Préfixe</th><th>Sens</th><th>Exemple</th></tr>
@@ -7227,7 +7227,11 @@ const NIVEAUX=[
   coach:`N, K, W — moi, toi, lui. Une fois que tu l'as vu, tu le vois partout. Amuse-toi une semaine
    à lire le dictionnaire en chassant ces préfixes : tu devineras le sens des mots avant de lire
    la traduction, et c'est le jour où tu commences à <i>lire</i> la langue au lieu de la traduire.`},
- {t:"Les verbes au présent",d:"Reconnaître la personne dans des formes indépendantes documentées.",ex:'conjp',lec:`
+ {t:"La phrase affirmative au présent",d:"Reconnaître la personne dans des formes indépendantes documentées.",ex:'conjp',use:'conjp',lec:`
+  <div class="aprnote"><b>Une affirmation présente l'action comme réalisée ou vraie</b>
+   <span class="al8">Nd'aloka</span> affirme « je travaille ». Il n'y a ni <span class="al8">Nda</span>
+   pour nier, ni mot interrogatif ou point d'interrogation pour demander. Cette leçon commence par
+   l'ordre indépendant affirmatif; la question et la négation seront ensuite comparées séparément.</div>
   <p>Dans les <b>formes indépendantes montrées ici</b>, la personne se reconnaît notamment au préfixe.
   Le même jeu de préfixes apparaît aussi avec les possessifs.</p>
   <table class="aprtab"><tr><th>Personne</th><th>Exemple</th></tr>
@@ -7248,7 +7252,7 @@ const NIVEAUX=[
   coach:`Commence par reconnaître les préfixes dans ces formes indépendantes. Pour poser une question,
    passe ensuite au module suivant : il montre pourquoi certaines formes gardent <span class="al8">k'-/kd'-</span>
    et pourquoi d'autres portent « tu » dans <span class="al8">-an/-ian</span>.`},
- {t:"La deuxième personne interrogative",d:"Où se trouve « tu » dans les questions documentées?",cat:'grammaire',ex:'inter2',lec:`
+ {t:"La deuxième personne interrogative",d:"Où se trouve « tu » dans les questions documentées?",cat:'grammaire',ex:'inter2',use:'inter2',lec:`
   <table class="aprtab">
   <tr><td class="k">Awani</td><td>qui</td></tr><tr><td class="k">Kagwi</td><td>quoi</td></tr>
   <tr><td class="k">Chiga</td><td>quand</td></tr>
@@ -7288,7 +7292,7 @@ const NIVEAUX=[
   coach:`Les saisons se collent au territoire : apprends-les en regardant dehors, pas dans l'écran.
    Quand les feuilles tomberont, pense <span class="al8">Pnibagos</span>. Une langue qui colle
    au pays s'apprend dans le pays — c'est ta grand-force à Wôlinak.`},
- {t:"Dire non",d:"Nda devant le verbe.",ex:'negs',lec:`
+ {t:"Dire non",d:"Passer d'une affirmation documentée à sa négation complète.",ex:'negs',use:'neg',lec:`
   <p>Pour dire le contraire, on met <b>Nda</b> devant le verbe, et on ajoute un petit suffixe au bout.</p>
   <table class="aprtab"><tr><th>Affirmatif</th><th>Négatif</th></tr>
   <tr><td class="k">Nd'aliwizi</td><td class="k">Nda nd'aliwizi<b>w</b></td></tr>
@@ -7299,7 +7303,7 @@ const NIVEAUX=[
   coach:`La négation est un sandwich : <span class="al8">Nda</span> devant, le petit suffixe derrière.
    Dis les paires à voix haute, affirmative puis négative, comme un refrain — l'oreille apprend
    le rythme avant que la tête apprenne la règle.`},
- {t:"La classe change la phrase",d:"Relier la classe au pluriel, au nombre et au choix du verbe.",ex:'classfx',lec:`
+ {t:"La classe change la phrase",d:"Relier la classe au pluriel, au nombre et au choix du verbe.",ex:'classfx',use:'classfx',lec:`
   <p>Tu sais maintenant reconnaître la classe d'un nom. Cette fois, observe <b>ce qu'elle commande</b>
   dans une phrase.</p>
   <table class="aprtab"><tr><th>Élément touché</th><th>Objet animé</th><th>Objet inanimé</th></tr>
@@ -7363,7 +7367,7 @@ const NIVEAUX=[
   coach:`Une journée racontée chaque soir : c'est l'exercice le plus puissant qui existe.
    Cinq phrases suffisent. Le jour où tu te surprends à <i>penser</i> ta journée en aln8ba
    avant de la dire, le secondaire est derrière toi.`},
- {t:"Traduire sans découper le français",d:"Comprendre pourquoi un mot français n'appelle pas toujours un mot aln8ba.",ex:'structure',lec:`
+ {t:"Traduire sans découper le français",d:"Comprendre pourquoi un mot français n'appelle pas toujours un mot aln8ba.",ex:'structure',use:'structure',lec:`
   <p>Une traduction fidèle transporte le <b>sens et la structure</b>; elle ne remplace pas chaque mot
   français par un mot aln8ba. Les deux langues ne découpent pas toujours la même idée de la même façon.</p>
   <h3>Trois réflexes qui empêchent les fausses phrases</h3>
@@ -7392,9 +7396,9 @@ const NIVEAUX=[
    documentée qui porte cette idée. S'il n'en existe pas, conserve les mots reconnus, montre ce qui manque
    et refuse l'assemblage automatique. C'est plus lent, mais c'est ainsi qu'on protège la langue.`}]},
 
-{id:'c',t:'Cégep',d:"Analyser. Les classes de verbes, la morphologie, les sources.",
+{id:'c',t:'Cégep',d:"Analyser les classes de verbes, les conjugaisons, la morphologie et les sources, puis produire avec méthode.",
  c:'var(--accent)',mods:[
- {t:"Les quatre classes de verbes",d:"Décider avec le sujet, l'objet et leur classe grammaticale.",ex:'vta',lec:`
+ {t:"Les quatre classes de verbes",d:"Décider avec le sujet, l'objet et leur classe grammaticale.",ex:'vta',use:'vta',lec:`
   <h3>Avant les sigles : trouve les rôles</h3>
   <p>Une phrase présente une <b>action</b>. Le <b>sujet</b> fait cette action. Un <b>objet</b>, lorsqu'il
   y en a un, reçoit directement l'action.</p>
@@ -7435,7 +7439,7 @@ const NIVEAUX=[
   coach:`Ne mémorise pas quatre sigles isolés. Fais l'arbre de décision : objet ou pas d'objet;
    puis classe du sujet ou classe de l'objet. L'exercice commence par identifier la classe et te fait
    ensuite choisir la forme verbale, avec une explication complète après chaque réponse.`},
- {t:"Aimuk : être présent ou demeurer",d:"Distinguer les formes de présence des autres sens français de « être ».",ex:'aimuk',lec:`
+ {t:"Aimuk : être présent ou demeurer",d:"Distinguer les formes de présence des autres sens français de « être ».",ex:'aimuk',use:'aimuk',lec:`
   <div class="aprnote w"><b>Apprentissage historique, sujet à révision</b>
    Cette leçon est tirée de documents historiques et de matériel pédagogique cité. Elle ne constitue pas
    une validation linguistique professionnelle actuelle. Elle peut être corrigée ou mise à jour à tout
@@ -7492,7 +7496,7 @@ const NIVEAUX=[
   coach:`Commence par demander ce que « être » signifie dans la phrase : présence dans un lieu, état,
    identité ou description. Ensuite seulement, vérifie la classe du sujet et la forme documentée. Le
    tableau historique explique le système; il n'autorise jamais à inventer une forme actuelle.`},
- {t:"Les trois ordres",d:"La conjugaison change selon le type de phrase.",ex:'ordre',lec:`
+ {t:"Les trois ordres",d:"Distinguer affirmation indépendante, impératif et interrogation conjonctive.",ex:'ordre',use:'ordre',lec:`
   <table class="aprtab"><tr><th>Ordre</th><th>Quand</th><th>Exemple</th></tr>
   <tr><td class="k">Indépendant</td><td>phrase ordinaire</td><td class="k">N'michi</td></tr>
   <tr><td class="k">Impératif</td><td>un ordre</td><td class="k">Michi!</td></tr>
@@ -7514,7 +7518,7 @@ const NIVEAUX=[
   coach:`Dans ces exemples, distingue la phrase indépendante, l'impératif et la forme
    conjonctive employée dans une question. Le suffixe <span class='al8'>-oda</span> marque ici
    une action proposée collectivement.`},
- {t:"La négation complète",d:"Trois suffixes selon la voyelle du radical.",ex:'neg',lec:`
+ {t:"La négation complète",d:"Trois suffixes selon la voyelle du radical.",ex:'neg',use:'neg',lec:`
   <table class="aprtab"><tr><th>Le radical finit par</th><th>Suffixe</th><th>Exemple</th></tr>
   <tr><td class="k">-i</td><td class="k">-w</td><td class="k">Nda nd'aliwiziw</td></tr>
   <tr><td class="k">-a</td><td class="k">-wi</td><td class="k">Nda nd'alokawi</td></tr>
@@ -7525,7 +7529,7 @@ const NIVEAUX=[
   coach:`Les trois suffixes suivent la voyelle du radical — c'est elle qui décide. Entraîne ton
    oreille à entendre cette voyelle finale avant ta mémoire : dis le verbe, allonge la dernière
    voyelle, et le bon suffixe se pose tout seul.`},
- {t:"Racines et suffixes",d:"Un mot se construit. Apprends à le démonter.",ex:'suf',lec:`
+ {t:"Racines et suffixes",d:"Un mot se construit. Apprends à le démonter.",ex:'suf',use:'suf',lec:`
   <table class="aprtab"><tr><th>Suffixe</th><th>Ce qu'il fait</th><th>Exemple</th></tr>
   <tr><td class="k">-w8gan</td><td>le fait de…</td><td>Lintow8gan le chant</td></tr>
   <tr><td class="k">-higan</td><td>l'objet qui sert à…</td><td>Pakholigan le tambour</td></tr>
@@ -7542,7 +7546,7 @@ const NIVEAUX=[
    <span class="al8">-gamikw</span> le lieu, <span class="al8">-winno</span> la personne. Collectionne-les
    comme des outils dans ta boîte de mécanicien — un mot long n'est plus un obstacle,
    c'est un assemblage que tu sais démonter.`},
- {t:"Décomposer un mot",d:"Préfixe, racine, suffixe — et la famille.",familyGroup:'derivation',ex:'fam',lec:`
+ {t:"Décomposer un mot",d:"Préfixe, racine, suffixe — et la famille.",familyGroup:'derivation',ex:'fam',use:'fam',lec:`
   <p>Chaque mot long est un assemblage. Prends <span class="al8">Agakimzowinno</span> :
   la racine <i>agakimzo-</i> qui parle de l'étude, plus <i>-winno</i>, le suffixe de la personne.
   Le mot désigne <b>la personne qui étudie</b>.</p>
@@ -7574,7 +7578,7 @@ const NIVEAUX=[
   coach:`Une graphie ancienne témoigne de ce qui est imprimé dans une source. Compare ses lettres
    avec la forme retenue par le projet, puis consulte la source ou une personne compétente avant
    d'en déduire une prononciation.`},
- {t:"Traduire une phrase",d:"Mettre ensemble tout ce que tu sais.",ex:'trad',lec:`
+ {t:"Traduire une phrase",d:"Mettre ensemble tout ce que tu sais.",ex:'trad',use:'trad',lec:`
   <p>Une phrase abénakise se lit en repérant d'abord le verbe et son préfixe.</p>
   <table class="aprtab"><tr><th>Phrase</th><th>Analyse</th></tr>
   <tr><td class="k">Nd'aliwizi Mali</td><td>Nd'- (je) + aliwizi (s'appeler) + le nom</td></tr>
@@ -7635,8 +7639,39 @@ let aprNiv='p', aprMod=null, aprRevScope=null;
 function aprActivateNav(section){
   document.querySelectorAll('#aprNav button').forEach(b=>b.classList.toggle('on',b.dataset.p===section));
 }
+const APR_LEVEL_PATHS={
+  p:[
+    ['Sons et graphie','entendre les cinq repères, puis écrire les lettres exactes'],
+    ['Premières phrases','saluer, se présenter et comprendre une première terminaison'],
+    ['Vocabulaire classé','nommer les personnes, le corps, le territoire et les actions'],
+    ['Conversation','réunir les formes documentées dans un échange complet']
+  ],
+  s:[
+    ['Nom et classe','apprendre animé ou inanimé avant tout accord'],
+    ['Nombre et possession','pluriels attestés, pronoms et préfixes possessifs'],
+    ['Phrase affirmative','personne et verbe à l’ordre indépendant'],
+    ['Interrogation','formes complètes en -an/-ian ou avec k\'-/kd\'-'],
+    ['Négation','partir de l’affirmation et écrire Nda avec le suffixe documenté'],
+    ['Effets dans la phrase','classe du nom, nombre et choix de la forme verbale']
+  ],
+  c:[
+    ['Structure verbale','objet ou non, puis VAI, VII, VTA ou VTI'],
+    ['Sens de la construction','présence, état et emplois documentés de Aimuk'],
+    ['Ordres de conjugaison','indépendant, impératif et conjonctif interrogatif'],
+    ['Morphologie','préfixe, racine, suffixe et famille documentée'],
+    ['Sources','séparer forme actuelle, attestation historique et reconstruction'],
+    ['Production','analyser puis écrire des phrases complètes documentées']
+  ]
+};
+function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
+function aprPathHtml(levelId){
+  const phases=APR_LEVEL_PATHS[levelId]||[];
+  return `<div class="aprnote" style="border-left-color:var(--gold);margin-bottom:14px"><b>Chemin d'apprentissage · dans cet ordre</b>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">${phases.map((phase,index)=>
+      `<div style="padding:9px;border:1px solid var(--border);border-radius:9px;background:var(--surface2)"><strong>${index+1}. ${escH(phase[0])}</strong><br><span style="font-size:.78rem;color:var(--text2)">${escH(phase[1])}</span></div>`).join('')}</div></div>`;
+}
 function aprModulePerfect(m,state){
-  return Boolean(m&&m.ex&&state&&state.retenir>=100&&(!m.cat||state.utiliser>=100));
+  return Boolean(m&&m.ex&&state&&state.retenir>=100&&(!aprModuleNeedsUse(m)||state.utiliser>=100));
 }
 function aprOpenModule(i){
   aprMod=i;
@@ -7668,14 +7703,14 @@ function aprParcours(){
    <div class="aprcard"><h3>Parcours</h3>
      <p class="aprlead">Trois niveaux qui s'appuient l'un sur l'autre. Chaque module actif se travaille
        en quatre temps : <b>📖 lire</b>, <b>🎙️ prononcer</b>, <b>🧠 retenir</b> avec le quiz,
-       <b>✍️ utiliser</b> en écrivant les mots — puis l'onglet <b>🔁 Révision</b> les fait durer.
+       <b>✍️ utiliser</b> en écrivant les mots et les formes grammaticales — puis l'onglet <b>🔁 Révision</b> les fait durer.
        Quinze minutes par jour battent trois heures le dimanche.</p>
      <div class="aprnav" style="margin:0">${NIVEAUX.map(n=>
        `<button data-n="${n.id}" class="${n.id===aprNiv?'on':''}" onclick="aprNiv='${n.id}';aprParcours()">${n.t}</button>`).join('')}</div>
    </div>
    ${NIVEAUX.filter(n=>n.id===aprNiv).map(n=>{
      const maitrises=n.mods.filter((m,i)=>{ const s=prog[n.id+'.'+i];
-       return s && (s.retenir>=75) && (!m.cat || s.utiliser>=75); }).length;
+       return s && (s.retenir>=75) && (!aprModuleNeedsUse(m) || s.utiliser>=75); }).length;
      const commences=n.mods.filter((m,i)=>prog[n.id+'.'+i]).length;
      return `
      <div class="aprnote" style="border-left-color:${n.c}"><b>${n.t}</b>${n.d}<br>
@@ -7686,8 +7721,9 @@ function aprParcours(){
        </div>
        <div style="margin-top:12px"><button class="aprbtn" onclick="aprJeux('${n.id}')">🎯 Jeux du niveau ${n.t}</button>
        <span style="font-size:.75rem;color:var(--text3);margin-left:8px">Une sélection adaptée aux notions de ce niveau.</span></div></div>
+      ${aprPathHtml(n.id)}
       <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[n.id+'.'+i];
-        const done=s&&s.retenir>=75&&(!m.cat||s.utiliser>=75);
+        const done=s&&s.retenir>=75&&(!aprModuleNeedsUse(m)||s.utiliser>=75);
         const perfect=aprModulePerfect(m,s);
         const badge=perfect?'↻':done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
         return `<button class="lz" onclick="aprOpenModule(${i})" aria-label="${escH(m.t)}${perfect?' — terminé à 100 %, ouvrir la révision':''}">
@@ -7709,17 +7745,17 @@ function aprLecon(i){
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n.mods[i];
   const lecHtml = typeof m.lec==='function' ? m.lec() : m.lec;
   APR_VOICE_READY=aprVoiceTargets(m,lecHtml);
-  const st=progGet(aprNiv+'.'+i), tt=m.t.replace(/'/g,"\\'");
+  const st=progGet(aprNiv+'.'+i), tt=m.t.replace(/'/g,"\\'"), canWrite=aprModuleNeedsUse(m);
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="aprParcours()">← ${n.t}</button>
     <div class="aprcard">
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
-      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${m.cat?'quatre':'trois'} temps</b>
+      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${canWrite?'quatre':'trois'} temps</b>
         1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🎙️ <b>Prononcer</b> — écoute le guide, enregistre-toi et compare les deux écoutes.
         3. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
-        ${m.cat?'4. ✍️ <b>Utiliser</b> — tu écris le mot toi-même, de mémoire. ':''}Puis reviens demain
+        ${canWrite?`4. ✍️ <b>Utiliser</b> — tu produis ${m.use?'la forme grammaticale':'le mot'} toi-même, de mémoire. `:''}Puis reviens demain
         dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>`:
         `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
         Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
@@ -7735,11 +7771,11 @@ function aprLecon(i){
           🎙️ Pratique vocale (${APR_VOICE_READY.length})</button>`:''}
         ${m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
           onclick="aprFC('${m.cat}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
-        ${m.ex?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||''}','${tt}','retenir')">
+        ${m.ex?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||m.use||''}','${tt}','retenir')">
           🧠 Retenir — le quiz</button>`:''}
-        ${m.cat?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
-          onclick="aprEx('ecris','${m.cat}','${tt}','utiliser')">
-          ✍️ Utiliser — écris le mot</button>`:''}
+        ${canWrite?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
+          onclick="aprEx('${m.use?'ecrisgram':'ecris'}','${m.use||m.cat}','${tt}','utiliser')">
+          ✍️ Utiliser — ${m.use?'produis la forme':'écris le mot'}</button>`:''}
       </div>
     </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
@@ -8265,13 +8301,14 @@ const EXSONS=[
  {m:'W',q:'Quel résumé décrit W?',o:['O doux devant une consonne, WA devant une voyelle, très doux à la fin sans syllabe OU','Toujours comme V','Toujours muet','Toujours comme OU'],r:0,e:'La prononciation de W dépend de sa position. Après G ou K en fin de mot, il ne crée pas une syllabe OU séparée.'},
  {m:'I',q:'Comment sonne souvent I, surtout en fin de mot?',o:['É','A','OU','AN'],r:0,e:'I sonne souvent É, surtout en fin de mot.'}
 ];
-let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exPoolOverride=null;
+let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exUseKey='', exPoolOverride=null;
 let exAsked=[], exSonsQueue=[];
 
 function aprEx(type,cat,titre,mode){
   exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
   exQ=0; exOk=0; exTot=8; exAsked=[]; exSonsQueue=[];
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
+  exUseKey=(m&&m.use)||'';
   const modulePool=m?aprModulePool(cat):[];
   const scopedPool=type==='genre'
     ?modulePool.filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''))
@@ -8283,7 +8320,7 @@ function aprEx(type,cat,titre,mode){
     negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length, aimuk:()=>EXAIMUK.length,
     vta:()=>EXVTA.length*2, inter2:()=>EXINTER2.length, ordre:()=>EXORDRE.length,
     neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
-    trad:()=>EXTRAD.length
+    trad:()=>EXTRAD.length, ecrisgram:()=>grammarWritingPool(cat).length
   }[type];
   if(fixedCapacity) exTot=Math.min(exTot,fixedCapacity());
   if(type==='sons'){ exSonsQueue=jShuf(EXSONS); exTot=exSonsQueue.length; }
@@ -8330,7 +8367,7 @@ function exFin(){
   cancelAnswerAdvance();
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   const pc=Math.round(exOk/exTot*100);
-  const canUse=exMode==='retenir' && !!exCat;
+  const canUse=exMode==='retenir' && Boolean(exUseKey||exCat);
   if(exMode!=='rev' && aprMod!==null && aprMod!==undefined)
     progRecord(aprNiv+'.'+aprMod, exMode, pc);
   const msg = canUse && pc>=75 ? "Le sens est bien retenu. Passe maintenant à l'utilisation : écris les mots de mémoire."
@@ -8345,7 +8382,7 @@ function exFin(){
       <p class="aprlead" style="margin:14px 0 22px;font-size:.95rem">${msg}</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         ${canUse?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
-          onclick="aprEx('ecris',exCat,exTitre,'utiliser')">✍️ Utiliser — écrire les mots</button>`:''}
+          onclick="aprEx('${exUseKey?'ecrisgram':'ecris'}','${exUseKey||exCat}',exTitre,'utiliser')">✍️ Utiliser — ${exUseKey?'produire les formes':'écrire les mots'}</button>`:''}
         <button class="aprbtn" style="${canUse?'background:var(--surface2);color:var(--text)':''}"
           onclick="${exMode==='rev'?'aprRevStart()':'aprEx(exType,exCat,exTitre,exMode)'}">Refaire</button>
         <button class="aprbtn" style="background:var(--surface2);color:var(--text)"
@@ -8359,7 +8396,7 @@ function exFin(){
 function exSuivant(){
   cancelAnswerAdvance();
   if(exQ>=exTot) return exFin();
-  const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
+  const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, ecrisgram:exGrammarWrite, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
     negs:exNegs, classfx:exClassFx, structure:exStructure, aimuk:exAimuk, vta:exVta, inter2:exInter2, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
     trad:exTrad})[exType];
   handler();
@@ -8558,6 +8595,116 @@ function exVerif(){
     return;
   }
   finishAnsweredStep(ok,'#exBody',exSuivant,4500);
+}
+function aprSentence(text){
+  const value=String(text||'').trim();
+  return /[.!?…]$/.test(value)?value:value+'.';
+}
+function grammarWritingPool(key){
+  const sourceManual="Manuel de l'étudiant 1 — Native Montreal";
+  if(key==='genre') return [
+    ['Aples','une pomme','animée'],['Wasawas','une orange','inanimée'],['Sips','un oiseau','animée'],
+    ['Awikhigan','un livre','inanimée'],['Almos','un chien','animée'],['Nbizon','un médicament','inanimée']
+  ].map(([word,fr,answer])=>({prompt:`Écris la classe grammaticale documentée de ${word}.`,context:fr,answer,record:false,
+    steps:[`Nom : ${word}`,`La fiche indique la classe ${answer}`,`Cette classe doit être mémorisée avec le nom`],
+    detail:"La classe ne se devine pas à partir de ce qui semble vivant ou non; elle se vérifie sur la fiche.",source:'Manuel de l’étudiant 1, pages 24 à 33'}));
+  if(key==='plur') return JPLUR.map(q=>({prompt:`Écris le pluriel documenté de ${q.s}.`,context:q.f,answer:q.p,
+    steps:[`Singulier : ${q.s}`,`Classe documentée : ${q.s==='Sata'?'inanimée':'animée'}`,`Paire attestée : ${q.s} → ${q.p}`],
+    detail:q.w+' La classe oriente la recherche, mais seule la paire attestée autorise cette forme.',source:'Manuel de l’étudiant 1, pages 16 à 18'}));
+  if(key==='poss') return EXPOSS.map(q=>{
+    const person=['N- · mon/ma','K- · ton/ta','W- · son/sa'][q.r];
+    return {prompt:`Écris en aln8ba : ${aprSentence(q.f)}`,context:`Préfixe attendu : ${person}`,answer:q.m,
+      steps:[`Repère le possesseur dans « ${q.f} »`,`Choisis ${person}`,`Écris la forme complète documentée : ${q.m}`],
+      detail:"Le préfixe est attaché au nom. Le D apparaît dans les formes documentées devant une voyelle.",source:sourceManual};
+  });
+  if(key==='conjp') return [
+    {prompt:'Écris la phrase affirmative « je mange ».',answer:"N'michi",steps:["Ordre indépendant affirmatif","N'- porte la première personne","michi porte l'action de manger"]},
+    {prompt:'Écris la phrase affirmative « tu manges ».',answer:"K'michi",steps:["Ordre indépendant affirmatif","K'- porte la deuxième personne","michi porte l'action de manger"]},
+    {prompt:'Écris la phrase affirmative « il mange ».',answer:'Michio',steps:['Ordre indépendant affirmatif','Troisième personne documentée : Michio','Ne pas la fabriquer en remplaçant seulement un préfixe']},
+    {prompt:'Écris la phrase affirmative « nous mangeons ».',answer:"N'michibena",steps:["N'- porte la première personne","-bena est visible dans cette forme de nous","Forme complète : N'michibena"]},
+    {prompt:'Écris la phrase affirmative « vous mangez ».',answer:"K'michiba",steps:["K'- porte la deuxième personne","-ba est visible dans cette forme de vous","Forme complète : K'michiba"]},
+    {prompt:'Écris la phrase affirmative « ils mangent ».',answer:'Michioak',steps:['Troisième personne documentée : Michio','La forme plurielle complète est Michioak','On retient le paradigme attesté entier']},
+    {prompt:'Écris la phrase affirmative « je travaille ».',answer:"Nd'aloka",steps:["Ordre indépendant affirmatif","Nd'- porte la première personne devant la voyelle initiale","aloka porte l'action de travailler"]},
+    {prompt:'Écris la phrase affirmative « j’habite ».',answer:"N'wigi",steps:["Ordre indépendant affirmatif","N'- porte la première personne","wigi porte l'action d'habiter"]}
+  ].map(q=>({...q,context:'Aucune négation et aucune interrogation.',detail:"La forme indépendante affirmative est apprise avant sa transformation en question ou en négation.",source:'Manuel de l’étudiant 1, pages 28 et 29'}));
+  if(key==='inter2') return EXINTER2.slice(0,6).map(q=>{
+    const analysis=APR_WRITING_ANALYSES.get(aprNorm(q.p));
+    return {prompt:`Écris en aln8ba : ${aprSentence(q.f)}`,answer:q.p,
+      steps:analysis?[analysis.equation,...analysis.parts.map(part=>`${part.form} : ${part.role} · ${part.meaning}`)]:[q.e],
+      detail:analysis?analysis.explanation:q.e,source:'Manuel de l’étudiant 1, pages 29 et 34'};
+  });
+  if(key==='neg') return DOCUMENTED_NEGATION_PARADIGMS.map(q=>({prompt:`Écris la négation complète de « ${q.positiveFr} ».`,
+    context:`Affirmation : ${q.positive}`,answer:q.negative,
+    steps:[`Pars de l'affirmation : ${q.positive}`,'Place Nda devant le verbe',q.rule,`Résultat documenté : ${q.negative}`],
+    detail:"Une négation est une construction complète : Nda seul ne suffit pas et le suffixe ne se choisit pas au hasard.",source:q.source}));
+  if(key==='classfx') return [
+    {prompt:'Écris la phrase documentée « Je mange une pomme ».',answer:"N'mow8 aples",steps:['Objet : Aples','Classe de Aples : animée',"Forme VTA documentée : N'mow8"]},
+    {prompt:'Écris la phrase documentée « Je mange une orange ».',answer:"N'miji wasawas",steps:['Objet : Wasawas','Classe de Wasawas : inanimée',"Forme VTI documentée : N'miji"]},
+    {prompt:'Écris la phrase documentée « Je vois un oiseau ».',answer:"N'namih8 sips",steps:['Objet : Sips','Classe de Sips : animée',"Forme VTA documentée : N'namih8"]},
+    {prompt:'Écris la phrase documentée « Je vois un livre ».',answer:"N'namito awikhigan",steps:['Objet : Awikhigan','Classe de Awikhigan : inanimée',"Forme VTI documentée : N'namito"]}
+  ].map(q=>({...q,context:'Trouve l’objet, vérifie sa classe, puis choisis la forme verbale.',
+    detail:"Le sujet et l'action restent les mêmes; la classe grammaticale de l'objet commande ici le choix documenté du verbe.",source:'Manuel de l’étudiant 1, page 33'}));
+  if(key==='structure') return [
+    {prompt:'Écris la phrase documentée « Je suis malade ».',answer:"Nd'akwamalsi",steps:['Idée entière : être malade','Le verbe d’état porte déjà le sujet et l’état',"Forme complète : Nd'akwamalsi"]},
+    {prompt:'Écris la phrase documentée « Je suis dans la maison ».',answer:"Nd'ai wigwomek",steps:['Idée : présence dans un lieu',"Nd'ai porte ici la présence de la première personne",'wigwomek indique la maison comme lieu']}
+  ].map(q=>({...q,context:"Ne traduis pas séparément chaque mot français.",detail:"La construction aln8ba complète porte l'idée; aucun auxiliaire français isolé n'est ajouté.",source:sourceManual}));
+  if(key==='vta') return DOCUMENTED_OBJECT_CLASS_PAIRS.filter(pair=>pair.oa.exact&&pair.oi.exact).flatMap(pair=>[
+    {pair,object:pair.oa,form:pair.a,anim:true},{pair,object:pair.oi,form:pair.i,anim:false}
+  ]).map(({pair,object,form,anim})=>({prompt:`Écris la phrase documentée : ${pair.s} ${object.fr}.`,
+    answer:`${form} ${object.aln8ba.toLowerCase()}`,
+    steps:[`Sujet : je`,`Action : ${pair.verb}`,`Objet : ${object.aln8ba} · classe ${anim?'animée':'inanimée'}`,`Forme ${anim?'VTA':'VTI'} documentée : ${form}`],
+    detail:"Avec un objet direct, la classe de cet objet détermine ici laquelle des deux formes documentées doit être employée.",source:'Manuel de l’étudiant 1, page 33'}));
+  if(key==='aimuk') return [
+    {prompt:'Écris la phrase actuelle documentée « Je suis dans la maison ».',answer:"Nd'ai wigwomek",steps:['Sens : présence dans un lieu','Sujet : première personne',"Forme actuelle complète : Nd'ai wigwomek"]},
+    {prompt:'Écris la phrase actuelle documentée « Je suis malade ».',answer:"Nd'akwamalsi",steps:["Sens : état du sujet","Le verbe d'état porte déjà toute l'idée","Forme actuelle complète : Nd'akwamalsi"]}
+  ].map(q=>({...q,context:"Distingue présence et état; n'ajoute jamais Ao automatiquement.",detail:"Aimuk n'est pas un auxiliaire universel. On choisit une construction complète selon le sens et la classe du sujet.",source:'Manuel de l’étudiant 1 (2018) · Laurent (1884), contexte historique'}));
+  if(key==='ordre') return EXORDRE.map(q=>({prompt:`Écris la forme ${['affirmative indépendante','impérative','interrogative conjonctive'][q.r]} : ${q.f}`,
+    answer:q.p,steps:[`Intention : ${['affirmer','demander une action','poser une question'][q.r]}`,`Ordre : ${['indépendant','impératif','conjonctif dans cet exemple'][q.r]}`,`Forme documentée : ${q.p}`],
+    detail:"L'intention de la phrase se décide avant la conjugaison : une affirmation, un ordre et une question ne partagent pas automatiquement la même forme.",source:'Manuel de l’étudiant 1, page 29'}));
+  if(key==='suf') return EXSUF.map(q=>({prompt:`Écris le mot documenté « ${q.f} » qui porte le suffixe ${q.s}.`,answer:q.m,
+    steps:[`Sens recherché : ${q.f}`,`Suffixe visible : ${q.s}`,`Mot complet documenté : ${q.m}`],
+    detail:"Le suffixe aide à comprendre le mot attesté; il ne permet pas à lui seul de fabriquer un nouveau mot.",source:'Entrée verte actuelle et leçon « Racines et suffixes »'}));
+  if(key==='fam') return [
+    {prompt:'Écris « l’étudiant », formé sur la famille agakimzo-.',answer:'Agakimzowinno',steps:['Base documentée : agakimzo- · étudier','Suffixe : -winno · la personne qui','Mot complet : Agakimzowinno']},
+    {prompt:'Écris « le petit ours », de la famille awassos-.',answer:'Awassosis',steps:['Base documentée : Awassos · ours','Suffixe diminutif : -is','Mot complet : Awassosis']},
+    {prompt:'Écris la forme locative « au village ».',answer:'Odanak',steps:['Nom : Odana · village','Suffixe locatif visible : -k','Forme documentée : Odanak']},
+    {prompt:'Écris « le boulanger » dans la graphie actuelle du Manuel.',answer:'Nodab8nkat',steps:['Nod- · celui qui fait habituellement','Ab8n · pain','-kat · celui qui produit','Forme complète : Nodab8nkat']}
+  ].map(q=>({...q,context:'Préfixe ou base + racine + suffixe.',detail:"Chaque relation affichée est documentée. Une ressemblance graphique seule ne suffit pas à prouver une nouvelle famille.",source:'Manuel de l’étudiant 1 · relations morphologiques documentées'}));
+  if(key==='trad') return EXTRAD.map(q=>({prompt:`Écris en aln8ba : ${aprSentence(q.o[q.r])}`,answer:q.p,
+    steps:['Lis le sens français comme une idée entière',`Retrouve la phrase complète documentée : ${q.p}`,'Vérifie personne, polarité, ordre et contexte'],
+    detail:"La réponse est une phrase complète déjà documentée; aucun fragment manquant n'est construit.",source:'Corpus actuel des phrases documentées'}));
+  return [];
+}
+function exGrammarWrite(){
+  const pool=grammarWritingPool(exCat);
+  const q=exPickUnique(pool,item=>item.prompt+'|'+item.answer);
+  if(!q){ exTot=exQ; return exFin(); }
+  window._ex=q;
+  exCadre(`<div class="jprompt"><div class="q">Production écrite · applique la règle</div>
+      <div class="w" style="font-size:clamp(1.05rem,3.5vw,1.55rem)">${escH(q.prompt)}</div>
+      ${q.context?`<div class="h">${escH(q.context)}</div>`:''}</div>
+    <div class="aprtool"><input id="exGrammarIn" autocomplete="off" autocapitalize="off" placeholder="Écris la réponse complète…">
+      <button class="aprbtn" onclick="exCheckGrammarWrite()">Vérifier</button></div>
+    <div class="jhint">Écris toutes les lettres, y compris le 8. La casse, les espaces, l'apostrophe et la ponctuation ne changent pas le score.</div>`);
+  const input=document.getElementById('exGrammarIn');
+  if(input){ input.focus(); input.onkeydown=event=>{if(event.key==='Enter') exCheckGrammarWrite();}; }
+}
+function exCheckGrammarWrite(){
+  const q=window._ex, input=document.getElementById('exGrammarIn');
+  if(!q||!input||input.disabled) return;
+  const accepted=[q.answer,...(q.answers||[])];
+  const ok=accepted.some(answer=>aprNorm(input.value)===aprNorm(answer));
+  if(ok) exOk++;
+  if(q.record!==false) revNote(q.answer,ok);
+  exQ++; exSyncScore(); input.disabled=true;
+  document.getElementById('exBody').insertAdjacentHTML('beforeend',`
+    <div class="jafter" role="status" aria-live="polite" aria-atomic="true">${ok?'✓ Forme exacte.':'✗ À reprendre. Réponse attendue :'}
+      <b><span class="al8">${escH(q.answer)}</span></b></div>
+    <div class="aprnote" style="margin-top:12px;border-left-color:var(--gold)"><b>Raisonnement complet</b>
+      <div style="display:grid;gap:7px;margin-top:8px">${q.steps.map((step,index)=>`<div style="display:grid;grid-template-columns:26px 1fr;gap:8px"><strong>${index+1}</strong><span>${escH(step)}</span></div>`).join('')}</div>
+      <p style="margin-top:10px">${escH(q.detail)}</p><span class="aprsrc">${escH(q.source)}</span></div>
+    <div style="text-align:center;margin-top:16px"><button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
+  finishAnsweredStep(ok,'#exBody',exSuivant,6500);
 }
 /* — révision espacée : les mots ratés et les mots qui datent passent en premier — */
 function aprRevView(){
