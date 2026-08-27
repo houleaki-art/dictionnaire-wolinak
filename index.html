@@ -2216,7 +2216,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-25-translator-004';
+const APP_RESET_VERSION = '2026-08-27-translator-005';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev','aln_voice_progress'];
 
@@ -5537,6 +5537,12 @@ const DOCUMENTED_SENTENCES=[
   {fr:['Je vois un livre'],aln8ba:"N'namito awikhigan"},
   {fr:['Je mange une pomme'],aln8ba:"N'mow8 aples"},
   {fr:['Je mange une orange'],aln8ba:"N'miji wasawas"},
+  {fr:['Tu travailles','Tu travailles fort','Tu mets des efforts'],aln8ba:"K'milaloka",
+    source:"Hélène O'Bomsawin — Document de langue Aln8ba8dwaw8gan",
+    note:"La forme complète porte déjà la nuance d'effort donnée par la source. « Fort » n'est pas traduit séparément ni ajouté comme un autre mot."},
+  {fr:['Tu as déjà beaucoup travaillé','Tu travailles tellement'],aln8ba:"K'milaloka kizi",
+    source:"Synthèse des corrections d'Hélène O'Bomsawin — conversation Guillaum, 2026-06-07",
+    note:"Expression complète documentée. Elle reste distincte de la forme simple K'milaloka."},
   {fr:['Je parle abénakis'],aln8ba:"Nd'aln8ba8dwa",
     source:"Manuel de l'étudiant 1 (2018)",
     note:"Phrase complète documentée. Elle exprime l'action actuelle de parler abénakis; elle ne traduit pas à elle seule le rêve, la durée ni l'intention future."}
@@ -5713,6 +5719,24 @@ function traduire(){
     && /\s/.test((w.aln8ba||'').trim()) && !w.aln8ba.startsWith('-')
     && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba));
   const byId = id => pool.find(w=>w.id===id);
+  // Tous les sens publics d'un seul mot protègent ce mot contre les corrections
+  // françaises hasardeuses. Les formes vertes et consultatives restent
+  // distinguées; aucune n'est choisie sans le contexte grammatical requis.
+  const lexicalChoiceIdx=new Map();
+  if(FR){
+    WORDS.filter(w=>w.fr&&w.aln8ba&&w.aln8ba!=='__version__'&&!enAttente(w)&&isConfirmed(w)
+      &&!w.aln8ba.startsWith('-')
+      &&!/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/.test(w.aln8ba))
+      .forEach(w=>tradFrenchSenses(w.fr).forEach(sens=>{
+        let value=elargirFr(norm(sens.replace(/\([^)]*\)/g,' ')))
+          .replace(/[^a-z0-9\s'8]/g,' ').replace(/\s+/g,' ').trim();
+        const tokens=value.split(' ').filter(Boolean);
+        if(tokens.length!==1||ARTICLES.has(tokens[0])) return;
+        if(!lexicalChoiceIdx.has(tokens[0])) lexicalChoiceIdx.set(tokens[0],[]);
+        const choices=lexicalChoiceIdx.get(tokens[0]);
+        if(!choices.some(choice=>choice.w.id===w.id)) choices.push({w,sens,level:getWordLevel(w)});
+      }));
+  }
 
   // Une graphie historique exacte ne doit jamais être corrigée silencieusement
   // vers une forme actuelle par la tolérance aux fautes du traducteur.
@@ -5763,8 +5787,11 @@ function traduire(){
     }
   }
 
-  // Index 1 : premier token du sens → expressions (correspondance de phrases, la plus longue gagne)
-  // Index 2 : chaque token de contenu → expressions (repli pour un mot seul, ex : « appeler » dans « Appeler · nommer »)
+  // Index 1 : premier token du sens → expressions (correspondance de phrases, la plus longue gagne).
+  // Index 2 ne reçoit que les sens d'un seul mot. Les variantes séparées par
+  // « · », « ; » ou « / » sont déjà isolées par tradFrenchSenses. Indexer les
+  // mots intérieurs d'une définition composée ferait de « fort » un faux
+  // synonyme d'Akwbi à partir de « l'alcool fort ».
   const idx = new Map(), tokIdx = new Map(), consultIdx = new Map();
   const pushIdx=(map,key,ent)=>{ if(!key) return; if(!map.has(key)) map.set(key,[]); map.get(key).push(ent); };
   pool.forEach(w => {
@@ -5777,7 +5804,9 @@ function traduire(){
       const ent = {toks, w, sens:sens0.trim()};
       pushIdx(idx, toks[0], ent);
       if(FR && toks.length>1 && ARTICLES.has(toks[0])) pushIdx(idx, toks[1], ent);
-      toks.forEach(t=>{ if(t.length>=3 && !ARTICLES.has(t)) pushIdx(tokIdx, t, ent); });
+      if(toks.length===1) toks.forEach(t=>{
+        if(t.length>=3 && !ARTICLES.has(t)) pushIdx(tokIdx,t,ent);
+      });
     });
   });
   idx.forEach(lst => lst.sort((a,b)=>b.toks.length-a.toks.length));
@@ -6367,9 +6396,18 @@ function traduire(){
       }
       if(synHit){ chunks.push({type:'hit', toks:[T], w:synHit.ent.w, sens:synHit.ent.sens, alts:[], viaSyn:synHit.syn}); i++; continue; }
     }
-    // 8) repli : le mot vit dans un sens plus long (« appeler » dans « Appeler · nommer »)
+    // 8) repli exact sur une variante lexicale d'un seul mot déjà isolée.
     const tk = tokIdx.get(t);
     if(tk && tk.length){ chunks.push({type:'hit', toks:[T], w:tk[0].w, sens:tk[0].sens, alts:[], dansSens:true}); i++; continue; }
+    // 8b) le mot existe dans les fiches publiques, mais plusieurs sens, classes
+    // ou statuts demandent du contexte. On les montre sans corriger ni choisir.
+    const exactLexChoices=FR?(lexicalChoiceIdx.get(t)||[]):[];
+    if(exactLexChoices.length){
+      chunks.push({type:'lexchoices',toks:[T],choices:exactLexChoices.slice(0,8)});
+      lastPron=null;
+      i++;
+      continue;
+    }
     // 9) Une majuscule protège des corrections automatiques, mais ne suffit pas à
     // déclarer un nom propre lorsqu'elle suit un point ou commence la saisie.
     const capitalized=FR&&/^[A-ZÀ-Þ]/.test(T.o);
@@ -6438,13 +6476,14 @@ function traduire(){
   const connectorChunks = chunks.filter(c=>c.type==='connector');
   const consultativeChunks = chunks.filter(c=>c.type==='consultative');
   const verbFamilyChunks = chunks.filter(c=>c.type==='verbfamily');
+  const lexicalChoiceChunks = chunks.filter(c=>c.type==='lexchoices');
   const essais = FR ? ["Je m'appelle Mali","Comment vas-tu ?","J'habite Wôlinak","Je suis dans la maison","Bonjour tout le monde"]
                     : ["Kwaï mziwi","T8ni aliwizian?","Nda n'mikwaldamowen","Nd'ai wigwomek"];
   const essaisHtml = '<div style="margin-top:12px;font-size:.78rem;color:var(--text2)">💡 Essaie une phrase que le traducteur connaît bien :</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
     + essais.map(p=>'<button class="btn btn-secondary" style="padding:3px 10px;font-size:.75rem" onclick="tradEssayer(\''+escQ(p)+'\')">'+escH(p)+'</button>').join('') + '</div>';
 
-  if(!hits.length && !gramChunks.length && !patChunks.length && !ruleChunks.length && !classChunks.length && !connectorChunks.length && !consultativeChunks.length && !verbFamilyChunks.length){
+  if(!hits.length && !gramChunks.length && !patChunks.length && !ruleChunks.length && !classChunks.length && !connectorChunks.length && !consultativeChunks.length && !verbFamilyChunks.length && !lexicalChoiceChunks.length){
     outEl.innerHTML = '<span style="color:var(--text2);font-style:italic">Aucun mot de cette phrase n\'est dans le dictionnaire pour l\'instant.<br><br>Essaie avec des mots plus simples, ou propose le mot manquant avec le bouton ＋ en bas à droite.</span>' + essaisHtml;
     document.getElementById('tradBtnTxt').textContent = 'Traduire →';
     TRAD_LAST_OUTPUT = '';
@@ -6543,6 +6582,8 @@ function traduire(){
       gap:true,consultative:false});
     else if(c.type==='verbfamily') previewCandidates.push({source,
       out:'⟦'+source+' — personne et nuance à préciser⟧',gap:true,consultative:false});
+    else if(c.type==='lexchoices') previewCandidates.push({source,
+      out:'⟦'+source+' — plusieurs sens documentés; contexte requis⟧',gap:true,consultative:false});
     else previewCandidates.push({source,out:'⟦'+source+' — non traduit⟧',gap:true,consultative:false});
   });
   previewCandidates.forEach((item,index)=>{
@@ -6638,6 +6679,18 @@ function traduire(){
         + '<b style="color:var(--accent)">'+lnk(form.aln8ba,'aln8ba')+'</b> — '+escH(form.fr)
         + '<div style="font-size:.72rem;color:var(--text2)">'+escH(form.source)+'</div></div>').join('')
       + '<div style="font-size:.75rem;color:var(--gold);margin-top:8px"><b>Aucune forme n’est sélectionnée automatiquement.</b> Ajoute le sujet et la nuance voulue.</div></div>').join('');
+  }
+  if(lexicalChoiceChunks.length){
+    html+=lexicalChoiceChunks.map(c=>'<div class="trad-near-card">'
+      + '<div class="trad-near-label">Mot connu · contexte grammatical requis</div>'
+      + '<div class="trad-near-word">'+escH(c.toks.map(token=>token.o||token.n).join(' '))+'</div>'
+      + '<div class="trad-near-note">Plusieurs fiches publiques portent ce sens. Le traducteur les connaît, mais refuse de confondre leurs classes ou leurs contextes.</div>'
+      + c.choices.map(choice=>'<div style="padding:8px 0;border-top:1px solid var(--border);line-height:1.4">'
+        + '<b style="color:var(--accent)">'+lnk(choice.w.aln8ba,'aln8ba')+'</b> — '+escH(choice.sens)
+        + (choice.w.grammar?' · <span style="font-size:.75rem">'+escH(choice.w.grammar)+'</span>':'')
+        + '<div style="font-size:.72rem;color:'+(choice.level==='vert'?'var(--green)':'var(--gold)')+'">'
+        + (choice.level==='vert'?'forme actuelle verte':'forme consultative à valider')+'</div></div>').join('')
+      + '<div style="font-size:.75rem;color:var(--gold);margin-top:8px"><b>Aucune forme n’est sélectionnée automatiquement.</b> Écris une phrase complète pour préciser le sens.</div></div>').join('');
   }
 
   if(!completeTranslation&&!completeRule&&!partialOutput&&continuousProposal){
@@ -6767,6 +6820,13 @@ function traduire(){
         ' <span style="color:var(--gold);font-size:.75rem">formes à distinguer</span>')
         + '<div class="trad-analysis-note">'+escH(c.family.note)+'<br>'
         + c.family.forms.map(form=>'<b>'+escH(form.aln8ba)+'</b> — '+escH(form.fr)).join('<br>')+'</div>';
+    } else if(c.type==='lexchoices'){
+      html += ligne(gaucheBase,'<b style="color:var(--gold)">plusieurs sens documentés</b>',
+        ' <span style="color:var(--gold);font-size:.75rem">contexte requis</span>')
+        + '<div class="trad-analysis-note">'
+        + c.choices.map(choice=>'<b>'+escH(choice.w.aln8ba)+'</b> — '+escH(choice.sens)
+          + (choice.w.grammar?' · '+escH(choice.w.grammar):'')
+          + (choice.level==='vert'?' · forme verte':' · forme consultative')).join('<br>')+'</div>';
     } else if(c.type==='skip'){
       html += '<div style="display:flex;gap:10px;align-items:baseline;padding:3px 0;border-bottom:1px dashed var(--border)">'
         + '<span style="font-size:.8rem;color:var(--text3);min-width:120px">' + gaucheBase + '</span>'

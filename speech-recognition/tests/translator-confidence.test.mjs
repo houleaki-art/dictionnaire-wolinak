@@ -83,3 +83,30 @@ test('travaillé sans personne présente la famille documentée sans choisir Kik
   );
   assert.match(translator, /Aucune forme n’est sélectionnée automatiquement/);
 });
+
+test('un mot intérieur de définition ne devient pas un faux synonyme', () => {
+  const indexSource = sourceBetween('// Index 1 : premier token du sens', '// Lemmes :');
+  assert.match(indexSource, /if\(toks\.length===1\) toks\.forEach/);
+  assert.match(indexSource, /« fort » un faux[\s\S]*synonyme d'Akwbi/);
+});
+
+test('tu travailles fort utilise la forme complète documentée', () => {
+  const sentences = sourceBetween('const DOCUMENTED_SENTENCES', 'const DOCUMENTED_SENTENCE_ALIASES');
+  assert.match(sentences, /fr:\['Tu travailles','Tu travailles fort','Tu mets des efforts'\],aln8ba:"K'milaloka"/);
+  assert.match(sentences, /« Fort » n'est pas traduit séparément/);
+  assert.match(sentences, /fr:\['Tu as déjà beaucoup travaillé','Tu travailles tellement'\],aln8ba:"K'milaloka kizi"/);
+  assert.match(html, /APP_RESET_VERSION = '2026-08-27-translator-005'/);
+});
+
+test('un mot français connu est protégé contre une correction verbale hasardeuse', () => {
+  const translator = sourceBetween('function traduire', 'function tradEssayer');
+  assert.match(translator, /const lexicalChoiceIdx=new Map\(\)/);
+  assert.match(translator, /WORDS\.filter\(w=>w\.fr&&w\.aln8ba[\s\S]*isConfirmed\(w\)/);
+  assert.match(translator, /type:'lexchoices'/);
+  assert.ok(
+    translator.indexOf('const exactLexChoices') < translator.indexOf('const verbGuess'),
+    'les sens du dictionnaire doivent gagner avant une correction vers un autre verbe français'
+  );
+  assert.match(translator, /Mot connu · contexte grammatical requis/);
+  assert.match(translator, /Aucune forme n’est sélectionnée automatiquement/);
+});
