@@ -1,0 +1,33 @@
+{
+  "current_usage": [
+    {
+      "form": "Kdakinna",
+      "root": "dakina",
+      "meaning": "notre terre, notre monde; premiere personne pluriel inclusive",
+      "evidence": "Usage actuel et paradigme Kdakinna / Ndakina signales par Guillaum Labrecque-Houle le 27 aout 2026."
+    }
+  ],
+  "documented_families": [
+    {
+      "historical_forms": ["Wanald8zik", "Wanalm8muk"],
+      "current_forms": ["N'wanaldam"],
+      "root": "aldam",
+      "relation": "famille documentee",
+      "evidence": "Laurent imprime Wanaldôzik et Wanalmômuk; la transcription avec 8 donne Wanald8zik et Wanalm8muk. Il distingue l'infinitif avec objet inanime en -zik et l'infinitif avec objet anime en -muk; N'wanaldam est une forme personnelle apparentee, pas un remplacement."
+    },
+    {
+      "historical_forms": ["Nodab8nkad"],
+      "current_forms": ["Nodab8nkat", "Ab8n"],
+      "root": "ab8n",
+      "relation": "decomposition documentee",
+      "evidence": "Nod- designe celui qui fait habituellement, Ab8n le pain, et -kad / -kat celui qui produit par metier."
+    },
+    {
+      "historical_forms": ["Kdakinna"],
+      "current_forms": ["Ndakina"],
+      "root": "dakina",
+      "relation": "meme paradigme actuel",
+      "evidence": "K- marque ici le nous inclusif et N- le nous exclusif; les deux formes demeurent utilisables."
+    }
+  ]
+}
