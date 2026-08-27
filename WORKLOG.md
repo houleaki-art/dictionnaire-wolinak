@@ -141,6 +141,15 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Réintégration d'`Askwa yudali` comme archive artistique demandée par l'auteur, avec avertissement visible sur les six lignes qui demeurent linguistiquement incertaines.
 - Vérification dans Chrome des deux lectures, du changement exclusif de piste, du lecteur persistant et de l'ouverture des paroles; contrôle statique des règles mobiles, des cibles tactiles, des fichiers audio et des identifiants HTML.
 
+## Archives : famille historique `-aldam-`
+
+- Retrait de la fausse modernisation automatique fondée uniquement sur une traduction française semblable.
+- `Wanaldozik` et `Wanalmomuk` sont présentés selon leur analyse documentée comme infinitifs historiques, respectivement avec objet inanimé et objet animé, dans la même famille radicale `-aldam-`; ils ne sont pas remplacés par `N'wanaldam`.
+- `N'wanaldam` demeure une autre entrée apparentée; l'absence d'une entrée portant exactement la même fonction dans le projet ne signifie pas que la forme documentée par Laurent n'est plus utilisée.
+- Toutes les cartes historiques de sens connu montrent désormais leur catégorie grammaticale et leur source; les rapprochements automatiques sont qualifiés d'autres entrées de sens proche, jamais de formes modernes équivalentes.
+- La présentation précise que les formes de Laurent et Masta ne sont pas automatiquement abandonnées : une grande partie de leurs mots et de leurs constructions demeure pertinente aujourd'hui.
+- Sur les fiches ordinaires, l'étiquette automatique « forme 1884, à valider dans l'usage actuel » devient « source 1884 »; son aide précise que la date seule ne prouve jamais qu'une forme n'est plus utilisée.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

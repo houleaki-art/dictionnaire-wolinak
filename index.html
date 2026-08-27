@@ -2649,7 +2649,7 @@ function levelBadge(w){
   const lv = getWordLevel(w);
   if(lv === 'orange'){
     const s = (w.source||'').toLowerCase();
-    if(s.includes('laurent')) return '<span class="lvl-badge lvl-orange" title="Jos. Laurent 1884 — forme historique, à valider dans l\'usage actuel">✳ forme 1884</span>';
+    if(s.includes('laurent')) return '<span class="lvl-badge lvl-orange" title="Jos. Laurent 1884 — forme documentée; la date seule ne signifie pas qu\'elle n\'est plus utilisée">✳ source 1884</span>';
     return '<span class="lvl-badge lvl-orange" title="À valider">✳ à valider</span>';
   }
   return '';
@@ -8628,6 +8628,11 @@ function renderArchives(){
   const normFr=s=>normS((s||'').split(/[·;(]/)[0]);
   const actifs=WORDS.filter(w=>w.cat!=='archive'&&w.cat!=='corpus'&&w.fr);
   const parFr={}; actifs.forEach(w=>{const k=normFr(w.fr); if(k&&!(k in parFr)) parFr[k]=w;});
+  const relationsHistoriques={
+    [normS('Wanaldozik')]:{famille:'-aldam-',actuelle:"N'wanaldam"},
+    [normS('Wanald8zik')]:{famille:'-aldam-',actuelle:"N'wanaldam"},
+    [normS('Wanalmomuk')]:{famille:'-aldam-',actuelle:"N'wanaldam"}
+  };
 
   const connus=arch.filter(w=>w.fr&&!w.fr.startsWith('⚠'));
   const inconnus=arch.filter(w=>!w.fr||w.fr.startsWith('⚠'));
@@ -8660,11 +8665,18 @@ function renderArchives(){
   const nVar=groupes.filter(g=>g.length>1).length;
 
   const chipMot=w=>{
-    const jumeau=parFr[normFr(w.fr)];
+    const relation=relationsHistoriques[normS(w.aln8ba)];
+    const rapprochement=relation?null:parFr[normFr(w.fr)];
+    const actuelle=relation?actifs.find(a=>normS(a.aln8ba)===normS(relation.actuelle)):null;
     return `<span style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:6px 12px;display:inline-flex;flex-direction:column;gap:1px;max-width:100%">
-      <span class="al8" style="font-size:.92rem">${w.aln8ba}</span>
-      <span style="font-size:.74rem;color:var(--text2)">${w.fr}</span>
-      ${jumeau?`<span style="font-size:.7rem;color:var(--accent)">→ aujourd'hui : <b>${jumeau.aln8ba}</b></span>`:''}
+      <span class="al8" style="font-size:.92rem">${escH(w.aln8ba)}</span>
+      <span style="font-size:.74rem;color:var(--text2)">${escH(w.fr)}</span>
+      ${w.grammar?`<span style="font-size:.7rem;color:var(--green)"><b>Fonction grammaticale documentée :</b> ${escH(w.grammar)}</span>`:''}
+      <span style="font-size:.66rem;color:var(--text3)">Source : ${srcTag(w)}</span>
+      ${relation?`<span style="font-size:.7rem;color:var(--accent)"><b>Famille radicale commune :</b> ${relation.famille}</span>
+        <span style="font-size:.7rem;color:var(--text2)"><b>Autre entrée apparentée :</b> ${escH(relation.actuelle)}${actuelle&&actuelle.grammar?` · ${escH(actuelle.grammar)}`:''}</span>
+        <span style="font-size:.68rem;color:var(--text3)">Cette autre entrée n'est pas l'équivalent direct de la forme documentée. Le projet ne possède pas encore une entrée portant exactement la même fonction grammaticale; cela ne signifie pas que cette manière de parler n'est plus utilisée.</span>`
+        :rapprochement?`<span style="font-size:.7rem;color:var(--accent)"><b>Autre entrée de sens proche :</b> ${escH(rapprochement.aln8ba)}${rapprochement.grammar?` · ${escH(rapprochement.grammar)}`:''}</span>`:''}
     </span>`;};
   const srcTag=w=>{const s=(w.source||'').toLowerCase();
     return s.includes('rasles')?'1691':s.includes('masta')?'1932':'1884';};
@@ -8674,16 +8686,18 @@ function renderArchives(){
     <div class="aprcard">
       <h3>📜 Les mots des ancêtres</h3>
       <p class="aprlead">Ici vivent les formes relevées dans les écrits de Rasles (1691), Laurent (1884)
-      et Masta (1932). Ce ne sont <b>pas</b> des fautes : ce sont les écritures d'une autre époque,
-      quand la langue se transmettait à l'oreille et que chaque auteur l'écrivait à sa manière.
+      et Masta (1932). Ce ne sont <b>pas</b> des fautes, ni automatiquement des formes abandonnées.
+      Une grande partie des mots et des façons de construire la langue documentés par ces auteurs demeure
+      pertinente aujourd'hui. Les graphies viennent toutefois d'une autre époque, quand chaque auteur
+      écrivait la langue à sa manière.
       Les formes proches sont regroupées ensemble — plusieurs écritures, une même parole.
       Le sens de certaines reste à décoder : elles attendent qu'un aîné, une aînée ou un gardien
       de la langue leur redonne leur voix.</p>
     </div>
 
     ${mots.length?`<div class="aprcard" style="margin-top:14px">
-      <h3 style="font-size:1rem">🔤 Anciennes formes de mots connus <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${mots.length}</span></h3>
-      <p style="font-size:.78rem;color:var(--text2);margin:6px 0 0">La forme d'aujourd'hui est indiquée quand elle existe au dictionnaire.</p>
+      <h3 style="font-size:1rem">🔤 Formes historiques dont le sens est connu <span style="font-weight:400;color:var(--text3);font-size:.8rem">· ${mots.length}</span></h3>
+      <p style="font-size:.78rem;color:var(--text2);margin:6px 0 0">La fonction grammaticale documentée reste visible pour apprendre ce que la forme exprime. Une autre entrée du dictionnaire peut servir de comparaison, mais elle ne remplace jamais la forme de la source et ne permet pas de conclure que celle-ci n'est plus utilisée.</p>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">${mots.map(chipMot).join('')}</div>
     </div>`:''}
 
