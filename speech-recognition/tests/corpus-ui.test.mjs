@@ -28,6 +28,27 @@ test('le bouton des cartes utilise la collecte rapide sans ouvrir de modal', () 
   assert.doesNotMatch(html, /class="ca corpus-rec[^>]+onclick="openCorpusRecorder\('/);
 });
 
+test('la vue de collecte ne montre que les formes vertes enregistrables', () => {
+  const filterSource = sourceBetween('function filtered()', '// ── Ordre');
+  const openSource = sourceBetween('function corpusOpenDictionary()', 'function corpusDefaultConsentId()');
+  assert.match(filterSource, /S\.corpusOnly/);
+  assert.match(filterSource, /r\.filter\(isCorpusEligible\)/);
+  assert.match(openSource, /S\.corpusOnly=true/);
+  assert.match(openSource, /function corpusExitDictionary/);
+  assert.match(html, /id="corpusModeBanner" hidden/);
+});
+
+test('la session administrateur survit au rechargement sans conserver le mot de passe', () => {
+  const sessionSource = sourceBetween('const ADMIN_SESSION_KEY', 'function openAdmin()');
+  const loginSource = sourceBetween('async function checkPin()', 'async function changePin()');
+  const initSource = sourceBetween("document.addEventListener('DOMContentLoaded'", '// ===== TRADUCTEUR IA =====');
+  assert.match(sessionSource, /sessionStorage\.setItem/);
+  assert.match(sessionSource, /refresh_token/);
+  assert.doesNotMatch(sessionSource, /password/);
+  assert.match(loginSource, /activateAdminSession\(d\)/);
+  assert.ok(initSource.indexOf('restoreAdminSession()') < initSource.indexOf('loadWords()'));
+});
+
 test('le collecteur reste local et necrit jamais dans Supabase', () => {
   const source = sourceBetween('// Corpus vocal prive', '//  PRATIQUE VOCALE');
   assert.doesNotMatch(source, /fetch\s*\(|saveWords\s*\(|pushPending\s*\(|SB_URL|SB_AUTH/);

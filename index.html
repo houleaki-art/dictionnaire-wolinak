@@ -382,6 +382,12 @@ body.music-dock-open .toast{bottom:116px}
 .pending-banner{background:rgba(212,160,48,.1);border:1px solid rgba(212,160,48,.3);border-radius:9px;padding:10px 16px;margin-bottom:16px;font-size:.83rem;color:#a07820;display:none;align-items:center;gap:10px;cursor:pointer}
 .pending-banner.show{display:flex}
 .pending-banner:hover{background:rgba(212,160,48,.16)}
+.corpus-mode-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;padding:14px 16px;border:1px solid rgba(61,122,80,.35);border-left:4px solid var(--green);border-radius:0 10px 10px 0;background:rgba(61,122,80,.09);color:var(--text2)}
+.corpus-mode-banner[hidden]{display:none}
+.corpus-mode-banner strong{display:block;margin-bottom:3px;color:var(--green);font-size:.9rem}
+.corpus-mode-banner span{font-size:.76rem;line-height:1.45}
+.corpus-mode-banner button{flex:0 0 auto;min-height:40px;padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:700 .72rem Georgia,serif;cursor:pointer}
+.corpus-mode-banner button:hover{border-color:var(--green);color:var(--green)}
 /* import/export */
 .io-zone{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:var(--tr)}
 .io-zone:hover{border-color:var(--accent);background:rgba(184,92,42,.04)}
@@ -458,6 +464,8 @@ body.music-dock-open .toast{bottom:116px}
   .toolbar{margin-bottom:12px}
   .tb-l{gap:6px}
   .sortsel{font-size:.72rem;padding:5px 8px}
+  .corpus-mode-banner{align-items:stretch;flex-direction:column;gap:10px}
+  .corpus-mode-banner button{width:100%;min-height:44px}
   /* FAB */
   .fab{bottom:16px;right:16px;width:52px;height:52px;font-size:22px}
   /* Toast */
@@ -1057,6 +1065,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="pending-banner" id="pendingBanner" onclick="openAdmin()">
       <span>📬</span><span id="pendingMsg"></span><span style="margin-left:auto;font-weight:700">Voir →</span>
     </div>
+    <div class="corpus-mode-banner" id="corpusModeBanner" hidden>
+      <div>
+        <strong>🎙️ Collecte vocale des formes vertes</strong>
+        <span id="corpusModeCount">Toutes les fiches affichées peuvent être enregistrées directement.</span>
+      </div>
+      <button type="button" onclick="corpusExitDictionary()">Voir tous les mots</button>
+    </div>
     <button class="music-promo" type="button" onclick="setView('musique')">
       <span><strong>🎵 Chansons du projet</strong><small>Écouter les maquettes, voir les crédits et pratiquer avec les paroles.</small></span>
       <span class="music-promo-go">Écouter et pratiquer →</span>
@@ -1168,7 +1183,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="trad-wrap">
       <div class="trad-header">
         <h2>🪶 Traducteur de phrases</h2>
-        <p class="trad-sub">Les phrases complètes documentées sont prioritaires. L'outil peut aussi proposer certaines constructions prévues par une règle documentée : elles sont signalées en jaune, expliquées étape par étape et restent à faire valider. Tout le reste est montré comme fragments séparés, sans assemblage automatique.</p>
+        <p class="trad-sub">Les phrases complètes documentées sont prioritaires. Une construction contemporaine peut aussi être proposée lorsque la personne, le verbe, la classe grammaticale et l'ordre sont tous couverts par un patron documenté. Son indice structurel est expliqué; à partir de 80&nbsp;%, elle est utilisable comme création moderne, sans devenir une citation ancienne. Les simples fragments ne sont jamais assemblés.</p>
       </div>
       <div class="trad-direction-bar">
         <button class="trad-dir-btn on" id="btnFrToAln" onclick="setTradDir('fr-aln')">
@@ -2068,6 +2083,7 @@ const SB_HEADERS = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Ty
 // ── AUTH ADMIN — le mot de passe n'est JAMAIS dans le code ──
 // Connexion réelle via Supabase Auth; le token remplace la clé anon pour les écritures.
 const ADMIN_EMAIL = 'guillaumhoule2001@gmail.com';
+const ADMIN_SESSION_KEY = 'aln8ba_admin_session_v1';
 let SB_AUTH = null;
 function sbUseAuth(token){ SB_AUTH=token; SB_HEADERS['Authorization']='Bearer '+token; }
 
@@ -2436,7 +2452,7 @@ function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(
 const S = {
   view:'all', cat:'', letter:'', q:'', lang:'aln8ba',
   layout:'grid', expanded:new Set(), adminOpen:false,
-  fcWords:[], fcIdx:0,
+  fcWords:[], fcIdx:0, corpusOnly:false,
 };
 let WORDS = SEED.map(w=>{const f=FAMILY_MAP[w.id];return f?{...w,...f}:w;});
 let FAVS  = loadFavs();
@@ -2507,6 +2523,8 @@ function filtered(){
   let r = WORDS.filter(w => !enAttente(w));
   // Visiteurs publics : afficher uniquement les mots confirmés
   if(!adminUnlocked) r = r.filter(w => isConfirmed(w));
+  // La collecte vocale ne montre jamais une fiche sans statut vert actuel.
+  if(S.corpusOnly) r = adminUnlocked ? r.filter(isCorpusEligible) : [];
   const q = S.q.trim().toLowerCase();
   if(q) r = r.filter(w=>{
     if(S.lang==='aln8ba') return w.aln8ba.toLowerCase().includes(q);
@@ -2646,13 +2664,21 @@ function renderWords(){
   const c=document.getElementById('wordsContainer');
   const r=filtered();
   const sv=document.getElementById('sortSel').value;
-  const renderKey=[S.view,S.cat,S.letter,S.q,S.lang,S.layout,sv].join('\u0001');
+  const corpusMode=S.corpusOnly&&adminUnlocked;
+  const banner=document.getElementById('corpusModeBanner');
+  if(banner) banner.hidden=!corpusMode;
+  const corpusCount=document.getElementById('corpusModeCount');
+  if(corpusCount&&corpusMode) corpusCount.textContent=`${r.length} forme${r.length!==1?'s':''} verte${r.length!==1?'s':''} enregistrable${r.length!==1?'s':''}. La recherche reste limitée à cette liste sûre.`;
+  if(corpusMode) document.getElementById('viewTitle').textContent='Collecte vocale';
+  const renderKey=[S.view,S.cat,S.letter,S.q,S.lang,S.layout,sv,S.corpusOnly,adminUnlocked].join('\u0001');
   if(renderKey!==WORD_RENDER_KEY){
     WORD_RENDER_KEY=renderKey;
     WORD_RENDER_LIMIT=wordBatchSize();
   }
-  document.getElementById('resCount').textContent=r.length+' résultat'+(r.length!==1?'s':'');
-  if(!r.length){c.innerHTML=`<div class="nores"><div class="ni">🔍</div><h3>Aucun mot trouvé</h3><p>Essayez un autre terme ou effacez les filtres.</p></div>`;return;}
+  document.getElementById('resCount').textContent=corpusMode
+    ? r.length+' forme'+(r.length!==1?'s':'')+' verte'+(r.length!==1?'s':'')
+    : r.length+' résultat'+(r.length!==1?'s':'');
+  if(!r.length){c.innerHTML=`<div class="nores"><div class="ni">🔍</div><h3>${corpusMode?'Aucune forme verte trouvée':'Aucun mot trouvé'}</h3><p>Essayez un autre terme ou effacez les filtres.</p></div>`;return;}
   c.className=S.layout==='grid'?'wgrid':'wlist';
   const items=buildDisplayItems(r);
   const visibleItems=items.slice(0,WORD_RENDER_LIMIT);
@@ -2864,7 +2890,7 @@ function initMusicPlayers(){
 }
 function setView(v,keepGameContext=false){
   if(v==='jeux'&&!keepGameContext){ jCtx=null; jCat='toutes'; }
-  S.view=v; S.cat=''; S.letter='';
+  S.view=v; S.cat=''; S.letter=''; S.corpusOnly=false;
   document.body.classList.toggle('compact-mobile-header',!['all','favorites'].includes(v));
   const gv=['flashcard','jeux'].includes(v)?'apprendre':v;
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===gv));
@@ -2892,7 +2918,7 @@ function setView(v,keepGameContext=false){
   if(v==='archives') renderArchives();
 }
 function filterCat(cat){
-  S.cat=cat; S.letter=''; S.view='all';
+  S.cat=cat; S.letter=''; S.view='all'; S.corpusOnly=false;
   document.querySelectorAll('.sb[data-cat]').forEach(b=>b.classList.toggle('on',b.dataset.cat===cat));
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view==='all'));
   document.querySelectorAll('.ab').forEach(b=>b.classList.remove('on'));
@@ -3518,6 +3544,64 @@ function renderStats(){
 //  ADMIN PANEL
 // ══════════════════════════════════════════════════════════
 let adminUnlocked = false;
+function readAdminSession(){
+  try{return JSON.parse(sessionStorage.getItem(ADMIN_SESSION_KEY)||'null');}
+  catch(error){return null;}
+}
+function saveAdminSession(data){
+  const previous=readAdminSession()||{};
+  const suppliedExpiry=Number(data.expires_at)||0;
+  const expiresAt=suppliedExpiry
+    ? (suppliedExpiry<1e12?suppliedExpiry*1000:suppliedExpiry)
+    : Date.now()+(Number(data.expires_in)||3600)*1000;
+  try{
+    sessionStorage.setItem(ADMIN_SESSION_KEY,JSON.stringify({
+      access_token:data.access_token,
+      refresh_token:data.refresh_token||previous.refresh_token||'',
+      expires_at:expiresAt,
+    }));
+  }catch(error){}
+}
+function clearAdminSession(){
+  try{sessionStorage.removeItem(ADMIN_SESSION_KEY);}catch(error){}
+  SB_AUTH=null;
+  SB_HEADERS['Authorization']='Bearer '+SB_KEY;
+  adminUnlocked=false;
+}
+function activateAdminSession(data,persist=true){
+  if(!data?.access_token) return false;
+  sbUseAuth(data.access_token);
+  adminUnlocked=true;
+  if(persist) saveAdminSession(data);
+  const pinLock=document.getElementById('pinLock');
+  const adminContent=document.getElementById('adminContent');
+  const pinInput=document.getElementById('pinIn');
+  if(pinLock) pinLock.style.display='none';
+  if(adminContent) adminContent.style.display='block';
+  if(pinInput) pinInput.value='';
+  updateCounts();
+  if(['all','favorites'].includes(S.view)) renderWords();
+  if(S.view==='admin') renderAdmin();
+  return true;
+}
+async function restoreAdminSession(){
+  const saved=readAdminSession();
+  if(!saved?.access_token) return false;
+  if(Number(saved.expires_at)>Date.now()+30000) return activateAdminSession(saved,false);
+  if(!saved.refresh_token){clearAdminSession();return false;}
+  try{
+    const response=await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({refresh_token:saved.refresh_token}),
+    });
+    if(!response.ok) throw new Error('refresh');
+    return activateAdminSession(await response.json());
+  }catch(error){
+    clearAdminSession();
+    return false;
+  }
+}
 function openAdmin(){
   S.view='admin';
   document.getElementById('dictView').style.display='none';
@@ -3547,11 +3631,7 @@ async function checkPin(){
     });
     if(!r.ok) throw new Error('auth');
     const d=await r.json();
-    sbUseAuth(d.access_token);
-    adminUnlocked=true;
-    document.getElementById('pinLock').style.display='none';
-    document.getElementById('adminContent').style.display='block';
-    renderAdmin();
+    activateAdminSession(d);
   }catch(e){
     err.style.display='block';
     document.getElementById('pinIn').value='';
@@ -4106,8 +4186,16 @@ function corpusOpenDictionary(){
   S.q=''; S.cat=''; S.letter='';
   const input=document.getElementById('searchIn'); if(input) input.value='';
   setView('all');
-  setTimeout(()=>document.getElementById('wordsContainer')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
-  toast('🎙️ Le micro apparaît maintenant sur chaque forme verte.');
+  S.corpusOnly=true;
+  renderWords();
+  setTimeout(()=>document.getElementById('corpusModeBanner')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  toast(`🎙️ ${filtered().length} formes vertes prêtes à enregistrer.`);
+}
+function corpusExitDictionary(){
+  S.corpusOnly=false;
+  document.getElementById('viewTitle').textContent='Tous les mots';
+  renderWords();
+  toast('Retour au dictionnaire complet.');
 }
 function corpusDefaultConsentId(){
   const day=new Date().toISOString().slice(0,10).replace(/-/g,'');
@@ -5047,6 +5135,7 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 document.addEventListener('DOMContentLoaded', async ()=>{
   initEntryWarning();
   initMusicPlayers();
+  await restoreAdminSession();
   corpusRefreshRecordedIds();
   // Chargement depuis Supabase (source unique des mots depuis le 2026-08-18)
   (async()=>{
@@ -5228,6 +5317,19 @@ const DOCUMENTED_NEGATION_PARADIGMS=[
   {positive:"N'saosa",positiveFr:"je sors",negativeFr:"je ne sors pas",negative:"Nda n'saosawi",answer:1,rule:"Le radical finit par -a : Nda et le suffixe -wi.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée N'saosa."},
   {positive:"N'mikwaldam",positiveFr:"je me souviens",negativeFr:"je ne me souviens pas",negative:"Nda n'mikwaldamowen",answer:2,rule:"Le radical appartient au groupe documenté en -aldam- : Nda et le suffixe -owen.",source:"Manuel de l'étudiant 1 — règle de négation; base actuelle documentée N'mikwaldam."}
 ];
+
+// La confiance porte sur la structure entière, pas sur la proportion de mots
+// reconnus. Une construction moderne devient utilisable à partir de 80 % si
+// tous ses rôles grammaticaux sont couverts par un patron documenté.
+const TRANSLATION_CONFIDENCE={
+  exact:{score:100,label:'Phrase complète documentée',tone:'var(--green)'},
+  corrected:{score:90,label:'Phrase documentée reconnue après correction',tone:'var(--green)'},
+  rule:{score:92,label:'Construction contemporaine fondée sur un paradigme',tone:'var(--green)'},
+  objectClass:{score:85,label:'Construction contemporaine avec classe vérifiée',tone:'var(--green)'},
+  consultative:{score:72,label:'Structure historique ou consultative',tone:'var(--gold)'},
+  reformulation:{score:65,label:'Intention reformulée, phrase originale non couverte',tone:'var(--gold)'},
+  fragments:{score:35,label:'Analyse lexicale seulement',tone:'#c0392b'}
+};
 
 function traduire(){
   const input = document.getElementById('tradInput').value.trim();
@@ -6125,7 +6227,39 @@ function traduire(){
   const continuousProposal=previewCandidates.map(item=>item.out).join(' ').trim();
   const previewHasGaps=previewCandidates.some(item=>item.gap);
   const previewHasConsultative=previewCandidates.some(item=>item.consultative);
-  TRAD_LAST_OUTPUT = completeTranslation && !hasConsultative && !hasPhraseCorrection ? sortie : '';
+  const confidence=completeTranslation
+    ? hasPatternConsultative?TRANSLATION_CONFIDENCE.consultative
+      :hasPhraseCorrection?TRANSLATION_CONFIDENCE.corrected
+      :TRANSLATION_CONFIDENCE.exact
+    :completeRule?TRANSLATION_CONFIDENCE.rule
+    :passagesCoverAll&&hasClassConstruction&&!passageHasConsultative&&!previewHasConsultative
+      ?TRANSLATION_CONFIDENCE.objectClass
+    :intentAlternative?TRANSLATION_CONFIDENCE.reformulation
+    :hasConsultative||passageHasConsultative||previewHasConsultative
+      ?TRANSLATION_CONFIDENCE.consultative
+      :TRANSLATION_CONFIDENCE.fragments;
+  const confidenceUsable=confidence.score>=80&&!previewHasGaps&&!hasConsultative&&!hasPhraseCorrection;
+  const confidenceExplanation=confidence===TRANSLATION_CONFIDENCE.exact
+    ? 'Le sens et la structure correspondent à une phrase complète du corpus actif.'
+    :confidence===TRANSLATION_CONFIDENCE.corrected
+      ? 'La structure correspond à une phrase documentée, mais la correction proposée doit être relue.'
+      :confidence===TRANSLATION_CONFIDENCE.rule
+        ? 'La personne, le verbe et la négation suivent un paradigme fermé documenté; la phrase est moderne, non une citation ancienne.'
+        :confidence===TRANSLATION_CONFIDENCE.objectClass
+          ? 'Le sujet, l’action, la classe de l’objet, la forme VTA ou VTI et l’ordre verbe-objet sont tous vérifiés. La combinaison est moderne, non une citation ancienne.'
+          :confidence===TRANSLATION_CONFIDENCE.reformulation
+            ? 'Une phrase proche est documentée, mais elle ne transporte pas toutes les relations de la saisie originale.'
+            :confidence===TRANSLATION_CONFIDENCE.consultative
+              ? 'Au moins un lien repose sur une forme historique ou consultative dont l’usage actuel n’est pas confirmé.'
+              : 'Des mots sont reconnus, mais leurs relations grammaticales ne sont pas toutes établies.';
+  const confidenceStatus=confidence===TRANSLATION_CONFIDENCE.exact
+    ? 'ATTESTÉE DANS LE CORPUS ACTIF'
+    :confidenceUsable?'UTILISABLE · CONSTRUCTION CONTEMPORAINE'
+    :confidence.score>=80?'AU-DESSUS DE 80 % · RELECTURE REQUISE'
+    :'SOUS LE SEUIL DE 80 %';
+  TRAD_LAST_OUTPUT=completeTranslation&&confidenceUsable?sortie
+    :completeRule&&confidenceUsable?ruleOutput
+    :passagesCoverAll&&confidenceUsable?continuousProposal:'';
 
   const lnk = (txt,lang) => '<span style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Voir dans le dictionnaire" onclick="tradGoto(\''+escQ(txt)+'\',\''+lang+'\')">'+escH(txt)+'</span>';
 
@@ -6153,11 +6287,11 @@ function traduire(){
           + '<span style="color:var(--text2)">'+escH(p.source)+'</span> '
           + (p.correction?'<span style="font-size:.72rem;color:var(--gold)">('+escH(p.correction)+')</span> ':'')
           + '<span aria-hidden="true">→</span> <b style="color:var(--accent)">'+escH(p.output)+'</b>'
-          + (p.constructed?' <span style="font-size:.72rem;color:var(--gold)">⚙ construction à valider</span>'
+          + (p.constructed?' <span style="font-size:.72rem;color:var(--gold)">⚙ '+(confidence===TRANSLATION_CONFIDENCE.objectClass?'construction contemporaine':'construction à valider')+'</span>'
             :p.consultative?' <span style="font-size:.72rem;color:var(--gold)">📜 usage actuel à valider</span>':'')+'</div>').join('')
         + '</div><div class="aprnote w" style="margin-bottom:12px"><b>'+(passagesCoverAll?'Proposition complète construite':'Le texte complet reste partiel')+'</b>'
         + (passagesCoverAll
-          ? ' Toute la saisie a été couverte par une construction grammaticale affichée. Elle suit les paires et les classes documentées, mais doit encore être validée comme phrase complète.'
+          ? ' Toute la saisie a été couverte par une construction grammaticale. Au-dessus du seuil structurel de 80 %, elle peut servir comme formulation contemporaine clairement identifiée; elle ne devient pas pour autant une citation historique.'
           : ' Les passages attestés et les constructions signalées sont conservés séparément. Les autres éléments sont analysés sans fabriquer les liens grammaticaux manquants.')+'</div>'
       : '<div class="aprnote w" style="margin-bottom:12px"><b>Aucune traduction complète documentée</b>'
         + ' Les éléments ci-dessous sont repérés séparément. Ils ne forment pas une phrase en aln8ba et ne doivent pas être assemblés.</div>';
@@ -6166,6 +6300,7 @@ function traduire(){
     html='<div style="background:var(--surface2);border:2px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px">'
       + '<div style="color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px">'
       + (previewHasGaps?'Aperçu ordonné — passages non traduits conservés'
+        :confidence===TRANSLATION_CONFIDENCE.objectClass?'Texte traduit — construction contemporaine structurée'
         :previewHasConsultative&&previewCandidates.length===1?'Forme consultative reconnue — usage actuel à valider'
         :previewCandidates.length===1?'Correspondance lexicale reconnue — pas une phrase complète'
         :'Fragments reconnus — aucun assemblage grammatical')+'</div>'
@@ -6190,10 +6325,19 @@ function traduire(){
       + '</div>'+html;
   }
 
+  html='<div style="border:1px solid '+confidence.tone+';border-left:4px solid '+confidence.tone+';border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:14px;background:var(--surface2)">'
+    + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">'
+    + '<b style="color:'+confidence.tone+'">Confiance structurelle : '+confidence.score+' %</b>'
+    + '<span style="font-size:.74rem;font-weight:800;color:'+confidence.tone+'">'
+    + confidenceStatus+'</span></div>'
+    + '<div style="font-size:.78rem;color:var(--text2);margin-top:5px"><b>'+escH(confidence.label)+'.</b> '
+    + escH(confidenceExplanation)+'</div></div>'+html;
+
   // Détail morceau par morceau
   html += '<div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">'
     + (completeTranslation ? '🧩 Détail de la correspondance :'
       : completeRule ? '⚙ Détail de la construction grammaticale :'
+      : confidence===TRANSLATION_CONFIDENCE.objectClass ? '⚙ Détail de la structure complète :'
       : '🔎 Analyse des passages et fragments indépendants :') + '</div>';
   const ligne = (gauche, droite, extra) =>
     '<div class="trad-analysis-row">'
@@ -6253,7 +6397,7 @@ function traduire(){
           + '<br><b>Paire documentée :</b> '+escH(c.pair.a)+' (objet animé) · '+escH(c.pair.i)+' (objet inanimé)'
           + '<br><b>Résultat :</b> la classe '+escH(classe)+' exige ici la forme '+escH(c.form)+'.'
           + '<br><b>Proposition complète :</b> '+escH(proposition)
-          + '<br><span style="color:var(--gold)">La forme verbale, la classe du nom et l’ordre verbe–objet suivent les exemples du Manuel. Cette combinaison précise n’a pas été retrouvée mot pour mot : elle reste une construction à faire valider.</span>'
+          + '<br><span style="color:var(--gold)">La forme verbale, la classe du nom et l’ordre verbe–objet suivent les exemples du Manuel. Cette combinaison précise est une construction contemporaine structurée, pas une citation retrouvée mot pour mot.</span>'
           :'<br><span style="color:var(--gold)">Les deux formes existent. Sans objet dont la classe est documentée, le traducteur refuse d’en choisir une.</span>')
         + '<br><b>Source :</b> Manuel de l’étudiant 1, page 33.</div>';
     } else if(c.type==='connector'){
@@ -6295,7 +6439,7 @@ function traduire(){
         ? '⚙ Proposition construite à partir d’un paradigme documenté. Elle n’a pas été retrouvée mot pour mot et doit être validée avant un usage officiel; la copie reste désactivée.'
       : classChunks.length
         ? hasClassConstruction
-          ? '⚙ Proposition complète construite et affichée : le traducteur choisit VTA ou VTI seulement lorsque la fiche active de l’objet indique sa classe, puis explique chaque choix. La construction est signalée, doit être validée et ne peut pas être copiée automatiquement.'
+          ? '⚙ Proposition contemporaine complète : le traducteur choisit VTA ou VTI seulement lorsque la fiche active de l’objet indique sa classe, explique chaque choix et permet la copie parce que l’indice structurel atteint 85 %.'
           : '⚠ Le verbe exige un objet dont la classe grammaticale est connue. Aucune forme VTA ou VTI n’a été choisie; ajoute un objet documenté pour obtenir une proposition complète.'
       : intentAlternative
         ? '💡 Une reformulation complète documentée est proposée pour l’intention centrale. Les nuances non couvertes restent explicitement exclues; la copie de la saisie originale demeure désactivée.'
