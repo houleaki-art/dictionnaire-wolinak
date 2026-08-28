@@ -12,6 +12,15 @@ Aln8ba8dwaw8gan.
 Le journal ne reproduit aucune ancienne version du code ni aucune ancienne
 banque de données. Il conserve seulement les grandes étapes du travail.
 
+## 28 août 2026 — pratique exhaustive et progression des leçons
+
+- La section Pratique passe à cinq niveaux : Découverte, Fondations, Consolidation, Approfondissement et Autonomie.
+- Toutes les formes vertes praticables sont affectées à un seul niveau. Les séances présentent jusqu'à 50 formes distinctes et poursuivent une rotation persistante afin de parcourir toute la banque avant de revenir continuellement aux mêmes mots.
+- L'interface distingue maintenant les formes actives dans les exercices du total des fiches publiques, qui comprend aussi des fiches historiques, consultatives ou explicatives.
+- Les cinq niveaux proposent des tâches différentes : reconnaître un sens, identifier une forme, relier un domaine, produire une forme et travailler en autonomie. Les pluriels demeurent limités aux sept paires documentées approuvées.
+- Les 45 modules affichent désormais leur place dans le parcours, leur mission propre, un critère de réussite et la part de vocabulaire nouvelle ou reprise volontairement.
+- Le module sur les trois ordres a été réorganisé en trois contrastes successifs avant les approfondissements historiques et collectifs.
+
 ## 28 août 2026 — droits et confidentialité
 
 - L'identité publique du site présente désormais clairement Aln8ba8dwaw8gan comme le projet personnel indépendant de Guillaum Labrecque-Houle, Abénakis de Wôlinak, sans parler au nom d'une Nation, d'un conseil ou d'une autorité linguistique.

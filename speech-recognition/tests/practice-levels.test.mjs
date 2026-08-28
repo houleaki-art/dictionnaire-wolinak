@@ -16,7 +16,7 @@ function sourceBetween(start, end) {
 }
 
 function practiceApi() {
-  const source = sourceBetween('const PRACTICE_BEGINNER_WORDS', 'function initPratique');
+  const source = sourceBetween('const PRACTICE_LEVELS', 'function initPratique');
   return new Function(`
     const isExerciseSafe = word => word.safe !== false;
     const DOCUMENTED_PLURALS = {
@@ -30,7 +30,11 @@ function practiceApi() {
     const catLabel = category => ({ nature:'Nature / Ciel', temps:'Temps' }[category] || category || '');
     const shuffle = items => [...items];
     ${source}
-    return { PRACTICE_LEVELS, practicePoolForLevel, practiceHasAdvancedGrammar, practiceMeaningHint, practiceMeaningNote, practiceExpertQueue };
+    return {
+      PRACTICE_LEVELS, practiceConfirmedEntries, practicePoolsByLevel, practicePoolForLevel,
+      practiceLevelForWord, practiceHasAdvancedGrammar, practiceMeaningHint, practiceMeaningNote,
+      practiceRotationSlice, practiceExpertQueue, practiceDomainLabel
+    };
   `)();
 }
 
@@ -38,36 +42,53 @@ function word(id, aln8ba, fr, cat, grammar = '') {
   return { id, aln8ba, fr, cat, grammar, notes: '', safe: true };
 }
 
-test('le debutant est une banque fermee sans possessif ni pluriel', () => {
-  const { practicePoolForLevel } = practiceApi();
-  const words = [
-    word('kwai', 'Kwai', 'Bonjour', 'salut', 'Formule de conversation'),
-    word('nis', 'Nis', 'Deux', 'nombre', 'Nombre cardinal'),
-    word('wkeskwanal', 'Wkeskwanal', 'Ses dents', 'corps', 'Nom possédé — pluriel inanimé'),
-    word('color', 'Mkwigen', "Rouge (c'est rouge)", 'couleur', 'Adjectif — forme inanimée en -igen')
-  ];
-  assert.deepEqual(practicePoolForLevel(1, words).map(item => item.aln8ba), ['Kwai', 'Nis']);
+test('les cinq niveaux ont une seance cible de 50 questions', () => {
+  const { PRACTICE_LEVELS } = practiceApi();
+  assert.deepEqual(Object.values(PRACTICE_LEVELS).map(level => level.total), [50, 50, 50, 50, 50]);
+  assert.equal((html.match(/class="plvl lvl-/g) || []).length, 5);
 });
 
-test('l intermediaire garde le vocabulaire concret sans formes complexes', () => {
-  const { practicePoolForLevel } = practiceApi();
+test('chaque forme verte praticable appartient a un seul niveau', () => {
+  const { practiceConfirmedEntries, practicePoolsByLevel } = practiceApi();
   const words = [
-    word('color', 'Mkwigen', "Rouge (c'est rouge)", 'couleur', 'Adjectif — forme inanimée en -igen'),
+    word('hello', 'Kwai', 'Bonjour', 'salut', 'Formule de conversation'),
     word('dog', 'Almos', 'Un chien', 'animal', 'Nom animé'),
-    word('possessed', 'Wkeskwanal', 'Ses dents', 'corps', 'Nom possédé — pluriel inanimé'),
-    { ...word('unsafe', 'Awassos', 'Ours', 'animal', 'Nom animé'), safe: false }
+    word('village', 'Odana', 'Village', 'territoire', 'Nom de lieu'),
+    word('work', "Nd'aloka", 'Je travaille', 'action', 'Verbe VAI'),
+    word('possessed', 'Wkeskwanal', 'Ses dents', 'corps', 'Nom possédé — pluriel inanimé')
   ];
-  assert.deepEqual(practicePoolForLevel(2, words).map(item => item.aln8ba), ['Mkwigen', 'Almos']);
+  const confirmed = practiceConfirmedEntries(words);
+  const pools = practicePoolsByLevel(words);
+  const assigned = Object.values(pools).flat();
+  assert.equal(assigned.length, confirmed.length);
+  assert.equal(new Set(assigned.map(item => item.id)).size, confirmed.length);
+  assert.deepEqual(Object.keys(pools).map(level => pools[level].map(item => item.id)), [
+    ['hello'], ['dog'], ['village'], ['work'], ['possessed']
+  ]);
 });
 
 test('une meme forme aln8ba napparait jamais deux fois dans une seance', () => {
-  const { practicePoolForLevel } = practiceApi();
+  const { practiceConfirmedEntries } = practiceApi();
   const words = [
     word('dog-1', 'Almos', 'Un chien', 'animal', 'Nom animé'),
     word('dog-2', 'ALMOS', 'Chien', 'animal', 'Nom animé'),
     word('wolf', 'M8lsem', 'Loup', 'animal', 'Nom animé')
   ];
-  assert.deepEqual(practicePoolForLevel(2, words).map(item => item.id), ['dog-1', 'wolf']);
+  assert.deepEqual(practiceConfirmedEntries(words).map(item => item.id), ['dog-1', 'wolf']);
+});
+
+test('la rotation sert 50 formes differentes puis continue dans la banque', () => {
+  const { practiceRotationSlice } = practiceApi();
+  const pool = Array.from({ length: 120 }, (_, index) => word(
+    `word-${index}`, `Forme${String(index).padStart(3, '0')}`, `Sens ${index}`, 'action', 'Verbe'
+  ));
+  const first = practiceRotationSlice(pool, 50, 0);
+  const second = practiceRotationSlice(pool, 50, 50);
+  const third = practiceRotationSlice(pool, 50, 100);
+  assert.equal(first.length, 50);
+  assert.equal(new Set(first.map(item => item.id)).size, 50);
+  assert.equal(first.filter(item => second.includes(item)).length, 0);
+  assert.equal(new Set([...first, ...second, ...third].map(item => item.id)).size, 120);
 });
 
 test('les mots proches mois et jour recoivent un contexte distinct', () => {
@@ -80,44 +101,33 @@ test('les mots proches mois et jour recoivent un contexte distinct', () => {
   assert.match(practiceMeaningNote(day), /Pazgwen kizokw/);
 });
 
-test('les niveaux de choix et d ecriture utilisent une consigne francaise claire sans anglais parasite', () => {
+test('les niveaux proposent cinq taches progressives et distinctes', () => {
+  const level1 = sourceBetween('function renderLvl1', 'function checkLvl1QCM');
   const level2 = sourceBetween('function renderLvl2', 'function checkLvl2');
-  const level3 = sourceBetween('function renderLvl3', 'function checkLvl3Write');
+  const level3 = sourceBetween('function renderLvl3', 'function checkLvl3Domain');
+  const level4 = sourceBetween('function renderLvl4', 'function checkLvl4Write');
+  const level5 = sourceBetween('function renderLvl5', 'function checkLvl5A');
+  assert.match(level1, /Que signifie ce mot/);
   assert.match(level2, /Choisis la forme aln8ba/);
   assert.match(level2, /Quel mot signifie/);
-  assert.match(level2, /Indice de sens/);
-  assert.doesNotMatch(level2, /w\.en/);
-  assert.match(level3, /Écris la forme aln8ba/);
-  assert.match(level3, /Écris le mot qui signifie/);
-  assert.doesNotMatch(level3, /w\.en/);
+  assert.match(level3, /Relie la forme à son domaine/);
+  assert.match(level4, /Écris la forme qui signifie/);
+  assert.match(level5, /Autonomie/);
+  for (const source of [level1, level2, level3, level4, level5]) assert.doesNotMatch(source, /w\.en/);
 });
 
-test('l avance accepte une forme verbale complete mais pas une phrase', () => {
-  const { practicePoolForLevel } = practiceApi();
-  const words = [
-    word('work', "Nd'aloka", 'Je travaille', 'action', 'Verbe VAI — 1re pers.'),
-    word('phrase', 'Kwai mziwi', 'Bonjour tout le monde', 'salut', 'Expression')
-  ];
-  assert.deepEqual(practicePoolForLevel(3, words).map(item => item.aln8ba), ["Nd'aloka"]);
-});
-
-test('la charge augmente graduellement et les distracteurs restent dans la seance', () => {
-  const { PRACTICE_LEVELS } = practiceApi();
-  assert.deepEqual(
-    Object.values(PRACTICE_LEVELS).map(level => level.total),
-    [15, 30, 50, 60]
-  );
+test('les distracteurs restent dans la seance', () => {
   assert.match(html, /getBestDistractors\(w, 2, 'fr'\)/);
   const distractors = sourceBetween('function getBestDistractors', 'function shuffle');
   assert.match(distractors, /const base=PS\.queue\.filter/);
   assert.doesNotMatch(distractors, /:WORDS/);
 });
 
-test('une longue seance experte ne repete aucune entree et ne depend plus du nombre de pluriels', () => {
+test('une longue seance autonome ne repete aucune entree et conserve aussi les formes plurielles', () => {
   const { practiceExpertQueue } = practiceApi();
   const pool = [
     word('plural', 'Alakws', 'Étoile', 'nature', 'Nom animé'),
-    ...Array.from({ length: 70 }, (_, index) => word(
+    ...Array.from({ length: 48 }, (_, index) => word(
       `general-${index}`,
       `Forme${index}`,
       `Sens ${index}`,
@@ -125,20 +135,23 @@ test('une longue seance experte ne repete aucune entree et ne depend plus du nom
       'Adverbe'
     ))
   ];
-  const queue = practiceExpertQueue(pool, 60);
-  assert.equal(queue.length, 60);
-  assert.equal(new Set(queue.map(item => item.id)).size, 60);
+  const pluralForm = word('plural-form', 'Alakwsak', 'Étoiles', 'nature', 'Nom animé pluriel');
+  pool.push(pluralForm);
+  const queue = practiceExpertQueue(pool, 50);
+  assert.equal(queue.length, 50);
+  assert.equal(new Set(queue.map(item => item.id)).size, 50);
   assert.equal(queue.filter(item => item.practiceType === 'plural').length, 1);
+  assert.ok(queue.some(item => item.id === 'plural-form'));
   assert.ok(queue.some(item => item.practiceType === 'writeAln8ba'));
   assert.ok(queue.some(item => item.practiceType === 'translateFrench'));
 });
 
-test('l expert alterne les taches et reserve le pluriel aux paires documentees', () => {
+test('l autonomie alterne les taches et reserve le pluriel aux paires documentees', () => {
   const queue = sourceBetween('function practiceExpertQueue', 'function initPratique');
   assert.match(queue, /DOCUMENTED_PLURALS\[w\.aln8ba\]/);
   assert.match(queue, /'writeAln8ba'/);
   assert.match(queue, /'translateFrench'/);
   assert.match(queue, /practiceType:'plural'/);
-  const renderer = sourceBetween('function renderLvl4', 'function checkLvl4A');
+  const renderer = sourceBetween('function renderLvl5', 'function checkLvl5A');
   assert.match(renderer, /w\.practiceType/);
 });

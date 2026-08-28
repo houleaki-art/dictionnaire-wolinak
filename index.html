@@ -606,6 +606,8 @@ body.music-dock-open .toast{bottom:116px}
 .lvl-2 .plvl-badge{background:rgba(212,160,48,.15);color:var(--gold)}
 .lvl-3 .plvl-badge{background:rgba(184,92,42,.15);color:var(--accent)}
 .lvl-4 .plvl-badge{background:rgba(192,57,43,.15);color:var(--red)}
+.lvl-5 .plvl-badge{background:rgba(74,54,117,.14);color:#654a91}
+.prat-coverage{margin:-10px 0 18px;padding:10px 14px;border-left:3px solid var(--green);background:var(--surface2);color:var(--text2);font-size:.78rem;line-height:1.5}
 .prat-arena{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:32px;min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;position:relative}
 .prat-progress{width:100%;background:var(--surface2);border-radius:10px;height:6px;margin-bottom:8px;overflow:hidden}
 .prat-prog-bar{height:100%;border-radius:10px;background:var(--accent);transition:width .4s ease}
@@ -741,6 +743,11 @@ body.music-dock-open .toast{bottom:116px}
 .apr-origin-body{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--border);padding:12px 13px;background:var(--surface)}
 .apr-origin-body div{font-size:.74rem;line-height:1.5;color:var(--text2)}
 .apr-origin-body strong{display:block;color:var(--text);margin-bottom:3px}
+.apr-module-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}
+.apr-module-guide>div{min-width:0;padding:12px 13px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.apr-module-guide strong{display:block;margin-bottom:4px;color:var(--accent);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase}
+.apr-module-guide span{display:block;color:var(--text2);font-size:.76rem;line-height:1.5}
+.apr-module-bank{margin:0 0 14px;padding:9px 12px;border-radius:9px;background:rgba(61,122,80,.09);color:var(--text2);font-size:.75rem;line-height:1.5}
 .aprtool{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
 .aprtool input,.aprtool select{font-family:inherit;font-size:.95rem;padding:11px 14px;
   border:1.5px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);flex:1;min-width:150px}
@@ -1025,6 +1032,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .music-card,.aprcard{padding:14px}
   .apr-method{grid-template-columns:1fr 1fr}
   .apr-origin-body{grid-template-columns:1fr}
+  .apr-module-guide{grid-template-columns:1fr}
   .prat-levels{grid-template-columns:1fr}
   .trad-direction-bar{grid-template-columns:1fr}
   .jstage{padding:13px}
@@ -1201,7 +1209,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="prat-header">
       <div>
         <h2>🧩 Pratique · Aln8ba8dwaw8gan</h2>
-        <p>Complète les mots, retrouve les traductions, maîtrise la grammaire abenakise.</p>
+        <p>Avance du repérage vers l'autonomie avec les formes vertes actuelles du dictionnaire.</p>
       </div>
       <div class="prat-score" role="status" aria-live="polite" aria-atomic="true">
         <div class="pscore"><div class="pscore-num" id="pScoreOk">0 / 0</div><div class="pscore-lbl">Score</div></div>
@@ -1209,30 +1217,37 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <div class="pscore"><div class="pscore-num" id="pScoreStreak" style="color:#f0c060">🔥0</div><div class="pscore-lbl">Série</div></div>
       </div>
     </div>
+    <div class="prat-coverage" id="practiceCoverage" role="status" aria-live="polite">Chargement de la banque de pratique...</div>
     <div class="prat-levels" id="pratLevels">
       <button class="plvl lvl-1 on" type="button" data-lvl="1" onclick="selectLevel(1)">
         <div class="plvl-icon">🌱</div>
-        <div class="plvl-name">Débutant — Reconnaissance</div>
-        <div class="plvl-desc">Salutations et nombres de 1 à 10. Trois choix seulement, sans possessif ni pluriel.</div>
-        <span class="plvl-badge">Niveau 1 · jusqu'à 15 questions</span>
+        <div class="plvl-name">Découverte — reconnaître</div>
+        <div class="plvl-desc">Formes courtes et concrètes : retrouve simplement leur sens parmi trois choix.</div>
+        <span class="plvl-badge">Calcul de la banque...</span>
       </button>
       <button class="plvl lvl-2" type="button" data-lvl="2" onclick="selectLevel(2)">
         <div class="plvl-icon">🌿</div>
-        <div class="plvl-name">Intermédiaire — Identification</div>
-        <div class="plvl-desc">Vocabulaire concret déjà rencontré : couleurs, animaux, plantes, saisons et territoire.</div>
-        <span class="plvl-badge">Niveau 2 · jusqu'à 30 questions</span>
+        <div class="plvl-name">Fondations — identifier</div>
+        <div class="plvl-desc">Pars du sens français et sélectionne la forme aln8ba exacte parmi quatre choix.</div>
+        <span class="plvl-badge">Calcul de la banque...</span>
       </button>
       <button class="plvl lvl-3" type="button" data-lvl="3" onclick="selectLevel(3)">
-        <div class="plvl-icon">🦌</div>
-        <div class="plvl-name">Avancé — Production</div>
-        <div class="plvl-desc">Actions, temps, territoire et grammaire : produis une forme complète de mémoire.</div>
-        <span class="plvl-badge">Niveau 3 · jusqu'à 50 questions</span>
+        <div class="plvl-icon">🧭</div>
+        <div class="plvl-name">Consolidation — relier</div>
+        <div class="plvl-desc">Relie chaque forme à son domaine de sens pour organiser le vocabulaire en contexte.</div>
+        <span class="plvl-badge">Calcul de la banque...</span>
       </button>
       <button class="plvl lvl-4" type="button" data-lvl="4" onclick="selectLevel(4)">
         <div class="plvl-icon">🪶</div>
-        <div class="plvl-name">Expert — Maîtrise totale</div>
-        <div class="plvl-desc">Trois tâches entremêlées : écrire, traduire et rappeler uniquement un pluriel documenté.</div>
-        <span class="plvl-badge">Niveau 4 · jusqu'à 60 questions</span>
+        <div class="plvl-name">Approfondissement — produire</div>
+        <div class="plvl-desc">Écris la forme aln8ba complète à partir de son sens et d'un contexte grammatical.</div>
+        <span class="plvl-badge">Calcul de la banque...</span>
+      </button>
+      <button class="plvl lvl-5" type="button" data-lvl="5" onclick="selectLevel(5)">
+        <div class="plvl-icon">🔥</div>
+        <div class="plvl-name">Autonomie — maîtriser</div>
+        <div class="plvl-desc">Écriture, traduction et seulement les sept paires de pluriels réellement documentées.</div>
+        <span class="plvl-badge">Calcul de la banque...</span>
       </button>
     </div>
     <div class="prat-arena" id="pratArena">
@@ -3327,21 +3342,25 @@ function fcNext(){ S.fcIdx++; if(S.fcIdx>=S.fcWords.length){S.fcWords.sort(()=>M
 //  PRATIQUE GRAMMAIRE
 // ══════════════════════════════════════════════════════════
 const PS = { level:1, queue:[], idx:0, ok:0, ko:0, streak:0, bestStreak:0, answered:false };
-const PRACTICE_BEGINNER_WORDS=new Set([
-  '8h8','adio','kwai','nda','wliwni','païa!',
-  'pazokw','nis','nas','iaw','n8lan','ngwed8s','t8baw8s','ns8zek','noliwi','mdala'
-]);
-const PRACTICE_INTERMEDIATE_WORDS=new Set([
-  'mkwigen','w8bigen','mkazawigen','wl8wigen','wiz8wigen','askaskwigen',
-  'aw8sis','almos','m8lsem','awassos','tolba','sips','namas','agaskw',
-  'aki','skweda','kizos','kizokw','niben','sigwan','koa','mskikwimen','sata','abazi','aples'
-]);
 const PRACTICE_LEVELS={
-  1:{total:15},
-  2:{total:30},
-  3:{total:50,cats:new Set(['action','temps','territoire','toponymie','grammaire']),maxLetters:20,maxFrench:50},
-  4:{total:60}
+  1:{name:'Découverte',total:50},
+  2:{name:'Fondations',total:50},
+  3:{name:'Consolidation',total:50},
+  4:{name:'Approfondissement',total:50},
+  5:{name:'Autonomie',total:50}
 };
+const PRACTICE_DISCOVERY_CATEGORIES=new Set(['salut','nombre','couleur']);
+const PRACTICE_FOUNDATION_CATEGORIES=new Set(['famille','corps','animal','plante','nature']);
+const PRACTICE_CONTEXT_CATEGORIES=new Set(['territoire','toponymie','temps','description']);
+const PRACTICE_DOMAINS=[
+  {label:'Conversation et relations',cats:new Set(['salut','famille'])},
+  {label:'Corps et description',cats:new Set(['corps','description','couleur'])},
+  {label:'Animaux, plantes et nourriture',cats:new Set(['animal','plante'])},
+  {label:'Territoire, lieux et nature',cats:new Set(['territoire','toponymie','nature'])},
+  {label:'Temps et nombres',cats:new Set(['temps','nombre'])},
+  {label:'Actions et valeurs',cats:new Set(['action'])},
+  {label:'Grammaire et formes de langue',cats:new Set(['grammaire'])}
+];
 
 function practiceFrenchLabel(w){
   return ((w&&w.fr)||'').split(/\s*(?:[·;]|[—–])\s*|\s*\(/)[0].trim();
@@ -3351,6 +3370,10 @@ function practiceLetterCount(w){
     .replace(/[^a-z8]/gi,'').length;
 }
 function practiceWordKey(w){ return ((w&&w.aln8ba)||'').trim().toLowerCase(); }
+function practiceTokenCount(w){
+  const tokens=((w&&w.aln8ba)||'').trim().split(/\s+/).filter(Boolean);
+  return tokens.length;
+}
 const PRACTICE_MEANING_GUIDES={
   kizos:'une division du temps : le mois, et non le jour',
   kizokw:'une division du temps : le jour, et non le mois'
@@ -3370,7 +3393,7 @@ function practiceMeaningNote(w){
 }
 function practiceIsSingleEntry(w){
   const word=((w&&w.aln8ba)||'').trim();
-  return !!word && !/\s/.test(word) && !/[()[\]{}]/.test(word) && !word.startsWith('-')
+  return !!word && !/[()[\]{}\n\r]/.test(word) && !word.startsWith('-')
     && !/^(RÈGLE|SUFFIXE|RACINE|PRONONCIATION|HISTOIRE|DIVERGENCE)/i.test(word);
 }
 function practiceHasAdvancedGrammar(w){
@@ -3388,44 +3411,83 @@ function practiceConfirmedEntries(words){
     return true;
   });
 }
-function practicePoolForLevel(level,words){
-  const confirmed=practiceConfirmedEntries(words);
-  if(level===1) return confirmed.filter(w=>PRACTICE_BEGINNER_WORDS.has(practiceWordKey(w))
-    && !practiceHasAdvancedGrammar(w));
-  if(level===2) return confirmed.filter(w=>PRACTICE_INTERMEDIATE_WORDS.has(practiceWordKey(w))
-    && !practiceHasAdvancedGrammar(w));
-  if(level===3){
-    const spec=PRACTICE_LEVELS[3];
-    return confirmed.filter(w=>spec.cats.has(w.cat) && practiceLetterCount(w)<=spec.maxLetters
-      && practiceFrenchLabel(w).length<=spec.maxFrench);
-  }
-  return confirmed;
+function practiceHasDeepGrammar(w){
+  const grammar=(w&&w.grammar)||'', notes=(w&&w.notes)||'';
+  return /interrog|impératif|conjonctif|subjonctif|obviatif|locatif|posséd|pluriel|passé|futur|conditionnel|ordre dépendant|préverbe/i
+    .test(grammar+' '+notes);
 }
-function practiceBeginnerQueue(pool,total){
-  const greetings=shuffle(pool.filter(w=>w.cat==='salut')).slice(0,4);
-  const numbers=shuffle(pool.filter(w=>w.cat==='nombre')).slice(0,Math.max(0,total-greetings.length));
-  return [...greetings,...numbers].slice(0,total);
+function practiceLevelForWord(w){
+  const letters=practiceLetterCount(w), tokens=practiceTokenCount(w), cat=w.cat||'';
+  const advanced=practiceHasAdvancedGrammar(w), deepGrammar=practiceHasDeepGrammar(w);
+  if(tokens===1 && letters<=14 && !advanced && PRACTICE_DISCOVERY_CATEGORIES.has(cat)) return 1;
+  if(tokens===1 && letters<=3 && !advanced && PRACTICE_FOUNDATION_CATEGORIES.has(cat)) return 1;
+  if(tokens===1 && letters<=18 && !advanced && PRACTICE_FOUNDATION_CATEGORIES.has(cat)) return 2;
+  if(tokens<=2 && letters<=26 && !advanced && PRACTICE_CONTEXT_CATEGORIES.has(cat)) return 3;
+  if(tokens<=2 && letters<=11 && !deepGrammar) return 4;
+  return 5;
+}
+function practicePoolsByLevel(words){
+  const pools={1:[],2:[],3:[],4:[],5:[]};
+  practiceConfirmedEntries(words).forEach(w=>pools[practiceLevelForWord(w)].push(w));
+  return pools;
+}
+function practicePoolForLevel(level,words){
+  return practicePoolsByLevel(words)[level]||[];
+}
+function practiceRotationSlice(pool,total,offset=0){
+  if(!pool.length) return [];
+  const ordered=[...pool].sort((a,b)=>practiceWordKey(a).localeCompare(practiceWordKey(b),'fr'));
+  const start=((Number(offset)||0)%ordered.length+ordered.length)%ordered.length;
+  const count=Math.min(total,ordered.length);
+  return Array.from({length:count},(_,index)=>ordered[(start+index)%ordered.length]);
+}
+function practiceRotatingQueue(level,pool,total){
+  const storageKey=`practice.rotation.v2.${level}.${pool.length}`;
+  let offset=0;
+  try{ offset=Number(localStorage.getItem(storageKey))||0; }catch(_e){}
+  const selected=practiceRotationSlice(pool,total,offset);
+  try{ localStorage.setItem(storageKey,String((offset+selected.length)%pool.length)); }catch(_e){}
+  return shuffle(selected);
 }
 function practiceExpertQueue(pool,total){
   const plurals=shuffle(pool.filter(w=>DOCUMENTED_PLURALS[w.aln8ba]));
-  const general=shuffle(pool.filter(w=>!DOCUMENTED_PLURAL_FORMS.has(practiceWordKey(w))));
   const pluralCount=Math.min(plurals.length,Math.floor(total/5));
   const pluralTasks=plurals.slice(0,pluralCount).map(w=>({...w,practiceType:'plural'}));
-  const generalTasks=general.slice(0,Math.max(0,total-pluralTasks.length)).map((w,index)=>({
+  const pluralKeys=new Set(pluralTasks.map(practiceWordKey));
+  const generalTasks=shuffle(pool.filter(w=>!pluralKeys.has(practiceWordKey(w)))).map((w,index)=>({
     ...w,
     practiceType:index%2===0?'writeAln8ba':'translateFrench'
   }));
-  return shuffle([...generalTasks,...pluralTasks]).slice(0,total);
+  return shuffle([...generalTasks,...pluralTasks]).slice(0,Math.min(total,pool.length));
 }
 
-function updatePracticeLevelBadge(level,count){
-  const badge=document.querySelector(`.plvl[data-lvl="${level}"] .plvl-badge`);
-  if(badge) badge.textContent=`Niveau ${level} · ${count} questions sans répétition`;
+function practiceDomainLabel(w){
+  return (PRACTICE_DOMAINS.find(domain=>domain.cats.has(w.cat))||PRACTICE_DOMAINS[6]).label;
+}
+function practiceDomainChoices(w){
+  const correct=practiceDomainLabel(w);
+  const others=shuffle(PRACTICE_DOMAINS.map(domain=>domain.label).filter(label=>label!==correct)).slice(0,3);
+  return shuffle([correct,...others]);
+}
+function refreshPracticeCoverage(activeLevel=0,sessionCount=0){
+  const pools=practicePoolsByLevel(WORDS);
+  const total=Object.values(pools).reduce((sum,pool)=>sum+pool.length,0);
+  const publicTotal=WORDS.filter(w=>w.aln8ba!=='__version__'&&!enAttente(w)&&isConfirmed(w)).length;
+  Object.keys(PRACTICE_LEVELS).forEach(key=>{
+    const level=Number(key), count=pools[level].length;
+    const badge=document.querySelector(`.plvl[data-lvl="${level}"] .plvl-badge`);
+    if(!badge) return;
+    const current=level===activeLevel&&sessionCount?sessionCount:Math.min(count,PRACTICE_LEVELS[level].total);
+    badge.textContent=`${count} formes · séance de ${current}`;
+  });
+  const coverage=document.getElementById('practiceCoverage');
+  if(coverage) coverage.innerHTML=`<strong>${total} formes vertes praticables réparties sans doublon</strong> dans cinq niveaux. Chaque séance continue la rotation et présente jusqu'à 50 formes différentes. Le total public de ${publicTotal} fiches comprend aussi ${Math.max(0,publicTotal-total)} fiches historiques, consultatives, explicatives ou réservées à une leçon; elles ne deviennent pas automatiquement des réponses actives.`;
+  return {pools,total,publicTotal};
 }
 
 function initPratique(){
   updatePratScoreDisplay();
-  // Si un niveau est déjà sélectionné, relancer
+  refreshPracticeCoverage();
   if(PS.queue.length===0) buildQueue();
 }
 
@@ -3443,14 +3505,13 @@ function buildQueue(){
     toast('Pas assez de mots verts dans la banque pédagogique de ce niveau.');
     return;
   }
-  if(PS.level===1) PS.queue=practiceBeginnerQueue(pool,spec.total);
-  else if(PS.level===4) PS.queue=practiceExpertQueue(pool,spec.total);
-  else PS.queue=shuffle([...pool]).slice(0,Math.min(pool.length,spec.total));
+  const rotating=practiceRotatingQueue(PS.level,pool,spec.total);
+  PS.queue=PS.level===5?practiceExpertQueue(rotating,rotating.length):rotating;
   if(PS.queue.length<4){
     toast('Ce niveau attend encore assez de formes vertes documentées.');
     return;
   }
-  updatePracticeLevelBadge(PS.level,PS.queue.length);
+  refreshPracticeCoverage(PS.level,PS.queue.length);
   PS.idx = 0; PS.ok = 0; PS.ko = 0; PS.streak = 0; PS.bestStreak = 0; PS.answered = false;
   updatePratScoreDisplay();
   showQuestion();
@@ -3489,6 +3550,7 @@ function showQuestion(){
   else if(PS.level===2) renderLvl2(arena, w, PS.idx, total, pct);
   else if(PS.level===3) renderLvl3(arena, w, PS.idx, total, pct);
   else if(PS.level===4) renderLvl4(arena, w, PS.idx, total, pct);
+  else if(PS.level===5) renderLvl5(arena, w, PS.idx, total, pct);
 }
 
 function progressBar(pct){
@@ -3583,7 +3645,7 @@ function renderLvl1(arena, w, idx, total, pct){
   arena.innerHTML = `
     ${progressBar(pct)}
     <div class="prat-question-lbl">Question ${idx+1} / ${total} · Que signifie ce mot ?</div>
-    <div class="prat-hint">Débutant · ${w.cat==='nombre'?'nombre de 1 à 10':'salutation courante'} · choisis simplement le sens</div>
+    <div class="prat-hint">Découverte · ${catLabel(w.cat)} · choisis simplement le sens</div>
     <div class="prat-word" style="font-size:2rem;font-weight:700;color:var(--accent);font-family:Georgia,serif">${w.aln8ba}</div>
     ${w.phonetic?`<div style="font-size:.8rem;color:var(--text3);margin-top:-8px">[${w.phonetic}]</div>`:''}
     <div class="prat-choices">${choiceHTML}</div>
@@ -3644,40 +3706,71 @@ function checkLvl2(chosenId, correctId){
   finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
-// ── NIVEAU 3 : Tu vois le sens précis → écris la forme aln8ba ──
+// ── NIVEAU 3 : Relier la forme à son domaine de sens ──
 function renderLvl3(arena, w, idx, total, pct){
+  const correct=practiceDomainLabel(w);
+  const choices=practiceDomainChoices(w);
+  const choiceHTML=choices.map((choice,index)=>`
+    <button class="prat-choice" id="pdom-${index}" onclick="checkLvl3Domain('${escQ(choice)}','${escQ(correct)}',${index})">${choice}</button>
+  `).join('');
+  arena.innerHTML = `
+    ${progressBar(pct)}
+    <div class="prat-question-lbl">Question ${idx+1} / ${total} · Relie la forme à son domaine</div>
+    <div class="prat-word" style="font-size:2rem;color:var(--accent);font-family:Georgia,serif">${w.aln8ba}</div>
+    <div class="prat-hint">${practiceFrenchLabel(w)} · choisis la famille de sens utilisée dans le dictionnaire</div>
+    <div class="prat-choices">${choiceHTML}</div>
+    <div class="prat-feedback" id="pratFb"></div>
+    <div class="prat-nav" id="pratNav" style="display:none">
+      <button class="btn btn-primary" onclick="nextQ()">Suivant →</button>
+    </div>`;
+}
+
+function checkLvl3Domain(chosen,correct,chosenIndex){
+  if(PS.answered) return;
+  PS.answered=true;
+  const isCorrect=chosen===correct;
+  document.querySelectorAll('.prat-choice').forEach((button,index)=>{
+    button.disabled=true;
+    if(button.textContent.trim()===correct) button.classList.add('correct');
+    else if(index===chosenIndex&&!isCorrect) button.classList.add('wrong');
+  });
+  const w=PS.queue[PS.idx];
+  const fb=document.getElementById('pratFb');
+  if(fb) fb.outerHTML=richFeedback(w,isCorrect);
+  recordAnswer(isCorrect,correct);
+  document.getElementById('pratNav').style.display='flex';
+  finishAnsweredStep(isCorrect,'#pratArena',nextQ);
+}
+
+// ── NIVEAU 4 : Produire la forme complète avec un indice de contexte ──
+function renderLvl4(arena, w, idx, total, pct){
   arena.innerHTML = `
     ${progressBar(pct)}
     <div class="prat-question-lbl">Question ${idx+1} / ${total} · Écris la forme aln8ba</div>
-    <div class="prat-word"><span class="prat-word-question">Écris le mot qui signifie</span>« ${practiceFrenchLabel(w)} »</div>
-    ${practiceMeaningHint(w)?`<div class="prat-hint">Indice de sens : ${practiceMeaningHint(w)}</div>`:''}
+    <div class="prat-word"><span class="prat-word-question">Écris la forme qui signifie</span>« ${practiceFrenchLabel(w)} »</div>
+    ${practiceMeaningHint(w)?`<div class="prat-hint">Contexte documenté : ${practiceMeaningHint(w)}</div>`:''}
     <div class="prat-input-wrap">
       <input class="prat-input" id="pratIn" placeholder="Forme aln8ba…" autocomplete="off" spellcheck="false">
     </div>
     <div class="prat-feedback" id="pratFb"></div>
     <div class="prat-nav">
-      <button class="btn btn-primary" onclick="checkLvl3Write('${escQ(w.aln8ba)}','${escQ(w.id)}')">Vérifier</button>
+      <button class="btn btn-primary" onclick="checkLvl4Write('${escQ(w.aln8ba)}')">Vérifier</button>
       <button class="btn btn-secondary" onclick="skipQ()">Passer →</button>
     </div>`;
-  const inp = document.getElementById('pratIn');
-  if(inp){ inp.focus(); inp.addEventListener('focus', mobileScrollToNav); inp.addEventListener('keydown', e=>{ if(e.key==='Enter') checkLvl3Write(w.aln8ba, w.id); }); }
+  const inp=document.getElementById('pratIn');
+  if(inp){inp.focus();inp.addEventListener('focus',mobileScrollToNav);inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl4Write(w.aln8ba);});}
 }
 
-function checkLvl3Write(answer, wid){
+function checkLvl4Write(answer){
   if(PS.answered) return;
-  const inp = document.getElementById('pratIn');
-  if(!inp) return;
-  const val = inp.value.trim();
-  const correct = val.toLowerCase() === answer.toLowerCase();
-  const w = PS.queue[PS.idx];
-  inp.disabled = true;
-  inp.classList.add(correct?'correct':'wrong');
-  PS.answered = true;
-  recordAnswer(correct, answer);
-  const fb = document.getElementById('pratFb');
-  if(fb) fb.outerHTML = richFeedback(w, correct);
-  const nav = document.querySelector('.prat-nav');
-  if(nav){ const v=nav.querySelector('.btn-primary'); if(v){v.textContent='Suivant →';v.onclick=nextQ;} }
+  const inp=document.getElementById('pratIn'); if(!inp) return;
+  const answerKey=value=>(value||'').trim().toLowerCase().replace(/[’']/g,"'").replace(/\s+/g,' ');
+  const correct=answerKey(inp.value)===answerKey(answer);
+  const w=PS.queue[PS.idx];
+  inp.disabled=true; inp.classList.add(correct?'correct':'wrong');
+  PS.answered=true; recordAnswer(correct,answer);
+  const fb=document.getElementById('pratFb'); if(fb) fb.outerHTML=richFeedback(w,correct);
+  const nav=document.querySelector('.prat-nav'); if(nav){const button=nav.querySelector('.btn-primary');if(button){button.textContent='Suivant →';button.onclick=nextQ;}}
   finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
@@ -3697,15 +3790,15 @@ function resolvePlural(w){
   return {form,type:form.endsWith('al')?'inanimé (-al)':'animé (-ak)'};
 }
 
-// ── NIVEAU 4 : EXPERT — questions mixtes, aucune aide ──
+// ── NIVEAU 5 : AUTONOMIE — questions mixtes, aucune aide ──
 // Types alternés : A) écrire le mot abenakis (sans indice) · B) écrire la traduction · C) pluriel
-function renderLvl4(arena, w, idx, total, pct){
+function renderLvl5(arena, w, idx, total, pct){
   const qtype=w.practiceType||['writeAln8ba','translateFrench','plural'][idx%3];
   if(qtype==='writeAln8ba'){
     // Type A : traduction → abenakis, AUCUN indice
     arena.innerHTML = `
       ${progressBar(pct)}
-      <div class="prat-question-lbl">Question ${idx+1} / ${total} · Expert — écris le mot abenakis</div>
+      <div class="prat-question-lbl">Question ${idx+1} / ${total} · Autonomie — écris la forme aln8ba</div>
       <div class="prat-word" style="font-size:1.5rem">${w.fr}</div>
       <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Aucun indice — de mémoire !</div>
       <div class="prat-input-wrap">
@@ -3713,16 +3806,16 @@ function renderLvl4(arena, w, idx, total, pct){
       </div>
       <div class="prat-feedback" id="pratFb"></div>
       <div class="prat-nav">
-        <button class="btn btn-primary" onclick="checkLvl4A('${escQ(w.aln8ba)}')">Vérifier</button>
+        <button class="btn btn-primary" onclick="checkLvl5A('${escQ(w.aln8ba)}')">Vérifier</button>
         <button class="btn btn-secondary" onclick="skipQ()">Passer →</button>
       </div>`;
     const inp=document.getElementById('pratIn');
-    if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl4A(w.aln8ba);});}
+    if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl5A(w.aln8ba);});}
   } else if(qtype==='translateFrench'){
     // Type B : mot abenakis → traduction française, écris de mémoire
     arena.innerHTML = `
       ${progressBar(pct)}
-      <div class="prat-question-lbl">Question ${idx+1} / ${total} · Expert — donne la traduction</div>
+      <div class="prat-question-lbl">Question ${idx+1} / ${total} · Autonomie — donne la traduction</div>
       <div class="prat-word" style="font-size:2rem;color:var(--accent);font-family:Georgia,serif">${w.aln8ba}</div>
       <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Traduis ce mot en français</div>
       <div class="prat-input-wrap">
@@ -3730,17 +3823,17 @@ function renderLvl4(arena, w, idx, total, pct){
       </div>
       <div class="prat-feedback" id="pratFb"></div>
       <div class="prat-nav">
-        <button class="btn btn-primary" onclick="checkLvl4B('${escQ(w.fr)}','${escQ(w.aln8ba)}')">Vérifier</button>
+        <button class="btn btn-primary" onclick="checkLvl5B('${escQ(w.fr)}','${escQ(w.aln8ba)}')">Vérifier</button>
         <button class="btn btn-secondary" onclick="skipQ()">Passer →</button>
       </div>`;
     const inp=document.getElementById('pratIn');
-    if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl4B(w.fr,w.aln8ba);});}
+    if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl5B(w.fr,w.aln8ba);});}
   } else {
     // Type C : donne le pluriel
     const {form:pluralForm, type:pluralType} = resolvePlural(w);
     arena.innerHTML = `
       ${progressBar(pct)}
-      <div class="prat-question-lbl">Question ${idx+1} / ${total} · Expert — donne le pluriel</div>
+      <div class="prat-question-lbl">Question ${idx+1} / ${total} · Autonomie — donne le pluriel</div>
       <div class="prat-word" style="font-size:2rem;color:var(--accent);font-family:Georgia,serif">${w.aln8ba}</div>
       <div class="prat-hint">${w.fr} · <em>paire documentée à rappeler de mémoire</em></div>
       <div class="prat-input-wrap">
@@ -3748,15 +3841,15 @@ function renderLvl4(arena, w, idx, total, pct){
       </div>
       <div class="prat-feedback" id="pratFb"></div>
       <div class="prat-nav">
-        <button class="btn btn-primary" onclick="checkLvl4C('${escQ(pluralForm)}','${escQ(pluralType)}')">Vérifier</button>
+        <button class="btn btn-primary" onclick="checkLvl5C('${escQ(pluralForm)}','${escQ(pluralType)}')">Vérifier</button>
         <button class="btn btn-secondary" onclick="skipQ()">Passer →</button>
       </div>`;
     const inp=document.getElementById('pratIn');
-    if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl4C(pluralForm,pluralType);});}
+    if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkLvl5C(pluralForm,pluralType);});}
   }
 }
 
-function checkLvl4A(answer){
+function checkLvl5A(answer){
   if(PS.answered) return;
   const inp=document.getElementById('pratIn'); if(!inp) return;
   const val=inp.value.trim();
@@ -3786,7 +3879,7 @@ function matchesFrenchExerciseAnswer(value,answer){
     (withoutFrenchArticle(typed) && withoutFrenchArticle(typed)===withoutFrenchArticle(variant)));
 }
 
-function checkLvl4B(frAnswer, aln8baWord){
+function checkLvl5B(frAnswer, aln8baWord){
   if(PS.answered) return;
   const inp=document.getElementById('pratIn'); if(!inp) return;
   const correct=matchesFrenchExerciseAnswer(inp.value,frAnswer);
@@ -3798,7 +3891,7 @@ function checkLvl4B(frAnswer, aln8baWord){
   finishAnsweredStep(correct,'#pratArena',nextQ);
 }
 
-function checkLvl4C(answer, type){
+function checkLvl5C(answer, type){
   if(PS.answered) return;
   const inp=document.getElementById('pratIn'); if(!inp) return;
   const val=inp.value.trim();
@@ -5559,7 +5652,11 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   (async()=>{
     try{
       const w = await loadWords();
-      if(w && w.length){ WORDS = w; updateCounts(); renderWords(); if(adminUnlocked) renderAdmin(); }
+      if(w && w.length){
+        WORDS = w; updateCounts(); renderWords(); if(adminUnlocked) renderAdmin();
+        refreshPracticeCoverage();
+        if(S.view==='pratique'){ PS.queue=[]; buildQueue(); }
+      }
     }catch(e){ console.warn('Supabase init error:', e); }
   })();
   // Search
@@ -7816,23 +7913,34 @@ const APR_MODULE_LIBRARY=[
    identité ou description. Ensuite seulement, vérifie la classe du sujet et la forme documentée. Le
    tableau historique explique le système; il n'autorise jamais à inventer une forme actuelle.`},
  {t:"Les trois ordres",d:"Distinguer affirmation indépendante, impératif et interrogation conjonctive.",ex:'ordre',use:'ordre',lec:`
+  <p>Ne mémorise pas trois étiquettes en même temps. Commence par reconnaître la fonction de la phrase,
+   puis regarde seulement la forme complète que la source donne pour cette fonction.</p>
+  <div class="apr-method" aria-label="Trois étapes pour distinguer les ordres">
+   <div class="apr-method-step"><strong>1 · Dire un fait</strong><span><span class="al8">N'michi</span> présente l'action dans une phrase ordinaire : ordre indépendant.</span></div>
+   <div class="apr-method-step"><strong>2 · Donner une consigne</strong><span><span class="al8">Michi!</span> donne ici un ordre direct : impératif.</span></div>
+   <div class="apr-method-step"><strong>3 · Poser cette question</strong><span><span class="al8">Kagwi k'michi?</span> emploie ici la forme conjonctive documentée.</span></div>
+  </div>
   <table class="aprtab"><tr><th>Ordre</th><th>Quand</th><th>Exemple</th></tr>
   <tr><td class="k">Indépendant</td><td>phrase ordinaire</td><td class="k">N'michi</td></tr>
   <tr><td class="k">Impératif</td><td>un ordre</td><td class="k">Michi!</td></tr>
   <tr><td class="k">Conjonctif</td><td>employé ici dans une question</td><td class="k">Kagwi k'michi?</td></tr></table>
+  <div class="aprnote"><b>Procédure de lecture</b>
+   1) demande si la phrase affirme, ordonne ou questionne; 2) choisis l'exemple complet correspondant;
+   3) explique l'indice visible. Ne transforme pas cette comparaison en conjugueur général.</div>
   <div class="aprnote"><b>Deuxième personne interrogative : relire la forme complète</b>
    Dans les questions actuelles documentées, « tu » apparaît soit dans une forme en
    <span class="al8">-an/-ian</span> — <span class="al8">alosan, wigian, aliwizian</span> —,
    soit dans <span class="al8">k'-/kd'-</span> — <span class="al8">k'michi, kd'al8wzin</span>.
    Ce sont des modèles attestés, pas une permission de déplacer ces marques d'un verbe à l'autre.</div>
-  <div class="aprnote w"><b>Interrogation historique par l'intonation</b>
+  <details class="apr-origin"><summary>Approfondir après avoir réussi les trois contrastes</summary>
+   <div class="apr-origin-body"><div><strong>Interrogation historique par l'intonation</strong>
    Laurent (1884, p. 204) indique qu'une phrase affirmative ou négative peut aussi devenir une question
    par l'intonation, ou par le point d'interrogation à l'écrit. Une source actuelle documente séparément
-   l'ordre conjonctif dans des questions d'information; le dictionnaire compare les deux descriptions
-   avec leur source et leur époque.</div>
-  <h3>L'impératif collectif</h3>
-  <p>Le suffixe <code>-oda</code> dit ce qu'on se propose de faire ensemble.
-  <span class="al8">Wig8damoda!</span> réjouissons-nous · <span class="al8">Losada</span> allons.</p>
+   l'ordre conjonctif dans des questions d'information; les deux descriptions gardent leur source et leur époque.</div>
+   <div><strong>Impératif collectif</strong>Le suffixe <code>-oda</code> apparaît dans les exemples documentés
+   <span class="al8">Wig8damoda!</span> « réjouissons-nous » et <span class="al8">Losada</span> « allons ».
+   Apprends ces formes entières avant d'étudier d'autres verbes.</div></div>
+  </details>
   <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, page 29 · Joseph Laurent, 1884, page 204.</span>`,
   coach:`Dans ces exemples, distingue la phrase indépendante, l'impératif et la forme
    conjonctive employée dans une question. Le suffixe <span class='al8'>-oda</span> marque ici
@@ -8025,6 +8133,76 @@ function aprPathHtml(levelId){
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">${phases.map((phase,index)=>
       `<div style="padding:9px;border:1px solid var(--border);border-radius:9px;background:var(--surface2)"><strong>${index+1}. ${escH(phase[0])}</strong><br><span style="font-size:.78rem;color:var(--text2)">${escH(phase[1])}</span></div>`).join('')}</div></div>`;
 }
+const APR_TASK_GUIDES={
+  sons:['Écoute un repère, associe-le à sa lettre, puis retrouve-le dans une forme complète.','Tu distingues CH, J, 8, W et I sans remplacer leur graphie.'],
+  conversation:['Lis chaque échange comme une phrase entière, puis remets les répliques dans leur ordre.','Tu peux tenir le court échange sans traduire chaque morceau isolément.'],
+  dialogue:['Repère le début, les réponses et la fermeture de la conversation avant de la rejouer.','Tu peux remettre tout le dialogue en ordre et expliquer le rôle de chaque réplique.'],
+  genre:['Classe chaque nom avec l’étiquette grammaticale documentée sur sa fiche.','Tu justifies animé ou inanimé par la fiche, jamais par une intuition philosophique.'],
+  plur:['Associe seulement les singuliers et pluriels explicitement documentés.','Tu rappelles les sept paires approuvées sans fabriquer une terminaison.'],
+  poss:['Compare les formes complètes de personne et repère le préfixe réellement écrit.','Tu distingues mon, ton et son dans les modèles présentés sans déplacer un préfixe.'],
+  conjp:['Repère la personne dans chaque forme indépendante documentée.','Tu identifies la personne et recopies la forme entière sans compléter un paradigme absent.'],
+  inter2:['Compare les questions complètes avant de chercher où apparaît « tu ».','Tu distingues les finales -an/-ian des formes qui conservent k’-/kd’-.'],
+  negs:['Pars d’une paire affirmative/négative déjà documentée et observe tout ce qui change.','Tu reconnais la négation complète sans ajouter un suffixe à un verbe non attesté.'],
+  classfx:['Relie la classe du nom aux changements réellement montrés dans les exemples.','Tu expliques quel élément de la phrase est touché, sans inventer une nouvelle forme.'],
+  day:['Replace les formes documentées dans le déroulement d’une journée.','Tu racontes la séquence proposée en conservant chaque forme entière.'],
+  structure:['Compare la structure française et la structure aln8ba sans exiger un mot pour chaque mot.','Tu peux expliquer pourquoi la construction entière porte le sens.'],
+  vta:['Décide d’abord s’il y a un objet, puis vérifie sa classe dans l’exemple.','Tu distingues VAI, VII, VTA et VTI à partir des rôles documentés.'],
+  temps:['Lis horizontalement une seule personne, puis compare présent, imparfait et futur attestés.','Tu retrouves les formes du tableau sans transporter leurs terminaisons vers un autre verbe.'],
+  ordre:['Compare une même idée dans une phrase ordinaire, un ordre et une question documentée.','Tu nommes l’ordre de chaque exemple et expliques l’indice visible.'],
+  neg:['Observe la fin du radical dans chacune des trois paires exactes.','Tu choisis la paire documentée correspondante sans générer une négation nouvelle.'],
+  suf:['Sépare seulement les préfixes, racines et suffixes déjà expliqués dans la leçon.','Tu peux redonner le rôle de chaque morceau et la limite de l’analyse.'],
+  fam:['Compare les formes reliées par une analyse documentée, puis nomme leur racine commune.','Tu justifies le rapprochement avec les fiches affichées, pas seulement avec une ressemblance.'],
+  sourcecheck:['Range les graphies par source et par date avant de les comparer.','Tu distingues attestation historique, forme retenue par le projet et usage à confirmer.'],
+  trad:['Lis d’abord la phrase complète et son sens, puis repère ses éléments.','Tu expliques la construction sans donner un sens fixe inventé à chaque fragment.'],
+  history:['Compare lettre par lettre sans convertir silencieusement une graphie ancienne.','Tu cites l’auteur et la date avec chaque forme historique.'],
+  evidence:['Lis la marque, sa définition et sa limite avant d’évaluer une fiche.','Tu distingues source citée, recoupement interne et validation externe.']
+};
+function aprVocabTaskGuide(m){
+  const variants={
+    recognize:['Regarde la forme aln8ba avant son sens et crée une image mentale précise.','Tu reconnais trois formes de suite sans indice français.'],
+    retrieve:['Pars du sens, cache le tableau et retrouve la forme aln8ba exacte.','Tu récupères trois formes de suite en conservant toutes les lettres, dont le 8.'],
+    context:['Relie la forme, son sens et l’information grammaticale affichée ensemble.','Tu choisis la bonne forme et peux dire quel contexte la distingue.'],
+    mixed:['Alterne reconnaissance du sens et rappel de la forme pour éviter une mémoire à sens unique.','Tu réussis dans les deux directions sans confondre les formes proches.']
+  };
+  return variants[m.activity]||variants.mixed;
+}
+function aprModuleTaskGuide(m){
+  return m.ex==='vocab'?aprVocabTaskGuide(m):(APR_TASK_GUIDES[m.ex]||[
+    'Observe les exemples de cette leçon, puis réponds uniquement avec les formes qu’elle documente.',
+    'Tu peux expliquer ta réponse et nommer la limite de ce que la leçon permet d’affirmer.'
+  ]);
+}
+function aprModuleItemsForGuide(m,lecHtml){
+  const items=Array.isArray(m.items)?m.items:aprLessonItems(m,lecHtml);
+  const seen=new Set();
+  return items.filter(item=>{
+    const key=aprLessonKey(item.aln8ba); if(!key||seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+}
+function aprEarlierModuleKeys(level,index){
+  const keys=new Set();
+  level.mods.slice(0,index).forEach(module=>{
+    let html='';
+    try{ html=typeof module.lec==='function'?module.lec():module.lec; }catch(_e){}
+    aprModuleItemsForGuide(module,html||'').forEach(item=>keys.add(aprLessonKey(item.aln8ba)));
+  });
+  return keys;
+}
+function aprModuleGuideHtml(level,m,index,lecHtml){
+  const guide=aprModuleTaskGuide(m), previous=level.mods[index-1], next=level.mods[index+1];
+  const items=aprModuleItemsForGuide(m,lecHtml), earlier=aprEarlierModuleKeys(level,index);
+  const repeated=items.filter(item=>earlier.has(aprLessonKey(item.aln8ba)));
+  const fresh=items.filter(item=>!earlier.has(aprLessonKey(item.aln8ba)));
+  const bank=items.length
+    ? `<div class="apr-module-bank"><strong>${fresh.length} forme${fresh.length>1?'s':''} nouvelle${fresh.length>1?'s':''} dans ce parcours</strong>${repeated.length?` · ${repeated.length} forme${repeated.length>1?'s':''} reprise${repeated.length>1?'s':''} volontairement pour consolider un lien précis`:''}. L'exercice reste limité à la banque de cette leçon.</div>`
+    : `<div class="apr-module-bank"><strong>Module de structure</strong> · la nouveauté porte ici sur le raisonnement et les contrastes documentés, pas sur une nouvelle liste de mots.</div>`;
+  return `<div class="apr-module-guide" aria-label="Progression propre à ce module">
+    <div><strong>Place dans le parcours</strong><span>${previous?`Après « ${escH(previous.t)} »`:'Point de départ de cette étape'} · ${next?`prépare « ${escH(next.t)} »`:'prépare la synthèse et la révision'}.</span></div>
+    <div><strong>Mission de ce module</strong><span>${escH(guide[0])}</span></div>
+    <div><strong>Tu peux avancer quand</strong><span>${escH(guide[1])}</span></div>
+  </div>${bank}`;
+}
 function aprModulePerfect(m,state){
   return Boolean(m&&m.ex&&state&&state.retenir>=100&&(!aprModuleNeedsUse(m)||state.utiliser>=100));
 }
@@ -8116,6 +8294,7 @@ function aprLecon(i){
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
+      ${aprModuleGuideHtml(n,m,i,lecHtml)}
       ${m.ex?aprMethodHtml(m):
         `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
         Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées

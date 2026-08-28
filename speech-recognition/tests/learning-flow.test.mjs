@@ -139,6 +139,33 @@ test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
   assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
 });
 
+test('chaque module affiche sa mission, sa place et ses formes nouvelles', () => {
+  const guide = sourceBetween('const APR_TASK_GUIDES', 'function aprModulePerfect');
+  for (const type of ['sons','conversation','dialogue','genre','plur','poss','conjp','inter2',
+    'negs','classfx','day','structure','vta','temps','ordre','neg','suf','fam','sourcecheck',
+    'trad','history','evidence']) {
+    assert.match(guide, new RegExp(`\\b${type}:\\[`), `guidage absent: ${type}`);
+  }
+  for (const activity of ['recognize','retrieve','context','mixed']) {
+    assert.match(guide, new RegExp(`${activity}:\\[`), `activité de vocabulaire absente: ${activity}`);
+  }
+  assert.match(guide, /aprEarlierModuleKeys/);
+  assert.match(guide, /forme.*nouvelle.*dans ce parcours/);
+  assert.match(guide, /reprise.*volontairement pour consolider/);
+  const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
+  assert.match(lesson, /aprModuleGuideHtml\(n,m,i,lecHtml\)/);
+});
+
+test('le module des trois ordres avance en trois contrastes avant les approfondissements', () => {
+  const lesson = sourceBetween('{t:"Les trois ordres"', '{t:"La négation complète"');
+  assert.match(lesson, /1 · Dire un fait/);
+  assert.match(lesson, /2 · Donner une consigne/);
+  assert.match(lesson, /3 · Poser cette question/);
+  assert.match(lesson, /Procédure de lecture/);
+  assert.match(lesson, /Approfondir après avoir réussi les trois contrastes/);
+  assert.ok(lesson.indexOf('1 · Dire un fait') < lesson.indexOf('Interrogation historique'));
+});
+
 test('le parcours contient cinq etapes, 45 modules actifs et preserve la progression existante', () => {
   const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
   const levels = sourceBetween('const NIVEAUX=', 'function aprProgressKey');
