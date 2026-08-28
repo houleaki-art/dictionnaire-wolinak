@@ -130,11 +130,64 @@ test('la production grammaticale suit une procedure documentee', () => {
 
 test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
   const path = sourceBetween('const APR_LEVEL_PATHS', 'function aprModulePerfect');
-  for (const phase of ['Nom et classe','Phrase affirmative','Interrogation','Négation','Structure verbale','Temps verbaux','Ordres de conjugaison','Morphologie','Production']) {
+  for (const phase of ['Sons et graphie','Premiers échanges','Monde vivant','Conversation',
+    'Nom et classe','Phrase affirmative','Interrogation','Négation','Structure verbale',
+    'Temps verbaux','Ordres de conjugaison','Morphologie','Sources','Lecture complète','Transmission']) {
     assert.match(path, new RegExp(phase));
   }
   assert.ok(path.indexOf('Phrase affirmative') < path.indexOf('Interrogation'));
   assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
+});
+
+test('le parcours contient cinq etapes, 45 modules actifs et preserve la progression existante', () => {
+  const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
+  const levels = sourceBetween('const NIVEAUX=', 'function aprProgressKey');
+  assert.equal([...library.matchAll(/\{t:"/g)].length, 45);
+  const exerciseTypes = [...library.matchAll(/ex:'([^']+)'/g)].map(match => match[1]);
+  assert.equal(exerciseTypes.length, 45);
+  assert.doesNotMatch(library, /ex:null/);
+  for (const [id, title] of [['d','Découverte'],['f','Fondations'],['co','Consolidation'],
+    ['a','Approfondissement'],['au','Autonomie']]) {
+    assert.match(levels, new RegExp(`id:'${id}',t:'${title}'`));
+  }
+  assert.match(levels, /progressId:'p',progressOffset:0/);
+  assert.match(levels, /progressId:'p',progressOffset:7/);
+  assert.match(levels, /progressId:'s',progressOffset:0/);
+  assert.match(levels, /progressId:'c',progressOffset:0/);
+  assert.match(levels, /progressId:'c',progressOffset:6/);
+  assert.match(html, /const APR_EXERCISE_TARGETS=\{d:10,f:14,co:12,a:12,au:10\}/);
+  assert.match(html, /exTot=APR_EXERCISE_TARGETS\[aprNiv\]\|\|8/);
+  assert.match(html, /jusqu'à \$\{APR_EXERCISE_TARGETS\[n\.id\]\} questions par séance/);
+
+  const dispatch = sourceBetween('function exSuivant()', 'function exPickUnique');
+  for (const type of new Set(exerciseTypes)) {
+    assert.match(dispatch, new RegExp(`${type}:`), `route d'exercice absente: ${type}`);
+  }
+});
+
+test('les syntheses et les modules de sources ont des exercices distincts', () => {
+  const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
+  for (const type of ['conversation','dialogue','day','sourcecheck','history','evidence']) {
+    assert.match(library, new RegExp(`ex:'${type}'`), `module absent: ${type}`);
+    assert.match(html, new RegExp(`${type}:\\(\\)=>exFixedLesson`), `route absente: ${type}`);
+  }
+  for (const bank of ['EXCONVERSATION','EXDIALOGUE','EXDAY','EXSOURCECHECK','EXHISTORY','EXEVIDENCE']) {
+    const source = sourceBetween(`const ${bank}=`, bank === 'EXEVIDENCE' ? 'let exQ=' : `const ${{
+      EXCONVERSATION:'EXDIALOGUE', EXDIALOGUE:'EXDAY', EXDAY:'EXSOURCECHECK',
+      EXSOURCECHECK:'EXHISTORY', EXHISTORY:'EXEVIDENCE'
+    }[bank]}=`);
+    assert.equal([...source.matchAll(/\{q:/g)].length, 6, `banque incomplète: ${bank}`);
+  }
+});
+
+test('T8ni est enseigne par phrases completes selon le contexte', () => {
+  const lesson = sourceBetween('{t:"Lire une phrase complète"', '{t:"Lire des mots construits"');
+  assert.match(lesson, /T8ni wigian\?/);
+  assert.match(lesson, /peut aussi correspondre à « comment » ou « combien »/);
+  assert.match(lesson, /T8ni aliwizian\?/);
+  assert.match(lesson, /T8ni kd'al8wzin\?/);
+  assert.doesNotMatch(lesson, /T8ni \(où\)/);
+  assert.doesNotMatch(html, /T8ni tali wigian/);
 });
 
 test('le repertoire verbal affiche seulement des paradigmes documentes', () => {
@@ -230,9 +283,11 @@ test('le jeu du territoire relie observation et vocabulaire vert actuel', () => 
   assert.match(gameSource, /stop\.words\.length===4/);
   assert.match(gameSource, /stops\.length!==TERRITORY_TRAIL\.length/);
   assert.match(gameSource, /Toutes les réponses proposées sont des entrées vertes actuelles/);
-  assert.match(html, /p:\['territoire','sens','caches'\]/);
-  assert.match(html, /s:\['territoire','genre','sens','negat','plur','caches'\]/);
-  assert.match(html, /c:\['territoire','negat','fam'\]/);
+  assert.match(html, /d:\['sens','caches'\]/);
+  assert.match(html, /f:\['territoire','sens','caches'\]/);
+  assert.match(html, /co:\['territoire','genre','sens','negat','plur','caches'\]/);
+  assert.match(html, /a:\['genre','negat','plur','fam'\]/);
+  assert.match(html, /au:\['territoire','negat','fam'\]/);
 
   for (const file of [
     'couleurs-territoire.webp',

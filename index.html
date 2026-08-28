@@ -5660,7 +5660,7 @@ const DOCUMENTED_SENTENCES=[
   {fr:["Je ne m'appelle pas"],aln8ba:"Nda nd'aliwiziw"},
   {fr:['Je ne me souviens pas'],aln8ba:"Nda n'mikwaldamowen"},
   {fr:["J'habite Wôlinak","J'habite Wolinak"],aln8ba:"N'wigi W8linak"},
-  {fr:['Où habites-tu?'],aln8ba:'T8ni tali wigian?'},
+  {fr:['Où habites-tu?'],aln8ba:'T8ni wigian?'},
   {fr:['Je suis dans la maison'],aln8ba:"Nd'ai wigw8mek",
     source:"Manuel de l'étudiant 1 (2018)",
     note:"Phrase locative documentée. Nd'ai exprime ici la présence dans un lieu; ce n'est pas un auxiliaire ajouté à tous les emplois français de « être »."},
@@ -7253,8 +7253,8 @@ function aprInit(){
   const box=document.getElementById('aprBody');
   if(box && !box.innerHTML.trim()) aprParcours();
 }
-const NIVEAUX=[
-{id:'p',t:'Primaire',d:"La fondation complète : vingt modules, des sons jusqu'à ta première conversation. On nomme, on répète, puis on commence à comprendre comment les formes documentées se construisent.",
+const APR_MODULE_LIBRARY=[
+{id:'p',t:'Base vocabulaire',d:"Vingt modules, des sons jusqu'à une première conversation.",
  c:'var(--green)',mods:[
  {t:"Les sons d'abord",d:"Cinq repères de prononciation : CH, J, 8, W et I.",ex:'sons',lec:`
   <p>L'aln8ba s'écrit presque comme il se prononce. Avant le premier mot, deux minutes pour l'alphabet.</p>
@@ -7272,7 +7272,7 @@ const NIVEAUX=[
   <div class="aprnote w"><b>Dis tout à voix haute, toujours</b>
    Une langue ne s'apprend pas des yeux. Chaque mot de ce parcours doit sortir de ta bouche,
    même seul dans ton char.</div>`},
- {t:"Kwaï — saluer",d:"Six formes essentielles pour saluer et répondre.",cat:'salut',ex:'vocab',items:[
+ {t:"Kwaï — saluer",d:"Six formes essentielles pour saluer et répondre.",cat:'salut',ex:'vocab',activity:'recognize',items:[
   {id:'mod-salut-1',aln8ba:'Kwaï',fr:'Bonjour',cat:'salut'},
   {id:'mod-salut-2',aln8ba:'Kwaï mziwi',fr:'Bonjour tout le monde',cat:'salut'},
   {id:'mod-salut-3',aln8ba:'8h8',fr:'Oui',cat:'salut'},
@@ -7290,7 +7290,7 @@ const NIVEAUX=[
   <div class="aprnote"><b>Deux formes à ne pas confondre</b>
    <span class="al8">8h8</span> est le oui clair « an-han ». Le <span class="al8">h8</span> murmuré en conseil
    est une forme historique distincte conservée aux Archives; il ne sert pas de réponse dans ce module.</div>`},
- {t:"Se présenter",d:"Dire son nom, demander celui de l'autre, remercier.",cat:'salut',ex:'vocab',lec:`
+ {t:"Se présenter",d:"Dire son nom, demander celui de l'autre, remercier.",cat:'salut',ex:'conversation',lec:`
   <p>Tes premières phrases complètes — quatre échanges, c'est tout ce qu'il faut pour se présenter.</p>
   <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>
   <tr><td class="k">Kwaï!</td><td>Bonjour!</td></tr>
@@ -7309,7 +7309,7 @@ const NIVEAUX=[
    1. Dis chaque phrase en lisant. 2. Redis-la en regardant seulement le français.
    3. Redis-la sans rien regarder. Si ça bloque, recommence — c'est normal, c'est comme ça
    que la mémoire se construit.</div>`},
- {t:"Les couleurs",d:"Six formes verbales documentées.",cat:'couleur',ex:'vocab',lec:`
+ {t:"Les couleurs",d:"Six formes verbales documentées.",cat:'couleur',ex:'vocab',activity:'retrieve',lec:`
   <p>Commence par regarder une chose, puis dis son état. Dans les six exemples retenus ici,
   on apprend une forme complète comme <i>c'est rouge</i>, et non une étiquette française isolée.</p>
   <table class="aprtab">
@@ -7323,13 +7323,13 @@ const NIVEAUX=[
    Choisis d'abord une couleur que tu vois réellement. Cache ensuite la colonne aln8ba,
    retrouve la forme complète, puis vérifie les lettres. Le rapprochement visuel aide la mémoire;
    il ne sert pas à inventer l'étymologie d'un mot.</div>`},
- {t:"Décrire le monde",d:"Grand, petit, beau — les mots qui décrivent tout ce qui t'entoure.",cat:'description',ex:'vocab',lec:aprAutoLec(`
+ {t:"Décrire le monde",d:"Grand, petit, beau — les mots qui décrivent tout ce qui t'entoure.",cat:'description',ex:'vocab',activity:'recognize',lec:aprAutoLec(`
   <p>Avec les couleurs, tu sais déjà dire <i>comment</i> sont les choses. Voici le reste de la
   famille des descriptions — les mots les plus courts d'abord, c'est plus facile pour la mémoire.</p>`,'description',16,`
   <div class="aprnote"><b>⏱ Cinq mots par jour, pas plus</b>
    La mémoire n'avale pas une liste — elle la digère. Choisis cinq mots aujourd'hui,
    cinq autres demain. L'onglet <b>🔁 Révision</b> te les resservira au bon moment.</div>`)},
- {t:"Compter jusqu'à dix",d:"Les dix premiers chiffres.",cat:'nombre',ex:'vocab',lec:`
+ {t:"Compter jusqu'à dix",d:"Les dix premiers chiffres.",cat:'nombre',ex:'vocab',activity:'retrieve',lec:`
   <table class="aprtab">
   <tr><td class="k">Pazokw</td><td>1</td></tr><tr><td class="k">Nis</td><td>2</td></tr>
   <tr><td class="k">Nas</td><td>3</td></tr><tr><td class="k">Iaw</td><td>4</td></tr>
@@ -7338,27 +7338,27 @@ const NIVEAUX=[
   <tr><td class="k">Noliwi</td><td>9</td></tr><tr><td class="k">Mdala</td><td>10</td></tr></table>
   <div class="aprnote"><b>Zéro se dit Ndakagwi</b>
    C'est le même mot que « rien » et que « de rien » quand on répond à un merci.</div>`},
- {t:"Compter plus loin",d:"Toute la famille des nombres, au-delà de dix.",cat:'nombre',ex:'vocab',lec:aprAutoLec(`
+ {t:"Compter plus loin",d:"Toute la famille des nombres, au-delà de dix.",cat:'nombre',ex:'vocab',activity:'mixed',lec:aprAutoLec(`
   <p>Tu connais déjà <span class="al8">Pazokw</span> à <span class="al8">Mdala</span>. Voici le reste
   des nombres attestés du dictionnaire — les plus courts d'abord.</p>`,'nombre',18,`
   <div class="aprnote"><b>Compte ce qui t'entoure</b>
    Les arbres dehors, les tasses dans l'armoire, les autos qui passent. Un nombre qu'on utilise
    est un nombre qu'on garde.</div>`)},
- {t:"Les animaux",d:"L'ours, le loup, l'aigle et les autres.",cat:'animal',ex:'vocab',lec:`
+ {t:"Les animaux",d:"L'ours, le loup, l'aigle et les autres.",cat:'animal',ex:'vocab',activity:'recognize',lec:`
   <p>Dans ce module, les noms d'animaux présentés sont de classe grammaticale <b>animée</b>.
-  Tu apprendras à vérifier cette classe mot par mot au niveau secondaire.</p>
+  Tu apprendras à vérifier cette classe mot par mot pendant l'étape Consolidation.</p>
   <table class="aprtab">
   <tr><td class="k">Awassos</td><td>l'ours</td></tr><tr><td class="k">M8lsem</td><td>le loup</td></tr>
   <tr><td class="k">Mgezo</td><td>l'aigle</td></tr><tr><td class="k">Tmakwa</td><td>le castor</td></tr>
   <tr><td class="k">Nolka</td><td>le chevreuil</td></tr><tr><td class="k">Tolba</td><td>la tortue</td></tr>
   <tr><td class="k">Moz</td><td>l'orignal</td></tr><tr><td class="k">Sips</td><td>l'oiseau</td></tr></table>`},
- {t:"Les bêtes de chez nous",d:"Toute la faune du territoire, du plus petit au plus grand.",cat:'animal',ex:'vocab',lec:aprAutoLec(`
+ {t:"Les bêtes de chez nous",d:"Toute la faune du territoire, du plus petit au plus grand.",cat:'animal',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
   <p>Tu as rencontré les huit grands. Voici toutes les autres bêtes attestées dans le
   dictionnaire — les noms les plus courts d'abord.</p>`,'animal',16,`
   <div class="aprnote"><b>Retiens la classe avec le mot</b>
    La classe grammaticale et le pluriel sont deux informations distinctes. Un pluriel ne doit
    être utilisé que lorsque sa forme est documentée dans le dictionnaire.</div>`)},
- {t:"Mon corps",d:"De la tête aux pieds.",cat:'corps',ex:'vocab',lec:`
+ {t:"Mon corps",d:"De la tête aux pieds.",cat:'corps',ex:'vocab',activity:'recognize',lec:`
   <p>Les parties du corps portent toujours un possesseur. <b>N-</b> veut dire <i>mon</i>.</p>
   <table class="aprtab">
   <tr><td class="k">Ndep</td><td>ma tête</td></tr><tr><td class="k">Nsizekw</td><td>mon visage</td></tr>
@@ -7367,13 +7367,13 @@ const NIVEAUX=[
   <tr><td class="k">Nzit</td><td>mon pied</td></tr><tr><td class="k">Nhaga</td><td>mon corps</td></tr></table>
   <div class="aprnote"><b>Change le N pour un K et ça devient « ton »</b>
    <span class="al8">Ndep</span> ma tête → <span class="al8">Kdep</span> ta tête.</div>`},
- {t:"Le corps en entier",d:"Toutes les parties du corps attestées dans le dictionnaire.",cat:'corps',ex:'vocab',lec:aprAutoLec(`
+ {t:"Le corps en entier",d:"Toutes les parties du corps attestées dans le dictionnaire.",cat:'corps',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
   <p>Après la tête et les mains, le reste du corps — toujours avec son possesseur,
   comme tu l'as vu avec <span class="al8">Ndep</span>.</p>`,'corps',16,`
   <div class="aprnote"><b>Touche et nomme</b>
    Le corps est le meilleur professeur : touche ta main en disant <span class="al8">Nelji</span>.
    Associer le mot à un geste donne un repère supplémentaire pour le rappeler.</div>`)},
- {t:"Ma famille",d:"Les mots qu'on dit à la maison.",cat:'famille',ex:'vocab',lec:`
+ {t:"Ma famille",d:"Les mots qu'on dit à la maison.",cat:'famille',ex:'vocab',activity:'context',lec:`
   <table class="aprtab">
   <tr><td class="k">Nigawes</td><td>ma mère</td></tr><tr><td class="k">Nmit8gwes</td><td>mon père</td></tr>
   <tr><td class="k">Nokmes</td><td>ma grand-mère</td></tr><tr><td class="k">Nmahom</td><td>mon grand-père</td></tr>
@@ -7383,46 +7383,46 @@ const NIVEAUX=[
    Un garçon dit <span class="al8">Nijia</span> pour son frère.
    Une fille dit <span class="al8">Nijakaso</span> pour sa sœur.
    Et <span class="al8">Nid8pso</span> sert quand c'est l'inverse.</div>`},
- {t:"La famille au grand complet",d:"Toute la parenté attestée : les aînés, les enfants, les liens.",cat:'famille',ex:'vocab',lec:aprAutoLec(`
+ {t:"La famille au grand complet",d:"Toute la parenté attestée : les aînés, les enfants, les liens.",cat:'famille',ex:'vocab',activity:'mixed',lec:aprAutoLec(`
   <p>Après papa et maman, tout le reste de la parenté. La famille est au cœur de la langue —
-  prends ton temps, c'est le plus gros module de vocabulaire du primaire.</p>`,'famille',18,`
+  prends ton temps, c'est le plus gros module de vocabulaire de Fondations.</p>`,'famille',18,`
   <div class="aprnote"><b>⏱ Deux ou trois visites, c'est normal</b>
    Personne ne retient 18 mots d'un coup. Fais le quiz, reviens demain, refais-le.
    Compare tes résultats d'une visite à l'autre pour voir ce qui reste à revoir.</div>`)},
- {t:"Les arbres",d:"Le pin, le cèdre, l'érable.",cat:'plante',ex:'vocab',lec:`
+ {t:"Les arbres",d:"Le pin, le cèdre, l'érable.",cat:'plante',ex:'vocab',activity:'recognize',lec:`
   <table class="aprtab">
   <tr><td class="k">Abazi</td><td>un arbre</td></tr><tr><td class="k">Koa</td><td>le pin</td></tr>
   <tr><td class="k">Molodagw</td><td>le cèdre</td></tr><tr><td class="k">Senomozi</td><td>l'érable</td></tr>
   <tr><td class="k">Maskwamozi</td><td>le bouleau</td></tr><tr><td class="k">Mahlakws</td><td>le frêne</td></tr></table>`},
- {t:"Les plantes et la nourriture",d:"Ce qui pousse, ce qu'on cueille, ce qu'on mange.",cat:'plante',ex:'vocab',lec:aprAutoLec(`
+ {t:"Les plantes et la nourriture",d:"Ce qui pousse, ce qu'on cueille, ce qu'on mange.",cat:'plante',ex:'vocab',activity:'context',lec:aprAutoLec(`
   <p>Après les arbres, tout le monde végétal et la nourriture — le garde-manger de la langue.</p>`,'plante',18,`
   <div class="aprnote"><b>Le lien avec la terre</b>
    Beaucoup de ces mots racontent la récolte et la saison. Quand tu en apprends un,
    demande-toi où tu l'as déjà vu pousser — le souvenir s'accroche à l'image.</div>`)},
- {t:"La nature autour",d:"Le soleil, la rivière, la montagne.",cat:'nature',ex:'vocab',lec:`
+ {t:"La nature autour",d:"Le soleil, la rivière, la montagne.",cat:'nature',ex:'vocab',activity:'recognize',lec:`
   <table class="aprtab">
   <tr><td class="k">Kizos</td><td>le soleil</td></tr><tr><td class="k">P8guas</td><td>la lune</td></tr>
   <tr><td class="k">Alakws</td><td>une étoile</td></tr><tr><td class="k">Nebi</td><td>l'eau</td></tr>
   <tr><td class="k">Watzo</td><td>la montagne</td></tr><tr><td class="k">Aki</td><td>la terre</td></tr>
   <tr><td class="k">Skweda</td><td>le feu</td></tr></table>`},
- {t:"Le territoire",d:"Les lieux, les eaux et les chemins — nommer le pays.",cat:'territoire',ex:'vocab',lec:aprAutoLec(`
+ {t:"Le territoire",d:"Les lieux, les eaux et les chemins — nommer le pays.",cat:'territoire',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
   <p>Le territoire se nomme morceau par morceau. Ces mots-là ont été prononcés ici
   pendant des générations avant toi — tu les remets en marche.</p>`,'territoire',16,`
   <div class="aprnote"><b>Sors dehors avec</b>
    La prochaine fois que tu passes près de l'eau, dis <span class="al8">Nebi</span>.
    Un mot dit sur le territoire vaut dix mots lus sur un écran.</div>`)},
- {t:"Le temps et les saisons",d:"Hier, demain, l'hiver, le printemps.",cat:'temps',ex:'vocab',lec:aprAutoLec(`
+ {t:"Le temps et les saisons",d:"Hier, demain, l'hiver, le printemps.",cat:'temps',ex:'vocab',activity:'context',lec:aprAutoLec(`
   <p>Tu connais déjà <span class="al8">Pamkizgak</span> (aujourd'hui) — voici toute la famille
   du temps : les saisons, les jours, les moments.</p>`,'temps',16,`
   <div class="aprnote"><b>Réflexe du matin</b>
    Chaque matin, nomme la saison et le moment de la journée en aln8ba.
    Trente secondes par jour, et ces mots-là ne te quitteront plus.</div>`)},
- {t:"Les actions de tous les jours",d:"Manger, dormir, parler, marcher — la langue commence à bouger.",cat:'action',ex:'vocab',lec:aprAutoLec(`
+ {t:"Les actions de tous les jours",d:"Manger, dormir, parler, marcher — la langue commence à bouger.",cat:'action',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
   <p>C'est le module qui change tout : avec les actions, tu passes du nommage à la phrase.
-  Au primaire, apprends juste à les reconnaître — au secondaire, tu apprendras à les conjuguer.</p>`,'action',18,`
+  Dans Fondations, apprends d'abord à les reconnaître; dans Consolidation, tu étudieras leurs formes personnelles documentées.</p>`,'action',18,`
   <div class="aprnote"><b>Mime chaque action</b>
    Dis le mot en faisant le geste. Ton corps retient ce que ta tête oublie.</div>`)},
- {t:"Ma première conversation",d:"Le test final du primaire : tenir un échange complet, du bonjour à l'au revoir.",cat:'salut',ex:'vocab',lec:`
+ {t:"Ma première conversation",d:"La mise en pratique finale de Fondations : tenir un échange complet, du bonjour à l'au revoir.",cat:'salut',ex:'dialogue',lec:`
   <p>Tout ce que tu as appris tient dans un vrai petit dialogue. Lis-le à deux voix —
    avec quelqu'un, ou tout seul en changeant de chaise.</p>
   <table class="aprtab">
@@ -7433,12 +7433,12 @@ const NIVEAUX=[
   <div class="aprnote"><b>Mise en pratique</b>
    Dis ce dialogue à voix haute. Si une personne compétente accepte de t'accompagner,
    demande-lui de corriger ta prononciation et le contexte d'emploi.
-   Quand tu y arrives sans lire, reprends les passages encore hésitants avant le secondaire.</div>
-  <div class="aprnote w"><b>Après le primaire</b>
+   Quand tu y arrives sans lire, reprends les passages encore hésitants avant Consolidation.</div>
+  <div class="aprnote w"><b>Après Fondations</b>
    Garde l'habitude : cinq minutes de <b>🔁 Révision</b> par jour pendant que tu montes
    de niveau. C'est ce qui transforme des mots appris en mots acquis.</div>`}]},
 
-{id:'s',t:'Secondaire',d:"Comprendre comment les formes changent : classe grammaticale, pluriel, possession, affirmation, interrogation et négation.",
+{id:'s',t:'Base grammaticale',d:"Classe grammaticale, pluriel, possession, affirmation, interrogation et négation.",
  c:'var(--gold)',mods:[
  {t:"Animé ou inanimé",d:"Comprendre une distinction qui agit sur toute la phrase.",ex:'genre',use:'genre',lec:`
   <p>En aln8ba, chaque nom appartient à une de deux <b>classes grammaticales</b> : animée ou inanimée.
@@ -7488,7 +7488,7 @@ const NIVEAUX=[
    <span class="al8">Sata → Satal</span></div>`,
   coach:`Le bon ordre est simple : 1) vérifier la classe grammaticale; 2) chercher une paire déjà documentée.
    S'il n'y a pas de paire sûre, on laisse le pluriel vide ou on note « non documenté ».`},
- {t:"Moi, toi, nous",d:"Sept pronoms — et deux façons de dire « nous ».",cat:'grammaire',ex:'vocab',lec:`
+ {t:"Moi, toi, nous",d:"Sept pronoms — et deux façons de dire « nous ».",cat:'grammaire',ex:'vocab',activity:'context',lec:`
   <table class="aprtab">
   <tr><td class="k">Nia</td><td>moi</td></tr><tr><td class="k">Kia</td><td>toi</td></tr>
   <tr><td class="k">Agma</td><td>lui, elle</td></tr>
@@ -7566,7 +7566,7 @@ const NIVEAUX=[
   coach:`Lis d'abord la question entière. Ensuite seulement, repère « tu » : parfois dans
    <span class="al8">-an/-ian</span>, parfois dans <span class="al8">k'-/kd'-</span>.
    Ne retire ni n'ajoute un préfixe par analogie : mémorise les six modèles attestés.`},
- {t:"Le temps qui passe",d:"Les jours, les mois, les saisons.",cat:'temps',ex:'vocab',lec:`
+ {t:"Le temps qui passe",d:"Les jours, les mois, les saisons.",cat:'temps',ex:'vocab',activity:'recognize',lec:`
   <table class="aprtab">
   <tr><td class="k">Sigwan</td><td>le printemps</td></tr><tr><td class="k">Niben</td><td>l'été</td></tr>
   <tr><td class="k">Tagw8gw</td><td>l'automne</td></tr><tr><td class="k">Pbon</td><td>l'hiver</td></tr>
@@ -7588,7 +7588,7 @@ const NIVEAUX=[
   <tr><td class="k">N'wal8wzi</td><td class="k">Nda n'wal8wzi<b>w</b></td></tr>
   <tr><td class="k">Nd'agakimzi</td><td class="k">Nda nd'agakimzi<b>w</b></td></tr></table>
   <div class="aprnote"><b>Ici, le suffixe est toujours -W</b>
-   Parce que ces verbes finissent tous par <b>-i</b>. Au cégep, tu verras les deux autres cas.</div>`,
+   Parce que ces verbes finissent tous par <b>-i</b>. Dans Approfondissement, tu compareras seulement les autres cas documentés.</div>`,
   coach:`La négation est un sandwich : <span class="al8">Nda</span> devant, le petit suffixe derrière.
    Dis les paires à voix haute, affirmative puis négative, comme un refrain — l'oreille apprend
    le rythme avant que la tête apprenne la règle.`},
@@ -7609,7 +7609,7 @@ const NIVEAUX=[
   <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, pages 24 à 33.</span>`,
   coach:`Pose toujours ces questions dans cet ordre : quel est l'objet? quelle classe sa fiche indique-t-elle?
    quelle forme documentée correspond à cette classe? L'exercice te fait pratiquer cette chaîne complète.`},
- {t:"Les mois qui racontent l'année",d:"Douze mois qui décrivent ce qui se passe dehors.",cat:'temps',ex:'vocab',lec:`
+ {t:"Les mois qui racontent l'année",d:"Douze mois qui décrivent ce qui se passe dehors.",cat:'temps',ex:'vocab',activity:'context',lec:`
   <p>En aln8ba, les mois ne sont pas des noms — ce sont des <b>observations du territoire</b> :</p>
   <table class="aprtab"><tr><th>Mois</th><th>Aln8ba</th><th>Ce que ça raconte</th></tr>
   <tr><td>Janvier</td><td class="k">Alamikos</td><td>le mois des salutations</td></tr>
@@ -7633,7 +7633,7 @@ const NIVEAUX=[
    <span class="al8">Tmez8was</span> en regardant dehors, la saison de la récolte.
    Le mois prochain, <span class="al8">Skamonkas</span>. En un an, tu les connais tous —
    sans une seule séance de mémorisation.`},
- {t:"Nommer les lieux",d:"Le suffixe des endroits, et les vrais noms du territoire.",cat:'toponymie',ex:'vocab',lec:aprAutoLec(`
+ {t:"Nommer les lieux",d:"Le suffixe des endroits, et les vrais noms du territoire.",cat:'toponymie',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
   <p>Pour dire « à » un endroit, l'aln8ba colle un suffixe au nom : <b>-k</b> ou <b>-ok</b> —
    c'est le <b>locatif</b>. <span class="al8">Odanak</span>, c'est littéralement « au village ».
    Voici les noms de lieux attestés du dictionnaire :</p>`,'toponymie',14,`
@@ -7643,7 +7643,7 @@ const NIVEAUX=[
   coach:`Le locatif est partout : chaque fois que tu entends un nom de lieu finir en
    <b>-k</b> ou <b>-ok</b>, tu entends « à ». Écoute les anciens parler de leurs déplacements —
    tu vas commencer à les entendre, ces petits suffixes.`},
- {t:"Ma journée en aln8ba",d:"Le test du secondaire : raconter une journée entière au présent.",cat:'action',ex:'vocab',lec:`
+ {t:"Ma journée en aln8ba",d:"La synthèse de Consolidation : raconter une journée au présent avec des formes documentées.",cat:'action',ex:'day',lec:`
   <p>Avec les verbes du module « Les verbes au présent », tu peux déjà raconter ta journée :</p>
   <table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>
   <tr><td class="k">N'toki</td><td>je me réveille</td></tr>
@@ -7656,7 +7656,7 @@ const NIVEAUX=[
    Demain, recommence — puis essaie la négation du module « Dire non » sur une des phrases.</div>`,
   coach:`Une journée racontée chaque soir : c'est l'exercice le plus puissant qui existe.
    Cinq phrases suffisent. Le jour où tu te surprends à <i>penser</i> ta journée en aln8ba
-   avant de la dire, le secondaire est derrière toi.`},
+   avant de la dire, tu es prêt à passer à Approfondissement.`},
  {t:"Traduire sans découper le français",d:"Comprendre pourquoi un mot français n'appelle pas toujours un mot aln8ba.",ex:'structure',use:'structure',lec:`
   <p>Une traduction fidèle transporte le <b>sens et la structure</b>; elle ne remplace pas chaque mot
   français par un mot aln8ba. Les deux langues ne découpent pas toujours la même idée de la même façon.</p>
@@ -7686,7 +7686,7 @@ const NIVEAUX=[
    documentée qui porte cette idée. S'il n'en existe pas, conserve les mots reconnus, montre ce qui manque
    et refuse l'assemblage automatique. C'est plus lent, mais c'est ainsi qu'on protège la langue.`}]},
 
-{id:'c',t:'Cégep',d:"Analyser les classes de verbes, les conjugaisons, la morphologie et les sources, puis produire avec méthode.",
+{id:'c',t:"Base d'analyse",d:"Classes de verbes, paradigmes documentés, morphologie, sources et production méthodique.",
  c:'var(--accent)',mods:[
  {t:"Les quatre classes de verbes",d:"Décider avec le sujet, l'objet et leur classe grammaticale.",ex:'vta',use:'vta',lec:`
   <h3>Avant les sigles : trouve les rôles</h3>
@@ -7880,7 +7880,7 @@ const NIVEAUX=[
   coach:`Un mot par jour dans le Décortiqueur. La famille affichée en bas montre comment les
    formes documentées partagent une racine et se combinent avec des affixes. Compare les morceaux
    avant de mémoriser le mot complet.`},
- {t:"Les sources et les graphies",d:"Cinq graphies documentées du même mot, de 1691 à 2018.",ex:null,lec:`
+ {t:"Les sources et les graphies",d:"Cinq graphies documentées du même mot, de 1691 à 2018.",ex:'sourcecheck',lec:`
   <p>Le mot « enfant » à travers les auteurs :</p>
   <table class="aprtab">
   <tr><td class="k">A8añsis</td><td>Rasles, 1691</td></tr>
@@ -7897,20 +7897,25 @@ const NIVEAUX=[
   coach:`Une graphie ancienne témoigne de ce qui est imprimé dans une source. Compare ses lettres
    avec la forme retenue par le projet, puis consulte la source ou une personne compétente avant
    d'en déduire une prononciation.`},
- {t:"Traduire une phrase",d:"Mettre ensemble tout ce que tu sais.",ex:'trad',use:'trad',lec:`
-  <p>Une phrase abénakise se lit en repérant d'abord le verbe et son préfixe.</p>
+ {t:"Lire une phrase complète",d:"Comprendre une construction attestée sans attribuer un sens fixe à chaque fragment.",ex:'trad',use:'trad',lec:`
+  <p>Commence par la phrase complète et son sens documenté. Repère ensuite le verbe, la personne
+  et les autres éléments sans supposer qu'un mot interrogatif possède toujours le même équivalent français.</p>
   <table class="aprtab"><tr><th>Phrase</th><th>Analyse</th></tr>
   <tr><td class="k">Nd'aliwizi Mali</td><td>Nd'- (je) + aliwizi (s'appeler) + le nom</td></tr>
-  <tr><td class="k">T8ni tali wigian?</td><td>T8ni (où) + tali (l'endroit) + wigian (tu habites)</td></tr>
+  <tr><td class="k">T8ni wigian?</td><td><b>Phrase entière :</b> « Où habites-tu? » · T8ni introduit la question et peut aussi correspondre à « comment » ou « combien » dans d'autres phrases · wigian porte « tu habites »</td></tr>
   <tr><td class="k">Nda n'mikwaldamowen</td><td>Nda (ne pas) + n'- (je) + mikwaldam (se souvenir) + -owen</td></tr>
-  <tr><td class="k">Kiona W8banakiak</td><td>Kiona (nous, toi inclus) + W8banakiak (les Abénakis)</td></tr></table>`,
+  <tr><td class="k">Kiona W8banakiak</td><td>Kiona (nous, toi inclus) + W8banakiak (les Abénakis)</td></tr></table>
+  <div class="aprnote"><b>Le point essentiel pour T8ni</b>
+   Apprends chaque question entière : <span class="al8">T8ni aliwizian?</span> « Comment t'appelles-tu? »,
+   <span class="al8">T8ni wigian?</span> « Où habites-tu? » et
+   <span class="al8">T8ni kd'al8wzin?</span> « Comment vas-tu? ». La construction complète fixe ici le sens.</div>`,
   coach:`Lis lentement, trois passes : 1) trouve le verbe, 2) trouve son préfixe, 3) assemble le reste.
    La vitesse viendra d'elle-même — la méthode, elle, se choisit maintenant.`},
  {t:"Lire des mots construits",d:"Repérer une racine commune dans des formes actuelles.",familyGroup:'alternance',ex:'fam',lec:aprFamilyAlternationLec,
   coach:`Ouvre le Décortiqueur avec <span class="al8">Agakimzowinno</span> puis avec
    <span class="al8">Nodab8nkat</span>. L'objectif est de repérer les morceaux du mot, pas d'inventer
    des familles qui ne sont pas documentées.`},
- {t:"Lire les anciens",d:"Laurent 1884, Masta 1932 : comparer les graphies sans les confondre.",ex:null,lec:`
+ {t:"Lire les anciens",d:"Laurent 1884, Masta 1932 : comparer les graphies sans les confondre.",ex:'history',lec:`
   <p>Les sources emploient différentes conventions d'écriture selon l'auteur et l'époque.
   Compare uniquement ce qui est documenté :</p>
   <table class="aprtab"><tr><th>Forme retenue par le projet</th><th>Graphie de la source</th><th>Source</th></tr>
@@ -7924,7 +7929,7 @@ const NIVEAUX=[
   coach:`Le dictionnaire garde les anciennes formes dans les notes de chaque mot. Elles documentent
    ce qui apparaît dans une source et à une date données; elles ne valident pas, à elles seules,
    la prononciation, le sens isolé ou l'usage actuel.`},
- {t:"Les niveaux de vérification",d:"Lire les marques internes du projet et ce qui attend encore une validation.",ex:null,lec:`
+ {t:"Les niveaux de vérification",d:"Lire les marques internes du projet et ce qui attend encore une validation.",ex:'evidence',lec:`
   <p>Le projet affiche ses limites. Chaque marque décrit un niveau interne de recoupement,
    et non une certification professionnelle ou communautaire :</p>
   <table class="aprtab"><tr><th>Marque</th><th>Ce qu'elle veut dire</th></tr>
@@ -7939,7 +7944,7 @@ const NIVEAUX=[
   coach:`Distingue toujours « attesté dans une source », « recoupé par le projet » et
    « validé dans l'usage actuel ». Seules des personnes compétentes peuvent confirmer l'emploi,
    le sens et la prononciation dans leur contexte.`},
- {t:"Décortiquer ensemble",d:"L'examen final du cégep : démonter deux mots longs, morceau par morceau.",ex:'fam',lec:`
+ {t:"Décortiquer ensemble",d:"La mission finale d'Autonomie : démonter deux mots longs, morceau par morceau.",ex:'fam',lec:`
   <h3>Pakholigan — le tambour</h3>
   <p><i>pakhol-</i> frapper + <i>-igan</i> l'instrument → <b>la chose avec laquelle on frappe</b>.</p>
   <h3>Nodab8nkat — le boulanger</h3>
@@ -7948,24 +7953,49 @@ const NIVEAUX=[
   <h3>À toi maintenant</h3>
   <p>Ouvre le Décortiqueur et entre <span class="al8">Aln8ba8dwaw8gan</span>. Écris ce que tu vois
   sur un papier : préfixes, racine, suffixes, famille. Puis explique chaque morceau à quelqu'un
-  d'autre, à voix haute. Si tu y arrives, le cégep est réussi.</p>`,
+  d'autre, à voix haute. Si tu y arrives, reprends ensuite l'analyse sans regarder les réponses.</p>`,
   coach:`Enseigner est la dernière marche de l'apprentissage. Le jour où tu expliques un mot
    à quelqu'un sans hésiter, il t'appartient pour de bon — et tu es devenu à ton tour
    quelqu'un qui transmet.`}]}];
 
-let aprNiv='p', aprMod=null, aprRevScope=null;
+const APR_LIBRARY_BY_ID=Object.fromEntries(APR_MODULE_LIBRARY.map(level=>[level.id,level]));
+const NIVEAUX=[
+ {id:'d',t:'Découverte',d:"Écouter les sons, saluer, se présenter, reconnaître les couleurs et construire les premiers nombres.",
+  c:'var(--green)',progressId:'p',progressOffset:0,mods:APR_LIBRARY_BY_ID.p.mods.slice(0,7)},
+ {id:'f',t:'Fondations',d:"Ancrer le vocabulaire du territoire, du vivant, du corps, de la famille, du temps et des actions dans une première conversation.",
+  c:'#5f7f3f',progressId:'p',progressOffset:7,mods:APR_LIBRARY_BY_ID.p.mods.slice(7)},
+ {id:'co',t:'Consolidation',d:"Comprendre les classes grammaticales, les formes personnelles, le pluriel, la possession, l'interrogation et la négation.",
+  c:'var(--gold)',progressId:'s',progressOffset:0,mods:APR_LIBRARY_BY_ID.s.mods},
+ {id:'a',t:'Approfondissement',d:"Comparer les classes verbales, les temps documentés, les ordres et les relations morphologiques sans fabriquer de formes.",
+  c:'var(--accent)',progressId:'c',progressOffset:0,mods:APR_LIBRARY_BY_ID.c.mods.slice(0,6)},
+ {id:'au',t:'Autonomie',d:"Lire les sources avec prudence, interpréter des phrases complètes et justifier chaque analyse par une attestation identifiable.",
+  c:'var(--blue)',progressId:'c',progressOffset:6,mods:APR_LIBRARY_BY_ID.c.mods.slice(6)}
+];
+const APR_EXERCISE_TARGETS={d:10,f:14,co:12,a:12,au:10};
+function aprProgressKey(level,index){
+  return `${level.progressId||level.id}.${(level.progressOffset||0)+index}`;
+}
+
+let aprNiv='d', aprMod=null, aprRevScope=null;
 
 function aprActivateNav(section){
   document.querySelectorAll('#aprNav button').forEach(b=>b.classList.toggle('on',b.dataset.p===section));
 }
 const APR_LEVEL_PATHS={
-  p:[
+  d:[
     ['Sons et graphie','entendre les cinq repères, puis écrire les lettres exactes'],
-    ['Premières phrases','saluer, se présenter et comprendre une première terminaison'],
-    ['Vocabulaire classé','nommer les personnes, le corps, le territoire et les actions'],
+    ['Premiers échanges','saluer, répondre et se présenter avec des phrases complètes'],
+    ['États visibles','observer et retrouver les six formes de couleur documentées'],
+    ['Premiers nombres','compter de zéro à dix, puis reconnaître les constructions suivantes']
+  ],
+  f:[
+    ['Monde vivant','animaux, arbres, plantes et nourriture'],
+    ['Corps et famille','lier chaque forme à une personne, un geste ou un visage'],
+    ['Territoire','nommer les lieux, l’eau, le feu, les saisons et les chemins'],
+    ['Actions','passer du nom isolé aux actions de tous les jours'],
     ['Conversation','réunir les formes documentées dans un échange complet']
   ],
-  s:[
+  co:[
     ['Nom et classe','apprendre animé ou inanimé avant tout accord'],
     ['Nombre et possession','pluriels attestés, pronoms et préfixes possessifs'],
     ['Phrase affirmative','personne et verbe à l’ordre indépendant'],
@@ -7973,14 +8003,19 @@ const APR_LEVEL_PATHS={
     ['Négation','partir de l’affirmation et écrire Nda avec le suffixe documenté'],
     ['Effets dans la phrase','classe du nom, nombre et choix de la forme verbale']
   ],
-  c:[
+  a:[
     ['Structure verbale','objet ou non, puis VAI, VII, VTA ou VTI'],
     ['Sens de la construction','présence, état et emplois documentés de Aimuk'],
     ['Temps verbaux','comparer personne, présent, imparfait à valeur passée et futur dans deux paradigmes attestés'],
     ['Ordres de conjugaison','indépendant, impératif et conjonctif interrogatif'],
-    ['Morphologie','préfixe, racine, suffixe et famille documentée'],
+    ['Morphologie','préfixe, racine, suffixe et famille documentée']
+  ],
+  au:[
     ['Sources','séparer forme actuelle, attestation historique et reconstruction'],
-    ['Production','analyser puis écrire des phrases complètes documentées']
+    ['Lecture complète','comprendre une phrase attestée sans traduire mot à mot'],
+    ['Comparaison','rapprocher des formes seulement lorsque les sources le permettent'],
+    ['Justification','expliquer le statut, la source et la limite de chaque analyse'],
+    ['Transmission','démonter une forme documentée et présenter son raisonnement']
   ]
 };
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
@@ -7995,7 +8030,7 @@ function aprModulePerfect(m,state){
 }
 function aprOpenModule(i){
   aprMod=i;
-  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[i], state=progGet(aprNiv+'.'+i);
+  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[i], state=n?progGet(aprProgressKey(n,i)):null;
   if(aprModulePerfect(m,state)){
     aprRevScope={nivId:aprNiv,modIndex:i,title:m.t};
     aprActivateNav('rev');
@@ -8021,7 +8056,8 @@ function aprParcours(){
   const prog=progAll();
   document.getElementById('aprBody').innerHTML=`
    <div class="aprcard"><h3>Parcours</h3>
-     <p class="aprlead">Trois niveaux qui s'appuient l'un sur l'autre. La méthode du projet a été conçue
+     <p class="aprlead">Cinq étapes qui s'appuient l'une sur l'autre. Ces noms appartiennent au projet et
+       ne correspondent à aucun ordre scolaire, diplôme, crédit ou programme ministériel. La méthode a été conçue
        pour ce projet : <b>ancrer</b> la forme entière, <b>observer</b> un contraste attesté,
        <b>retrouver</b> sans regarder, puis <b>produire</b> à l'oral ou à l'écrit.
        Les sources établissent les données linguistiques; la progression, les explications,
@@ -8030,20 +8066,21 @@ function aprParcours(){
        `<button data-n="${n.id}" class="${n.id===aprNiv?'on':''}" onclick="aprNiv='${n.id}';aprParcours()">${n.t}</button>`).join('')}</div>
    </div>
    ${NIVEAUX.filter(n=>n.id===aprNiv).map(n=>{
-     const maitrises=n.mods.filter((m,i)=>{ const s=prog[n.id+'.'+i];
+     const maitrises=n.mods.filter((m,i)=>{ const s=prog[aprProgressKey(n,i)];
        return s && (s.retenir>=75) && (!aprModuleNeedsUse(m) || s.utiliser>=75); }).length;
-     const commences=n.mods.filter((m,i)=>prog[n.id+'.'+i]).length;
+     const commences=n.mods.filter((m,i)=>prog[aprProgressKey(n,i)]).length;
      return `
      <div class="aprnote" style="border-left-color:${n.c}"><b>${n.t}</b>${n.d}<br>
        <span style="font-size:.78rem;color:var(--text2)">✓ ${maitrises} module${maitrises>1?'s':''} maîtrisé${maitrises>1?'s':''}
-       · ${commences} commencé${commences>1?'s':''} sur ${n.mods.length}</span>
+        · ${commences} commencé${commences>1?'s':''} sur ${n.mods.length}
+        · jusqu'à ${APR_EXERCISE_TARGETS[n.id]} questions par séance selon la banque attestée</span>
        <div style="height:4px;background:var(--border);border-radius:2px;margin-top:8px">
          <div style="height:100%;width:${Math.round(maitrises/n.mods.length*100)}%;background:${n.c};border-radius:2px;transition:.3s"></div>
        </div>
-       <div style="margin-top:12px"><button class="aprbtn" onclick="aprJeux('${n.id}')">🎯 Jeux du niveau ${n.t}</button>
+      <div style="margin-top:12px"><button class="aprbtn" onclick="aprJeux('${n.id}')">🎯 Jeux du niveau ${n.t}</button>
        <span style="font-size:.75rem;color:var(--text3);margin-left:8px">Une sélection adaptée aux notions de ce niveau.</span></div></div>
       ${aprPathHtml(n.id)}
-      <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[n.id+'.'+i];
+      <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[aprProgressKey(n,i)];
         const done=s&&s.retenir>=75&&(!aprModuleNeedsUse(m)||s.utiliser>=75);
         const perfect=aprModulePerfect(m,s);
         const badge=perfect?'↻':done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
@@ -8054,7 +8091,13 @@ function aprParcours(){
 /* Lance les jeux limités aux catégories de mots d'un niveau du parcours */
 function aprJeux(nivId){
   const n=NIVEAUX.find(x=>x.id===nivId);
-  const games={p:['territoire','sens','caches'],s:['territoire','genre','sens','negat','plur','caches'],c:['territoire','negat','fam']};
+  const games={
+    d:['sens','caches'],
+    f:['territoire','sens','caches'],
+    co:['territoire','genre','sens','negat','plur','caches'],
+    a:['genre','negat','plur','fam'],
+    au:['territoire','negat','fam']
+  };
   jCtx={label:n.t,cats:[...new Set(n.mods.map(m=>m.cat).filter(Boolean))],games:games[nivId]||[]};
   jCat='toutes';
   setView('jeux',true);
@@ -8066,7 +8109,7 @@ function aprLecon(i){
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n.mods[i];
   const lecHtml = typeof m.lec==='function' ? m.lec() : m.lec;
   APR_VOICE_READY=aprVoiceTargets(m,lecHtml);
-  const st=progGet(aprNiv+'.'+i), tt=m.t.replace(/'/g,"\\'"), canWrite=aprModuleNeedsUse(m);
+  const st=progGet(aprProgressKey(n,i)), tt=m.t.replace(/'/g,"\\'"), canWrite=aprModuleNeedsUse(m);
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="aprParcours()">← ${n.t}</button>
     <div class="aprcard">
@@ -8793,14 +8836,63 @@ const EXSONS=[
  {m:'W',q:'Quel résumé décrit W?',o:['O doux devant une consonne, WA devant une voyelle, très doux à la fin sans syllabe OU','Toujours comme V','Toujours muet','Toujours comme OU'],r:0,e:'La prononciation de W dépend de sa position. Après G ou K en fin de mot, il ne crée pas une syllabe OU séparée.'},
  {m:'I',q:'Comment sonne souvent I, surtout en fin de mot?',o:['É','A','OU','AN'],r:0,e:'I sonne souvent É, surtout en fin de mot.'}
 ];
-let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exUseKey='', exPoolOverride=null;
+const EXCONVERSATION=[
+ {q:"Quelle phrase demande le nom de l'autre personne?",f:"Comment t'appelles-tu?",o:["T8ni aliwizian?","T8ni kd'al8wzin?","N'wal8wzi, wliwni.","Adio!"],r:0,e:"T8ni aliwizian? est la question complète documentée pour demander le nom."},
+ {q:"Quelle phrase demande comment va l'autre personne?",f:"Comment vas-tu?",o:["T8ni kd'al8wzin?","T8ni aliwizian?","Nd'aliwizi Mali.","Kwaï!"],r:0,e:"T8ni kd'al8wzin? est appris comme une phrase entière."},
+ {q:"Quelle réponse donne son nom?",f:"Je m'appelle Mali.",o:["Nd'aliwizi Mali.","N'wal8wzi.","T8ni aliwizian?","Wliwni."],r:0,e:"Nd'aliwizi Mali contient la forme de première personne et le nom."},
+ {q:"Quelle réponse dit que la personne va bien et remercie?",f:"Je vais bien, merci.",o:["N'wal8wzi, wliwni.","Nda.","Kwaï mziwi.","Adio!"],r:0,e:"N'wal8wzi, wliwni. réunit les deux formes documentées."},
+ {q:"Quelle forme termine l'échange?",f:"Au revoir!",o:["Adio!","Kwaï!","8h8.","Nda."],r:0,e:"Adio est la forme du module pour prendre congé."},
+ {q:"Quel mot remercie?",f:"Merci",o:["Wliwni","Kwaï","Adio","Nda"],r:0,e:"Wliwni signifie merci dans la banque documentée du module."}
+];
+const EXDIALOGUE=[
+ {q:"Quelle réplique répond à cette question?",f:"— Kwaï! T8ni aliwizian?",o:["— Nd'aliwizi Mali. T8ni kd'al8wzin?","— N'wal8wzi. Adio!","— Kwaï! T8ni aliwizian?","— N'wal8wzi, wliwni. Kia?"],r:0,e:"Après la salutation et la question sur le nom, la personne se nomme puis demande comment va l'autre."},
+ {q:"Quelle réplique vient après la présentation?",f:"— Nd'aliwizi Mali. T8ni kd'al8wzin?",o:["— N'wal8wzi, wliwni. Kia?","— N'wal8wzi. Adio!","— Kwaï! T8ni aliwizian?","— Nd'aliwizi Mali. T8ni kd'al8wzin?"],r:0,e:"La réponse documentée dit que la personne va bien, remercie et retourne la question avec Kia?"},
+ {q:"Quelle réplique termine le dialogue?",f:"Dernière réponse",o:["— N'wal8wzi. Adio!","— Kwaï! T8ni aliwizian?","— N'wal8wzi, wliwni. Kia?","— Nd'aliwizi Mali. T8ni kd'al8wzin?"],r:0,e:"N'wal8wzi. Adio! ferme l'échange."},
+ {q:"Dans quelle réplique entend-on la question sur le nom?",f:"Repère la construction complète",o:["— Kwaï! T8ni aliwizian?","— N'wal8wzi. Adio!","— N'wal8wzi, wliwni. Kia?","— Nd'aliwizi Mali. T8ni kd'al8wzin?"],r:0,e:"T8ni aliwizian? doit être reconnu comme une question complète."},
+ {q:"Dans quelle réplique la personne retourne-t-elle la question avec Kia?",f:"Et toi?",o:["— N'wal8wzi, wliwni. Kia?","— Kwaï! T8ni aliwizian?","— N'wal8wzi. Adio!","— Nd'aliwizi Mali. T8ni kd'al8wzin?"],r:0,e:"Kia? apparaît ici après Je vais bien, merci."},
+ {q:"Remets le début de la conversation en place.",f:"Première réplique",o:["— Kwaï! T8ni aliwizian?","— Nd'aliwizi Mali. T8ni kd'al8wzin?","— N'wal8wzi, wliwni. Kia?","— N'wal8wzi. Adio!"],r:0,e:"Le dialogue commence par Kwaï puis la question sur le nom."}
+];
+const EXDAY=[
+ {q:"Quelle forme dit cette action de la journée?",f:"je me réveille",o:["N'toki","N'michi","Nd'aloka","N'kawi"],r:0,e:"N'toki — je me réveille."},
+ {q:"Quelle forme dit cette action de la journée?",f:"je mange",o:["N'michi","N'toki","N'klozi","Nd'aloka"],r:0,e:"N'michi — je mange."},
+ {q:"Quelle forme dit cette action de la journée?",f:"je travaille",o:["Nd'aloka","N'kawi","N'michi","N'klozi"],r:0,e:"Nd'aloka — je travaille."},
+ {q:"Quelle forme dit cette action de la journée?",f:"je parle",o:["N'klozi","N'kawi","N'toki","Nd'aloka"],r:0,e:"N'klozi — je parle."},
+ {q:"Quelle forme dit cette action de la journée?",f:"je dors",o:["N'kawi","N'klozi","N'michi","N'toki"],r:0,e:"N'kawi — je dors."},
+ {q:"Quelle action ouvre naturellement la suite proposée dans la leçon?",f:"Réveil → repas → travail → parole → sommeil",o:["N'toki","N'kawi","Nd'aloka","N'klozi"],r:0,e:"La suite commence avec N'toki, je me réveille. Cet ordre sert ici de repère de mémoire, pas de règle grammaticale."}
+];
+const EXSOURCECHECK=[
+ {q:"Quelle forme récente est retenue par le projet dans cette série?",f:"enfant",o:["Aw8sis","Awôssis","Awossis","A8añsis"],r:0,e:"Aw8sis est la forme récente retenue par le projet; les autres restent identifiées par leur source et leur date."},
+ {q:"Quelle graphie est associée à Laurent, 1884?",f:"enfant",o:["Awôssis","Aw8sis","Awossis","A8añsis"],r:0,e:"La leçon associe Awôssis à Laurent, 1884."},
+ {q:"Quelle graphie est associée à Masta, 1932?",f:"enfant",o:["Aw8ssis","Aw8sis","Awôssis","Awossis"],r:0,e:"La leçon associe Aw8ssis à Masta, 1932."},
+ {q:"Quelle graphie est associée à Wzokhilain, 1830?",f:"enfant",o:["Awossis","Aw8sis","Aw8ssis","A8añsis"],r:0,e:"La leçon associe Awossis à Wzokhilain, 1830."},
+ {q:"Quelle graphie est associée à Rasles, 1691?",f:"enfant",o:["A8añsis","Awossis","Awôssis","Aw8sis"],r:0,e:"La leçon associe A8añsis à Rasles, 1691."},
+ {q:"Que permet d'affirmer une graphie ancienne à elle seule?",f:"Choisis la limite correcte",o:["Qu'elle figure dans une source et une époque identifiées","Que sa prononciation actuelle est certaine","Que toutes ses lettres se prononcent comme en français","Qu'elle remplace automatiquement la forme récente"],r:0,e:"Une graphie ancienne atteste d'abord ce qui est imprimé dans une source; elle ne suffit pas à confirmer seule l'usage ou la prononciation actuels."}
+];
+const EXHISTORY=[
+ {q:"Quelle forme récente le projet rapproche de O'hoo dans ce tableau?",f:"Laurent, 1884",o:["8h8","Nda","Chegwal","Aw8sis"],r:0,e:"Le tableau compare O'hoo à 8h8 sans effacer la graphie historique."},
+ {q:"Quelle graphie de Masta, 1932 est comparée à Chegwal?",f:"grenouille",o:["Chegual","Awôssis","8nda","O'hoo"],r:0,e:"Chegual est la graphie de source affichée en regard de Chegwal."},
+ {q:"Quelles graphies historiques sont comparées à Nda?",f:"non",o:["8da · 8nda","O'hoo · Awôssis","Chegual · A8añsis","Aw8ssis · Awossis"],r:0,e:"Le tableau associe 8da à Laurent et 8nda à Masta."},
+ {q:"Quelle forme récente est comparée à A8añsis et Awôssis?",f:"enfant",o:["Aw8sis","Chegwal","Nda","8h8"],r:0,e:"Aw8sis est affiché comme forme récente dans cette comparaison."},
+ {q:"Quel est le bon geste devant deux graphies différentes?",f:"Méthode historique",o:["Noter les lettres, l'auteur et la date","Fusionner les formes sans note","Choisir celle qui semble plus facile à prononcer","Corriger silencieusement la source"],r:0,e:"La méthode du module est de comparer et documenter sans confondre les statuts."},
+ {q:"Que ne prouve pas un rapprochement graphique à lui seul?",f:"Limite de l'analyse",o:["La prononciation et l'usage actuels","La présence d'une forme dans le tableau","Le nom de l'auteur indiqué","La date imprimée par la leçon"],r:0,e:"Une ressemblance graphique ne valide pas seule la prononciation ni l'usage actuel."}
+];
+const EXEVIDENCE=[
+ {q:"Que signifie la marque interne « ✓ Orthographe confirmée »?",f:"Statut du projet",o:["Le projet a recoupé le mot dans deux sources ou plus","Une institution a certifié toute la fiche","La prononciation a été enregistrée par un aîné","La forme peut être conjuguée automatiquement"],r:0,e:"Cette marque décrit un recoupement interne du projet, pas une certification professionnelle ou communautaire."},
+ {q:"Que signifie « ★ Citation exacte »?",f:"Statut du passage",o:["Le passage est reproduit tel quel et vérifiable dans l'ouvrage","La forme est nécessairement actuelle","La traduction a été créée par le projet","La prononciation est certaine"],r:0,e:"La marque indique une citation vérifiable dans la source nommée."},
+ {q:"Que signifie « ✳ Forme de 1932 »?",f:"Statut historique",o:["La forme est attestée chez Masta et reste à valider dans l'usage actuel","La forme est obligatoire aujourd'hui","La forme a été inventée en 1932","La source n'est pas identifiée"],r:0,e:"L'attestation historique et la validation dans l'usage actuel sont deux choses distinctes."},
+ {q:"Que signale « ⚠️ Graphies anciennes fusionnées »?",f:"Avertissement",o:["Plusieurs écritures historiques ont été réunies dans une entrée","Toutes les graphies sont identiques","La forme moderne est supprimée","La prononciation est enregistrée"],r:0,e:"La fiche réunit des graphies, elle doit donc être lue avec prudence."},
+ {q:"Que demande « ⚠️ Étymologie de l'enseignant »?",f:"Limite",o:["Une validation supplémentaire","Une correction automatique","La suppression de la source","Une traduction mot à mot"],r:0,e:"L'explication est attribuée au cours et reste à faire valider."},
+ {q:"Que faut-il indiquer lorsqu'on cite une forme du dictionnaire?",f:"Bonne pratique",o:["Sa source et la limite signalée par sa fiche","Seulement sa traduction française","Seulement l'année la plus récente","Aucune information si la forme est verte"],r:0,e:"La source et le statut permettent au lecteur de comprendre ce qui est attesté, recoupé ou encore à valider."}
+];
+let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exUseKey='', exVariant='mixed', exPoolOverride=null;
 let exAsked=[], exSonsQueue=[];
 
 function aprEx(type,cat,titre,mode){
   exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
-  exQ=0; exOk=0; exTot=8; exAsked=[]; exSonsQueue=[];
+  exQ=0; exOk=0; exTot=APR_EXERCISE_TARGETS[aprNiv]||8; exAsked=[]; exSonsQueue=[];
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
   exUseKey=(m&&m.use)||'';
+  exVariant=(m&&m.activity)||'mixed';
   const modulePool=m?aprModulePool(cat):[];
   const scopedPool=type==='genre'
     ?modulePool.filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''))
@@ -8812,7 +8904,9 @@ function aprEx(type,cat,titre,mode){
     negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length, temps:()=>EXTEMPS.length,
     vta:()=>EXVTA.length*2, inter2:()=>EXINTER2.length, ordre:()=>EXORDRE.length,
     neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
-    trad:()=>EXTRAD.length, ecrisgram:()=>grammarWritingPool(cat).length
+    trad:()=>EXTRAD.length, conversation:()=>EXCONVERSATION.length, dialogue:()=>EXDIALOGUE.length,
+    day:()=>EXDAY.length, sourcecheck:()=>EXSOURCECHECK.length, history:()=>EXHISTORY.length,
+    evidence:()=>EXEVIDENCE.length, ecrisgram:()=>grammarWritingPool(cat).length
   }[type];
   if(fixedCapacity) exTot=Math.min(exTot,fixedCapacity());
   if(type==='sons'){ exSonsQueue=jShuf(EXSONS); exTot=exSonsQueue.length; }
@@ -8860,8 +8954,10 @@ function exFin(){
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   const pc=Math.round(exOk/exTot*100);
   const canUse=exMode==='retenir' && Boolean(exUseKey||exCat);
-  if(exMode!=='rev' && aprMod!==null && aprMod!==undefined)
-    progRecord(aprNiv+'.'+aprMod, exMode, pc);
+  if(exMode!=='rev' && aprMod!==null && aprMod!==undefined){
+    const level=NIVEAUX.find(item=>item.id===aprNiv);
+    if(level) progRecord(aprProgressKey(level,aprMod), exMode, pc);
+  }
   const msg = canUse && pc>=75 ? "Le sens est bien retenu. Passe maintenant à l'utilisation : écris les mots de mémoire."
             : canUse           ? "Quiz terminé. L'étape Utiliser te permet maintenant d'écrire les mots de mémoire."
             : pc===100 ? "Parfait. Tu peux passer au module suivant."
@@ -8890,8 +8986,11 @@ function exSuivant(){
   if(exQ>=exTot) return exFin();
   const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, ecrisgram:exGrammarWrite, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
     negs:exNegs, classfx:exClassFx, structure:exStructure, temps:exTemps, vta:exVta, inter2:exInter2, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
-    trad:exTrad})[exType];
-  handler();
+    trad:exTrad, conversation:()=>exFixedLesson(EXCONVERSATION), dialogue:()=>exFixedLesson(EXDIALOGUE),
+    day:()=>exFixedLesson(EXDAY), sourcecheck:()=>exFixedLesson(EXSOURCECHECK), history:()=>exFixedLesson(EXHISTORY),
+    evidence:()=>exFixedLesson(EXEVIDENCE)})[exType];
+  if(handler) handler();
+  else exCadre('<div class="aprnote w"><b>Exercice indisponible</b>Ce module a été bloqué proprement au lieu de laisser une page vide.</div>');
 }
 function exPickUnique(pool,keyFn){
   if(!pool.length) return null;
@@ -8900,6 +8999,21 @@ function exPickUnique(pool,keyFn){
   const chosen=jPick(available.length?available:pool);
   if(chosen&&!exAsked.includes(key(chosen))) exAsked.push(key(chosen));
   return chosen;
+}
+
+function exFixedLesson(bank){
+  const q=exPickUnique(bank,item=>item.q+'|'+item.f);
+  if(!q) return exFin();
+  window._ex=q;
+  const order=jShuf(q.o.map((_,i)=>i));
+  const opts=order.map(i=>q.o[i]), answer=order.indexOf(q.r);
+  exCadre(`
+    <div class="jprompt"><div class="q">${q.q}</div><div class="w" style="font-size:clamp(1.2rem,4vw,1.8rem)">${q.f}</div></div>
+    <div class="jopts">${opts.map((option,i)=>`<button class="jopt" onclick="exRepond(${answer},${i},exRetFixedLesson())">${option}</button>`).join('')}</div>`);
+}
+function exRetFixedLesson(){
+  const q=window._ex;
+  return `<b>${q.o[q.r]}</b><em>${q.e}</em><span class="aprsrc">Réponse limitée aux formes et aux distinctions présentées dans cette leçon.</span>`;
 }
 
 function exSons(){
@@ -8912,7 +9026,7 @@ function exSons(){
 }
 function exRetSons(){ return `<b>${window._ex.m}</b><em>${window._ex.e}</em>`; }
 
-/* — primaire : reconnaissance de vocabulaire — */
+/* — Découverte et Fondations : vocabulaire — */
 function exVocab(){
   let pool=(exPoolOverride&&exPoolOverride.length)?exPoolOverride
     :aprSur().filter(w=>w.cat===exCat && w.aln8ba.length<=18);
@@ -8920,7 +9034,8 @@ function exVocab(){
   let choix=pool.filter(w=>!exAsked.includes(w.id||w.aln8ba));
   if(!choix.length){ exAsked=[]; choix=pool; }
   const bon=jPick(choix); exAsked.push(bon.id||bon.aln8ba);
-  const sens = exQ%2===0;
+  const sens = exVariant==='recognize' || (exVariant==='mixed' && exQ%2===0);
+  const contextual=exVariant==='context';
   const key=w=>sens?w.fr:w.aln8ba;
   const catDistractors=pool.length>=4?pool:aprSur().filter(w=>w.cat===exCat&&w.aln8ba.length<=18);
   const autres=jUniqueBy(catDistractors.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
@@ -8930,8 +9045,9 @@ function exVocab(){
   const tous=jShuf([bon,...autres]);
   const ib=tous.indexOf(bon); window._ex=bon;
   exCadre(`
-    <div class="jprompt"><div class="q">${sens?'Que veut dire ce mot?':'Quel mot dit cela?'}</div>
+    <div class="jprompt"><div class="q">${sens?'Reconnais le sens de cette forme':contextual?'Retrouve la forme grâce au sens et à son contexte':'Retrouve la forme aln8ba'}</div>
       <div class="w">${sens?bon.aln8ba:bon.fr}</div>
+      ${contextual?`<div class="h">${bon.grammar||bon.cat||'forme documentée'} · la réponse exacte est dans la banque de cette leçon</div>`:''}
       ${sens&&MODULE_VOICE_PUBLIC?'<button class="voice-btn" style="margin-top:12px" onclick="voiceListenExercise()">🔊 Écouter</button>':''}</div>
     <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="exRepond(${ib},${i},exRetVocab())">${
       sens?w.fr:`<span class="al">${w.aln8ba}</span>`}</button>`).join('')}</div>`);
@@ -9259,7 +9375,7 @@ function aprRevStart(){
 }
 function exRev(){ (exQ%2===0?exVocab:exEcris)(); }
 
-/* — secondaire : animé ou inanimé — */
+/* — Consolidation : animé ou inanimé — */
 function exGenre(){
   const pool=(exPoolOverride&&exPoolOverride.length?exPoolOverride:aprSur())
     .filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
@@ -9279,7 +9395,7 @@ function exRetGenre(){ const w=window._ex,a=window._exa;
     <div style="margin-top:7px;font-size:1.05rem">Pluriel : <b class="al8" style="color:var(--accent)">${pl.form}</b> <span style="font-size:.72rem;color:var(--text2)">(${pl.type})</span></div>
     <span class="aprsrc">${aprSrc(w.source)}</span>`; }
 
-/* — secondaire : le pluriel — */
+/* — Consolidation : le pluriel — */
 function exPlur(){
   const q=exPickUnique(JPLUR,x=>x.s); window._ex=q;
   const autres=jShuf(JPLUR.filter(x=>x.p!==q.p)).slice(0,3).map(x=>x.p);
@@ -9295,7 +9411,7 @@ function exRetPlur(){ const q=window._ex;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
     <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, pages 16 à 18"))}</span>`; }
 
-/* — secondaire : les possessifs — */
+/* — Consolidation : les possessifs — */
 const EXPOSS=[
  {m:'Ndep',f:'ma tête',r:0},{m:'Kdep',f:'ta tête',r:1},{m:'Wdep',f:'sa tête',r:2},
  {m:'Nid8ba',f:'mon ami',r:0},{m:'Kid8ba',f:'ton ami',r:1},{m:'Wid8ba',f:'son ami',r:2},
@@ -9313,7 +9429,7 @@ function exPoss(){
 function exRetPoss(){ const q=window._ex;
   return `<b>${q.m} — ${q.f}</b><em>Le préfixe N- dit « mon », K- dit « ton », W- dit « son ».</em>`; }
 
-/* — secondaire : conjuguer au présent — */
+/* — Consolidation : formes personnelles au présent — */
 const EXCONJ=[
  {r:'michi',f:'manger'},{r:'klozi',f:'parler'},{r:'wigi',f:'habiter'},
  {r:'kawi',f:'dormir'},{r:'toki',f:'se réveiller'},{r:'pidiga',f:'entrer'},
@@ -9342,7 +9458,7 @@ function exRetConjp(){ const {v,pers,bonne}=window._ex;
     « ${pers===0?'je':'tu'} ». ${voy?'Le D apparaît parce que le verbe commence par une voyelle.'
     :'Pas de D : le verbe commence par une consonne.'}</em>`; }
 
-/* — secondaire : négation simple — */
+/* — Consolidation : négation simple — */
 const EXNEGS=[
  {v:"Nd'aliwizi",f:"je m'appelle",n:"Nda nd'aliwiziw"},
  {v:"N'wal8wzi",f:"je vais bien",n:"Nda n'wal8wziw"},
@@ -9363,7 +9479,7 @@ function exRetNegs(){ const q=window._ex;
   return `<b>${q.n}</b><em>Nda devant le verbe, et le suffixe -W à la fin —
     parce que le radical finit par -i.</em>`; }
 
-/* — secondaire : effets concrets de la classe grammaticale — */
+/* — Consolidation : effets concrets de la classe grammaticale — */
 const EXCLASSFX=[
  {q:'Quelle est la classe documentée de Aples (une pomme)?',o:['Animée','Inanimée'],r:0,
   e:'Aples est animé. Le sens français « fruit » ne permet pas de deviner cette classe.'},
@@ -9393,7 +9509,7 @@ function exRetClassFx(){ const q=window._ex;
   return `<b>${q.o[q.r]}</b><em>${q.e}</em>
     <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, pages 24 à 33"))}</span>`; }
 
-/* — secondaire : traduire la structure plutôt que les mots isolés — */
+/* — Consolidation : lire la structure plutôt que les mots isolés — */
 const EXSTRUCT=[
  {q:'Que signifie Kizilla?',o:['Peut-être','Il est','Ici','Village'],r:0,
   e:'Kizilla signifie « peut-être » dans le Manuel. Il ne traduit jamais l’auxiliaire français « est ».'},
@@ -9427,7 +9543,7 @@ function exRetStructure(){ const q=window._ex;
   return `<b>${q.displayOptions[q.displayAnswer]}</b><em>${q.e}</em>
     <span class="aprsrc">Sources indiquées dans la leçon</span>`; }
 
-/* — cégep : personne et temps dans des paradigmes documentés — */
+/* — Approfondissement : personne et temps dans des paradigmes documentés — */
 const EXTEMPS=[
  {q:'Quel sens central Laurent donne-t-il à Aimuk?',o:['Être présent ou demeurer quelque part','Être malade','Posséder un objet','Transformer un nom en pluriel'],r:0,
   e:'Laurent le décrit comme un verbe principal de présence ou de résidence, pas comme un auxiliaire universel.'},
@@ -9479,7 +9595,7 @@ function exRetTemps(){ const q=window._ex;
   return `<b>${q.displayOptions[q.displayAnswer]}</b><em>${q.e}</em>
     <span class="aprsrc">Manuel 2018 · Laurent 1884, pages 162 à 167 · Pilaskw d'Odanak, mai 2019</span>`; }
 
-/* — cégep : VTA ou VTI — */
+/* — Approfondissement : VTA ou VTI — */
 const EXVTA=DOCUMENTED_OBJECT_CLASS_PAIRS;
 function exVta(){
   if(exQ<2){
@@ -9534,7 +9650,7 @@ function exRetVta(){
       <p><b>Méthode :</b> trouve l'objet, vérifie sa classe sur sa fiche, puis choisis la forme exacte de la paire.</p></div>
     <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, page 33"))}</span>`; }
 
-/* — secondaire : deuxième personne dans les questions documentées — */
+/* — Consolidation : deuxième personne dans les questions documentées — */
 const EXINTER2=[
  {p:'T8ni aliwizian?',f:"Comment t'appelles-tu?",q:'Où se trouve « tu » dans cette forme?',
   o:['Dans la forme en -ian',"Dans un préfixe kd'-",'Dans un préfixe n’-','Aucune marque'],r:0,
@@ -9571,7 +9687,7 @@ function exRetInter2(){ const q=window._ex;
   return `<b>${escH(q.interCorrect)}</b><em>${escH(q.e)}</em>
     <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, pages 29 et 34"))}</span>`; }
 
-/* — cégep : les trois ordres — */
+/* — Approfondissement : les trois ordres — */
 const EXORDRE=[
  {p:"N'michi",f:"je mange",r:0},{p:"Michi!",f:"mange!",r:1},
  {p:"Kagwi k'michi?",f:"que manges-tu?",r:2},{p:"Nd'aloka",f:"je travaille",r:0},
@@ -9592,7 +9708,7 @@ function exRetOrdre(){ const q=window._ex;
     'Forme conjonctive : elle est employée ici dans un exemple interrogatif.'][q.r]}</em>
     <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, page 29"))}</span>`; }
 
-/* — cégep : négation complète — */
+/* — Approfondissement : négation complète — */
 function exNeg(){
   const q=exPickUnique(JNEG,x=>x.v); window._ex=q;
   exCadre(`
@@ -9608,7 +9724,7 @@ function exRetNeg(){ const q=window._ex;
   return `<b>${q.n}</b><em>${q.w}</em>
     <span class="aprsrc">Exemple actuel documenté dans le parcours d'apprentissage.</span>`; }
 
-/* — cégep : les suffixes — */
+/* — Approfondissement : les suffixes — */
 const EXSUF=[
  {m:'Pakholigan',s:'-higan',r:1,f:'le tambour'},{m:'Lintow8gan',s:'-w8gan',r:0,f:'le chant'},
  {m:'Agakimzowinno',s:'-winno',r:2,f:'l’étudiant'},{m:'Pizwagamikw',s:'-gamikw',r:3,f:"la salle de danse"},
@@ -9627,7 +9743,7 @@ function exRetSuf(){ const q=window._ex;
   return `<b>${q.m} — ${q.f}</b><em>Le suffixe est <code>${q.s}</code>.
     Sers-toi du Décortiqueur pour voir toute la famille du mot.</em>`; }
 
-/* — cégep : familles de racines — */
+/* — Approfondissement : familles de racines — */
 function exFam(){
   const B=exerciseRootFamilies();
   if(!B.length) return exVocab();
@@ -9652,7 +9768,7 @@ function exRetFam(){ const {fid,relation,mem,cous}=window._ex;
     ${objectClassFamilyNote(mem)}
     <span class="aprsrc">Relation documentée : ${relation}. Les pluriels restent dans leur exercice dédié.</span>`; }
 
-/* — cégep : traduire — */
+/* — Autonomie : lire des phrases complètes — */
 const EXTRAD=[
  {p:"Nd'aliwizi Mali",r:0,o:["Je m'appelle Marie","Tu t'appelles Marie","Elle s'appelle Marie","Nous nous appelons Marie"]},
  {p:"T8ni kd'al8wzin?",r:1,o:["Où habites-tu?","Comment vas-tu?","Quel âge as-tu?","Qui es-tu?"]},
