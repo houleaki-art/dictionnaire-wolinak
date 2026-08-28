@@ -246,6 +246,13 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - La rotation des séances passe à une nouvelle version et une actualisation forte de l'application conserve les clés de progression pédagogique.
 - Validation de 82 tests automatisés, des 30 questions de Découverte dans Chrome et de la disposition mobile à 390 × 844.
 
+## Lecture des rétroactions — 28 août 2026
+
+- L'avancement automatique reste actif après une confirmation courte afin de garder un bon rythme de pratique.
+- Une bonne réponse qui révèle une note de sens, un exemple, une nature grammaticale, une analyse de structure ou un raisonnement complet ne disparaît plus automatiquement.
+- Dans ces cas, l'explication est placée dans la zone visible et le bouton devient `Suivant après lecture` afin que l'élève décide quand il a terminé.
+- Une erreur continue toujours d'attendre une action manuelle avant de passer à la question suivante.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

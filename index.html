@@ -813,6 +813,7 @@ body.music-dock-open .toast{bottom:116px}
   border-left:3px solid var(--green);font-size:.84rem;line-height:1.6}
 .jafter b{font-size:1.05rem;display:block;margin-bottom:5px}
 .answer-auto-note{display:block;margin-top:9px;color:var(--green);font-size:.74rem;font-weight:700}
+.answer-learning-note{display:block;margin-top:9px;color:var(--gold);font-size:.78rem;font-weight:700}
 .answer-auto-leaving{animation:answerLeave .18s ease forwards;pointer-events:none}
 @keyframes answerLeave{to{opacity:0;transform:translateY(-6px)}}
 @media(prefers-reduced-motion:reduce){.answer-auto-leaving{animation:none;opacity:1}}
@@ -2128,7 +2129,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-28-practice-rotation-015';
+const APP_RESET_VERSION = '2026-08-28-learning-feedback-016';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev'];
 
@@ -3390,7 +3391,7 @@ function progressBar(pct){
 
 // Feedback lexical : les niveaux de reconnaissance ne devancent jamais la leçon de grammaire.
 function richFeedback(w, correct){
-  const ex = w.example_a ? `<div style="margin-top:8px;font-size:.8rem;font-style:italic;opacity:.8">"${w.example_a}" — ${w.example_f||''}</div>` : '';
+  const ex = w.example_a ? `<div class="prat-example-note" style="margin-top:8px;font-size:.8rem;font-style:italic;opacity:.8">"${w.example_a}" — ${w.example_f||''}</div>` : '';
   const meaningNote=practiceMeaningNote(w);
   if(correct) return `<div class="prat-feedback ok" role="status" aria-live="polite" aria-atomic="true">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${ex}</div>`;
   return `<div class="prat-feedback ko" role="status" aria-live="polite" aria-atomic="true">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${ex}</div>`;
@@ -3450,9 +3451,17 @@ function finishAnsweredStep(correct,scopeSelector,nextAction,delayMs){
   if(!correct){scrollToNextAction(scopeSelector);return;}
   const scope=document.querySelector(scopeSelector); if(!scope) return;
   const feedback=scope.querySelector('[role="status"],.prat-feedback,.jafter');
+  const learningContent=scope.querySelector('.prat-meaning-note,.prat-example-note,.prat-grammar-note,.writing-analysis,.answer-learning-content,.aprnote');
+  const next=[...scope.querySelectorAll('button')].find(btn=>/^(Suivant|Voir le résultat)/i.test((btn.textContent||'').trim()));
+  if(learningContent){
+    if(feedback&&!feedback.querySelector('.answer-learning-note'))
+      feedback.insertAdjacentHTML('beforeend','<span class="answer-learning-note">Explication importante : prends le temps de la lire, puis continue.</span>');
+    if(next) next.textContent=/Voir le résultat/i.test(next.textContent)?'Voir le résultat après lecture →':'Suivant après lecture →';
+    requestAnimationFrame(()=>learningContent.scrollIntoView({behavior:'smooth',block:'center'}));
+    return;
+  }
   if(feedback&&!feedback.querySelector('.answer-auto-note'))
     feedback.insertAdjacentHTML('beforeend','<span class="answer-auto-note">Bonne réponse. Question suivante automatiquement…</span>');
-  const next=[...scope.querySelectorAll('button')].find(btn=>/^(Suivant|Voir le résultat)/i.test((btn.textContent||'').trim()));
   if(next) next.textContent=/Voir le résultat/i.test(next.textContent)?'Résultat automatique…':'Question suivante…';
   scrollToNextAction(scopeSelector);
   const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -3571,7 +3580,7 @@ function checkLvl3Class(chosen,correct,chosenIndex){
   const w=PS.queue[PS.idx];
   const fb=document.getElementById('pratFb');
   if(fb){
-    const detail=`<div style="margin-top:7px"><strong>Nature de la fiche :</strong> ${escH(correct)}${w.grammar?` · ${escH(w.grammar)}`:''}</div>`;
+    const detail=`<div class="prat-grammar-note" style="margin-top:7px"><strong>Nature de la fiche :</strong> ${escH(correct)}${w.grammar?` · ${escH(w.grammar)}`:''}</div>`;
     fb.outerHTML=richFeedback(w,isCorrect).replace(/<\/div>$/,detail+'</div>');
   }
   recordAnswer(isCorrect,correct);

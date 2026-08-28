@@ -25,14 +25,19 @@ test('la reponse ecrite ignore casse, espaces, apostrophes et ponctuation', () =
   assert.match(html, /Le <b>8 est une lettre importante<\/b> et doit être écrit/);
 });
 
-test('une bonne reponse avance seule et une erreur garde le bouton', () => {
+test('une bonne reponse simple avance seule mais une explication reste a lire', () => {
   const source = sourceBetween('function finishAnsweredStep', '// ── NIVEAU 1');
   assert.match(source, /if\(!correct\)\{scrollToNextAction\(scopeSelector\);return;\}/);
+  assert.match(source, /learningContent/);
+  assert.match(source, /Suivant après lecture/);
+  assert.match(source, /Explication importante/);
   assert.match(source, /Question suivante automatiquement/);
   assert.match(source, /setTimeout/);
   assert.match(html, /finishAnsweredStep\(correct,'#pratArena',nextQ\)/);
   assert.match(html, /finishAnsweredStep\(correct,'#exBody',exSuivant\)/);
   assert.match(html, /finishAnsweredStep\(correct,'#jBody',jNext\)/);
+  assert.match(html, /class="prat-example-note"/);
+  assert.match(html, /class="prat-grammar-note"/);
 });
 
 test('le defilement reserve la hauteur du lecteur musical', () => {
