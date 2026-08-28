@@ -730,6 +730,16 @@ body.music-dock-open .toast{bottom:116px}
 .aprnote.w{border-left-color:var(--accent)}
 .aprnote b{font-size:1rem;display:block;margin-bottom:3px}
 .aprsrc{font-size:.7rem;color:var(--text3);font-style:italic;display:block;margin-top:8px}
+.apr-method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.apr-method-step{min-width:0;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)}
+.apr-method-step strong{display:block;color:var(--accent);font-size:.76rem;letter-spacing:.04em;margin-bottom:4px}
+.apr-method-step span{display:block;color:var(--text2);font-size:.72rem;line-height:1.45}
+.apr-origin{margin:12px 0;border:1px solid var(--border);border-radius:10px;background:var(--surface2);overflow:hidden}
+.apr-origin summary{cursor:pointer;padding:11px 13px;font-size:.78rem;font-weight:700;color:var(--text2);list-style-position:inside}
+.apr-origin summary:hover,.apr-origin summary:focus-visible{color:var(--accent)}
+.apr-origin-body{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--border);padding:12px 13px;background:var(--surface)}
+.apr-origin-body div{font-size:.74rem;line-height:1.5;color:var(--text2)}
+.apr-origin-body strong{display:block;color:var(--text);margin-bottom:3px}
 .aprtool{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
 .aprtool input,.aprtool select{font-family:inherit;font-size:.95rem;padding:11px 14px;
   border:1.5px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);flex:1;min-width:150px}
@@ -1012,6 +1022,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   main{padding:11px}
   .music-hero{padding:20px 16px}
   .music-card,.aprcard{padding:14px}
+  .apr-method{grid-template-columns:1fr 1fr}
+  .apr-origin-body{grid-template-columns:1fr}
   .prat-levels{grid-template-columns:1fr}
   .trad-direction-bar{grid-template-columns:1fr}
   .jstage{padding:13px}
@@ -6330,7 +6342,7 @@ function traduire(){
     if(FR&&t==='parler'&&TOKS[i+1]&&['aln8ba8dwaw8gan','abenakis'].includes(TOKS[i+1].n)){
       chunks.push({type:'gram',toks:TOKS.slice(i,i+2),titre:"Nd'aln8ba8dwa",
         preview:"forme complète connue Nd'aln8ba8dwa (« je parle abénakis »)",
-        note:"Le Manuel de l'étudiant 1 documente la phrase complète Nd'aln8ba8dwa. Le traducteur la propose comme reformulation; il ne transforme pas cette forme conjuguée en infinitif autonome."});
+        note:"La phrase complète Nd'aln8ba8dwa est documentée dans la source actuelle citée. Le traducteur la propose comme reformulation; il ne transforme pas cette forme conjuguée en infinitif autonome."});
       i+=2;
       continue;
     }
@@ -7025,6 +7037,46 @@ function aprSrc(s){ if(!s) return '';
   if(s.includes('caodanak')) return "Conseil des Abénakis d'Odanak";
   if(s.includes('Bomsawin')) return "Hélène ou Nicole O'Bomsawin"; return ''; }
 
+const APR_PROJECT_PEDAGOGY="Progression, explications et exercices : conception originale du projet Aln8ba8dwaw8gan.";
+const APR_METHOD_STEPS=[
+  ['1 · Ancrer','Voir ou entendre la forme entière dans son contexte.'],
+  ['2 · Observer','Repérer un seul contraste documenté sans inventer de règle.'],
+  ['3 · Retrouver','Rappeler la forme sans regarder, puis vérifier.'],
+  ['4 · Produire','Dire, écrire ou expliquer la forme avec sa limite.']
+];
+function aprMethodHtml(m){
+  const steps=APR_METHOD_STEPS.slice(0,aprModuleNeedsUse(m)?4:3);
+  return `<div class="aprnote" style="border-left-color:var(--gold)"><b>Méthode du projet · apprendre sans recopier</b>
+    La leçon transforme des données linguistiques citées en un parcours créé pour ce projet.</div>
+    <div class="apr-method" aria-label="Étapes de la méthode du projet">${steps.map(step=>
+      `<div class="apr-method-step"><strong>${step[0]}</strong><span>${step[1]}</span></div>`).join('')}</div>`;
+}
+function aprLessonReferences(m,lecHtml){
+  const text=[m&&m.refs,lecHtml].filter(Boolean).join(' '), refs=[];
+  const add=ref=>{ if(!refs.includes(ref)) refs.push(ref); };
+  if(/Manuel de l['’]étudiant|Charland|Terraza/i.test(text)) add("Manuel de l'étudiant 1 (2018)");
+  if(/Laurent/i.test(text)) add('Joseph Laurent (1884)');
+  if(/Masta/i.test(text)) add('Henry Lorne Masta (1932)');
+  if(/Rasles/i.test(text)) add('Sébastien Rasles (1691)');
+  if(/Wzokhilain/i.test(text)) add('Peter Paul Wzokhilain (1830)');
+  if(/Pilaskw/i.test(text)) add("W8banaki Pilaskw d'Odanak");
+  if(/Beach/i.test(text)) add('Jesse R. Beach (2004)');
+  if(m&&(m.cat||m.items)) add('fiches vertes actuelles du dictionnaire; source propre à chaque entrée');
+  return refs.length?refs:['fiches documentées du dictionnaire'];
+}
+function aprProvenanceHtml(m,lecHtml){
+  const refs=aprLessonReferences(m,lecHtml).map(escH).join(' · ');
+  return `<details class="apr-origin"><summary>Origine des données et création de la leçon</summary>
+    <div class="apr-origin-body"><div><strong>Données linguistiques consultées</strong>${refs}.
+      La référence indique une source consultée; elle ne signifie ni participation ni approbation du projet.</div>
+      <div><strong>Travail propre au projet</strong>${APR_PROJECT_PEDAGOGY}
+      Les citations exactes nécessaires restent identifiées; les explications affichées sont celles du projet.</div></div></details>`;
+}
+function aprCitationText(source){
+  const clean=publicSourceLabel(source||'').trim();
+  return `${clean?`Donnée linguistique consultée : ${clean}. `:''}${APR_PROJECT_PEDAGOGY}`;
+}
+
 const APR_DOCUMENTED_ANALYSES=new Map([
   [aprNorm('Nodab8nkad'),{
     racine:'Ab8n',
@@ -7034,7 +7086,7 @@ const APR_DOCUMENTED_ANALYSES=new Map([
       {t:'-kad',l:'suffixe de métier',s:'celui qui produit; graphie de Masta',c:'suf'}
     ],
     liens:['Nodab8nkat','Ab8n'],
-    lecon:'Lien fort : Masta donne Nodab8nkad « boulanger »; le Manuel actuel donne Nodab8nkat « celui qui fait du pain par profession » et Ab8n « un pain ». La variation finale d/t est conservée selon la source.'
+    lecon:'Lien fort : Nodab8nkad et Nodab8nkat sont deux formes documentées dans des sources différentes; Ab8n fournit la base « pain ». La variation finale d/t est conservée avec la source qui l’atteste.'
   }],
   [aprNorm('Nodab8nkat'),{
     racine:'Ab8n',
@@ -7044,7 +7096,7 @@ const APR_DOCUMENTED_ANALYSES=new Map([
       {t:'-kat',l:'suffixe de métier',s:'celui qui produit; graphie du Manuel',c:'suf'}
     ],
     liens:['Nodab8nkad','Ab8n'],
-    lecon:'Lien fort : le Manuel actuel explique le boulanger comme celui qui fait du pain par profession; Masta documente la forme Nodab8nkad et Ab8n fournit la base « pain ».'
+    lecon:'Lien fort : Nodab8nkat désigne la personne qui fait le pain par profession; Masta documente Nodab8nkad et Ab8n fournit la base « pain ». Chaque graphie demeure liée à sa source.'
   }],
   [aprNorm('Kdakinna'),{
     racine:'Dakinna',
@@ -7208,12 +7260,13 @@ const NIVEAUX=[
    Entre le <i>an</i> et le <i>on</i>. Le oui <span class="al8">8h8</span> se dit clairement « an-han ».
    Il ne faut pas le confondre avec le <span class="al8">h8</span> historique, murmuré collectivement en conseil.
    <span class="al8">W8linak</span> sonne « Wanlinak ».</div>
-  <table class="aprtab"><tr><th>Lettre</th><th>Comment la dire (Manuel de l'étudiant 1, pages 9 à 13)</th></tr>
+  <table class="aprtab"><tr><th>Repère écrit</th><th>Geste sonore à observer</th></tr>
   <tr><td class="k">CH</td><td>se prononce <b>TS</b>, jamais comme dans « chien »</td></tr>
   <tr><td class="k">J</td><td>se prononce <b>DZ</b>, jamais comme en français</td></tr>
   <tr><td class="k">8</td><td>une voyelle nasale entre « an » et « on »</td></tr>
   <tr><td class="k">W</td><td>devant une consonne, il sonne comme un <b>O doux</b> — <span class="al8">Wli</span> se dit « oli ». Devant une voyelle, il sonne <b>WA</b> — <span class="al8">W8linak</span> se dit « wanlinak ». À la fin, il reste <b>très doux</b> et ne forme jamais une syllabe « ou » séparée. Après G ou K, il arrondit légèrement la consonne — <span class="al8">Alsig8ntegw</span> finit comme « tègue », pas « té-gou ».</td></tr>
   <tr><td class="k">I</td><td>un seul <b>I intérieur</b> reste I — <span class="al8">Agakimzo</span>. Le dernier I tend vers <b>É</b> s'il termine le mot ou si le mot contient plusieurs I — <span class="al8">Abazi</span> sonne « abazé » et <span class="al8">Mziwi</span> « mziwé ». Exception documentée : <span class="al8">Kizi</span> garde I.</td></tr></table>
+  <span class="aprsrc">Données phonétiques consultées : Manuel de l'étudiant 1, pages 9 à 13. Présentation et progression : projet Aln8ba8dwaw8gan.</span>
   <div class="aprnote w"><b>Dis tout à voix haute, toujours</b>
    Une langue ne s'apprend pas des yeux. Chaque mot de ce parcours doit sortir de ta bouche,
    même seul dans ton char.</div>`},
@@ -7255,15 +7308,19 @@ const NIVEAUX=[
    3. Redis-la sans rien regarder. Si ça bloque, recommence — c'est normal, c'est comme ça
    que la mémoire se construit.</div>`},
  {t:"Les couleurs",d:"Six formes verbales documentées.",cat:'couleur',ex:'vocab',lec:`
-  <p>En aln8ba, la couleur se dit avec un verbe : pas « rouge » mais <i>c'est rouge</i>.
-  Les six formes documentées de ce module finissent par <code>-igen</code>.</p>
+  <p>Commence par regarder une chose, puis dis son état. Dans les six exemples retenus ici,
+  on apprend une forme complète comme <i>c'est rouge</i>, et non une étiquette française isolée.</p>
   <table class="aprtab">
   <tr><td class="k">Mkwigen</td><td>c'est rouge</td></tr>
   <tr><td class="k">W8bigen</td><td>c'est blanc</td></tr>
     <tr><td class="k">Mkazawigen</td><td>c'est noir</td></tr>
     <tr><td class="k">Wl8wigen</td><td>c'est bleu</td></tr>
     <tr><td class="k">Wiz8wigen</td><td>c'est jaune</td></tr>
-    <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>`},
+    <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>
+  <div class="aprnote"><b>Notre exercice</b>
+   Choisis d'abord une couleur que tu vois réellement. Cache ensuite la colonne aln8ba,
+   retrouve la forme complète, puis vérifie les lettres. Le rapprochement visuel aide la mémoire;
+   il ne sert pas à inventer l'étymologie d'un mot.</div>`},
  {t:"Décrire le monde",d:"Grand, petit, beau — les mots qui décrivent tout ce qui t'entoure.",cat:'description',ex:'vocab',lec:aprAutoLec(`
   <p>Avec les couleurs, tu sais déjà dire <i>comment</i> sont les choses. Voici le reste de la
   famille des descriptions — les mots les plus courts d'abord, c'est plus facile pour la mémoire.</p>`,'description',16,`
@@ -7395,7 +7452,7 @@ const NIVEAUX=[
    <tr><td class="k">Awikhigan</td><td>un livre</td><td><b>inanimée</b></td></tr>
    <tr><td class="k">Nbizon</td><td>un médicament</td><td><b>inanimée</b></td></tr></table>
   <h3>Le sens français ne suffit pas</h3>
-  <p>Le Manuel donne un contraste important : <span class="al8">Aples</span> (une pomme) est de classe
+  <p>Un contraste attesté guide l'observation : <span class="al8">Aples</span> (une pomme) est de classe
   <b>animée</b>, tandis que <span class="al8">Wasawas</span> (une orange) est de classe <b>inanimée</b>.
   Deux fruits peuvent donc commander deux formes différentes du verbe « manger ».</p>
   <table class="aprtab"><tr><th>Objet</th><th>Classe</th><th>Phrase documentée</th></tr>
@@ -7405,7 +7462,7 @@ const NIVEAUX=[
    1. Repère le nom. 2. Ouvre ou consulte sa fiche. 3. Lis sa classe grammaticale.
    4. Cherche ensuite la forme documentée exigée par cette classe. Ne déduis jamais une classe
    uniquement parce qu'une chose semble vivante ou non.</div>
-  <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 33 · W8banaki Pilaskw, chronique linguistique d'Odanak, 2018</span>`,
+  <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, pages 24 à 33 · W8banaki Pilaskw, chronique linguistique d'Odanak, 2018.</span>`,
   coach:`Répète toujours le mot avec sa classe : « Aples, animé », « Wasawas, inanimé ».
    Ensuite seulement, observe ce que la classe fait changer. Ce petit réflexe évite une erreur qui
    peut se propager au pluriel, au nombre et au verbe.`},
@@ -7503,7 +7560,7 @@ const NIVEAUX=[
    comment ou quand. Laurent (1884) explique aussi qu'une phrase affirmative ou négative peut devenir
    interrogative par l'intonation et, à l'écrit, par <b>?</b>. Cette remarque historique ne permet pas
    de fabriquer une forme actuelle absente du Manuel.</div>
-  <span class="aprsrc">Manuel de l'étudiant 1, pages 29 et 34 · Joseph Laurent, 1884, page 204</span>`,
+  <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, pages 29 et 34 · Joseph Laurent, 1884, page 204.</span>`,
   coach:`Lis d'abord la question entière. Ensuite seulement, repère « tu » : parfois dans
    <span class="al8">-an/-ian</span>, parfois dans <span class="al8">k'-/kd'-</span>.
    Ne retire ni n'ajoute un préfixe par analogie : mémorise les six modèles attestés.`},
@@ -7547,7 +7604,7 @@ const NIVEAUX=[
   <div class="aprnote w"><b>Ce que le système ne doit jamais faire</b>
    Il ne doit ni inventer un pluriel, ni choisir une forme verbale sans objet, ni deviner la classe
    d'après le français. La fiche actuelle du nom reste la source de vérité.</div>
-  <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 33</span>`,
+  <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, pages 24 à 33.</span>`,
   coach:`Pose toujours ces questions dans cet ordre : quel est l'objet? quelle classe sa fiche indique-t-elle?
    quelle forme documentée correspond à cette classe? L'exercice te fait pratiquer cette chaîne complète.`},
  {t:"Les mois qui racontent l'année",d:"Douze mois qui décrivent ce qui se passe dehors.",cat:'temps',ex:'vocab',lec:`
@@ -7622,7 +7679,7 @@ const NIVEAUX=[
    « Odana pasodawiwi ao ». Elle ne doit donc pas être présentée comme une citation ni servir de modèle.
    Connaître <span class="al8">Odana</span> et <span class="al8">Yudali</span> ne suffit pas non plus à fabriquer
    « le village est ici » : le sujet est inanimé et la construction actuelle doit encore être confirmée.</div>
-  <span class="aprsrc">Manuel de l'étudiant 1 · Henry Lorne Masta, 1932 · Jos. Laurent, 1884</span>`,
+  <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1 · Henry Lorne Masta, 1932 · Jos. Laurent, 1884.</span>`,
   coach:`Lis d'abord la phrase française comme une idée entière. Cherche ensuite une phrase aln8ba
    documentée qui porte cette idée. S'il n'en existe pas, conserve les mots reconnus, montre ce qui manque
    et refuse l'assemblage automatique. C'est plus lent, mais c'est ainsi qu'on protège la langue.`}]},
@@ -7666,7 +7723,7 @@ const NIVEAUX=[
    1. Trouve le sujet. 2. Trouve l'action. 3. Demande s'il existe un objet direct.
    4. Sans objet, vérifie la classe du sujet pour VAI ou VII. 5. Avec un objet, vérifie la classe
    de cet objet sur sa fiche pour VTA ou VTI. 6. Utilise seulement la forme documentée correspondante.</div>
-  <span class="aprsrc">Manuel de l'étudiant 1, page 33</span>`,
+  <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, page 33.</span>`,
   coach:`Ne mémorise pas quatre sigles isolés. Fais l'arbre de décision : objet ou pas d'objet;
    puis classe du sujet ou classe de l'objet. L'exercice commence par identifier la classe et te fait
    ensuite choisir la forme verbale, avec une explication complète après chaque réponse.`},
@@ -7712,11 +7769,11 @@ const NIVEAUX=[
    suivant conserve ses personnes et ses terminaisons, mais écrit la racine attestée aujourd'hui
    <span class="al8">namih8-</span> afin de ne pas enseigner <span class="al8">namihô-</span>
    comme une graphie actuelle.</p>
-  <div class="aprnote"><b>Ce que le Manuel actuel permet de relier</b>
-   Laurent écrit <span class="al8">N'namihô</span>; le Manuel actuel documente
+  <div class="aprnote"><b>Ce que les attestations permettent de relier</b>
+   Laurent écrit <span class="al8">N'namihô</span>; une source actuelle documente
    <span class="al8">N'namih8 sips</span> « je vois un oiseau ». Dans cette correspondance précise,
    le <span class="al8">ô</span> historique est rendu par la lettre actuelle <span class="al8">8</span>.
-   Le Manuel ne donne toutefois pas ici tout le passé et le futur : les terminaisons restent donc
+   La source actuelle ne fournit toutefois pas ici tout le passé et le futur : les terminaisons restent donc
    celles de Laurent et ne sont pas présentées comme un paradigme actuel entièrement attesté.</div>
   <table class="aprtab"><tr><th>Personne</th><th>Présent</th><th>Imparfait</th><th>Futur</th></tr>
    <tr><td>je</td><td class="k">N'namih8</td><td class="k">N'namih8b</td><td class="k">N'namih8ji</td></tr>
@@ -7727,7 +7784,7 @@ const NIVEAUX=[
    <tr><td>ils/elles</td><td class="k">'Namihak</td><td class="k">'Namihabanik</td><td class="k">'Namihakji</td></tr></table>
   <div class="aprnote w"><b>Deux limites à retenir</b>
    L'imparfait de Laurent peut aussi porter une valeur de passé dans son système. De plus,
-   seule la racine <span class="al8">namihô- → namih8-</span> est reliée directement par le Manuel.
+   seule la correspondance <span class="al8">namihô- → namih8-</span> est reliée directement par les formes citées.
    Ainsi, le <span class="al8">ô</span> de la terminaison <span class="al8">-bôb</span> reste visible :
    <span class="al8">K'namih8bôb</span>. L'original de Laurent est <span class="al8">K'namihôbôb</span>.</div>
   <h3>Négation, conditionnel et impératif historiques</h3>
@@ -7752,7 +7809,7 @@ const NIVEAUX=[
    Le tableau de 1884 laisse lui-même une forme vide. Le dictionnaire conserve ce manque au lieu de le
    compléter par analogie. Pour une phrase actuelle, il faut confirmer la personne, le nombre, l'ordre,
    le temps, la polarité et surtout la classe grammaticale du sujet.</div>
-  <span class="aprsrc">Manuel de l'étudiant 1 (2018) · Joseph Laurent, 1884, pages 162 à 167 · Pilaskw d'Odanak, mai 2019 · analyse de Jesse R. Beach, 2004</span>`,
+  <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1 (2018) · Joseph Laurent, 1884, pages 162 à 167 · Pilaskw d'Odanak, mai 2019 · analyse de Jesse R. Beach, 2004.</span>`,
   coach:`Commence par demander ce que « être » signifie dans la phrase : présence dans un lieu, état,
    identité ou description. Ensuite seulement, vérifie la classe du sujet et la forme documentée. Le
    tableau historique explique le système; il n'autorise jamais à inventer une forme actuelle.`},
@@ -7768,13 +7825,13 @@ const NIVEAUX=[
    Ce sont des modèles attestés, pas une permission de déplacer ces marques d'un verbe à l'autre.</div>
   <div class="aprnote w"><b>Interrogation historique par l'intonation</b>
    Laurent (1884, p. 204) indique qu'une phrase affirmative ou négative peut aussi devenir une question
-   par l'intonation, ou par le point d'interrogation à l'écrit. Le Manuel actuel enseigne séparément
-   l'ordre conjonctif dans les questions d'information; le dictionnaire conserve les deux explications
+   par l'intonation, ou par le point d'interrogation à l'écrit. Une source actuelle documente séparément
+   l'ordre conjonctif dans des questions d'information; le dictionnaire compare les deux descriptions
    avec leur source et leur époque.</div>
   <h3>L'impératif collectif</h3>
   <p>Le suffixe <code>-oda</code> dit ce qu'on se propose de faire ensemble.
   <span class="al8">Wig8damoda!</span> réjouissons-nous · <span class="al8">Losada</span> allons.</p>
-  <span class="aprsrc">Manuel de l'étudiant 1, page 29 · Joseph Laurent, 1884, page 204</span>`,
+  <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, page 29 · Joseph Laurent, 1884, page 204.</span>`,
   coach:`Dans ces exemples, distingue la phrase indépendante, l'impératif et la forme
    conjonctive employée dans une question. Le suffixe <span class='al8'>-oda</span> marque ici
    une action proposée collectivement.`},
@@ -7962,10 +8019,11 @@ function aprParcours(){
   const prog=progAll();
   document.getElementById('aprBody').innerHTML=`
    <div class="aprcard"><h3>Parcours</h3>
-     <p class="aprlead">Trois niveaux qui s'appuient l'un sur l'autre. Chaque module actif se travaille
-       en quatre temps : <b>📖 lire</b>, <b>🎙️ prononcer</b>, <b>🧠 retenir</b> avec le quiz,
-       <b>✍️ utiliser</b> en écrivant les mots et les formes grammaticales — puis l'onglet <b>🔁 Révision</b> les fait durer.
-       Quinze minutes par jour battent trois heures le dimanche.</p>
+     <p class="aprlead">Trois niveaux qui s'appuient l'un sur l'autre. La méthode du projet a été conçue
+       pour ce projet : <b>ancrer</b> la forme entière, <b>observer</b> un contraste attesté,
+       <b>retrouver</b> sans regarder, puis <b>produire</b> à l'oral ou à l'écrit.
+       Les sources établissent les données linguistiques; la progression, les explications,
+       les jeux, les scores et la révision sont notre propre travail pédagogique.</p>
      <div class="aprnav" style="margin:0">${NIVEAUX.map(n=>
        `<button data-n="${n.id}" class="${n.id===aprNiv?'on':''}" onclick="aprNiv='${n.id}';aprParcours()">${n.t}</button>`).join('')}</div>
    </div>
@@ -8013,14 +8071,11 @@ function aprLecon(i){
       <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
-      ${m.ex?`<div class="aprnote" style="border-left-color:${n.c}"><b>La méthode en ${canWrite?'quatre':'trois'} temps</b>
-        1. 📖 Lis la leçon <b>à voix haute</b>. 2. 🎙️ <b>Prononcer</b> — écoute le guide, enregistre-toi et compare les deux écoutes.
-        3. 🧠 <b>Retenir</b> — le quiz vérifie que c'est rentré.
-        ${canWrite?`4. ✍️ <b>Utiliser</b> — tu produis ${m.use?'la forme grammaticale':'le mot'} toi-même, de mémoire. `:''}Puis reviens demain
-        dans <b>🔁 Révision</b> : c'est là que le mot devient tien.</div>`:
+      ${m.ex?aprMethodHtml(m):
         `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
         Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
         comme réponses dans les exercices actifs et ne remplacent pas les graphies actuelles.</div>`}
+      ${aprProvenanceHtml(m,lecHtml)}
       ${lecHtml}
       ${st?`<div class="aprnote"><b>Ta progression dans ce module</b>
         🧠 Retenir : ${st.retenir!=null?st.retenir+'%':'pas encore fait'} ·
@@ -8045,6 +8100,7 @@ function aprDecorView(){
   document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Décortiqueur</h3>
     <p class="aprlead">Entre un mot abénakis. L'outil isole le préfixe, la racine et les suffixes,
       puis cherche la famille du mot dans le dictionnaire.</p>
+    ${aprProvenanceHtml({refs:'fiches vertes actuelles du dictionnaire'},'')}
     <div class="aprtool"><input id="dIn" placeholder="Pakholigan, Nd'aliwizi, Wanaldamw8gan…" autocomplete="off">
       <button class="aprbtn" onclick="aprDecor(document.getElementById('dIn').value)">Décortiquer</button></div>
     <div class="chips">${["Awikhigan","Nd'aliwizi","Agakimzowinno","Nodab8nkat","Wiagaldamw8gan","Aln8ba8dwaw8gan","Odanak","Moskwaldamw8gan"]
@@ -8134,13 +8190,14 @@ const APR_CONJ_PARADIGMS=[
    ["je","N'namih8","N'namih8b","N'namih8ji"],["tu","K'namih8","K'namih8b","K'namih8ji"],
    ["il/elle","'Namiha","'Namihab","'Namihaji"],["nous","N'namih8bena","N'namih8benob","N'namih8benaji"],
    ["vous","K'namih8ba","K'namih8bôb","K'namih8baji"],["ils/elles","'Namihak","'Namihabanik","'Namihakji"]],
-  note:"Le Manuel actuel atteste N'namih8 pour « je vois » avec un objet animé. Seule cette racine est transcrite en graphie actuelle dans le tableau; les terminaisons demeurent celles de Laurent. Exemple : K'namih8bôb, original 1884 K'namihôbôb.",
+  note:"Une source actuelle atteste N'namih8 pour « je vois » avec un objet animé. Seule cette racine est transcrite en graphie actuelle dans le tableau; les terminaisons demeurent celles de Laurent. Exemple : K'namih8bôb, original 1884 K'namihôbôb.",
   source:"Manuel de l'étudiant 1, page 33 · Joseph Laurent, 1884, pages 165 et 166"}
 ];
 function aprConjView(){
   document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Paradigmes verbaux documentés</h3>
     <p class="aprlead">Cet outil ne calcule aucune forme. Il affiche seulement des paradigmes complets
-      recopiés d'une source et distingue toujours les formes actuelles des graphies historiques.</p>
+      transcrits pour la comparaison et distingue toujours les formes actuelles des graphies historiques.</p>
+    ${aprProvenanceHtml({refs:"Manuel de l'étudiant 1 (2018) · Joseph Laurent (1884)"},'')}
     <div class="aprtool"><select id="vSel" onchange="aprConj(+this.value)">${APR_CONJ_PARADIGMS.map((p,i)=>
       `<option value="${i}">${escH(p.label)}</option>`).join('')}</select></div>
     <div id="cOut"></div></div>`;
@@ -8234,6 +8291,7 @@ function aprNombView(){
   document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Atelier des nombres</h3>
     <p class="aprlead">N'apprends pas tout le tableau d'un coup. Lis le nombre de gauche à droite,
       repère ses blocs, puis applique une seule règle à la fois.</p>
+    ${aprProvenanceHtml({refs:"Manuel de l'étudiant 1 (2018)"},'')}
     <div class="aprnote"><b>La stratégie en trois questions</b>
       1. Est-ce une forme entière à mémoriser? 2. Est-ce une base suivie de <span class="al8">kas-</span>?
       3. Faut-il ajouter une unité avec <span class="al8">taba</span>?</div>
@@ -8266,7 +8324,7 @@ function aprNombView(){
       <div class="num-equation"><span class="meaning">60</span><span class="piece">Ngwed8s</span><span>+</span><span class="piece">kasinska</span><span>→</span><b>Ngwed8s kasinska</b></div>
       <p><b>Pour ajouter une unité, taba fait le lien.</b> Il se place après la dizaine.</p>
       <div class="num-equation"><span class="meaning">25</span><span class="piece">Nisinska</span><span class="piece">taba</span><span class="piece">N8lan</span><span>→</span><b>Nisinska taba n8lan</b></div>
-      <div class="num-memory"><b>Ordre à suivre :</b> dizaine + <span class="al8">taba</span> + unité. Le Manuel documente notamment 21, 25 et 33 avec cet ordre.</div>
+      <div class="num-memory"><b>Ordre à suivre :</b> dizaine + <span class="al8">taba</span> + unité. Les formes attestées 21, 25 et 33 montrent cet ordre.</div>
     </div></details>
     <details class="num-stage"><summary>Étape 4 · Centaines, milliers et limite du module</summary><div class="num-stage-body">
       <p>De 100 à 500 et de 1 000 à 5 000, les formes du tableau sont à mémoriser.</p>
@@ -8288,10 +8346,10 @@ function aprNombView(){
         <tr><td>4</td><td class="k">Iawak</td><td class="k">Iawnol</td></tr>
         <tr><td>5</td><td class="k">N8nnoak</td><td class="k">N8nnenol</td></tr></table>
         <i>Niswak almosak</i> deux chiens · <i>Nisnol tasakwabonal</i> deux chaises.<br>Au-delà de cinq : <i>Ngwed8s almosak</i> six chiens.
-        <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 26</span></div>
+        <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, pages 24 à 26.</span></div>
       <div class="num-memory"><b>La bonne question :</b> est-ce que je récite le nombre, ou est-ce que je compte un nom? Si je compte un nom de un à cinq, je dois d'abord connaître sa classe.</div>
     </div></details>
-    <span class="aprsrc">Formes et règles : Manuel de l'étudiant 1, pages 24 à 26. Les constructions calculées sont signalées comme telles.</span>
+    <span class="aprsrc">Données linguistiques consultées : Manuel de l'étudiant 1, pages 24 à 26. Les constructions guidées par ces règles sont signalées comme telles.</span>
   </div>`;
   aprNombRender(25);
 }
@@ -8300,6 +8358,7 @@ function aprGramView(){
   const g={}; R.forEach(w=>{const k=w.aln8ba.split('·')[0].trim(); (g[k]=g[k]||[]).push(w);});
   document.getElementById('aprBody').innerHTML=`<div class="aprcard"><h3>Grammaire</h3>
     <p class="aprlead">Les ${R.length} fiches de règle du dictionnaire, rassemblées.</p>
+    ${aprProvenanceHtml({refs:'fiches documentées du dictionnaire'},'')}
     ${Object.entries(g).map(([k,v])=>`<h3>${k}</h3>${v.map(w=>`<div class="aprnote">
       <b>${w.aln8ba.replace(/^[^·]+·\s*/,'')}</b>${w.fr}
       ${w.example_a?`<p style="margin-top:6px"><span class="al8">${w.example_a}</span>
@@ -8577,7 +8636,7 @@ function jPlur(){
 }
 function jRetPlur(){ const q=window._jp;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
-    <span class="aprsrc">Manuel de l'étudiant 1 — Native Montreal, pages 16 à 18</span>`; }
+    <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1 — Montréal Autochtone, pages 16 à 18"))}</span>`; }
 const DOCUMENTED_ROOT_FAMILIES=[
  {root:'awassos-',relation:'diminutif en -is',words:['Awassos','Awassosis']},
  {root:'agakimzo-',relation:'dérivation en -winno',words:['Agakimzo','Agakimzowinno']},
@@ -9136,7 +9195,7 @@ function exCheckGrammarWrite(){
       <b><span class="al8">${escH(q.answer)}</span></b></div>
     <div class="aprnote" style="margin-top:12px;border-left-color:var(--gold)"><b>Raisonnement complet</b>
       <div style="display:grid;gap:7px;margin-top:8px">${q.steps.map((step,index)=>`<div style="display:grid;grid-template-columns:26px 1fr;gap:8px"><strong>${index+1}</strong><span>${escH(step)}</span></div>`).join('')}</div>
-      <p style="margin-top:10px">${escH(q.detail)}</p><span class="aprsrc">${escH(q.source)}</span></div>
+      <p style="margin-top:10px">${escH(q.detail)}</p><span class="aprsrc">${escH(aprCitationText(q.source))}</span></div>
     <div style="text-align:center;margin-top:16px"><button class="aprbtn" onclick="exSuivant()">${exQ>=exTot?'Voir le résultat →':'Suivant →'}</button></div>`);
   finishAnsweredStep(ok,'#exBody',exSuivant,6500);
 }
@@ -9232,7 +9291,7 @@ function exPlur(){
 }
 function exRetPlur(){ const q=window._ex;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
-    <span class="aprsrc">Manuel de l'étudiant 1, pages 16 à 18</span>`; }
+    <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, pages 16 à 18"))}</span>`; }
 
 /* — secondaire : les possessifs — */
 const EXPOSS=[
@@ -9330,7 +9389,7 @@ function exClassFx(){
 }
 function exRetClassFx(){ const q=window._ex;
   return `<b>${q.o[q.r]}</b><em>${q.e}</em>
-    <span class="aprsrc">Manuel de l'étudiant 1, pages 24 à 33</span>`; }
+    <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, pages 24 à 33"))}</span>`; }
 
 /* — secondaire : traduire la structure plutôt que les mots isolés — */
 const EXSTRUCT=[
@@ -9371,7 +9430,7 @@ const EXTEMPS=[
  {q:'Quel sens central Laurent donne-t-il à Aimuk?',o:['Être présent ou demeurer quelque part','Être malade','Posséder un objet','Transformer un nom en pluriel'],r:0,
   e:'Laurent le décrit comme un verbe principal de présence ou de résidence, pas comme un auxiliaire universel.'},
  {q:"Que signifie la phrase actuelle documentée Nd'ai wigw8mek?",o:['Je suis dans la maison','Je suis malade','Nous sommes dans la maison','La maison est ici'],r:0,
-  e:"Le Manuel de l'étudiant 1 documente Nd'ai wigw8mek pour « Je suis dans la maison »."},
+  e:"La phrase actuelle documentée Nd'ai wigw8mek signifie « Je suis dans la maison »."},
  {q:'Quelle est la 3e personne animée du présent chez Laurent?',o:['Ao','Aaok','Aoji','Aob'],r:0,
   e:'Ao est la 3e personne animée singulière du présent dans le tableau historique.'},
  {q:'Quelle est la 3e personne animée plurielle du présent chez Laurent?',o:['Aaok','Ao','Aobanik','Aidij'],r:0,
@@ -9391,7 +9450,7 @@ const EXTEMPS=[
  {q:'Que fait-on lorsqu’une case manque dans le tableau de Laurent?',o:['On conserve le manque','On complète par analogie','On prend la forme plurielle','On traduit mot à mot du français'],r:0,
   e:'La source laisse elle-même une forme vide. Le dictionnaire ne l’invente pas.'},
  {q:'Quelle différence faut-il préserver entre Nd\'ai et N\'-d-ai?',o:['La première est la graphie actuelle du Manuel; la seconde est historique','Elles désignent deux personnes différentes','La seconde est une traduction française','Aucune, on peut toujours les remplacer'],r:0,
-  e:"Nd'ai est montré selon le Manuel 2018; N'-d-ai conserve la graphie de Laurent 1884. Le site ne les corrige pas silencieusement."},
+  e:"Nd'ai est la graphie de la source actuelle citée; N'-d-ai conserve la graphie de Laurent 1884. Le site ne les corrige pas silencieusement."},
  {q:"Quelle forme est la 1re personne de l'imparfait historique de Aimuk?",o:["N'-d-aib","N'-d-ai","N'-d-aiji","N'-d-aiba"],r:0,
   e:"N'-d-aib appartient à la colonne de l'imparfait; Laurent précise que cet imparfait peut aussi porter une valeur passée."},
  {q:"Quelle forme est la 1re personne plurielle du futur historique de Aimuk?",o:["N'-d-aibenaji","N'-d-aibenob","N'-d-aibena","K'-d-aibaji"],r:0,
@@ -9469,33 +9528,33 @@ function exRetVta(){
       <p><b>Le sujet et l'action restent les mêmes.</b> C'est la classe grammaticale de l'objet qui fait choisir l'autre forme du verbe.</p>
       <p>Compare : <span class="al8">${autre} ${autreObjet.aln8ba.toLowerCase()}</span> emploie l'autre forme,
         parce que <span class="al8">${autreObjet.aln8ba}</span> appartient à la classe ${anim?'inanimée':'animée'}.</p>
-      <p><b>Statut :</b> ${object.exact?'cette phrase complète est documentée dans le Manuel.':'la paire verbale et la classe du nom sont documentées séparément; la phrase affichée est une construction pédagogique à faire valider.'}</p>
+      <p><b>Statut :</b> ${object.exact?'cette phrase complète est attestée dans la source citée.':'la paire verbale et la classe du nom sont documentées séparément; la phrase affichée est une construction pédagogique à faire valider.'}</p>
       <p><b>Méthode :</b> trouve l'objet, vérifie sa classe sur sa fiche, puis choisis la forme exacte de la paire.</p></div>
-    <span class="aprsrc">Manuel de l'étudiant 1, page 33</span>`; }
+    <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, page 33"))}</span>`; }
 
 /* — secondaire : deuxième personne dans les questions documentées — */
 const EXINTER2=[
  {p:'T8ni aliwizian?',f:"Comment t'appelles-tu?",q:'Où se trouve « tu » dans cette forme?',
   o:['Dans la forme en -ian',"Dans un préfixe kd'-",'Dans un préfixe n’-','Aucune marque'],r:0,
-  e:"Le Manuel donne aliwizian avec -ian, sans kd'. La phrase complète doit être apprise telle quelle."},
+  e:"La forme attestée porte -ian sans kd'. La phrase complète doit être apprise telle quelle."},
  {p:'T8ni alosan?',f:'Où vas-tu?',q:'Où se trouve « tu » dans cette forme?',
   o:['Dans la forme en -an',"Dans un préfixe k'-",'Dans un préfixe w’-','Aucune marque'],r:0,
-  e:"Le Manuel donne alosan avec -an. On n'ajoute pas automatiquement k'- ou kd'."},
+  e:"La forme attestée porte -an. On n'ajoute pas automatiquement k'- ou kd'."},
  {p:'T8ni wigian?',f:'Où habites-tu?',q:'Où se trouve « tu » dans cette forme?',
   o:['Dans la forme en -ian',"Dans un préfixe kd'-",'Dans T8ni seulement','Aucune marque'],r:0,
-  e:"Le Manuel donne wigian avec -ian. T8ni introduit la question; la forme verbale porte aussi l'information de personne."},
+  e:"La forme attestée porte -ian. T8ni introduit la question; la forme verbale porte aussi l'information de personne."},
  {p:"Kagwi k'michi?",f:'Que manges-tu?',q:'Quelle marque de deuxième personne est visible?',
   o:["Le préfixe k'-",'La terminaison -ian','La terminaison -an',"Le préfixe n'-"],r:0,
-  e:"Cet exemple conjonctif du Manuel conserve k'-. Il montre qu'on ne peut pas supprimer le préfixe dans toutes les questions."},
+  e:"Cet exemple conjonctif attesté conserve k'-. Il montre qu'on ne peut pas supprimer le préfixe dans toutes les questions."},
  {p:"T8ni kd'al8wzin?",f:'Comment vas-tu?',q:'Quelle marque de deuxième personne est visible?',
   o:["Le préfixe kd'-",'La terminaison -ian','La terminaison -an',"Le préfixe n'-"],r:0,
   e:"Cette question courante conserve kd'-. Elle doit être apprise comme forme complète documentée."},
  {p:"K'kasigadma?",f:'Quel âge as-tu?',q:'Quelle marque de deuxième personne est visible?',
   o:["Le préfixe k'-",'La terminaison -ian','La terminaison -an',"Le préfixe n'-"],r:0,
   e:"Cette question courante conserve k'-. Elle ne permet pas de construire par analogie une autre question."},
- {p:"Comment t'appelles-tu?",f:'Choisis uniquement la forme actuelle documentée.',q:'Quelle question donne le Manuel?',
+ {p:"Comment t'appelles-tu?",f:'Choisis uniquement la forme actuelle documentée.',q:'Quelle question complète est attestée?',
   o:['T8ni aliwizian?',"T8ni kd'aliwizian?","T8ni kd'aliwizi?",'T8ni aliwizi?'],r:0,
-  e:"T8ni aliwizian? est la forme actuelle complète du Manuel. Les trois autres choix mélangent ou retranchent des marques."}
+  e:"T8ni aliwizian? est la forme actuelle complète attestée. Les trois autres choix mélangent ou retranchent des marques."}
 ];
 function exInter2(){
   const q=exPickUnique(EXINTER2,x=>x.p+'|'+x.q); window._ex=q;
@@ -9508,7 +9567,7 @@ function exInter2(){
 }
 function exRetInter2(){ const q=window._ex;
   return `<b>${escH(q.interCorrect)}</b><em>${escH(q.e)}</em>
-    <span class="aprsrc">Manuel de l'étudiant 1, pages 29 et 34</span>`; }
+    <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, pages 29 et 34"))}</span>`; }
 
 /* — cégep : les trois ordres — */
 const EXORDRE=[
@@ -9529,7 +9588,7 @@ function exRetOrdre(){ const q=window._ex;
   return `<b>${q.p} — ${q.f}</b><em>${['Ordre indépendant : la forme de tous les jours.',
     "Ordre impératif : on demande à quelqu'un de faire quelque chose.",
     'Forme conjonctive : elle est employée ici dans un exemple interrogatif.'][q.r]}</em>
-    <span class="aprsrc">Manuel de l'étudiant 1, page 29</span>`; }
+    <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, page 29"))}</span>`; }
 
 /* — cégep : négation complète — */
 function exNeg(){

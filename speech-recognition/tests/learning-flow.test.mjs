@@ -200,7 +200,9 @@ test('le module des nombres enseigne une seule etape a la fois', () => {
 test('le module des couleurs est revenu a sa forme simple sans ancien enrichissement', () => {
   const colors = sourceBetween('{t:"Les couleurs"', '{t:"Décrire le monde"');
   assert.match(colors, /Six formes verbales documentées/);
-  assert.match(colors, /Les six formes documentées de ce module finissent/);
+  assert.match(colors, /Commence par regarder une chose, puis dis son état/);
+  assert.match(colors, /Notre exercice/);
+  assert.match(colors, /il ne sert pas à inventer l'étymologie/);
   assert.doesNotMatch(colors, /couleurs-territoire|color-learning|color-observe|Mskikwimen|Observe →/);
   assert.doesNotMatch(colors, /Dix couleurs/);
   for (const word of ['Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen']) {

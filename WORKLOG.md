@@ -190,6 +190,17 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Chaque carte de niveau affiche après chargement le nombre réel de questions uniques disponibles.
 - La déduplication se fait par graphie aln8ba, pas seulement par identifiant de fiche, afin qu'une variante du même enregistrement ne réapparaisse pas dans la séance.
 
+## Pédagogie indépendante et provenance — 28 août 2026
+
+- Séparation explicite, dans chaque leçon, entre les données linguistiques attestées et le travail pédagogique propre au projet.
+- Création de la méthode du projet en quatre gestes : ancrer la forme entière, observer un contraste documenté, retrouver sans regarder, puis produire à l'oral ou à l'écrit.
+- Ajout d'un panneau repliable de provenance dans les modules, le Décortiqueur, le Conjugueur, l'atelier des nombres et la vue Grammaire.
+- Réécriture des formulations qui faisaient du Manuel le narrateur du cours : il demeure une source bibliographique, sans participation ni approbation implicite.
+- Les citations nécessaires et les graphies aln8ba attestées demeurent intactes; les explications, consignes, distracteurs, scores et parcours sont identifiés comme créations du projet.
+- Refonte du module des couleurs autour d'une observation réelle et d'un rappel de mémoire, sans inventer d'étymologie.
+- Ajout de `research/PEDAGOGY_PROVENANCE.md` comme règle de travail durable et de cinq tests de non-régression dédiés.
+- Vérification locale à 390 × 844 : deux colonnes lisibles pour les quatre gestes, aucune largeur débordante et aucun avertissement JavaScript.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix
