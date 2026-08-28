@@ -224,6 +224,15 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - La section Musique indique maintenant que l'emploi de W8linak est descriptif et ne suppose aucune commande, commandite, autorisation ou approbation du Conseil.
 - Vérification Chrome réelle : audit `ready`, 45 modules sur 45, quiz ouverts pour le corps, l'arbre, la possession et les suffixes. Vérification mobile à 390 × 844 sans débordement et avec commandes de 44 à 48 pixels.
 
+## Retrait de la diction vocale et banques d'exercices — 28 août 2026
+
+- Retrait complet de la pratique vocale publique, de l'enregistreur administrateur, de la synthèse vocale et de la reconnaissance vocale. Le site ne demande plus l'accès au microphone et ne conserve aucun enregistrement de voix.
+- Conservation des lecteurs de chansons et de leurs paroles : le retrait concerne uniquement la diction des mots et les exercices au microphone.
+- Suppression des boutons d'écoute intégrés aux fiches et aux cartes mémoire afin qu'aucune voix synthétique non fiable ne soit présentée comme modèle linguistique.
+- Élargissement des deux modules consacrés aux animaux : un premier groupe courant, puis une banque distincte qui puise dans les autres fiches vertes sans recommencer le premier module.
+- Remplacement du classement arbitraire par domaine de sens par une identification grammaticale vérifiable : forme nominale, forme verbale, nom de lieu ou expression.
+- Validation de 79 tests automatisés couvrant notamment l'absence des API vocales, la conservation de la musique, les banques d'apprentissage et les niveaux de pratique.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

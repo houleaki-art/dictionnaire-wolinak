@@ -15,27 +15,42 @@ function sourceBetween(start, end) {
   return html.slice(from, to);
 }
 
-test('le consentement est verifie avant toute demande de microphone', () => {
-  const source = sourceBetween('async function corpusStartRecording()', 'function corpusStopRecording()');
-  assert.ok(source.indexOf('corpusConsentCheck') < source.indexOf('getUserMedia'));
-  assert.match(source, /Le microphone reste fermé/);
+test('la diction vocale est absente du site public et administrateur', () => {
+  for (const forbidden of [
+    'getUserMedia',
+    'MediaRecorder',
+    'speechSynthesis',
+    'SpeechSynthesisUtterance',
+    'webkitSpeechRecognition',
+    'SpeechRecognition',
+    'Pratique vocale',
+    'M’enregistrer',
+    'Enregistrer la voix',
+    'corpusModal',
+    'corpusQuickStart',
+    'playAudio(',
+    'voiceListenExercise'
+  ]) {
+    assert.ok(!html.includes(forbidden), `fonction vocale encore présente: ${forbidden}`);
+  }
 });
 
-test('le bouton des cartes utilise la collecte rapide sans ouvrir de modal', () => {
-  const source = sourceBetween('async function corpusQuickStart', 'function corpusQuickStop');
-  assert.ok(source.indexOf('corpusQuickConsent()') < source.indexOf('getUserMedia'));
-  assert.match(html, /onclick="corpusQuickStart\('/);
-  assert.doesNotMatch(html, /class="ca corpus-rec[^>]+onclick="openCorpusRecorder\('/);
+test('les lecteurs musicaux restent disponibles sans réactiver la diction', () => {
+  for (const id of [
+    'musicSkweda',
+    'musicAskwa',
+    'musicNikwonbi',
+    'musicWlaWonGan',
+    'musicKikas',
+    'musicEntends'
+  ]) assert.match(html, new RegExp(`<audio id="${id}"`));
+  assert.match(html, /const MUSIC_TRACK_IDS=/);
 });
 
-test('la vue de collecte ne montre que les formes vertes enregistrables', () => {
-  const filterSource = sourceBetween('function filtered()', '// ── Ordre');
-  const openSource = sourceBetween('function corpusOpenDictionary()', 'function corpusDefaultConsentId()');
-  assert.match(filterSource, /S\.corpusOnly/);
-  assert.match(filterSource, /r\.filter\(isCorpusEligible\)/);
-  assert.match(openSource, /S\.corpusOnly=true/);
-  assert.match(openSource, /function corpusExitDictionary/);
-  assert.match(html, /id="corpusModeBanner" hidden/);
+test('la confidentialité annonce clairement l absence de collecte vocale', () => {
+  assert.match(html, /ne demande pas l’accès au microphone/);
+  assert.match(html, /n’enregistre aucune voix/);
+  assert.match(html, /n’utilise aucun moteur vocal/);
 });
 
 test('la session administrateur survit au rechargement sans conserver le mot de passe', () => {
@@ -47,25 +62,4 @@ test('la session administrateur survit au rechargement sans conserver le mot de 
   assert.doesNotMatch(sessionSource, /password/);
   assert.match(loginSource, /activateAdminSession\(d\)/);
   assert.ok(initSource.indexOf('restoreAdminSession()') < initSource.indexOf('loadWords()'));
-});
-
-test('le collecteur reste local et necrit jamais dans Supabase', () => {
-  const source = sourceBetween('// Corpus vocal prive', '//  PRATIQUE VOCALE');
-  assert.doesNotMatch(source, /fetch\s*\(|saveWords\s*\(|pushPending\s*\(|SB_URL|SB_AUTH/);
-  assert.match(source, /indexedDB\.open/);
-  assert.match(source, /review_status:'approved'/);
-  assert.match(source, /source_status:'green-current'/);
-});
-
-test('le WAV produit est PCM 16 bits mono a 16 kHz', async () => {
-  const source = sourceBetween('function corpusEncodeWav', 'function corpusSlug');
-  const encode = new Function(`${source}; return corpusEncodeWav;`)();
-  const bytes = Buffer.from(await encode(new Float32Array(16000), 16000).arrayBuffer());
-  assert.equal(bytes.toString('ascii', 0, 4), 'RIFF');
-  assert.equal(bytes.toString('ascii', 8, 12), 'WAVE');
-  assert.equal(bytes.readUInt16LE(20), 1);
-  assert.equal(bytes.readUInt16LE(22), 1);
-  assert.equal(bytes.readUInt32LE(24), 16000);
-  assert.equal(bytes.readUInt16LE(34), 16);
-  assert.equal(bytes.length, 32044);
 });

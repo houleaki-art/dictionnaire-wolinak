@@ -42,12 +42,11 @@ test('le defilement reserve la hauteur du lecteur musical', () => {
   assert.match(source, /viewportBottom/);
 });
 
-test('une prise locale validee passe avant la synthese et affiche sa couverture', () => {
-  const playback = sourceBetween('async function playApprovedWordAudio', 'async function corpusDbGet');
-  const voice = sourceBetween('async function voiceListenCurrent', 'function voiceResetMic');
-  assert.ok(playback.indexOf('corpusLatestRecordForWord') < playback.indexOf('word.audio'));
-  assert.match(voice, /playApprovedWordAudio/);
-  assert.match(html, /mots enregistrés/);
+test('les modules ne proposent plus de diction vocale', () => {
+  const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
+  const vocabulary = sourceBetween('function exVocab', 'function exRetVocab');
+  assert.doesNotMatch(lesson, /Pratique vocale|aprVoice/);
+  assert.doesNotMatch(vocabulary, /Écouter|voiceListenExercise|playApprovedWordAudio/);
 });
 
 test('la deuxieme personne interrogative est enseignee sans regle inventee', () => {
@@ -204,7 +203,7 @@ test('le parcours contient cinq etapes, 45 modules actifs et preserve la progres
   assert.match(levels, /progressId:'s',progressOffset:0/);
   assert.match(levels, /progressId:'c',progressOffset:0/);
   assert.match(levels, /progressId:'c',progressOffset:6/);
-  assert.match(html, /const APR_EXERCISE_TARGETS=\{d:10,f:14,co:12,a:12,au:10\}/);
+  assert.match(html, /const APR_EXERCISE_TARGETS=\{d:12,f:24,co:24,a:24,au:24\}/);
   assert.match(html, /exTot=APR_EXERCISE_TARGETS\[aprNiv\]\|\|8/);
   assert.match(html, /jusqu'à \$\{APR_EXERCISE_TARGETS\[n\.id\]\} questions par séance/);
 
@@ -318,7 +317,14 @@ test('les banques automatiques respectent le principe annonce par leur module', 
   assert.doesNotMatch(description, /Grand, petit, beau/);
 
   const fauna = sourceBetween('{t:"Les bêtes de chez nous"', '{t:"Mon corps"');
-  assert.match(fauna, /!\/esprit\/i\.test/);
+  assert.match(fauna, /!\/esprit\|aulne\/i\.test/);
+  assert.match(fauna, /'animal',64/);
+
+  const animalBasics = sourceBetween('{t:"Les animaux"', '{t:"Les bêtes de chez nous"');
+  assert.equal([...animalBasics.matchAll(/<td class="k">/g)].length, 24);
+  for (const form of ['Awassos','M8lsem','Mgezo','Agaskw','Nolka','Tolba','Almos','Tideso']) {
+    assert.match(animalBasics, new RegExp(`<td class="k">${form}</td>`));
+  }
 
   const territory = sourceBetween('{t:"Le territoire"', '{t:"Le temps et les saisons"');
   assert.match(territory, /rivière\|fleuve\|ruisseau\|lac\|baie/);

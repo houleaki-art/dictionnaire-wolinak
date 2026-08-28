@@ -33,7 +33,7 @@ function practiceApi() {
     return {
       PRACTICE_LEVELS, practiceConfirmedEntries, practicePoolsByLevel, practicePoolForLevel,
       practiceLevelForWord, practiceHasAdvancedGrammar, practiceMeaningHint, practiceMeaningNote,
-      practiceRotationSlice, practiceExpertQueue, practiceDomainLabel
+      practiceRotationSlice, practiceExpertQueue, practiceFormClass
     };
   `)();
 }
@@ -104,16 +104,26 @@ test('les mots proches mois et jour recoivent un contexte distinct', () => {
 test('les niveaux proposent cinq taches progressives et distinctes', () => {
   const level1 = sourceBetween('function renderLvl1', 'function checkLvl1QCM');
   const level2 = sourceBetween('function renderLvl2', 'function checkLvl2');
-  const level3 = sourceBetween('function renderLvl3', 'function checkLvl3Domain');
+  const level3 = sourceBetween('function renderLvl3', 'function checkLvl3Class');
   const level4 = sourceBetween('function renderLvl4', 'function checkLvl4Write');
   const level5 = sourceBetween('function renderLvl5', 'function checkLvl5A');
   assert.match(level1, /Que signifie ce mot/);
   assert.match(level2, /Choisis la forme aln8ba/);
   assert.match(level2, /Quel mot signifie/);
-  assert.match(level3, /Relie la forme à son domaine/);
+  assert.match(level3, /Quelle sorte de forme est-ce/);
   assert.match(level4, /Écris la forme qui signifie/);
   assert.match(level5, /Autonomie/);
   for (const source of [level1, level2, level3, level4, level5]) assert.doesNotMatch(source, /w\.en/);
+});
+
+test('la consolidation classe la nature grammaticale sans inventer un domaine semantique', () => {
+  const { practiceFormClass } = practiceApi();
+  assert.equal(practiceFormClass(word('month', 'Kikas', 'Mai', 'temps', 'Nom')), 'Nom ou forme nominale');
+  assert.equal(practiceFormClass(word('basket', 'Abaznoda', 'Un panier', 'territoire', 'Nom inanimé')), 'Nom ou forme nominale');
+  assert.equal(practiceFormClass(word('lamp', 'Lal8b', 'Lampe', 'territoire', 'Nom inanimé')), 'Nom ou forme nominale');
+  assert.equal(practiceFormClass(word('work', "Nd'aloka", 'Je travaille', 'action', 'Verbe VAI')), 'Forme verbale : action ou état');
+  const level3 = sourceBetween('function renderLvl3', 'function checkLvl3Class');
+  assert.doesNotMatch(level3, /domaine de sens|famille de sens/);
 });
 
 test('les distracteurs restent dans la seance', () => {
