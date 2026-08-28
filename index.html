@@ -565,6 +565,8 @@ body.music-dock-open .toast{bottom:116px}
 .prat-word{font-size:2.2rem;font-weight:700;color:var(--accent);font-style:italic;text-align:center;line-height:1.2}
 .prat-word-question{display:block;margin-bottom:6px;font-size:.84rem;color:var(--text2);font-style:normal;font-weight:600}
 .prat-hint{font-size:.88rem;color:var(--text3);font-style:italic;text-align:center;line-height:1.45}
+.practice-class-guide{width:100%;max-width:680px;padding:12px 15px;border-left:3px solid var(--gold);background:var(--paper2);color:var(--text2);font-size:.9rem;line-height:1.5}
+.practice-class-guide strong{color:var(--text);display:block;margin-bottom:3px}
 .prat-meaning-note{margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--surface2);color:var(--text2);font-size:.85rem;font-weight:400;line-height:1.45}
 .prat-feedback.ok .prat-meaning-note,.prat-feedback.ko .prat-meaning-note{color:var(--text2)}
 .prat-blank{display:flex;align-items:center;gap:4px;font-size:2rem;font-weight:700;color:var(--accent);font-style:italic;flex-wrap:wrap;justify-content:center}
@@ -1157,13 +1159,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <button class="plvl lvl-1 on" type="button" data-lvl="1" onclick="selectLevel(1)">
         <div class="plvl-icon">🌱</div>
         <div class="plvl-name">Découverte — reconnaître</div>
-        <div class="plvl-desc">Formes courtes et concrètes : retrouve simplement leur sens parmi trois choix.</div>
+        <div class="plvl-desc">Salutations, six couleurs, nombres de 0 à 10 et racines concrètes : retrouve simplement leur sens.</div>
         <span class="plvl-badge">Calcul de la banque...</span>
       </button>
       <button class="plvl lvl-2" type="button" data-lvl="2" onclick="selectLevel(2)">
         <div class="plvl-icon">🌿</div>
         <div class="plvl-name">Fondations — identifier</div>
-        <div class="plvl-desc">Pars du sens français et sélectionne la forme aln8ba exacte parmi quatre choix.</div>
+        <div class="plvl-desc">Ajoute le vivant, le territoire, la famille, le corps et les nombres au-delà de 10.</div>
         <span class="plvl-badge">Calcul de la banque...</span>
       </button>
       <button class="plvl lvl-3" type="button" data-lvl="3" onclick="selectLevel(3)">
@@ -2126,7 +2128,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-27-wigw8mek-013';
+const APP_RESET_VERSION = '2026-08-28-practice-progression-014';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev'];
 
@@ -3120,14 +3122,22 @@ const PRACTICE_LEVELS={
   4:{name:'Approfondissement',total:50},
   5:{name:'Autonomie',total:50}
 };
-const PRACTICE_DISCOVERY_CATEGORIES=new Set(['salut','nombre','couleur']);
-const PRACTICE_FOUNDATION_CATEGORIES=new Set(['famille','corps','animal','plante','nature']);
-const PRACTICE_CONTEXT_CATEGORIES=new Set(['territoire','toponymie','temps','description']);
+const PRACTICE_DISCOVERY_FORMS=new Set([
+  'Kwaï','Kwaï mziwi','8h8','Nda','Wliwni','Adio',
+  'Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen',
+  'Ndakagwi','Pazokw','Nis','Nas','Iaw','N8lan','Ngwed8s','T8baw8s','Ns8zek','Noliwi','Mdala',
+  'Aki','Nebi','Sibo','Skweda','Koa','Alakws','Awassos','M8lsem','Sips','Almos','Nolka'
+].map(form=>form.toLowerCase()));
+const PRACTICE_FOUNDATION_CATEGORIES=new Set([
+  'famille','corps','animal','plante','nature','territoire','toponymie','temps','description','action'
+]);
+const PRACTICE_CLASS_EXCLUDED_CATEGORIES=new Set(['nombre','couleur','salut']);
 const PRACTICE_FORM_CLASSES=[
   'Nom ou forme nominale',
   'Forme verbale : action ou état',
   'Nom de lieu',
-  'Expression ou mot grammatical'
+  'Pronom, particule ou mot-outil',
+  'Expression, formule ou adverbe'
 ];
 
 function practiceFrenchLabel(w){
@@ -3186,18 +3196,58 @@ function practiceHasDeepGrammar(w){
 }
 function practiceLevelForWord(w){
   const letters=practiceLetterCount(w), tokens=practiceTokenCount(w), cat=w.cat||'';
-  const advanced=practiceHasAdvancedGrammar(w), deepGrammar=practiceHasDeepGrammar(w);
-  if(tokens===1 && letters<=14 && !advanced && PRACTICE_DISCOVERY_CATEGORIES.has(cat)) return 1;
-  if(tokens===1 && letters<=3 && !advanced && PRACTICE_FOUNDATION_CATEGORIES.has(cat)) return 1;
-  if(tokens===1 && letters<=18 && !advanced && PRACTICE_FOUNDATION_CATEGORIES.has(cat)) return 2;
-  if(tokens<=2 && letters<=26 && !advanced && PRACTICE_CONTEXT_CATEGORIES.has(cat)) return 3;
-  if(tokens<=2 && letters<=11 && !deepGrammar) return 4;
+  if(PRACTICE_DISCOVERY_FORMS.has(practiceWordKey(w))) return 1;
+  if(tokens===1 && letters<=18 && (cat==='nombre'||PRACTICE_FOUNDATION_CATEGORIES.has(cat))) return 2;
+  if(tokens<=2 && letters<=22 && practiceFormClass(w)) return 3;
+  if(tokens<=2 && letters<=28) return 4;
   return 5;
 }
+function practiceCurriculumKeysByStage(){
+  if(typeof NIVEAUX==='undefined'||typeof aprModuleItemsForGuide!=='function'
+    ||typeof aprNiv==='undefined'||typeof aprMod==='undefined') return null;
+  const stages={d:new Set(),f:new Set(),co:new Set(),a:new Set(),au:new Set()};
+  const previousLevel=aprNiv, previousModule=aprMod;
+  try{
+    NIVEAUX.forEach(level=>{
+      level.mods.forEach((module,index)=>{
+        aprNiv=level.id; aprMod=index;
+        let lesson='';
+        try{ lesson=typeof module.lec==='function'?module.lec():module.lec; }catch(_error){}
+        aprModuleItemsForGuide(module,lesson||'').forEach(item=>{
+          const key=practiceWordKey(item); if(key) stages[level.id].add(key);
+        });
+      });
+    });
+  }finally{
+    aprNiv=previousLevel; aprMod=previousModule;
+  }
+  return stages;
+}
 function practicePoolsByLevel(words){
-  const pools={1:[],2:[],3:[],4:[],5:[]};
-  practiceConfirmedEntries(words).forEach(w=>pools[practiceLevelForWord(w)].push(w));
-  return pools;
+  const confirmed=practiceConfirmedEntries(words);
+  const curriculum=practiceCurriculumKeysByStage();
+  if(curriculum){
+    const core=new Set(PRACTICE_DISCOVERY_FORMS);
+    const foundations=new Set([...core,...curriculum.d,...curriculum.f]);
+    const consolidation=new Set([...foundations,...curriculum.co]);
+    const advanced=new Set([...consolidation,...curriculum.a]);
+    return {
+      1:confirmed.filter(word=>core.has(practiceWordKey(word))),
+      2:confirmed.filter(word=>foundations.has(practiceWordKey(word))),
+      3:confirmed.filter(word=>consolidation.has(practiceWordKey(word))
+        &&!PRACTICE_CLASS_EXCLUDED_CATEGORIES.has(word.cat||'')&&practiceFormClass(word)),
+      4:confirmed.filter(word=>advanced.has(practiceWordKey(word))),
+      5:confirmed
+    };
+  }
+  const stage=word=>practiceLevelForWord(word);
+  return {
+    1:confirmed.filter(word=>stage(word)===1),
+    2:confirmed.filter(word=>stage(word)<=2),
+    3:confirmed.filter(word=>stage(word)<=3&&!PRACTICE_CLASS_EXCLUDED_CATEGORIES.has(word.cat||'')&&practiceFormClass(word)),
+    4:confirmed.filter(word=>stage(word)<=4),
+    5:confirmed
+  };
 }
 function practicePoolForLevel(level,words){
   return practicePoolsByLevel(words)[level]||[];
@@ -3210,7 +3260,7 @@ function practiceRotationSlice(pool,total,offset=0){
   return Array.from({length:count},(_,index)=>ordered[(start+index)%ordered.length]);
 }
 function practiceRotatingQueue(level,pool,total){
-  const storageKey=`practice.rotation.v2.${level}.${pool.length}`;
+  const storageKey=`practice.rotation.v3.${level}.${pool.length}`;
   let offset=0;
   try{ offset=Number(localStorage.getItem(storageKey))||0; }catch(_e){}
   const selected=practiceRotationSlice(pool,total,offset);
@@ -3238,14 +3288,18 @@ function practiceFormClass(w){
     return 'Forme verbale : action ou état';
   if(/\bnom\b|substantif|possédé|possessif|diminutif|pluriel/.test(evidence))
     return 'Nom ou forme nominale';
-  return 'Expression ou mot grammatical';
+  if(/pronom|particule|conjonction|numéral|préverbe/.test(evidence))
+    return 'Pronom, particule ou mot-outil';
+  if(/expression|interjection|adverbe|formule|locution/.test(evidence))
+    return 'Expression, formule ou adverbe';
+  return '';
 }
 function practiceFormClassChoices(){
   return shuffle([...PRACTICE_FORM_CLASSES]);
 }
 function refreshPracticeCoverage(activeLevel=0,sessionCount=0){
   const pools=practicePoolsByLevel(WORDS);
-  const total=Object.values(pools).reduce((sum,pool)=>sum+pool.length,0);
+  const total=pools[5].length;
   const publicTotal=WORDS.filter(w=>w.aln8ba!=='__version__'&&!enAttente(w)&&isConfirmed(w)).length;
   Object.keys(PRACTICE_LEVELS).forEach(key=>{
     const level=Number(key), count=pools[level].length;
@@ -3255,7 +3309,7 @@ function refreshPracticeCoverage(activeLevel=0,sessionCount=0){
     badge.textContent=`${count} formes · séance de ${current}`;
   });
   const coverage=document.getElementById('practiceCoverage');
-  if(coverage) coverage.innerHTML=`<strong>${total} formes vertes praticables réparties sans doublon</strong> dans cinq niveaux. Chaque séance continue la rotation et présente jusqu'à 50 formes différentes. Le total public de ${publicTotal} fiches comprend aussi ${Math.max(0,publicTotal-total)} fiches historiques, consultatives, explicatives ou réservées à une leçon; elles ne deviennent pas automatiquement des réponses actives.`;
+  if(coverage) coverage.innerHTML=`<strong>Progression cumulative, du connu vers le nouveau.</strong> Découverte reste limitée aux salutations, aux six couleurs, aux nombres de 0 à 10 et à quelques racines concrètes. Fondations ajoute le vocabulaire et les nombres plus grands; la grammaire commence seulement à Consolidation. Autonomie peut rejoindre ${total} formes vertes praticables. Le total public de ${publicTotal} fiches comprend aussi ${Math.max(0,publicTotal-total)} fiches historiques, consultatives, explicatives ou réservées à une leçon.`;
   return {pools,total,publicTotal};
 }
 
@@ -3331,14 +3385,12 @@ function progressBar(pct){
   return `<div class="prat-progress"><div class="prat-prog-bar" style="width:${pct}%"></div></div>`;
 }
 
-// Feedback enrichi : paire mot-traduction toujours visible + pluriel si c'est un nom + exemple
+// Feedback lexical : les niveaux de reconnaissance ne devancent jamais la leçon de grammaire.
 function richFeedback(w, correct){
-  const pl = /nom (animé|inanimé)/i.test(w.grammar||'') ? (()=>{ const p=resolvePlural(w);
-    return `<div style="margin-top:6px;font-size:.88rem">Pluriel : <b>${p.form}</b> <span style="font-size:.72rem;opacity:.75">(${p.type})</span></div>`; })() : '';
   const ex = w.example_a ? `<div style="margin-top:8px;font-size:.8rem;font-style:italic;opacity:.8">"${w.example_a}" — ${w.example_f||''}</div>` : '';
   const meaningNote=practiceMeaningNote(w);
-  if(correct) return `<div class="prat-feedback ok" role="status" aria-live="polite" aria-atomic="true">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${pl}${ex}</div>`;
-  return `<div class="prat-feedback ko" role="status" aria-live="polite" aria-atomic="true">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${pl}${ex}</div>`;
+  if(correct) return `<div class="prat-feedback ok" role="status" aria-live="polite" aria-atomic="true">✓ <b>Bonne réponse !</b><div style="margin-top:6px"><strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${ex}</div>`;
+  return `<div class="prat-feedback ko" role="status" aria-live="polite" aria-atomic="true">✗ <b>Pas tout à fait.</b><div style="margin-top:6px">La bonne réponse : <strong>${w.aln8ba}</strong> = ${w.fr}</div>${meaningNote}${ex}</div>`;
 }
 
 function scrollInstant(top){
@@ -3489,9 +3541,14 @@ function renderLvl3(arena, w, idx, total, pct){
   `).join('');
   arena.innerHTML = `
     ${progressBar(pct)}
-    <div class="prat-question-lbl">Question ${idx+1} / ${total} · Quelle sorte de forme est-ce?</div>
+    <div class="prat-question-lbl">Question ${idx+1} / ${total} · Quel rôle cette forme joue-t-elle?</div>
     <div class="prat-word" style="font-size:2rem;color:var(--accent);font-family:Georgia,serif">${w.aln8ba}</div>
-    <div class="prat-hint">${practiceFrenchLabel(w)} · appuie-toi sur le type grammatical affiché dans la fiche, pas sur une association culturelle supposée</div>
+    <div class="prat-hint">${practiceFrenchLabel(w)} · repère le rôle indiqué dans sa fiche</div>
+    <div class="practice-class-guide">
+      <strong>Repère avant de répondre :</strong>
+      un nom désigne; un verbe exprime une action ou un état; un nom de lieu nomme un endroit;
+      un mot-outil aide à construire la phrase; une expression ou une formule forme une unité déjà documentée.
+    </div>
     <div class="prat-choices">${choiceHTML}</div>
     <div class="prat-feedback" id="pratFb"></div>
     <div class="prat-nav" id="pratNav" style="display:none">

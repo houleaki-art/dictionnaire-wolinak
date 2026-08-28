@@ -233,6 +233,17 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Remplacement du classement arbitraire par domaine de sens par une identification grammaticale vérifiable : forme nominale, forme verbale, nom de lieu ou expression.
 - Validation de 79 tests automatisés couvrant notamment l'absence des API vocales, la conservation de la musique, les banques d'apprentissage et les niveaux de pratique.
 
+## Progression du mode Pratique — 28 août 2026
+
+- Remplacement de la répartition par longueur et grande catégorie par une progression cumulative liée aux formes réellement affichées dans les modules du parcours.
+- Découverte est limitée à 30 formes : salutations, six couleurs, nombres de 0 à 10 et racines concrètes. Les nombres supérieurs à 10 commencent à Fondations.
+- Fondations puise dans les leçons Découverte avancée et Fondations au lieu d'aspirer des catégories entières du dictionnaire.
+- Consolidation commence seule l'identification grammaticale et exclut les nombres, les couleurs et les salutations de cette tâche.
+- La catégorie vague « forme grammaticale » est remplacée par cinq rôles expliqués : nom, verbe, nom de lieu, mot-outil et expression ou formule.
+- Le retour des niveaux débutants n'affiche plus le pluriel ni les classes animé/inanimé avant leur enseignement.
+- La rotation des séances passe à une nouvelle version et une actualisation forte de l'application conserve les clés de progression pédagogique.
+- Validation de 82 tests automatisés, des 30 questions de Découverte dans Chrome et de la disposition mobile à 390 × 844.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix
