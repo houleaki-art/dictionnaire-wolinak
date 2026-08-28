@@ -16,6 +16,10 @@ test('public source labels never imply Nation or external approval', () => {
   const publicSourceLabel = new Function(`${source}; return publicSourceLabel;`)();
   const raw = "Manuel · Enseignement actuel de la Nation · ✓ Confirmé par l'admin";
   assert.equal(publicSourceLabel(raw), 'Manuel');
+  assert.equal(
+    publicSourceLabel("Laurent, 1884 · Référence recommandée par Hélène O'Bomsawin"),
+    'Laurent, 1884'
+  );
 });
 
 test('internal review is named as internal review', () => {
@@ -43,4 +47,24 @@ test('legal notices distinguish sources and third-party rights', () => {
   assert.match(html, /Les mots, faits linguistiques, citations et œuvres de tiers conservent leur propre statut/);
   assert.doesNotMatch(html, /Les mots, traductions et contenus linguistiques de ce dictionnaire sont protégés/);
   assert.doesNotMatch(html, /Toute reproduction identique est illégale/);
+});
+
+test('public contributions are anonymous and never collect or publish a voice', () => {
+  assert.match(html, /id="fPrivacyConsent"/);
+  assert.match(html, /id="suggPrivacyConsent"/);
+  assert.doesNotMatch(html, /id="fAudioConsent"/);
+  assert.doesNotMatch(html, /id="f-contributor"/);
+  assert.doesNotMatch(html, /id="suggContrib"/);
+  assert.match(html, /audio:null/);
+  assert.match(html, /contributor:'Anonyme'/);
+  assert.match(html, /delete word\.audio;/);
+  assert.match(html, /delete word\.status; delete word\.submitted_date; delete word\.contributor;/);
+  assert.doesNotMatch(html, /Suggestion approuvée de ['"]?\+s\.contributor/);
+});
+
+test('privacy notice identifies the processor, purposes and withdrawal contact', () => {
+  assert.match(html, /proposition linguistique anonyme à la base Supabase du projet/);
+  assert.match(html, /Responsable : <strong>Guillaum Labrecque-Houle<\/strong>/);
+  assert.match(html, /mailto:houle\.aki@gmail\.com/);
+  assert.match(html, /demander l'accès, la rectification ou le retrait/);
 });

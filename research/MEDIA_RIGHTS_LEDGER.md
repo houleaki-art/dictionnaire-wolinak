@@ -1,0 +1,34 @@
+# Registre de provenance des medias
+
+Derniere mise a jour : 28 aout 2026
+
+Ce registre sert a conserver les preuves de provenance et de licence. Il ne remplace pas les conditions des services utilises et ne garantit pas, a lui seul, qu'un droit d'auteur existe sur chaque element genere.
+
+## Declaration du responsable
+
+Guillaum Labrecque-Houle a confirme le 28 aout 2026 que :
+
+- toutes les voix humaines enregistrees pour les mots et les chansons sont sa propre voix;
+- les generations Suno publiees ont ete creees pendant que sa licence etait active;
+- les paroles et la conception artistique personnelles lui appartiennent, sous reserve des droits eventuels sur les sources et outils tiers.
+
+Les recus d'abonnement, dates de generation, exports originaux et pages Suno doivent etre conserves hors du depot comme preuves.
+
+## Pistes publiees
+
+| Fichier | Page ou identifiant de generation | Preuve a conserver |
+| --- | --- | --- |
+| `audio/skweda.mp3` | a consigner | URL Suno, date, formule active, export original |
+| `audio/askwa-yudali.mp3` | a consigner | URL Suno, date, formule active, export original |
+| `audio/nikw8bi-aln8ba8dwa-v2.mp3` | `https://suno.com/song/27a8bff1-a867-4c0b-be9c-9d06e3a55e12` | recu et capture de la formule active |
+| `audio/wig8damoda-kwa-v3.mp3` | `https://suno.com/song/7c394b39-e6ac-45c6-9c35-fd62ec0d61ba` | recu et capture de la formule active |
+| `audio/kikas-v2.mp3` | `https://suno.com/song/86979f10-61bb-459b-a5d2-d28ea9042fe4` | recu et capture de la formule active |
+| `audio/est-ce-que-tu-mentends.mp3` | a consigner | URL Suno, date, formule active, export original |
+
+## Images
+
+Les six pochettes dans `audio/*.jpg` et les quatre scenes dans `assets/learning/*.webp` doivent chacune recevoir une fiche indiquant leur auteur ou outil de generation, leur date de creation, leur prompt ou fichier source et les conditions applicables au moment de leur creation. Jusqu'a ce que ces fiches soient completees, elles ne doivent pas etre vendues ni reutilisees hors de ce projet comme si leur provenance etait entierement documentee.
+
+## Regle de publication
+
+Avant d'ajouter un nouveau media, consigner son origine, sa date, son createur humain, l'outil utilise, le statut de licence au moment de la creation et l'emplacement de la preuve. Une licence active aujourd'hui ne doit jamais etre presentee comme une preuve retroactive pour une generation anterieure.

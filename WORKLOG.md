@@ -12,6 +12,12 @@ Aln8ba8dwaw8gan.
 Le journal ne reproduit aucune ancienne version du code ni aucune ancienne
 banque de données. Il conserve seulement les grandes étapes du travail.
 
+## 28 août 2026 — droits et confidentialité
+
+- Guillaum Labrecque-Houle confirme que toutes les voix humaines utilisées pour les mots et les chansons sont sa propre voix et que sa licence Suno était active lors des générations publiées; un registre de provenance des médias est ajouté dans `research/MEDIA_RIGHTS_LEDGER.md`.
+- Les formulaires publics cessent de demander un nom ou un enregistrement vocal. Ils transmettent seulement une proposition linguistique anonyme, car les files de soumission utilisent une clé publique et ne doivent contenir aucun renseignement personnel.
+- Le corpus vocal administrateur demeure local dans le navigateur, avec consentement explicite, et n'est pas envoyé à Supabase.
+
 ## Fondation et sécurité
 
 - Création initiale du site du dictionnaire, avec le code séparé des données.

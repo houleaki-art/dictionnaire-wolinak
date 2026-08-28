@@ -1849,6 +1849,7 @@ Merci... merci de m'avoir entendu</pre>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
       <div class="acard"><h3>💰 Financement personnel</h3><p>Ce dictionnaire a été monté et financé entièrement avec l'argent personnel de <strong>Guillaum Labrecque-Houle</strong>. Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Ce financement personnel n'est ni une subvention, ni une commandite, ni une approbation institutionnelle du projet.</p></div>
       <div class="acard"><h3>📚 Sources, noms et droits</h3><p>Les références bibliographiques et les noms servent à identifier les sources consultées. Ils n'indiquent aucune participation au projet ni aucune approbation de celui-ci. Les ouvrages, citations et contributions de tiers demeurent soumis aux droits de leurs titulaires. Ce site ne remplace pas les manuels ni les publications d'origine.</p></div>
+      <div class="acard"><h3>🔐 Confidentialité</h3><p>Le site n'utilise aucun outil d'analytique publicitaire. Les formulaires publics transmettent uniquement une proposition linguistique anonyme à la base Supabase du projet; ils ne demandent ni nom ni voix. N'inscrivez aucun renseignement personnel dans les champs libres. La soumission en attente est supprimée après la décision. Le corpus vocal administrateur, composé de la voix du responsable du projet avec son consentement, demeure dans son navigateur et n'est pas envoyé à Supabase. GitHub Pages et Supabase peuvent traiter des journaux techniques standards selon leurs propres politiques. Responsable : <strong>Guillaum Labrecque-Houle</strong> · <a href="mailto:houle.aki@gmail.com">houle.aki@gmail.com</a>. Vous pouvez demander l'accès, la rectification ou le retrait d'une soumission encore en attente.</p></div>
       <div class="acard"><h3>➕ Contribuer</h3><p>Cliquez le bouton <strong>+</strong> pour proposer un mot.
         Une proposition reste en attente tant qu'elle n'a pas été vérifiée; son envoi ne constitue pas une approbation linguistique.</p></div>
       <div class="acard"><h3>⚕️ Santé et sécurité</h3><p>Les notes historiques ou culturelles du projet ne sont pas des conseils de santé.
@@ -2000,18 +2001,17 @@ Merci... merci de m'avoir entendu</pre>
       </div>
       <div class="frow full">
         <div class="fg">
-          <label>Votre nom / source (optionnel)</label>
-          <input type="text" id="f-source" placeholder="Votre nom ou la source du mot">
+          <label>Source bibliographique (optionnel)</label>
+          <input type="text" id="f-source" placeholder="Titre, auteur, page ou lien public">
         </div>
       </div>
-      <!-- AUDIO RECORDER -->
-      <div class="rec-zone" id="recZone">
-        <p style="font-size:.82rem;color:var(--text3);margin-bottom:8px">🎙️ Enregistrer la prononciation</p>
-        <button class="rec-btn start" id="recStartBtn" onclick="startRec()">⏺ Commencer l'enregistrement</button>
-        <button class="rec-btn stop" id="recStopBtn" style="display:none" onclick="stopRec()">⏹ Arrêter</button>
-        <div class="rec-status" id="recStatus">Facultatif — un enregistrement natif est précieux</div>
-        <audio id="recPlayback" controls style="display:none;margin-top:8px;width:100%;height:32px"></audio>
+      <div class="corpus-privacy" role="note">
+        <strong>Contribution anonyme.</strong> Le texte et la source bibliographique sont transmis à Supabase uniquement pour examiner la proposition. Le contenu accepté peut être publié et la soumission en attente est supprimée après la décision. N'inscrivez aucun nom, courriel, numéro de téléphone ni autre renseignement personnel. Pour une demande de retrait avant examen : <a href="mailto:houle.aki@gmail.com">houle.aki@gmail.com</a>.
       </div>
+      <label class="corpus-consent">
+        <input type="checkbox" id="fPrivacyConsent">
+        <span>J'ai lu cet avis et j'autorise l'examen ainsi que la publication éventuelle de ma proposition linguistique anonyme.</span>
+      </label>
       <div class="btns">
         <button class="btn btn-secondary" onclick="closeModal('addModal')">Annuler</button>
         <button class="btn btn-primary" onclick="submitWord()">Soumettre pour approbation →</button>
@@ -2192,10 +2192,13 @@ Merci... merci de m'avoir entendu</pre>
         <label style="font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Raison (optionnel)</label>
         <input id="suggReason" type="text" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.88rem" placeholder="Pourquoi cette correction?">
       </div>
-      <div>
-        <label style="font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Votre nom (optionnel)</label>
-        <input id="suggContrib" type="text" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.88rem" placeholder="Anonyme">
+      <div class="corpus-privacy" role="note">
+        <strong>Contribution anonyme.</strong> La correction et sa raison sont transmises à Supabase pour examen, puis la soumission est supprimée de la file après la décision. N'inscrivez aucun renseignement personnel. Pour demander son retrait avant examen : <a href="mailto:houle.aki@gmail.com">houle.aki@gmail.com</a>.
       </div>
+      <label class="corpus-consent">
+        <input type="checkbox" id="suggPrivacyConsent">
+        <span>J'ai lu cet avis et je consens à l'envoi de cette suggestion pour examen.</span>
+      </label>
       <div style="display:flex;gap:10px;margin-top:4px">
         <button class="btn btn-primary" style="flex:1" onclick="submitSuggestion()">Envoyer la suggestion</button>
         <button class="btn btn-secondary" onclick="closeModal('suggestionModal')">Annuler</button>
@@ -2696,7 +2699,6 @@ const S = {
 };
 let WORDS = SEED.map(w=>{const f=FAMILY_MAP[w.id];return f?{...w,...f}:w;});
 let FAVS  = loadFavs();
-let mediaRecorder = null, audioChunks = [], audioBlob = null;
 let corpusWord=null, corpusRecorder=null, corpusStream=null, corpusChunks=[];
 let corpusTimer=null, corpusDraftBlob=null, corpusDraftUrl='', corpusDraftMeta=null;
 let corpusRequestToken=0, corpusStarting=false;
@@ -2718,6 +2720,7 @@ function showMoreWords(){
 function publicSourceLabel(value){
   return String(value||'')
     .replace(/\s*·?\s*Enseignement actuel de la Nation/gi,'')
+    .replace(/\s*·?\s*Référence recommandée par Hélène O['’]Bomsawin/gi,'')
     .replace(/\s*·?\s*[✓✔]\s*Confirmé(?:\s+par\s+l['’]admin)?/gi,'')
     .replace(/\s*·?\s*Revu dans le projet\s*\(validation interne(?: seulement)?\)/gi,'')
     .replace(/\s*·\s*·\s*/g,' · ')
@@ -4203,6 +4206,8 @@ async function approvePending(id){
   const word={...pend[idx], id:uid(), date_added:new Date().toISOString().slice(0,10)};
   ['aln8ba','fr','en','grammar','notes','source','example_a','example_f','phonetic','cat'].forEach(k=>{ if(typeof word[k]==='string') word[k]=sanitizePlain(word[k]); });
   if(Array.isArray(word.related)) word.related=word.related.map(sanitizePlain).filter(Boolean);
+  // L'audio public sert uniquement à l'examen; sa publication exige une autorisation distincte.
+  delete word.audio;
   delete word.status; delete word.submitted_date; delete word.contributor;
   WORDS.push(word); saveWords([word]);
   await deletePending(id);
@@ -4228,7 +4233,7 @@ function openSuggestion(wordId, aln8ba, fr){
   document.getElementById('suggWordTitle').textContent = aln8ba + ' — ' + fr;
   document.getElementById('suggValue').value = '';
   document.getElementById('suggReason').value = '';
-  document.getElementById('suggContrib').value = '';
+  document.getElementById('suggPrivacyConsent').checked = false;
   updateSuggCurrent();
   openModal('suggestionModal');
 }
@@ -4244,6 +4249,9 @@ async function submitSuggestion(){
   const field = document.getElementById('suggField').value;
   const suggested = document.getElementById('suggValue').value.trim();
   if(!suggested){ toast('⚠️ Veuillez entrer une suggestion.'); return; }
+  if(!document.getElementById('suggPrivacyConsent').checked){
+    toast('Lis l’avis de confidentialité et confirme ton consentement avant l’envoi.'); return;
+  }
   const w = _suggWordData;
   const entry = {
     id: Date.now().toString(36)+Math.random().toString(36).slice(2,6),
@@ -4253,7 +4261,7 @@ async function submitSuggestion(){
     current_value: w ? (w[field]||'') : '',
     suggested_value: sanitizePlain(suggested),
     reason: sanitizePlain(document.getElementById('suggReason').value.trim()),
-    contributor: sanitizePlain(document.getElementById('suggContrib').value.trim()) || 'Anonyme',
+    contributor: 'Anonyme',
     submitted_date: new Date().toISOString().slice(0,10),
     status: 'pending'
   };
@@ -4269,7 +4277,7 @@ async function applySuggestion(id){
   if(!w){ toast('Mot introuvable'); return; }
   const idx = WORDS.findIndex(x=>x.id===s.word_id);
   WORDS[idx] = {...w, [s.field]: s.suggested_value,
-    corrections:[...(w.corrections||[]),{field:s.field,from:s.current_value,to:s.suggested_value,note:'Suggestion approuvée de '+s.contributor,date:new Date().toISOString().slice(0,10),by:'Admin'}]
+    corrections:[...(w.corrections||[]),{field:s.field,from:s.current_value,to:s.suggested_value,note:'Suggestion publique examinée et approuvée',date:new Date().toISOString().slice(0,10),by:'Admin'}]
   };
   saveWords([WORDS[idx]]);
   await deleteSuggestion(id);
@@ -4403,12 +4411,7 @@ function openAddWord(){
   ['f-aln8ba','f-phonetic','f-fr','f-en','f-exA','f-exF','f-notes','f-related','f-source'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-cat').value=''; document.getElementById('f-gram').value='';
   document.getElementById('f-aln8ba-hint').textContent='';
-  audioBlob=null; audioChunks=[];
-  document.getElementById('recPlayback').style.display='none';
-  document.getElementById('recPlayback').src='';
-  document.getElementById('recStatus').textContent='Facultatif — un enregistrement natif est précieux';
-  document.getElementById('recStartBtn').style.display='';
-  document.getElementById('recStopBtn').style.display='none';
+  document.getElementById('fPrivacyConsent').checked=false;
   openModal('addModal');
 }
 function liveCheck(){
@@ -4485,7 +4488,10 @@ async function submitWord(){
   const fr=document.getElementById('f-fr').value.trim();
   const cat=document.getElementById('f-cat').value;
   if(!aln||!fr||!cat){toast('⚠️ Remplissez les champs obligatoires (Aln8ba, Français, Catégorie)');return;}
-  const contributor=document.getElementById('f-source').value.trim();
+  if(!document.getElementById('fPrivacyConsent').checked){
+    toast('Lis l’avis de confidentialité et confirme ton consentement avant l’envoi.'); return;
+  }
+  const source=document.getElementById('f-source').value.trim();
   const entry={
     id:uid(),
     aln8ba:aln, phonetic:document.getElementById('f-phonetic').value.trim(),
@@ -4495,9 +4501,9 @@ async function submitWord(){
     example_f:document.getElementById('f-exF').value.trim(),
     notes:document.getElementById('f-notes').value.trim(),
     related:document.getElementById('f-related').value.split(',').map(s=>s.trim()).filter(Boolean),
-    audio:audioBlob?URL.createObjectURL(audioBlob):null,
-    contributor:contributor||'Anonyme',
-    source:contributor,
+    audio:null,
+    contributor:'Anonyme',
+    source:source,
     corrections:[],
     date_added:new Date().toISOString().slice(0,10),
     status:'pending',
@@ -4508,54 +4514,12 @@ async function submitWord(){
     const msgLines = validation.issues.map(i => '• ' + i.replace(/<[^>]+>/g,'')).join('\n\n');
     if (!confirm('⚠️ PROBLÈME LINGUISTIQUE DÉTECTÉ :\n\n' + msgLines + '\n\n─────────────────────\nCes erreurs peuvent créer de fausses réponses dans le quiz.\n\nSoumettre quand même ?')) return;
   }
-  // Store audio as base64
-  if(audioBlob){
-    const reader=new FileReader();
-    reader.onload=async e=>{
-      entry.audio=e.target.result;
-      await pushPending(entry);
-      finishSubmit(aln);
-    };
-    reader.readAsDataURL(audioBlob);
-  } else {
-    await pushPending(entry);
-    finishSubmit(aln);
-  }
+  await pushPending(entry);
+  finishSubmit(aln);
 }
 function finishSubmit(aln){
   closeModal('addModal'); updateAdminBadge();
   toast(`📬 « ${aln} » soumis pour approbation. Merci!`);
-}
-
-// ══════════════════════════════════════════════════════════
-//  AUDIO RECORDER
-// ══════════════════════════════════════════════════════════
-async function startRec(){
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    audioChunks=[]; audioBlob=null;
-    mediaRecorder=new MediaRecorder(stream);
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>{
-      audioBlob=new Blob(audioChunks,{type:'audio/webm'});
-      const url=URL.createObjectURL(audioBlob);
-      const pb=document.getElementById('recPlayback');
-      pb.src=url; pb.style.display='block';
-      document.getElementById('recStatus').textContent='✅ Enregistrement prêt — vous pouvez écouter et re-enregistrer';
-      document.getElementById('recZone').classList.remove('recording');
-      stream.getTracks().forEach(t=>t.stop());
-    };
-    mediaRecorder.start();
-    document.getElementById('recStartBtn').style.display='none';
-    document.getElementById('recStopBtn').style.display='';
-    document.getElementById('recStatus').textContent='🔴 Enregistrement en cours…';
-    document.getElementById('recZone').classList.add('recording');
-  } catch(e){ toast('Microphone non accessible: '+e.message); }
-}
-function stopRec(){
-  if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
-  document.getElementById('recStartBtn').style.display='';
-  document.getElementById('recStopBtn').style.display='none';
 }
 
 // Corpus vocal prive: collecte locale, jamais envoyee automatiquement a Supabase.
@@ -5536,7 +5500,10 @@ function updateAdminBadge(){
 function catLabel(c){return{salut:'Salutations',famille:'Famille',territoire:'Territoire',nature:'Nature / Ciel',animal:'Animaux',plante:'Plantes / Nourriture',action:'Actions / Valeurs',temps:'Temps',nombre:'Nombres',description:'Description',corps:'Corps humain',couleur:'Couleurs',grammaire:'Grammaire',toponymie:'Toponymie'}[c]||c;}
 function catIcon(c){return{salut:'🤝',famille:'👨‍👩‍👧',territoire:'🌍',nature:'🌿',animal:'🦌',plante:'🌱',action:'💡'}[c]||'📖';}
 function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){if(id==='corpusModal'){closeCorpusRecorder();return;}document.getElementById(id).classList.remove('open');}
+function closeModal(id){
+  if(id==='corpusModal'){closeCorpusRecorder();return;}
+  document.getElementById(id).classList.remove('open');
+}
 function setEntryWarningActive(active){
   document.body.classList.toggle('warning-open',active);
   [...document.body.children].forEach(el=>{
