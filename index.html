@@ -1159,7 +1159,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <button class="plvl lvl-1 on" type="button" data-lvl="1" onclick="selectLevel(1)">
         <div class="plvl-icon">🌱</div>
         <div class="plvl-name">Découverte — reconnaître</div>
-        <div class="plvl-desc">Salutations, six couleurs, nombres de 0 à 10 et racines concrètes : retrouve simplement leur sens.</div>
+        <div class="plvl-desc">30 questions tirées à tour de rôle des salutations, des six couleurs, des nombres de 0 à 10 et de racines concrètes.</div>
         <span class="plvl-badge">Calcul de la banque...</span>
       </button>
       <button class="plvl lvl-2" type="button" data-lvl="2" onclick="selectLevel(2)">
@@ -2128,7 +2128,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-28-practice-progression-014';
+const APP_RESET_VERSION = '2026-08-28-practice-rotation-015';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev'];
 
@@ -3116,17 +3116,20 @@ function fcNext(){ S.fcIdx++; if(S.fcIdx>=S.fcWords.length){S.fcWords.sort(()=>M
 // ══════════════════════════════════════════════════════════
 const PS = { level:1, queue:[], idx:0, ok:0, ko:0, streak:0, bestStreak:0, answered:false };
 const PRACTICE_LEVELS={
-  1:{name:'Découverte',total:50},
+  1:{name:'Découverte',total:30},
   2:{name:'Fondations',total:50},
   3:{name:'Consolidation',total:50},
   4:{name:'Approfondissement',total:50},
   5:{name:'Autonomie',total:50}
 };
 const PRACTICE_DISCOVERY_FORMS=new Set([
-  'Kwaï','Kwaï mziwi','8h8','Nda','Wliwni','Adio',
+  'Kwai','Kwaï mziwi!','8h8','Nda','Wliwni','Adio',
   'Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen',
   'Ndakagwi','Pazokw','Nis','Nas','Iaw','N8lan','Ngwed8s','T8baw8s','Ns8zek','Noliwi','Mdala',
-  'Aki','Nebi','Sibo','Skweda','Koa','Alakws','Awassos','M8lsem','Sips','Almos','Nolka'
+  'Aki','Skweda','Koa','Alakws',
+  'Awassos','M8lsem','Mgezo','Agaskw','Nolka','Tolba','Moz','Sips','Almos','Asban','Chegwal','K8gw',
+  'N8balha','Kokokhas','Mag8libo','Pezo','Mikwa','Mamaska','Seg8gw','Mkazas','Pakesso','Skok','Tideso',
+  'Abazi','Wanibagw','Pag8nis','Mskikwimen','Aples','Adbimen','Odana','Migwen','Mski','Watzo'
 ].map(form=>form.toLowerCase()));
 const PRACTICE_FOUNDATION_CATEGORIES=new Set([
   'famille','corps','animal','plante','nature','territoire','toponymie','temps','description','action'
@@ -3260,7 +3263,7 @@ function practiceRotationSlice(pool,total,offset=0){
   return Array.from({length:count},(_,index)=>ordered[(start+index)%ordered.length]);
 }
 function practiceRotatingQueue(level,pool,total){
-  const storageKey=`practice.rotation.v3.${level}.${pool.length}`;
+  const storageKey=`practice.rotation.v4.${level}.${pool.length}`;
   let offset=0;
   try{ offset=Number(localStorage.getItem(storageKey))||0; }catch(_e){}
   const selected=practiceRotationSlice(pool,total,offset);
@@ -3309,7 +3312,7 @@ function refreshPracticeCoverage(activeLevel=0,sessionCount=0){
     badge.textContent=`${count} formes · séance de ${current}`;
   });
   const coverage=document.getElementById('practiceCoverage');
-  if(coverage) coverage.innerHTML=`<strong>Progression cumulative, du connu vers le nouveau.</strong> Découverte reste limitée aux salutations, aux six couleurs, aux nombres de 0 à 10 et à quelques racines concrètes. Fondations ajoute le vocabulaire et les nombres plus grands; la grammaire commence seulement à Consolidation. Autonomie peut rejoindre ${total} formes vertes praticables. Le total public de ${publicTotal} fiches comprend aussi ${Math.max(0,publicTotal-total)} fiches historiques, consultatives, explicatives ou réservées à une leçon.`;
+  if(coverage) coverage.innerHTML=`<strong>Progression cumulative, du connu vers le nouveau.</strong> Découverte propose 30 questions par séance et reprend ensuite là où la séance précédente s'est arrêtée dans sa banque de racines concrètes, salutations, six couleurs et nombres de 0 à 10. Fondations ajoute le vocabulaire et les nombres plus grands; la grammaire commence seulement à Consolidation. Autonomie peut rejoindre ${total} formes vertes praticables. Le total public de ${publicTotal} fiches comprend aussi ${Math.max(0,publicTotal-total)} fiches historiques, consultatives, explicatives ou réservées à une leçon.`;
   return {pools,total,publicTotal};
 }
 

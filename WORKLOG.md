@@ -236,7 +236,9 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 ## Progression du mode Pratique — 28 août 2026
 
 - Remplacement de la répartition par longueur et grande catégorie par une progression cumulative liée aux formes réellement affichées dans les modules du parcours.
-- Découverte est limitée à 30 formes : salutations, six couleurs, nombres de 0 à 10 et racines concrètes. Les nombres supérieurs à 10 commencent à Fondations.
+- Une séance Découverte est limitée à 30 questions : salutations, six couleurs, nombres de 0 à 10 et racines concrètes. Les nombres supérieurs à 10 commencent à Fondations.
+- La banque Découverte contient maintenant 60 formes simples : les deux premières séances servent chacune 30 racines concrètes différentes avant de reprendre la banque.
+- `Mkwi` reste consultable dans le dictionnaire, mais n'entre pas dans cette banque : l'exercice des couleurs reprend seulement les six formes complètes enseignées dans la leçon, dont `Mkwigen`.
 - Fondations puise dans les leçons Découverte avancée et Fondations au lieu d'aspirer des catégories entières du dictionnaire.
 - Consolidation commence seule l'identification grammaticale et exclut les nombres, les couleurs et les salutations de cette tâche.
 - La catégorie vague « forme grammaticale » est remplacée par cinq rôles expliqués : nom, verbe, nom de lieu, mot-outil et expression ou formule.

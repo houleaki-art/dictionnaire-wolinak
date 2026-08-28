@@ -42,16 +42,16 @@ function word(id, aln8ba, fr, cat, grammar = '') {
   return { id, aln8ba, fr, cat, grammar, notes: '', safe: true };
 }
 
-test('les cinq niveaux ont une seance cible de 50 questions', () => {
+test('decouverte garde une seance courte et les autres niveaux visent 50 questions', () => {
   const { PRACTICE_LEVELS } = practiceApi();
-  assert.deepEqual(Object.values(PRACTICE_LEVELS).map(level => level.total), [50, 50, 50, 50, 50]);
+  assert.deepEqual(Object.values(PRACTICE_LEVELS).map(level => level.total), [30, 50, 50, 50, 50]);
   assert.equal((html.match(/class="plvl lvl-/g) || []).length, 5);
 });
 
 test('les banques suivent une progression cumulative du vocabulaire vers la grammaire', () => {
   const { practiceConfirmedEntries, practicePoolsByLevel } = practiceApi();
   const words = [
-    word('hello', 'Kwaï', 'Bonjour', 'salut', 'Formule de conversation'),
+    word('hello', 'Kwai', 'Bonjour', 'salut', 'Formule de conversation'),
     word('dog', 'Almos', 'Un chien', 'animal', 'Nom animé'),
     word('twelve', 'Nis8kaw', 'Douze', 'nombre', 'Numéral'),
     word('village', 'Odana', 'Village', 'territoire', 'Nom de lieu'),
@@ -61,7 +61,7 @@ test('les banques suivent une progression cumulative du vocabulaire vers la gram
   ];
   const confirmed = practiceConfirmedEntries(words);
   const pools = practicePoolsByLevel(words);
-  assert.deepEqual(pools[1].map(item => item.id), ['hello', 'dog']);
+  assert.deepEqual(pools[1].map(item => item.id), ['hello', 'dog', 'village']);
   assert.deepEqual(pools[2].map(item => item.id), ['hello', 'dog', 'twelve', 'village', 'work', 'possessed']);
   assert.deepEqual(pools[3].map(item => item.id), ['dog', 'village', 'work', 'possessed', 'pronoun']);
   assert.equal(pools[5].length, confirmed.length);
@@ -78,12 +78,15 @@ test('decouverte garde les nombres de zero a dix et les racines concretes seulem
     word('twelve', 'Nis8kaw', 'Douze', 'nombre', 'Numéral'),
     word('earth', 'Aki', 'Terre', 'nature', 'Nom inanimé'),
     word('water', 'Nebi', 'Eau', 'nature', 'Nom inanimé'),
+    word('full-red', 'Mkwigen', "C'est rouge", 'couleur', 'Adjectif — forme inanimée en -igen'),
+    word('short-red', 'Mkwi', 'Rouge', 'couleur', 'Adjectif'),
+    word('eagle', 'Mgezo', 'Aigle', 'animal', 'Nom animé'),
     word('long-number', 'N8n8l8kas8kaw', 'Dix-neuf', 'nombre', 'Numéral')
   ];
   const discovery = practicePoolForLevel(1, words).map(item => item.id);
-  assert.deepEqual(discovery, ['one', 'ten', 'earth', 'water']);
+  assert.deepEqual(discovery, ['one', 'ten', 'earth', 'full-red', 'eagle']);
   assert.equal(practiceLevelForWord(words[2]), 2);
-  assert.equal(practiceLevelForWord(words[5]), 2);
+  assert.equal(practiceLevelForWord(words[8]), 2);
 });
 
 test('les banques reelles puisent dans les formes enseignees par les modules', () => {
@@ -118,6 +121,20 @@ test('la rotation sert 50 formes differentes puis continue dans la banque', () =
   assert.equal(new Set(first.map(item => item.id)).size, 50);
   assert.equal(first.filter(item => second.includes(item)).length, 0);
   assert.equal(new Set([...first, ...second, ...third].map(item => item.id)).size, 120);
+});
+
+test('deux seances decouverte de 30 parcourent une banque plus grande sans etre identiques', () => {
+  const { practiceRotationSlice } = practiceApi();
+  const pool = Array.from({ length: 51 }, (_, index) => word(
+    `root-${index}`, `Racine${String(index).padStart(2, '0')}`, `Sens ${index}`, 'nature', 'Nom'
+  ));
+  const first = practiceRotationSlice(pool, 30, 0);
+  const second = practiceRotationSlice(pool, 30, 30);
+  assert.equal(first.length, 30);
+  assert.equal(second.length, 30);
+  assert.notDeepEqual(first.map(item => item.id), second.map(item => item.id));
+  assert.equal(new Set([...first, ...second].map(item => item.id)).size, 51);
+  assert.match(html, /practice\.rotation\.v4/);
 });
 
 test('les mots proches mois et jour recoivent un contexte distinct', () => {
