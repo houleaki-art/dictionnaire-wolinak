@@ -49,6 +49,14 @@ test('legal notices distinguish sources and third-party rights', () => {
   assert.doesNotMatch(html, /Toute reproduction identique est illégale/);
 });
 
+test('public identity presents a personal Wôlinak project without institutional representation', () => {
+  assert.match(html, /Projet personnel de Guillaum Labrecque-Houle · Abénakis de Wôlinak/);
+  assert.match(html, /Un projet personnel de Wôlinak/);
+  assert.match(html, /ni approuvé dans son ensemble par des professionnels, une Nation, un conseil de bande/);
+  assert.doesNotMatch(html, /Dictionnaire vivant · Abenakis d'Odanak et Wôlinak/);
+  assert.doesNotMatch(html, /Première Nation Abénakise de Wôlinak/);
+});
+
 test('public contributions are anonymous and never collect or publish a voice', () => {
   assert.match(html, /id="fPrivacyConsent"/);
   assert.match(html, /id="suggPrivacyConsent"/);
