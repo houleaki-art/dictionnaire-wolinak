@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Aln8ba8dwaw8gan — dictionnaire vivant",
+  "short_name": "Aln8ba8dwaw8gan",
+  "description": "Projet personnel de dictionnaire et d'apprentissage aln8ba de Guillaum Labrecque-Houle.",
+  "lang": "fr-CA",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#4a2808",
+  "icons": [
+    {
+      "src": "assets/aln8ba-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

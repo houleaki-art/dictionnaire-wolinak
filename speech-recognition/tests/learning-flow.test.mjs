@@ -375,3 +375,75 @@ test('la forme locative wigw8mek reste coherente partout', () => {
   assert.match(html, /Nd'ai wigw8mek/);
   assert.match(html, /wigw8mek indique la maison comme lieu/);
 });
+
+test('les noms du corps enseignent la possession sans substitution automatique', () => {
+  const body = sourceBetween('{t:"Mon corps"', '{t:"Ma famille"');
+  assert.match(body, /Avant les mots : pourquoi la forme porte déjà « mon »/);
+  assert.match(body, /Ndep<\/span> « ma tête »/);
+  assert.match(body, /K'dup<\/span> « ta tête »/);
+  assert.match(body, /Wdep<\/span> « sa tête »/);
+  assert.match(body, /dep → dup/);
+  assert.doesNotMatch(body, /Change le N pour un K/);
+  assert.match(body, /lec:aprBodyPossessionLec/);
+  const grouping = sourceBetween('function aprBodyPossessionLec', 'function aprGenreReviewLec');
+  assert.match(grouping, /Avec moi/);
+  assert.match(grouping, /Avec lui ou elle/);
+  assert.match(grouping, /Avec plusieurs personnes/);
+  assert.match(grouping, /une ressemblance n'est pas une règle automatique/i);
+});
+
+test('la possession compare des paradigmes attestes et laisse les cases manquantes ouvertes', () => {
+  const lesson = sourceBetween('{t:"Mon, ton, son"', '{t:"La phrase affirmative au présent"');
+  for (const form of ['Nid8ba','Kid8ba','Wid8ba','Ndep',"K'dup",'Wdep',"N'haga",'Whaga','Nelji','Welji']) {
+    assert.ok(lesson.includes(form), `forme absente: ${form}`);
+  }
+  assert.match(lesson, /non donné ici/);
+  assert.match(lesson, /Préfixes nominaux et préfixes verbaux ne sont pas une seule règle/);
+  assert.doesNotMatch(lesson, /<td class="k">Kdep<\/td>/);
+});
+
+test('la morphologie definit prefixe base et suffixe avant les tableaux', () => {
+  const lesson = sourceBetween('{t:"Racines et suffixes"', '{t:"Décomposer un mot"');
+  assert.ok(lesson.indexOf('Trois morceaux possibles') < lesson.indexOf('<table class="aprtab">'));
+  assert.match(lesson, /Préfixe · avant/);
+  assert.match(lesson, /Base ou racine · cœur/);
+  assert.match(lesson, /Suffixe · après/);
+  assert.match(lesson, /Agakimzowinno/);
+  assert.match(lesson, /Odana/);
+  assert.match(lesson, /Une addition n'est pas toujours visible/);
+});
+
+test("le module de l'arbre utilise seulement sa banque active verifiee", () => {
+  const lesson = sourceBetween('{t:"L\'arbre et ses repères"', '{t:"Les plantes et la nourriture"');
+  for (const form of ['Abazi', 'Koa', 'Wanibagw', 'Pag8nis']) {
+    assert.match(lesson, new RegExp(`<td class="k">${form}</td>`));
+  }
+  for (const historical of ['Molodagw', 'Senomozi', 'Maskwamozi', 'Mahlakws']) {
+    assert.doesNotMatch(lesson, new RegExp(`<td class="k">${historical}</td>`));
+  }
+  assert.match(lesson, /ne sont\s+pas transformés silencieusement en réponses modernes/);
+});
+
+test('le site audite les routes et les banques des 45 modules au chargement', () => {
+  const audit = sourceBetween('const APR_EXERCISE_ROUTES', 'function aprModuleNeedsUse');
+  assert.match(audit, /function aprLearningRuntimeAudit/);
+  assert.match(audit, /aprModulePool\(module\.cat\)\.length/);
+  assert.match(audit, /banque de vocabulaire trop petite/);
+  assert.match(audit, /route d'exercice absente/);
+  assert.match(html, /APR_LAST_AUDIT=aprLearningRuntimeAudit\(\)/);
+  assert.match(html, /Contrôle fonctionnel réussi/);
+  assert.match(html, /document\.documentElement\.dataset\.learningAudit/);
+});
+
+test('le projet fournit une identite visuelle originale au navigateur', () => {
+  const manifestPath = path.resolve(here, '..', '..', 'manifest.webmanifest');
+  const iconPath = path.resolve(here, '..', '..', 'assets', 'aln8ba-icon.svg');
+  assert.ok(fs.existsSync(manifestPath));
+  assert.ok(fs.existsSync(iconPath));
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  assert.equal(manifest.short_name, 'Aln8ba8dwaw8gan');
+  assert.equal(manifest.icons[0].src, 'assets/aln8ba-icon.svg');
+  assert.match(html, /rel="icon" href="assets\/aln8ba-icon\.svg"/);
+  assert.match(html, /rel="manifest" href="manifest\.webmanifest"/);
+  assert.match(html, /<div class="logo"><img src="assets\/aln8ba-icon\.svg" alt=""><\/div>/);
+});

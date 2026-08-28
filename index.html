@@ -8,6 +8,10 @@
 <meta http-equiv="Expires" content="0">
 <title>Aln8ba8dwaw8gan — Projet personnel de Guillaum Labrecque-Houle</title>
 <meta name="description" content="Aln8ba8dwaw8gan, projet personnel de dictionnaire vivant créé par Guillaum Labrecque-Houle, Abénakis de Wôlinak. Projet indépendant en construction.">
+<meta name="theme-color" content="#4a2808">
+<link rel="icon" href="assets/aln8ba-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/aln8ba-icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
 <style>
 :root {
   --bg:#faf7f2;--surface:#fff;--surface2:#f5f0e8;--border:#e0d5c0;
@@ -29,7 +33,8 @@ body{font-family:Georgia,serif;background:var(--bg);color:var(--text);min-height
 header{background:linear-gradient(135deg,#1e1008,#4a2808,#7a3a18);color:#f8f0e0;position:sticky;top:0;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,.4)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid rgba(255,255,255,.1)}
 .hdr-brand{display:flex;align-items:center;gap:14px}
-.logo{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0c060,#c47830);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 0 3px rgba(255,255,255,.15),0 4px 12px rgba(0,0,0,.3);flex-shrink:0}
+.logo{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(240,192,96,.34),0 5px 16px rgba(0,0,0,.36);overflow:hidden;flex-shrink:0}
+.logo img{display:block;width:100%;height:100%;object-fit:cover}
 .hdr-title h1{font-size:1.4rem;font-weight:700;color:#f8e8c0;text-shadow:0 2px 8px rgba(0,0,0,.4);line-height:1.2}
 .hdr-title p{font-size:.73rem;color:rgba(255,255,255,.55);font-style:italic;letter-spacing:.04em}
 .hdr-controls{display:flex;align-items:center;gap:8px}
@@ -754,6 +759,28 @@ body.music-dock-open .toast{bottom:116px}
 .apr-module-contract li{position:relative;min-width:0;padding:9px 10px 9px 34px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text2);font-size:.76rem;line-height:1.42}
 .apr-module-contract li::before{counter-increment:module-step;content:counter(module-step);position:absolute;left:9px;top:9px;width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;text-align:center;font-size:.68rem;font-weight:800;line-height:18px}
 .apr-module-bank{margin:0 0 14px;padding:9px 12px;border-radius:9px;background:rgba(61,122,80,.09);color:var(--text2);font-size:.75rem;line-height:1.5}
+.morph-primer{margin:14px 0 18px;padding:16px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--border));border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 11%,var(--surface)),var(--surface))}
+.morph-primer>strong{display:block;margin-bottom:4px;color:var(--accent);font-size:1.05rem}
+.morph-primer>p{color:var(--text2)}
+.morph-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.morph-step{min-width:0;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.morph-step b{display:block;margin-bottom:4px;color:var(--text);font-size:.82rem}
+.morph-step span{display:block;color:var(--text2);font-size:.75rem;line-height:1.45}
+.morph-equation{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap;margin:12px 0}
+.morph-piece{flex:1 1 130px;min-width:0;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface);text-align:center}
+.morph-piece code{display:block;font-size:1.08rem;margin-bottom:3px}
+.morph-piece small{display:block;color:var(--text2);line-height:1.4}
+.morph-plus{align-self:center;color:var(--text3);font-size:1.2rem;font-weight:800}
+.poss-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.poss-group{min-width:0;border:1px solid var(--border);border-radius:11px;background:var(--surface);overflow:hidden}
+.poss-group h4{padding:11px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.86rem;color:var(--accent)}
+.poss-group p{padding:9px 12px;margin:0;color:var(--text2);font-size:.74rem}
+.poss-group .aprtab{margin:0}
+.poss-group .aprtab td{padding:8px 9px}
+.learning-audit{margin-top:12px;padding:9px 12px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--border));border-radius:9px;background:color-mix(in srgb,var(--green) 7%,var(--surface));font-size:.76rem;color:var(--text2);line-height:1.45}
+.learning-audit strong{color:var(--green)}
+.learning-audit.failed{border-color:var(--red);background:color-mix(in srgb,var(--red) 7%,var(--surface))}
+.learning-audit.failed strong{color:var(--red)}
 .aprtool{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
 .aprtool input,.aprtool select{font-family:inherit;font-size:.95rem;padding:11px 14px;
   border:1.5px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);flex:1;min-width:150px}
@@ -1040,6 +1067,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .apr-origin-body{grid-template-columns:1fr}
   .apr-module-guide{grid-template-columns:1fr}
   .apr-module-contract ol{grid-template-columns:1fr}
+  .morph-steps,.poss-groups{grid-template-columns:1fr}
+  .morph-plus{display:none}
   .prat-levels{grid-template-columns:1fr}
   .trad-direction-bar{grid-template-columns:1fr}
   .jstage{padding:13px}
@@ -1090,7 +1119,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <header>
   <div class="hdr-top">
     <div class="hdr-brand">
-      <div class="logo">🪶</div>
+      <div class="logo"><img src="assets/aln8ba-icon.svg" alt=""></div>
       <div class="hdr-title">
         <h1>Aln8ba8dwaw8gan</h1>
         <p>Projet personnel de Guillaum Labrecque-Houle · Abénakis de Wôlinak · <em>En construction</em></p>
@@ -1342,6 +1371,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <div class="music-warning music-rights" role="note">
       <strong>© 2026 Guillaum Labrecque-Houle — écoute seulement.</strong> Les droits sont réservés sur ses paroles et ses choix créatifs originaux, sous réserve des droits et licences applicables aux outils et aux éléments tiers. La mise en écoute sur ce site n'accorde aucune licence de copie, de modification ou de redistribution.
+    </div>
+    <div class="music-warning" role="note">
+      <strong>Projet personnel indépendant.</strong> L'emploi du nom W8linak décrit l'origine, le lieu ou le sujet de certaines œuvres. Il n'implique aucune commande, autorisation, commandite ni approbation du Conseil des Abénakis de Wôlinak, et aucun symbole officiel de la Nation n'est employé comme identité de ces chansons.
     </div>
     <div class="music-warning" role="status">
       <strong>Révisions du 25 août 2026.</strong> Les anciennes versions contenant des formes douteuses ont été retirées. Les versions conservées emploient des phrases ou des mots documentés et demeurent sujettes à révision.
@@ -7355,6 +7387,10 @@ function aprInit(){
     ({parcours:aprParcours,rev:aprRevView,decor:aprDecorView,conj:aprConjView,nomb:aprNombView,gram:aprGramView})[section]();
   });
   const box=document.getElementById('aprBody');
+  APR_LAST_AUDIT=aprLearningRuntimeAudit();
+  document.documentElement.dataset.learningAudit=APR_LAST_AUDIT.ok?'ready':'failed';
+  document.documentElement.dataset.learningAuditIssues=APR_LAST_AUDIT.issues.join(' | ');
+  if(!APR_LAST_AUDIT.ok) console.error('Audit fonctionnel du parcours: '+APR_LAST_AUDIT.issues.join(' | '));
   if(box && !box.innerHTML.trim()) aprParcours();
 }
 const APR_MODULE_LIBRARY=[
@@ -7465,20 +7501,28 @@ const APR_MODULE_LIBRARY=[
    être utilisé que lorsque sa forme est documentée dans le dictionnaire.</div>`,
    w=>!/esprit/i.test(w.fr||''))},
  {t:"Mon corps",d:"De la tête aux pieds.",cat:'corps',ex:'vocab',activity:'recognize',lec:`
-  <p>Les parties du corps portent toujours un possesseur. <b>N-</b> veut dire <i>mon</i>.</p>
+  <section class="morph-primer">
+   <strong>Avant les mots : pourquoi la forme porte déjà « mon »</strong>
+   <p>Plusieurs noms de parties du corps sont enseignés comme des <b>noms dépendants</b> : la fiche
+   présente une forme complète avec son possesseur. On apprend donc <span class="al8">Ndep</span>
+   « ma tête », et non un prétendu mot nu qu'on détacherait automatiquement.</p>
+   <div class="morph-steps">
+    <div class="morph-step"><b>1 · Lis le sens entier</b><span>« ma tête » contient déjà la personne qui possède.</span></div>
+    <div class="morph-step"><b>2 · Repère la marque visible</b><span>Dans les huit exemples ci-dessous, N- ou N'- accompagne la première personne.</span></div>
+    <div class="morph-step"><b>3 · Garde toute la forme</b><span>Une autre personne exige sa forme attestée complète; on ne remplace pas une lettre au hasard.</span></div>
+   </div>
+  </section>
   <table class="aprtab">
   <tr><td class="k">Ndep</td><td>ma tête</td></tr><tr><td class="k">Nsizekw</td><td>mon visage</td></tr>
   <tr><td class="k">Nj8l</td><td>mon nez</td></tr><tr><td class="k">Ndon</td><td>ma bouche</td></tr>
   <tr><td class="k">Ntawakw</td><td>mon oreille</td></tr><tr><td class="k">Nelji</td><td>ma main</td></tr>
   <tr><td class="k">Nzit</td><td>mon pied</td></tr><tr><td class="k">Nhaga</td><td>mon corps</td></tr></table>
-  <div class="aprnote"><b>Change le N pour un K et ça devient « ton »</b>
-   <span class="al8">Ndep</span> ma tête → <span class="al8">Kdep</span> ta tête.</div>`},
- {t:"Le corps en entier",d:"Toutes les parties du corps attestées dans le dictionnaire.",cat:'corps',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
-  <p>Après la tête et les mains, le reste du corps — toujours avec son possesseur,
-  comme tu l'as vu avec <span class="al8">Ndep</span>.</p>`,'corps',16,`
-  <div class="aprnote"><b>Touche et nomme</b>
-   Le corps est le meilleur professeur : touche ta main en disant <span class="al8">Nelji</span>.
-   Associer le mot à un geste donne un repère supplémentaire pour le rappeler.</div>`)},
+  <div class="aprnote w"><b>Ne transforme jamais la forme mécaniquement</b>
+   La fiche actuelle documente <span class="al8">Ndep</span> « ma tête »,
+   <span class="al8">K'dup</span> « ta tête » et <span class="al8">Wdep</span> « sa tête ».
+   Le changement <span class="al8">dep → dup</span> montre pourquoi « remplacer N par K » serait faux.
+   Apprends le paradigme complet seulement lorsqu'il est réellement donné par la source.</div>`},
+ {t:"Le corps en entier",d:"Toutes les parties du corps attestées dans le dictionnaire.",cat:'corps',ex:'vocab',activity:'retrieve',lec:aprBodyPossessionLec},
  {t:"Ma famille",d:"Les mots qu'on dit à la maison.",cat:'famille',ex:'vocab',activity:'context',lec:`
   <table class="aprtab">
   <tr><td class="k">Nigawes</td><td>ma mère</td></tr><tr><td class="k">Nmit8gwes</td><td>mon père</td></tr>
@@ -7495,11 +7539,27 @@ const APR_MODULE_LIBRARY=[
   <div class="aprnote"><b>⏱ Deux ou trois visites, c'est normal</b>
    Personne ne retient 18 mots d'un coup. Fais le quiz, reviens demain, refais-le.
    Compare tes résultats d'une visite à l'autre pour voir ce qui reste à revoir.</div>`)},
- {t:"Les arbres",d:"Le pin, le cèdre, l'érable.",cat:'plante',ex:'vocab',activity:'recognize',lec:`
-  <table class="aprtab">
-  <tr><td class="k">Abazi</td><td>un arbre</td></tr><tr><td class="k">Koa</td><td>le pin</td></tr>
-  <tr><td class="k">Molodagw</td><td>le cèdre</td></tr><tr><td class="k">Senomozi</td><td>l'érable</td></tr>
-  <tr><td class="k">Maskwamozi</td><td>le bouleau</td></tr><tr><td class="k">Mahlakws</td><td>le frêne</td></tr></table>`},
+ {t:"L'arbre et ses repères",d:"Le mot général, une espèce et deux parties observables.",cat:'plante',ex:'vocab',activity:'context',lec:`
+  <section class="morph-primer">
+   <h4>Du tout vers le détail</h4>
+   <p>Ce module n'est pas une liste d'espèces. Il apprend à passer d'un arbre entier à un repère
+   précis que tu peux observer : l'espèce, la feuille ou le fruit.</p>
+   <div class="morph-steps">
+    <div class="morph-step"><span class="morph-piece">Abazi</span><b>le tout</b><small>un arbre, en général</small></div>
+    <div class="morph-step"><span class="morph-piece">Koa</span><b>une espèce</b><small>le pin</small></div>
+    <div class="morph-step"><span class="morph-piece">Wanibagw</span><b>une partie</b><small>une feuille d'arbre</small></div>
+    <div class="morph-step"><span class="morph-piece">Pag8nis</span><b>un fruit</b><small>un gland de chêne</small></div>
+   </div>
+  </section>
+  <table class="aprtab"><tr><th>Aln8ba</th><th>Repère à retrouver</th></tr>
+  <tr><td class="k">Abazi</td><td>un arbre, en général</td></tr>
+  <tr><td class="k">Koa</td><td>un pin</td></tr>
+  <tr><td class="k">Wanibagw</td><td>une feuille d'arbre</td></tr>
+  <tr><td class="k">Pag8nis</td><td>un gland de chêne</td></tr></table>
+  <div class="aprnote"><b>Pourquoi seulement ces quatre formes?</b>
+   Elles sont toutes admises dans les exercices actifs actuels. Les noms historiques d'autres
+   espèces restent consultables dans le dictionnaire avec leur époque et leur source, mais ne sont
+   pas transformés silencieusement en réponses modernes.</div>`},
  {t:"Les plantes et la nourriture",d:"Ce qui pousse, ce qu'on cueille, ce qu'on mange.",cat:'plante',ex:'vocab',activity:'context',lec:aprAutoLec(`
   <p>Après les arbres, tout le monde végétal et la nourriture — le garde-manger de la langue.</p>`,'plante',18,`
   <div class="aprnote"><b>Le lien avec la terre</b>
@@ -7610,15 +7670,31 @@ const APR_MODULE_LIBRARY=[
    fait partie du « nous »? Kiona l'inclut; Niona ne l'inclut pas. Vérifie cette distinction
    grammaticale dans chaque exemple.`},
  {t:"Mon, ton, son",d:"Des mots qui ne peuvent jamais rester seuls.",ex:'poss',use:'poss',lec:`
-  <p>Certains mots doivent <b>toujours</b> porter un possesseur. On ne peut pas dire « ami »
-  tout court, ni « tête ».</p>
-  <table class="aprtab"><tr><th>Préfixe</th><th>Sens</th><th>Exemple</th></tr>
-  <tr><td class="k">N'- · Nd'-</td><td>mon</td><td class="k">Nid8ba · Ndep</td></tr>
-  <tr><td class="k">K'- · Kd'-</td><td>ton</td><td class="k">Kid8ba · Kdep</td></tr>
-  <tr><td class="k">W'- · Wd'-</td><td>son</td><td class="k">Wid8ba · Wdep</td></tr></table>
-  <div class="aprnote"><b>Le D apparaît devant une voyelle</b>
-   On dit <span class="al8">N'kika</span> mais <span class="al8">Nd'aliwizi</span> —
-   parce que <i>aliwizi</i> commence par une voyelle.</div>`,
+  <section class="morph-primer">
+   <strong>Le préfixe donne un indice; la forme complète donne la réponse</strong>
+   <p>Dans les exemples documentés, des marques en N-, K- ou W- permettent souvent de repérer
+   « mon », « ton » ou « son ». Mais la base peut aussi changer. La bonne méthode consiste donc
+   à comparer un <b>paradigme attesté</b>, jamais à fabriquer une forme par substitution.</p>
+   <div class="morph-equation">
+    <div class="morph-piece"><code>Nid8ba</code><small>mon ami · première personne</small></div>
+    <span class="morph-plus">→</span>
+    <div class="morph-piece"><code>Kid8ba</code><small>ton ami · deuxième personne</small></div>
+    <span class="morph-plus">→</span>
+    <div class="morph-piece"><code>Wid8ba</code><small>son ami · troisième personne</small></div>
+   </div>
+  </section>
+  <table class="aprtab"><tr><th>Famille documentée</th><th>Moi</th><th>Toi</th><th>Lui ou elle</th></tr>
+  <tr><td>ami</td><td class="k">Nid8ba</td><td class="k">Kid8ba</td><td class="k">Wid8ba</td></tr>
+  <tr><td>tête</td><td class="k">Ndep</td><td class="k">K'dup</td><td class="k">Wdep</td></tr>
+  <tr><td>corps</td><td class="k">N'haga</td><td>non donné ici</td><td class="k">Whaga</td></tr>
+  <tr><td>main</td><td class="k">Nelji</td><td>non donné ici</td><td class="k">Welji</td></tr></table>
+  <div class="aprnote"><b>Pourquoi les apostrophes et les voyelles ne sont pas identiques partout</b>
+   La forme dépend du mot et de sa structure documentée. <span class="al8">K'dup</span> n'est pas
+   <span class="al8">Kdep</span>; une case absente reste « non donnée ici » au lieu d'être calculée.</div>
+  <div class="aprnote w"><b>Préfixes nominaux et préfixes verbaux ne sont pas une seule règle</b>
+   Les marques de personne apparaissent aussi dans des verbes comme <span class="al8">Nd'aliwizi</span>,
+   mais ce module enseigne la <b>possession des noms</b>. Le module suivant étudie séparément la
+   personne dans les verbes affirmatifs.</div>`,
   coach:`N, K, W — moi, toi, lui. Une fois que tu l'as vu, tu le vois partout. Amuse-toi une semaine
    à lire le dictionnaire en chassant ces préfixes : tu devineras le sens des mots avant de lire
    la traduction, et c'est le jour où tu commences à <i>lire</i> la langue au lieu de la traduire.`},
@@ -7968,6 +8044,37 @@ const APR_MODULE_LIBRARY=[
    oreille à entendre cette voyelle finale avant ta mémoire : dis le verbe, allonge la dernière
    voyelle, et le bon suffixe se pose tout seul.`},
  {t:"Racines et suffixes",d:"Un mot se construit. Apprends à le démonter.",ex:'suf',use:'suf',lec:`
+  <section class="morph-primer">
+   <strong>Trois morceaux possibles, trois fonctions différentes</strong>
+   <p>On commence toujours par une <b>forme complète documentée</b>. Ensuite seulement, on observe
+   les morceaux que sa fiche ou la leçon permet d'identifier. Cette analyse aide à comprendre un mot;
+   elle ne donne pas la permission d'en construire un nouveau.</p>
+   <div class="morph-steps">
+    <div class="morph-step"><b>Préfixe · avant</b><span>Il peut notamment porter une personne ou un possesseur dans un modèle attesté.</span></div>
+    <div class="morph-step"><b>Base ou racine · cœur</b><span>Elle porte le noyau de sens et peut changer de forme selon le mot.</span></div>
+    <div class="morph-step"><b>Suffixe · après</b><span>Il ajoute une fonction documentée : personne, objet, lieu, diminutif ou autre relation.</span></div>
+   </div>
+  </section>
+  <h3>Observe d'abord quatre constructions complètes</h3>
+  <div class="morph-equation">
+   <div class="morph-piece"><code>agakimzo-</code><small>base liée à l'étude</small></div>
+   <span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-winno</code><small>personne qui fait</small></div>
+   <span class="morph-plus">=</span>
+   <div class="morph-piece"><code>Agakimzowinno</code><small>l'étudiant</small></div>
+  </div>
+  <div class="morph-equation">
+   <div class="morph-piece"><code>Odana</code><small>le village</small></div>
+   <span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-k</code><small>forme locative documentée</small></div>
+   <span class="morph-plus">=</span>
+   <div class="morph-piece"><code>Odanak</code><small>au village</small></div>
+  </div>
+  <div class="aprnote w"><b>Attention aux changements internes</b>
+   Une addition n'est pas toujours visible comme des blocs parfaitement inchangés. Compare
+   <span class="al8">Ndep</span> et <span class="al8">K'dup</span> : la personne et la base varient.
+   C'est pourquoi le dictionnaire analyse les familles attestées au lieu d'appliquer une formule universelle.</div>
+  <h3>Suffixes expliqués dans les exemples du module</h3>
   <table class="aprtab"><tr><th>Suffixe</th><th>Ce qu'il fait</th><th>Exemple</th></tr>
   <tr><td class="k">-w8gan</td><td>le fait de…</td><td>Lintow8gan le chant</td></tr>
   <tr><td class="k">-higan</td><td>l'objet qui sert à…</td><td>Pakholigan le tambour</td></tr>
@@ -7976,7 +8083,7 @@ const APR_MODULE_LIBRARY=[
   <tr><td class="k">-skwa</td><td>féminin</td><td>M8lsemskwa la louve</td></tr>
   <tr><td class="k">-sis · -is</td><td>diminutif</td><td>Awassosis le petit ours</td></tr>
   <tr><td class="k">-ok · -k</td><td>locatif</td><td>Odana → Odanak au village</td></tr></table>
-  <div class="aprnote"><b>Exemples actifs sûrs</b>
+  <div class="aprnote"><b>Exemples actifs sûrs à démonter, pas à extrapoler</b>
    <span class="al8">Awikhigan</span> · <span class="al8">Agakimzowinno</span> ·
    <span class="al8">Pizwagamikw</span> · <span class="al8">Wiagaldamw8gan</span> ·
    <span class="al8">Moskwaldamw8gan</span> · <span class="al8">Sagezow8gan</span></div>`,
@@ -8203,10 +8310,10 @@ const APR_MODULE_CONTRACTS={
     steps:["situer la personne dans la parenté","comparer les sens voisins","rappeler la forme sans simplifier son lien"],
     mastery:"Tu identifies les nouveaux liens de parenté sans les réduire aux huit membres de la famille immédiate."
   },
-  "Les arbres":{
-    principle:"Passer du nom général de l'arbre aux espèces documentées les plus courantes du territoire.",
-    steps:["reconnaître arbre ou espèce","observer un indice concret","dire la forme exacte de la fiche"],
-    mastery:"Tu distingues le terme général des cinq espèces présentées et tu peux les retrouver à partir de leur nom français."
+  "L'arbre et ses repères":{
+    principle:"Passer du mot général de l'arbre à une espèce, une partie et un fruit réellement documentés dans le corpus actif.",
+    steps:["identifier le tout ou le détail","relier le mot à ce qui est observable","retrouver la forme complète sans extrapoler"],
+    mastery:"Tu distingues arbre, pin, feuille et gland, et tu sais pourquoi les espèces historiques consultatives ne deviennent pas automatiquement des réponses actuelles."
   },
   "Les plantes et la nourriture":{
     principle:"Relier chaque plante ou aliment à son sens documenté et à un contexte concret de croissance, de cueillette ou d'usage.",
@@ -8364,6 +8471,43 @@ const APR_MODULE_CONTRACTS={
     mastery:"Tu peux expliquer une analyse du début à la fin et montrer précisément quelles données la soutiennent."
   }
 };
+const APR_EXERCISE_ROUTES=new Set([
+  'sons','vocab','genre','plur','poss','conjp','negs','classfx','structure','temps','vta',
+  'inter2','ordre','neg','suf','fam','trad','conversation','dialogue','day','sourcecheck',
+  'history','evidence'
+]);
+let APR_LAST_AUDIT=null;
+function aprLearningRuntimeAudit(){
+  const previousLevel=aprNiv, previousModule=aprMod, issues=[], details=[];
+  const fixedBanks={
+    sons:EXSONS,conversation:EXCONVERSATION,dialogue:EXDIALOGUE,day:EXDAY,
+    sourcecheck:EXSOURCECHECK,history:EXHISTORY,evidence:EXEVIDENCE
+  };
+  try{
+    NIVEAUX.forEach(level=>level.mods.forEach((module,index)=>{
+      aprNiv=level.id; aprMod=index;
+      let lesson='', poolSize=null;
+      try{ lesson=typeof module.lec==='function'?module.lec():module.lec; }
+      catch(error){ issues.push(`${level.t} · ${module.t}: la leçon ne s'exécute pas (${error.message})`); }
+      const holder=document.createElement('div'); holder.innerHTML=lesson||'';
+      if((holder.textContent||'').trim().length<80) issues.push(`${level.t} · ${module.t}: contenu pédagogique incomplet`);
+      const contract=APR_MODULE_CONTRACTS[module.t];
+      if(!contract||contract.steps.length!==3) issues.push(`${level.t} · ${module.t}: contrat pédagogique incomplet`);
+      if(!APR_EXERCISE_ROUTES.has(module.ex)) issues.push(`${level.t} · ${module.t}: route d'exercice absente (${module.ex||'aucune'})`);
+      if(module.ex==='vocab'){
+        try{ poolSize=aprModulePool(module.cat).length; }
+        catch(error){ issues.push(`${level.t} · ${module.t}: banque inaccessible (${error.message})`); }
+        if((poolSize||0)<4) issues.push(`${level.t} · ${module.t}: banque de vocabulaire trop petite (${poolSize||0})`);
+      }else if(fixedBanks[module.ex]&&fixedBanks[module.ex].length<4){
+        issues.push(`${level.t} · ${module.t}: banque fixe trop petite (${fixedBanks[module.ex].length})`);
+      }
+      details.push({level:level.id,title:module.t,exercise:module.ex,poolSize});
+    }));
+  }finally{
+    aprNiv=previousLevel; aprMod=previousModule;
+  }
+  return {ok:issues.length===0,total:details.length,executable:details.filter(item=>APR_EXERCISE_ROUTES.has(item.exercise)).length,issues,details};
+}
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
 function aprPathHtml(levelId){
   const phases=APR_LEVEL_PATHS[levelId]||[];
@@ -8477,6 +8621,7 @@ function aprParcours(){
   aprRevScope=null;
   aprActivateNav('parcours');
   const prog=progAll();
+  const runtime=APR_LAST_AUDIT||aprLearningRuntimeAudit();
   document.getElementById('aprBody').innerHTML=`
    <div class="aprcard"><h3>Parcours</h3>
      <p class="aprlead">Cinq étapes qui s'appuient l'une sur l'autre. Ces noms appartiennent au projet et
@@ -8485,6 +8630,12 @@ function aprParcours(){
        <b>retrouver</b> sans regarder, puis <b>produire</b> à l'oral ou à l'écrit.
        Les sources établissent les données linguistiques; la progression, les explications,
        les jeux, les scores et la révision sont notre propre travail pédagogique.</p>
+     <div class="learning-audit ${runtime.ok?'':'failed'}" role="status">
+       <strong>${runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> ·
+       ${runtime.ok
+         ? `${runtime.executable} modules sur ${runtime.total} possèdent une leçon exécutable, un principe complet, une route d'exercice et une banque vérifiée lorsqu'elle dépend du vocabulaire.`
+         : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}; les modules concernés sont bloqués dans le rapport technique au lieu d'être déclarés prêts.`}
+     </div>
      <div class="aprnav" style="margin:0">${NIVEAUX.map(n=>
        `<button data-n="${n.id}" class="${n.id===aprNiv?'on':''}" onclick="aprNiv='${n.id}';aprParcours()">${n.t}</button>`).join('')}</div>
    </div>
@@ -9505,6 +9656,46 @@ function aprAutoLec(intro,cat,n,note,predicate){
       : `<p class="aprlead">Les mots de cette famille arrivent bientôt.</p>`;
     return intro+tab+(note||'');
   };
+}
+function aprBodyPossessionLec(){
+  const introduced=new Set(['Ndep','Nsizekw','Nj8l','Ndon','Ntawakw','Nelji','Nzit','Nhaga'].map(aprLessonKey));
+  const words=aprSur().filter(w=>w.cat==='corps'&&w.fr&&!introduced.has(aprLessonKey(w.aln8ba)))
+    .sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba));
+  const definitions=[
+    {title:'Avec moi',note:'La traduction actuelle contient mon, ma ou mes.',test:w=>/^(mon|ma|mes)\b/i.test(w.fr)},
+    {title:'Avec lui ou elle',note:'La traduction actuelle contient son, sa ou ses.',test:w=>/^(son|sa|ses)\b/i.test(w.fr)},
+    {title:'Avec plusieurs personnes',note:'La traduction actuelle contient notre, nos, votre, vos, leur ou leurs.',test:w=>/^(notre|nos|votre|vos|leur|leurs)\b/i.test(w.fr)},
+    {title:'Autres fiches du corps',note:'La traduction ne présente pas ici un possesseur français explicite.',test:()=>true}
+  ];
+  const remaining=[...words], groups=definitions.map(def=>{
+    const items=remaining.filter(def.test);
+    items.forEach(item=>remaining.splice(remaining.indexOf(item),1));
+    return {...def,items};
+  }).filter(group=>group.items.length);
+  const tables=groups.map(group=>`<section class="poss-group">
+    <h4>${escH(group.title)} · ${group.items.length}</h4>
+    <p>${escH(group.note)}</p>
+    <table class="aprtab"><tr><th>Forme complète</th><th>Sens de la fiche</th></tr>
+      ${group.items.map(w=>`<tr><td class="k">${escH(w.aln8ba)}</td><td>${escH(w.fr)}</td></tr>`).join('')}
+    </table></section>`).join('');
+  return `<section class="morph-primer">
+    <strong>Lis d'abord la personne déjà présente dans chaque fiche</strong>
+    <p>Cette vue ne mélange plus toutes les formes dans une seule longue liste. Elle les range selon
+    le possesseur exprimé par leur traduction actuelle. Le rangement aide à observer; seule la fiche
+    et sa source permettent d'analyser précisément la forme.</p>
+    <div class="morph-steps">
+      <div class="morph-step"><b>1 · Sens complet</b><span>Repère mon, son, nos ou une partie du corps sans possesseur français explicite.</span></div>
+      <div class="morph-step"><b>2 · Forme complète</b><span>Lis toutes les lettres avant de chercher un préfixe ou un suffixe.</span></div>
+      <div class="morph-step"><b>3 · Comparaison attestée</b><span>Ne rapproche deux personnes que si la fiche fournit réellement le paradigme.</span></div>
+    </div>
+  </section>
+  <div class="aprnote w"><b>Une ressemblance n'est pas une règle automatique</b>
+    N-, K- et W- sont des repères importants, mais une base peut alterner et certains mots suivent
+    un autre patron. Le quiz demande donc la forme entière affichée par le dictionnaire.</div>
+  <div class="poss-groups">${tables}</div>
+  <div class="aprnote"><b>Touche, nomme, puis explique</b>
+    Touche la partie du corps, dis la forme complète, puis précise qui possède. Ce troisième geste
+    vérifie que tu comprends la forme au lieu de réciter seulement le tableau.</div>`;
 }
 function aprGenreReviewLec(){
   const introKeys=new Set(['Alakws','Awassos','Awikhigan','Sata'].map(aprLessonKey));

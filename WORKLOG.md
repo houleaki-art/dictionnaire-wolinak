@@ -214,6 +214,16 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Ajout de `research/PEDAGOGY_PROVENANCE.md` comme règle de travail durable et de cinq tests de non-régression dédiés.
 - Vérification locale à 390 × 844 : deux colonnes lisibles pour les quatre gestes, aucune largeur débordante et aucun avertissement JavaScript.
 
+## Audit fonctionnel, possession et identité — 28 août 2026
+
+- Ajout d'un audit d'exécution qui contrôle les 45 modules : leçon rendable, principe pédagogique distinct, route d'exercice existante et banque minimale réelle.
+- Correction du module de l'arbre après détection d'une divergence entre six mots affichés et seulement deux réponses actives. Le nouveau module enseigne quatre repères verts actuels et garde les espèces historiques hors du jeu actif.
+- Refonte des leçons du corps et de la possession : les formes dépendantes sont apprises entières; les paradigmes `Nid8ba / Kid8ba / Wid8ba` et `Ndep / K'dup / Wdep` sont comparés sans inventer de substitution mécanique.
+- Définition de préfixe, base et suffixe avant leur utilisation; ajout de deux décompositions documentées et d'un avertissement contre la fabrication de formes nouvelles.
+- Ajout d'une identité visuelle originale au navigateur et au manifeste de l'application, sans reprendre un symbole officiel de la Nation.
+- La section Musique indique maintenant que l'emploi de W8linak est descriptif et ne suppose aucune commande, commandite, autorisation ou approbation du Conseil.
+- Vérification Chrome réelle : audit `ready`, 45 modules sur 45, quiz ouverts pour le corps, l'arbre, la possession et les suffixes. Vérification mobile à 390 × 844 sans débordement et avec commandes de 44 à 48 pixels.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

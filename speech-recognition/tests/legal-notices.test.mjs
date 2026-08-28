@@ -57,6 +57,12 @@ test('public identity presents a personal Wôlinak project without institutional
   assert.doesNotMatch(html, /Première Nation Abénakise de Wôlinak/);
 });
 
+test('music uses W8linak descriptively without claiming Council approval', () => {
+  assert.match(html, /L'emploi du nom W8linak décrit l'origine, le lieu ou le sujet/);
+  assert.match(html, /aucune commande, autorisation, commandite ni approbation du Conseil des Abénakis de Wôlinak/);
+  assert.match(html, /aucun symbole officiel de la Nation n'est employé comme identité de ces chansons/);
+});
+
 test('public contributions are anonymous and never collect or publish a voice', () => {
   assert.match(html, /id="fPrivacyConsent"/);
   assert.match(html, /id="suggPrivacyConsent"/);
