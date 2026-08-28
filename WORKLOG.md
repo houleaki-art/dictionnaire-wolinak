@@ -19,6 +19,9 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - L'interface distingue maintenant les formes actives dans les exercices du total des fiches publiques, qui comprend aussi des fiches historiques, consultatives ou explicatives.
 - Les cinq niveaux proposent des tâches différentes : reconnaître un sens, identifier une forme, relier un domaine, produire une forme et travailler en autonomie. Les pluriels demeurent limités aux sept paires documentées approuvées.
 - Les 45 modules affichent désormais leur place dans le parcours, leur mission propre, un critère de réussite et la part de vocabulaire nouvelle ou reprise volontairement.
+- Les 45 modules possèdent aussi un contrat pédagogique distinct : un principe complet, trois étapes de compréhension et une preuve de maîtrise. Un test automatique interdit un module sans contrat ou deux principes copiés.
+- L'audit des écrans rendus a corrigé trois banques trop larges : le territoire ne propose plus des objets sans rapport, les actions excluent les préverbes et le module de description annonce maintenant clairement les qualités et les émotions qu'il enseigne.
+- Le calcul des formes nouvelles tient compte de toutes les étapes précédentes du parcours, afin qu'une reprise soit annoncée comme une consolidation et non comme une nouveauté.
 - Le module sur les trois ordres a été réorganisé en trois contrastes successifs avant les approfondissements historiques et collectifs.
 
 ## 28 août 2026 — droits et confidentialité

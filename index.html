@@ -747,6 +747,12 @@ body.music-dock-open .toast{bottom:116px}
 .apr-module-guide>div{min-width:0;padding:12px 13px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
 .apr-module-guide strong{display:block;margin-bottom:4px;color:var(--accent);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase}
 .apr-module-guide span{display:block;color:var(--text2);font-size:.76rem;line-height:1.5}
+.apr-module-contract{margin:14px 0 9px;padding:15px 17px;border:1px solid color-mix(in srgb,var(--green) 55%,var(--border));border-left:4px solid var(--green);border-radius:10px;background:color-mix(in srgb,var(--green) 7%,var(--surface))}
+.apr-module-contract-title span{display:block;margin-bottom:4px;color:var(--green);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.apr-module-contract-title strong{display:block;font-family:var(--serif);font-size:1rem;line-height:1.45;color:var(--text)}
+.apr-module-contract ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;counter-reset:module-step;list-style:none;margin:12px 0 0;padding:0}
+.apr-module-contract li{position:relative;min-width:0;padding:9px 10px 9px 34px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text2);font-size:.76rem;line-height:1.42}
+.apr-module-contract li::before{counter-increment:module-step;content:counter(module-step);position:absolute;left:9px;top:9px;width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;text-align:center;font-size:.68rem;font-weight:800;line-height:18px}
 .apr-module-bank{margin:0 0 14px;padding:9px 12px;border-radius:9px;background:rgba(61,122,80,.09);color:var(--text2);font-size:.75rem;line-height:1.5}
 .aprtool{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
 .aprtool input,.aprtool select{font-family:inherit;font-size:.95rem;padding:11px 14px;
@@ -1033,6 +1039,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .apr-method{grid-template-columns:1fr 1fr}
   .apr-origin-body{grid-template-columns:1fr}
   .apr-module-guide{grid-template-columns:1fr}
+  .apr-module-contract ol{grid-template-columns:1fr}
   .prat-levels{grid-template-columns:1fr}
   .trad-direction-bar{grid-template-columns:1fr}
   .jstage{padding:13px}
@@ -7420,12 +7427,13 @@ const APR_MODULE_LIBRARY=[
    Choisis d'abord une couleur que tu vois réellement. Cache ensuite la colonne aln8ba,
    retrouve la forme complète, puis vérifie les lettres. Le rapprochement visuel aide la mémoire;
    il ne sert pas à inventer l'étymologie d'un mot.</div>`},
- {t:"Décrire le monde",d:"Grand, petit, beau — les mots qui décrivent tout ce qui t'entoure.",cat:'description',ex:'vocab',activity:'recognize',lec:aprAutoLec(`
-  <p>Avec les couleurs, tu sais déjà dire <i>comment</i> sont les choses. Voici le reste de la
-  famille des descriptions — les mots les plus courts d'abord, c'est plus facile pour la mémoire.</p>`,'description',16,`
+ {t:"Qualités et émotions",d:"Distinguer une qualité, un état ressenti et le nom d'une émotion.",cat:'description',ex:'vocab',activity:'recognize',lec:aprAutoLec(`
+  <p>Après les couleurs, cette leçon change de principe : elle réunit les qualités et les émotions
+  documentées dans la catégorie Description. Observe toujours si la fiche donne une qualité,
+  un état ou un nom abstrait; ces fonctions ne sont pas interchangeables.</p>`,'description',16,`
   <div class="aprnote"><b>⏱ Cinq mots par jour, pas plus</b>
-   La mémoire n'avale pas une liste — elle la digère. Choisis cinq mots aujourd'hui,
-   cinq autres demain. L'onglet <b>🔁 Révision</b> te les resservira au bon moment.</div>`)},
+   Choisis cinq formes aujourd'hui et classe-les d'abord comme qualité ou émotion.
+   L'onglet <b>🔁 Révision</b> te les resservira ensuite au bon moment.</div>`)},
  {t:"Compter jusqu'à dix",d:"Les dix premiers chiffres.",cat:'nombre',ex:'vocab',activity:'retrieve',lec:`
   <table class="aprtab">
   <tr><td class="k">Pazokw</td><td>1</td></tr><tr><td class="k">Nis</td><td>2</td></tr>
@@ -7454,7 +7462,8 @@ const APR_MODULE_LIBRARY=[
   dictionnaire — les noms les plus courts d'abord.</p>`,'animal',16,`
   <div class="aprnote"><b>Retiens la classe avec le mot</b>
    La classe grammaticale et le pluriel sont deux informations distinctes. Un pluriel ne doit
-   être utilisé que lorsque sa forme est documentée dans le dictionnaire.</div>`)},
+   être utilisé que lorsque sa forme est documentée dans le dictionnaire.</div>`,
+   w=>!/esprit/i.test(w.fr||''))},
  {t:"Mon corps",d:"De la tête aux pieds.",cat:'corps',ex:'vocab',activity:'recognize',lec:`
   <p>Les parties du corps portent toujours un possesseur. <b>N-</b> veut dire <i>mon</i>.</p>
   <table class="aprtab">
@@ -7507,7 +7516,8 @@ const APR_MODULE_LIBRARY=[
   pendant des générations avant toi — tu les remets en marche.</p>`,'territoire',16,`
   <div class="aprnote"><b>Sors dehors avec</b>
    La prochaine fois que tu passes près de l'eau, dis <span class="al8">Nebi</span>.
-   Un mot dit sur le territoire vaut dix mots lus sur un écran.</div>`)},
+   Relie chaque forme à un lieu, une eau ou un chemin que tu peux réellement situer.</div>`,
+   w=>/(?:lieu|territoire|terre|village|ville|rue|chemin|route|rivière|fleuve|ruisseau|lac|baie|rive|rivage|île|montagne|forêt|bois|champ|marais|source|plage|pont|endroit|amont|aval)/i.test(w.fr||''))},
  {t:"Le temps et les saisons",d:"Hier, demain, l'hiver, le printemps.",cat:'temps',ex:'vocab',activity:'context',lec:aprAutoLec(`
   <p>Tu connais déjà <span class="al8">Pamkizgak</span> (aujourd'hui) — voici toute la famille
   du temps : les saisons, les jours, les moments.</p>`,'temps',16,`
@@ -7518,7 +7528,8 @@ const APR_MODULE_LIBRARY=[
   <p>C'est le module qui change tout : avec les actions, tu passes du nommage à la phrase.
   Dans Fondations, apprends d'abord à les reconnaître; dans Consolidation, tu étudieras leurs formes personnelles documentées.</p>`,'action',18,`
   <div class="aprnote"><b>Mime chaque action</b>
-   Dis le mot en faisant le geste. Ton corps retient ce que ta tête oublie.</div>`)},
+   Dis la forme complète en faisant le geste et vérifie la personne indiquée sur sa fiche.</div>`,
+   w=>/verbe/i.test(w.grammar||'')&&!/(?:pré|pre)[- ]?verbe/i.test(`${w.grammar||''} ${w.fr||''}`))},
  {t:"Ma première conversation",d:"La mise en pratique finale de Fondations : tenir un échange complet, du bonjour à l'au revoir.",cat:'salut',ex:'dialogue',lec:`
   <p>Tout ce que tu as appris tient dans un vrai petit dialogue. Lis-le à deux voix —
    avec quelqu'un, ou tout seul en changeant de chaise.</p>
@@ -8126,6 +8137,233 @@ const APR_LEVEL_PATHS={
     ['Transmission','démonter une forme documentée et présenter son raisonnement']
   ]
 };
+const APR_MODULE_CONTRACTS={
+  "Les sons d'abord":{
+    principle:"Relier cinq repères écrits à leur geste sonore documenté sans remplacer les lettres de l'aln8ba.",
+    steps:["écouter un seul contraste","le retrouver dans un mot complet","réécrire CH, J, 8, W ou I sans transcription française"],
+    mastery:"Tu reconnais les cinq repères dans des mots complets et tu conserves leur graphie exacte."
+  },
+  "Kwaï — saluer":{
+    principle:"Choisir une formule sociale complète selon le moment de l'échange : ouvrir, répondre, remercier ou fermer.",
+    steps:["repérer la fonction de la réplique","choisir la formule entière","rejouer un mini-échange dans le bon ordre"],
+    mastery:"Tu peux commencer et terminer un échange avec les six formes du module sans mélanger leurs fonctions."
+  },
+  "Se présenter":{
+    principle:"Construire une présentation avec des paires question-réponse complètes plutôt qu'avec des mots isolés.",
+    steps:["lire la question entière","répondre avec la forme personnelle documentée","remplacer seulement le nom dans le modèle prévu"],
+    mastery:"Tu demandes le nom et l'état de l'autre, puis tu réponds sans ajouter de préfixe à une forme qui n'en porte pas."
+  },
+  "Les couleurs":{
+    principle:"Comprendre que les six couleurs du module sont apprises comme des états complets, par exemple « c'est rouge ».",
+    steps:["observer une couleur réelle","dire la forme complète","vérifier le sens et toutes les lettres"],
+    mastery:"Tu retrouves les six états de couleur à partir d'un objet observé, pas seulement à partir d'une liste française."
+  },
+  "Qualités et émotions":{
+    principle:"Distinguer une qualité, un état ressenti et un nom d'émotion sans les traiter comme des couleurs ou des mots interchangeables.",
+    steps:["identifier qualité, état ou émotion","retrouver la forme et sa catégorie grammaticale","l'employer seulement avec le sens documenté"],
+    mastery:"Tu classes chaque nouvelle forme selon ce qu'elle exprime et tu la distingues des six états de couleur."
+  },
+  "Compter jusqu'à dix":{
+    principle:"Mémoriser les formes de base de zéro à dix qui servent de fondation aux constructions numériques suivantes.",
+    steps:["compter des objets visibles","alterner chiffre et forme aln8ba","recommencer dans un ordre différent"],
+    mastery:"Tu donnes les formes de zéro à dix dans les deux directions sans t'appuyer sur leur position dans le tableau."
+  },
+  "Compter plus loin":{
+    principle:"Lire les nombres au-delà de dix comme des constructions organisées, tout en respectant les limites documentées du calculateur.",
+    steps:["repérer le bloc numérique","observer le lien entre les parties","vérifier la construction avant de la retenir"],
+    mastery:"Tu expliques comment un nombre documenté se décompose et tu refuses de compléter une zone que le module signale comme inconnue."
+  },
+  "Les animaux":{
+    principle:"Apprendre les noms d'animaux fréquents avec leur classe grammaticale animée comme une seule information.",
+    steps:["identifier l'animal","dire son nom entier","vérifier la classe sur la fiche"],
+    mastery:"Tu reconnais les animaux de base et tu peux dire que leur classe est grammaticale, sans interprétation ajoutée."
+  },
+  "Les bêtes de chez nous":{
+    principle:"Élargir la faune connue en distinguant des espèces moins fréquentes à partir de leur sens précis dans le dictionnaire.",
+    steps:["partir de l'animal décrit","écarter les sens voisins","rappeler la forme complète et sa classe affichée"],
+    mastery:"Tu identifies les nouvelles espèces sans les confondre avec les huit animaux d'introduction."
+  },
+  "Mon corps":{
+    principle:"Lire les parties du corps avec le possesseur déjà présent dans la forme, au lieu d'apprendre un nom nu artificiel.",
+    steps:["toucher la partie du corps","repérer le N- écrit","dire la forme complète avec son sens possédé"],
+    mastery:"Tu reconnais huit formes en N- comme des expressions complètes de première personne."
+  },
+  "Le corps en entier":{
+    principle:"Construire une carte corporelle plus précise en reliant chaque forme possédée à une position ou à un geste distinct.",
+    steps:["localiser la partie","retrouver la forme de la fiche","contraster les formes proches sans déplacer leur préfixe"],
+    mastery:"Tu parcours le corps de mémoire et récupères les nouvelles formes possédées sans revenir aux huit formes d'introduction."
+  },
+  "Ma famille":{
+    principle:"Comprendre qu'un terme de parenté peut dépendre du lien familial et, dans certains cas documentés, de la personne qui parle.",
+    steps:["identifier le lien","lire la note d'usage","choisir la forme complète correspondant au contexte donné"],
+    mastery:"Tu présentes les proches de base et tu expliques pourquoi les formes de frère ou de sœur ne sont pas interchangeables."
+  },
+  "La famille au grand complet":{
+    principle:"Distinguer la parenté élargie par le lien exact, la génération et l'information de possession conservée dans chaque fiche.",
+    steps:["situer la personne dans la parenté","comparer les sens voisins","rappeler la forme sans simplifier son lien"],
+    mastery:"Tu identifies les nouveaux liens de parenté sans les réduire aux huit membres de la famille immédiate."
+  },
+  "Les arbres":{
+    principle:"Passer du nom général de l'arbre aux espèces documentées les plus courantes du territoire.",
+    steps:["reconnaître arbre ou espèce","observer un indice concret","dire la forme exacte de la fiche"],
+    mastery:"Tu distingues le terme général des cinq espèces présentées et tu peux les retrouver à partir de leur nom français."
+  },
+  "Les plantes et la nourriture":{
+    principle:"Relier chaque plante ou aliment à son sens documenté et à un contexte concret de croissance, de cueillette ou d'usage.",
+    steps:["classer plante ou nourriture","former une image du contexte","récupérer le mot exact sans inventer son étymologie"],
+    mastery:"Tu reconnais les nouvelles formes végétales par leur sens précis et non par une simple ressemblance entre mots."
+  },
+  "La nature autour":{
+    principle:"Nommer les grands éléments naturels visibles avant de passer aux lieux particuliers du territoire.",
+    steps:["pointer un élément","dire la forme entière","contraster ciel, eau, relief, terre et feu"],
+    mastery:"Tu identifies les sept éléments de base sans les confondre avec un nom de lieu particulier."
+  },
+  "Le territoire":{
+    principle:"Distinguer les mots qui nomment des lieux, des eaux et des chemins dans les entrées actuelles du dictionnaire.",
+    steps:["repérer le type de lieu","l'associer à une situation réelle","retrouver la forme et sa note grammaticale"],
+    mastery:"Tu peux nommer plusieurs repères du territoire et expliquer ce que chaque fiche permet réellement d'affirmer."
+  },
+  "Le temps et les saisons":{
+    principle:"Organiser le vocabulaire temporel en moments, jours et saisons plutôt que de mémoriser une liste sans repère.",
+    steps:["choisir l'échelle de temps","placer le mot dans une situation quotidienne","retrouver la forme exacte"],
+    mastery:"Tu distingues moment, jour et saison et tu choisis la forme correspondant au contexte proposé."
+  },
+  "Les actions de tous les jours":{
+    principle:"Reconnaître les formes d'action comme des formes complètes du dictionnaire avant toute étude de conjugaison.",
+    steps:["mimer l'action","lire la personne ou la note affichée","retenir toute la forme sans la réduire à un infinitif français"],
+    mastery:"Tu identifies les actions fréquentes et tu sais quelles informations doivent encore être vérifiées avant de les employer dans une phrase."
+  },
+  "Ma première conversation":{
+    principle:"Réunir salutations, présentation et réponse personnelle dans un échange cohérent du début à la fin.",
+    steps:["ordonner les répliques","jouer les deux rôles","reprendre l'échange sans traduction intermédiaire"],
+    mastery:"Tu tiens tout le dialogue dans l'ordre et tu sais quelle leçon revoir lorsqu'une réplique bloque."
+  },
+  "Animé ou inanimé":{
+    principle:"Traiter animé et inanimé comme deux classes grammaticales attachées au nom et capables d'agir sur la phrase.",
+    steps:["lire la classe sur la fiche","mémoriser mot et classe ensemble","observer un accord documenté"],
+    mastery:"Tu classes les exemples avec leur attestation et tu n'utilises ni intuition biologique ni interprétation philosophique."
+  },
+  "Le pluriel":{
+    principle:"Apprendre seulement les sept couples singulier-pluriel approuvés comme des paires complètes.",
+    steps:["lire le singulier","rappeler le pluriel exact","vérifier la paire dans les données documentées"],
+    mastery:"Tu restitues les sept paires sans transformer leur terminaison en règle générale."
+  },
+  "Moi, toi, nous":{
+    principle:"Distinguer les pronoms personnels, particulièrement les deux formes de « nous » selon l'inclusion de l'interlocuteur.",
+    steps:["identifier les participants","choisir inclusif ou exclusif","relire la forme et son contexte"],
+    mastery:"Tu expliques qui est inclus dans chaque « nous » et tu reconnais les sept pronoms du module."
+  },
+  "Mon, ton, son":{
+    principle:"Comprendre que les marques de possession font partie de la forme et ne doivent pas être déplacées librement.",
+    steps:["identifier le possesseur","comparer les formes complètes","repérer le préfixe réellement attesté"],
+    mastery:"Tu distingues mon, ton et son dans les exemples sans construire une forme absente du dictionnaire."
+  },
+  "La phrase affirmative au présent":{
+    principle:"Repérer la personne dans des formes verbales indépendantes documentées au présent.",
+    steps:["trouver le verbe complet","repérer la marque de personne","associer la forme à la bonne personne"],
+    mastery:"Tu analyses les exemples présents sans compléter les cases manquantes d'un paradigme."
+  },
+  "La deuxième personne interrogative":{
+    principle:"Reconnaître « tu » dans des questions complètes qui emploient soit -an/-ian, soit une forme attestée en k'-/kd'-.",
+    steps:["lire toute la question","repérer l'indice de deuxième personne","comparer seulement les modèles documentés"],
+    mastery:"Tu distingues les deux patrons attestés et tu n'ajoutes pas kd'- à T8ni aliwizian."
+  },
+  "Le temps qui passe":{
+    principle:"Ordonner les repères temporels selon leur échelle et leur relation avant, maintenant ou après.",
+    steps:["classer le repère","le placer sur une ligne du temps","récupérer la forme depuis son contexte"],
+    mastery:"Tu choisis le bon repère pour un moment, un jour, un mois ou une saison sans te fier à la longueur du mot."
+  },
+  "Dire non":{
+    principle:"Observer la négation dans des couples affirmatif-négatif complets avant d'étudier ses différentes finales.",
+    steps:["lire l'affirmation","comparer toute la forme négative","repérer Nda et la différence finale"],
+    mastery:"Tu reconnais les couples du module et tu ne fabriques pas la négation d'un autre verbe."
+  },
+  "La classe change la phrase":{
+    principle:"Relier la classe grammaticale d'un nom à ses effets documentés sur le nombre, le pluriel ou le choix verbal.",
+    steps:["identifier le nom et sa classe","repérer l'élément touché","justifier le changement avec l'exemple"],
+    mastery:"Tu expliques quel accord change et pourquoi, sans attribuer à la classe un sens culturel non documenté."
+  },
+  "Les mois qui racontent l'année":{
+    principle:"Apprendre les douze mois comme des formes calendaires liées à ce que leurs fiches documentent dans l'année.",
+    steps:["placer le mois dans l'ordre","lire son sens documenté","relier la forme à la saison sans inventer une histoire"],
+    mastery:"Tu remets les douze mois dans l'ordre et associes chacun à l'explication réellement fournie."
+  },
+  "Nommer les lieux":{
+    principle:"Reconnaître les noms de lieux et les formes locatives attestées sans appliquer automatiquement un suffixe à un nouveau mot.",
+    steps:["distinguer lieu et forme locative","repérer la terminaison affichée","vérifier la paire ou la note source"],
+    mastery:"Tu interprètes les exemples de lieux du module et tu sais quand la fiche ne permet pas de construire une nouvelle forme."
+  },
+  "Ma journée en aln8ba":{
+    principle:"Organiser des formes déjà documentées dans la chronologie d'une journée sans inventer les liens manquants.",
+    steps:["ordonner les moments","choisir une forme attestée pour chaque étape","raconter la séquence en conservant chaque bloc"],
+    mastery:"Tu restitues la journée proposée et tu distingues une séquence pédagogique d'une phrase nouvellement construite."
+  },
+  "Traduire sans découper le français":{
+    principle:"Comprendre qu'une construction aln8ba peut porter en un seul bloc ce que le français répartit entre plusieurs mots.",
+    steps:["partir du sens complet","repérer personne, verbe et dépendants","refuser l'équivalence mot à mot quand elle n'est pas documentée"],
+    mastery:"Tu expliques une construction entière sans attribuer un faux mot aln8ba à chaque fragment français."
+  },
+  "Les quatre classes de verbes":{
+    principle:"Choisir VAI, VII, VTA ou VTI en observant la présence d'un objet et la classe grammaticale des participants.",
+    steps:["trouver sujet et objet","vérifier leur classe","nommer la classe verbale montrée par l'exemple"],
+    mastery:"Tu classes les exemples et justifies ta décision par les rôles grammaticaux, pas par la traduction française seule."
+  },
+  "Aimuk et les temps verbaux":{
+    principle:"Lire personne et temps dans des paradigmes attestés de présence ou de vision sans transporter leurs finales vers un autre verbe.",
+    steps:["choisir une personne","lire horizontalement présent, passé ou futur","comparer seulement les formes du même tableau"],
+    mastery:"Tu retrouves les formes attestées et tu peux nommer les cases que les sources laissent vides."
+  },
+  "Les trois ordres":{
+    principle:"Distinguer une affirmation indépendante, un impératif et une interrogation conjonctive par la fonction de la phrase.",
+    steps:["identifier fait, consigne ou question","choisir l'exemple complet","expliquer l'indice visible sans généraliser"],
+    mastery:"Tu nommes l'ordre des trois contrastes et justifies chacun avec la forme documentée."
+  },
+  "La négation complète":{
+    principle:"Comparer trois finales négatives documentées selon la forme du radical, après avoir maîtrisé les couples du module Dire non.",
+    steps:["observer la fin du radical","choisir le couple exact de la leçon","recopier toute la négation avec Nda"],
+    mastery:"Tu distingues -w, -wi et -owen dans les exemples sans les convertir en conjugueur général."
+  },
+  "Racines et suffixes":{
+    principle:"Comprendre la fonction de suffixes documentés qui forment un fait, un objet, un lieu, une personne ou une relation grammaticale.",
+    steps:["isoler le suffixe expliqué","nommer sa fonction dans l'exemple","reconstituer le sens de la forme documentée"],
+    mastery:"Tu expliques le rôle des suffixes présentés et tu limites l'analyse aux exemples attestés."
+  },
+  "Décomposer un mot":{
+    principle:"Analyser une forme longue en préfixe, racine et suffixe, puis vérifier sa famille morphologique documentée.",
+    steps:["segmenter la forme","justifier chaque morceau","comparer une autre forme de la même famille"],
+    mastery:"Tu démontes les exemples sans confondre ressemblance graphique et parenté démontrée."
+  },
+  "Les sources et les graphies":{
+    principle:"Suivre un même mot à travers plusieurs graphies datées sans les fusionner ni les moderniser silencieusement.",
+    steps:["associer forme, auteur et date","comparer les lettres","séparer attestation historique et forme retenue"],
+    mastery:"Tu remets les cinq graphies dans leur contexte et cites la source de chacune."
+  },
+  "Lire une phrase complète":{
+    principle:"Interpréter d'abord le sens attesté d'une phrase, puis analyser ses éléments sans figer la traduction de chaque fragment.",
+    steps:["lire phrase et sens ensemble","repérer le verbe et la personne","expliquer les autres éléments dans ce contexte précis"],
+    mastery:"Tu analyses les quatre constructions du module et expliques pourquoi T8ni change de traduction selon la phrase complète."
+  },
+  "Lire des mots construits":{
+    principle:"Reconnaître une racine commune dans plusieurs formes actuelles seulement lorsqu'une analyse documentée les relie.",
+    steps:["repérer le segment partagé","comparer les sens et les notes","justifier ou refuser la famille proposée"],
+    mastery:"Tu différencies famille morphologique et simple paire singulier-pluriel ou ressemblance de lettres."
+  },
+  "Lire les anciens":{
+    principle:"Comparer les conventions de Laurent, Masta et d'autres sources sans confondre leur époque avec l'usage actuel.",
+    steps:["identifier la source","noter la différence graphique","conserver séparément forme historique et forme actuelle"],
+    mastery:"Tu peux présenter chaque comparaison avec auteur, date et limite d'interprétation."
+  },
+  "Les niveaux de vérification":{
+    principle:"Distinguer citation, recoupement interne, attestation historique et validation externe dans les marques du projet.",
+    steps:["lire la marque exacte","retrouver ce qu'elle garantit","nommer explicitement ce qu'elle ne garantit pas"],
+    mastery:"Tu évalues une fiche sans transformer une marque interne en attestation professionnelle."
+  },
+  "Décortiquer ensemble":{
+    principle:"Réaliser une analyse complète et transmissible d'un mot construit en reliant forme, morceaux, sens, famille et source.",
+    steps:["démonter deux modèles guidés","analyser une nouvelle forme documentée","présenter le raisonnement et ses limites à quelqu'un"],
+    mastery:"Tu peux expliquer une analyse du début à la fin et montrer précisément quelles données la soutiennent."
+  }
+};
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
 function aprPathHtml(levelId){
   const phases=APR_LEVEL_PATHS[levelId]||[];
@@ -8182,7 +8420,9 @@ function aprModuleItemsForGuide(m,lecHtml){
 }
 function aprEarlierModuleKeys(level,index){
   const keys=new Set();
-  level.mods.slice(0,index).forEach(module=>{
+  const levelIndex=NIVEAUX.findIndex(candidate=>candidate.id===level.id);
+  const earlierLevels=levelIndex>0?NIVEAUX.slice(0,levelIndex).flatMap(candidate=>candidate.mods):[];
+  [...earlierLevels,...level.mods.slice(0,index)].forEach(module=>{
     let html='';
     try{ html=typeof module.lec==='function'?module.lec():module.lec; }catch(_e){}
     aprModuleItemsForGuide(module,html||'').forEach(item=>keys.add(aprLessonKey(item.aln8ba)));
@@ -8190,17 +8430,22 @@ function aprEarlierModuleKeys(level,index){
   return keys;
 }
 function aprModuleGuideHtml(level,m,index,lecHtml){
-  const guide=aprModuleTaskGuide(m), previous=level.mods[index-1], next=level.mods[index+1];
+  const guide=aprModuleTaskGuide(m), contract=APR_MODULE_CONTRACTS[m.t];
+  const previous=level.mods[index-1], next=level.mods[index+1];
   const items=aprModuleItemsForGuide(m,lecHtml), earlier=aprEarlierModuleKeys(level,index);
   const repeated=items.filter(item=>earlier.has(aprLessonKey(item.aln8ba)));
   const fresh=items.filter(item=>!earlier.has(aprLessonKey(item.aln8ba)));
   const bank=items.length
     ? `<div class="apr-module-bank"><strong>${fresh.length} forme${fresh.length>1?'s':''} nouvelle${fresh.length>1?'s':''} dans ce parcours</strong>${repeated.length?` · ${repeated.length} forme${repeated.length>1?'s':''} reprise${repeated.length>1?'s':''} volontairement pour consolider un lien précis`:''}. L'exercice reste limité à la banque de cette leçon.</div>`
     : `<div class="apr-module-bank"><strong>Module de structure</strong> · la nouveauté porte ici sur le raisonnement et les contrastes documentés, pas sur une nouvelle liste de mots.</div>`;
-  return `<div class="apr-module-guide" aria-label="Progression propre à ce module">
+  const contractHtml=contract?`<section class="apr-module-contract" aria-label="Principe complet de ce module">
+    <div class="apr-module-contract-title"><span>Un principe complet</span><strong>${escH(contract.principle)}</strong></div>
+    <ol>${contract.steps.map(step=>`<li>${escH(step)}</li>`).join('')}</ol>
+  </section>`:'';
+  return `${contractHtml}<div class="apr-module-guide" aria-label="Progression propre à ce module">
     <div><strong>Place dans le parcours</strong><span>${previous?`Après « ${escH(previous.t)} »`:'Point de départ de cette étape'} · ${next?`prépare « ${escH(next.t)} »`:'prépare la synthèse et la révision'}.</span></div>
-    <div><strong>Mission de ce module</strong><span>${escH(guide[0])}</span></div>
-    <div><strong>Tu peux avancer quand</strong><span>${escH(guide[1])}</span></div>
+    <div><strong>Entraînement qui vérifie ce principe</strong><span>${escH(guide[0])}</span></div>
+    <div><strong>Tu peux avancer quand</strong><span>${escH(contract?contract.mastery:guide[1])}</span></div>
   </div>${bank}`;
 }
 function aprModulePerfect(m,state){
@@ -9243,17 +9488,18 @@ function exRetVocab(){ const b=window._ex;
 
 /* ═══════ OUTILS DU PARCOURS PROFOND ═══════ */
 /* — leçons auto : tableaux tirés en direct du dictionnaire (aucun mot inventé) — */
-function aprAutoWords(cat,n,maxLen){
+function aprAutoWords(cat,n,maxLen,predicate){
   let pool=aprSur().filter(w=>w.cat===cat&&w.fr&&(w.aln8ba||'').length<=(maxLen||20)
     &&!/pluriel/i.test(w.grammar||''));
+  if(typeof predicate==='function') pool=pool.filter(predicate);
   const used=aprPreviousModuleKeys(cat);
   if(used.size) pool=pool.filter(w=>!used.has(aprLessonKey(w.aln8ba)));
   pool.sort((a,b)=>a.aln8ba.length-b.aln8ba.length||a.aln8ba.localeCompare(b.aln8ba));
   return pool.slice(0,n||14);
 }
-function aprAutoLec(intro,cat,n,note){
+function aprAutoLec(intro,cat,n,note,predicate){
   return function(){
-    const ws=aprAutoWords(cat,n);
+    const ws=aprAutoWords(cat,n,undefined,predicate);
     const tab=ws.length
       ? `<table class="aprtab"><tr><th>Aln8ba</th><th>Français</th></tr>${ws.map(w=>`<tr><td class="k">${w.aln8ba}</td><td>${w.fr}</td></tr>`).join('')}</table>`
       : `<p class="aprlead">Les mots de cette famille arrivent bientôt.</p>`;

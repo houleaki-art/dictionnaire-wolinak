@@ -150,10 +150,32 @@ test('chaque module affiche sa mission, sa place et ses formes nouvelles', () =>
     assert.match(guide, new RegExp(`${activity}:\\[`), `activité de vocabulaire absente: ${activity}`);
   }
   assert.match(guide, /aprEarlierModuleKeys/);
+  assert.match(guide, /NIVEAUX\.slice\(0,levelIndex\)\.flatMap/);
   assert.match(guide, /forme.*nouvelle.*dans ce parcours/);
   assert.match(guide, /reprise.*volontairement pour consolider/);
   const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
   assert.match(lesson, /aprModuleGuideHtml\(n,m,i,lecHtml\)/);
+});
+
+test('les 45 modules enseignent chacun un principe complet et distinct', () => {
+  const source = sourceBetween('const APR_MODULE_CONTRACTS=', 'function aprModuleNeedsUse');
+  const contracts = new Function(`${source}; return APR_MODULE_CONTRACTS;`)();
+  const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
+  const titles = [...library.matchAll(/\{t:"([^"]+)"/g)].map(match => match[1]);
+  assert.equal(titles.length, 45);
+  assert.deepEqual(new Set(Object.keys(contracts)), new Set(titles));
+  assert.equal(new Set(Object.values(contracts).map(contract => contract.principle)).size, 45);
+  for (const [title, contract] of Object.entries(contracts)) {
+    assert.ok(contract.principle.trim().length >= 80, `principe trop court: ${title}`);
+    assert.equal(contract.steps.length, 3, `trois étapes requises: ${title}`);
+    assert.ok(contract.steps.every(step => step.trim().length >= 12), `étape incomplète: ${title}`);
+    assert.match(contract.mastery, /^Tu /, `critère observable absent: ${title}`);
+  }
+  const guide = sourceBetween('function aprModuleGuideHtml', 'function aprModulePerfect');
+  assert.match(guide, /APR_MODULE_CONTRACTS\[m\.t\]/);
+  assert.match(guide, /Un principe complet/);
+  assert.match(guide, /Entraînement qui vérifie ce principe/);
+  assert.match(guide, /contract\.mastery/);
 });
 
 test('le module des trois ordres avance en trois contrastes avant les approfondissements', () => {
@@ -278,7 +300,7 @@ test('le module des nombres enseigne une seule etape a la fois', () => {
 });
 
 test('le module des couleurs est revenu a sa forme simple sans ancien enrichissement', () => {
-  const colors = sourceBetween('{t:"Les couleurs"', '{t:"Décrire le monde"');
+  const colors = sourceBetween('{t:"Les couleurs"', '{t:"Qualités et émotions"');
   assert.match(colors, /Six formes verbales documentées/);
   assert.match(colors, /Commence par regarder une chose, puis dis son état/);
   assert.match(colors, /Notre exercice/);
@@ -288,6 +310,25 @@ test('le module des couleurs est revenu a sa forme simple sans ancien enrichisse
   for (const word of ['Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen']) {
     assert.match(colors, new RegExp(word));
   }
+});
+
+test('les banques automatiques respectent le principe annonce par leur module', () => {
+  const description = sourceBetween('{t:"Qualités et émotions"', '{t:"Compter jusqu\'à dix"');
+  assert.match(description, /qualité, un état ressenti et le nom d'une émotion/);
+  assert.doesNotMatch(description, /Grand, petit, beau/);
+
+  const fauna = sourceBetween('{t:"Les bêtes de chez nous"', '{t:"Mon corps"');
+  assert.match(fauna, /!\/esprit\/i\.test/);
+
+  const territory = sourceBetween('{t:"Le territoire"', '{t:"Le temps et les saisons"');
+  assert.match(territory, /rivière\|fleuve\|ruisseau\|lac\|baie/);
+  assert.match(territory, /lieu\|territoire\|terre\|village/);
+
+  const actions = sourceBetween('{t:"Les actions de tous les jours"', '{t:"Ma première conversation"');
+  assert.match(actions, /!\/\(\?:pré\|pre\)\[- \]\?verbe\/i\.test/);
+  const autoLesson = sourceBetween('function aprAutoWords', 'function aprGenreReviewLec');
+  assert.match(autoLesson, /typeof predicate==='function'/);
+  assert.match(autoLesson, /aprAutoWords\(cat,n,undefined,predicate\)/);
 });
 
 test('le jeu du territoire relie observation et vocabulaire vert actuel', () => {
