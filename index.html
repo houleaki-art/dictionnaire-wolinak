@@ -139,7 +139,7 @@ main{flex:1;padding:24px 28px;min-width:0}
 /* ── MODAL SYSTEM ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(5px);padding:20px}
 .overlay.open{display:flex}
-.modal{background:var(--surface);border-radius:18px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);position:relative}
+.modal{background:var(--surface);border-radius:18px;width:100%;max-width:600px;max-height:90vh;overflow-x:hidden;overflow-y:auto;box-shadow:var(--shadow-lg);position:relative}
 .modal.wide{max-width:820px}
 .mhdr{padding:24px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:10;border-radius:18px 18px 0 0}
 .mhdr h2{font-size:1.2rem;color:var(--accent)}
@@ -206,6 +206,59 @@ textarea{resize:vertical;min-height:68px}
 .admin-panel.open{display:flex}
 .asec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px}
 .asec h3{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.admin-access{max-width:520px;margin:clamp(20px,8vh,80px) auto;padding:clamp(22px,5vw,38px)}
+.admin-access #adminBackBtn{display:block!important;margin:0 0 22px}
+.admin-workbench{display:none}
+.admin-hero{position:relative;overflow:hidden;padding:clamp(20px,4vw,32px);border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-radius:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--surface) 90%,var(--accent)),var(--surface));box-shadow:var(--shadow)}
+.admin-hero::after{content:'A';position:absolute;right:24px;top:50%;transform:translateY(-52%);font-size:clamp(84px,14vw,150px);font-weight:700;color:var(--accent);opacity:.055;pointer-events:none}
+.admin-eyebrow{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:7px}
+.admin-hero h2{font-size:clamp(1.45rem,4vw,2.2rem);line-height:1.08;margin-bottom:8px}
+.admin-hero p{max-width:670px;color:var(--text2);font-size:.88rem;line-height:1.55}
+.admin-hero-row{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.admin-hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.admin-session{display:inline-flex;align-items:center;gap:7px;margin-top:13px;padding:5px 10px;border-radius:999px;background:rgba(61,122,80,.1);color:var(--green);font-size:.72rem;font-weight:700}
+.admin-session::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(61,122,80,.12)}
+.admin-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.admin-metric{min-height:104px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}
+.admin-metric b{display:block;font-size:clamp(1.45rem,4vw,2rem);line-height:1;color:var(--accent);margin:8px 0 6px}
+.admin-metric span{display:block;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-weight:700}
+.admin-metric small{display:block;color:var(--text2);font-size:.74rem;line-height:1.35}
+.admin-tabs{position:sticky;top:158px;z-index:90;display:flex;gap:6px;padding:8px;margin-bottom:14px;border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb,var(--surface) 94%,transparent);box-shadow:var(--shadow);backdrop-filter:blur(12px);overflow-x:auto}
+.admin-tab{flex:1;min-width:145px;padding:10px 14px;border:0;border-radius:8px;background:transparent;color:var(--text2);font:700 .78rem Georgia,serif;cursor:pointer;white-space:nowrap}
+.admin-tab:hover{background:var(--surface2);color:var(--text)}
+.admin-tab.on{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(184,92,42,.22)}
+.admin-tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;margin-left:6px;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.2);font-size:.67rem}
+.admin-workspace[hidden]{display:none!important}
+.admin-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:12px}
+.admin-section-head h3{font-size:1.05rem;margin:0 0 4px}
+.admin-section-head p{font-size:.78rem;line-height:1.45;color:var(--text2)}
+.admin-queue{display:grid;gap:10px}
+.admin-queue-card{border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow)}
+.admin-queue-card>summary{list-style:none;display:flex;align-items:center;gap:11px;padding:14px 16px;cursor:pointer;font-weight:700;color:var(--text)}
+.admin-queue-card>summary::-webkit-details-marker{display:none}
+.admin-queue-card>summary::after{content:'+';margin-left:auto;color:var(--accent);font-size:1.2rem}
+.admin-queue-card[open]>summary::after{content:'−'}
+.admin-queue-card[open]>summary{border-bottom:1px solid var(--border);background:var(--surface2)}
+.admin-queue-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:var(--surface2);font-size:1rem}
+.admin-queue-label small{display:block;margin-top:2px;font-size:.7rem;font-weight:400;color:var(--text3)}
+.admin-count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:25px;padding:0 8px;border-radius:999px;background:rgba(184,92,42,.1);color:var(--accent);font-size:.72rem}
+.admin-queue-body{padding:14px 16px}
+.admin-empty{padding:18px;border:1px dashed var(--border);border-radius:9px;color:var(--text3);font-size:.82rem;text-align:center}
+.admin-filterbar{display:grid;grid-template-columns:minmax(220px,1fr) minmax(150px,220px) minmax(150px,220px);gap:8px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);margin-bottom:10px}
+.admin-filterbar input,.admin-filterbar select{min-height:42px;background:var(--surface2)}
+.admin-result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;color:var(--text2);font-size:.77rem}
+.admin-pager{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 0 4px}
+.admin-pager span{font-size:.78rem;color:var(--text2)}
+.admin-tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.admin-tool-card{padding:18px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+.admin-tool-card h4{margin-bottom:6px;color:var(--text);font-size:.92rem}
+.admin-tool-card p{min-height:42px;margin-bottom:13px;color:var(--text2);font-size:.77rem;line-height:1.5}
+.admin-tool-card .btn{width:100%}
+.edit-status{display:flex;align-items:center;gap:8px;margin-top:5px;font-size:.72rem;color:var(--text2)}
+.edit-fieldset{margin:0 0 14px;padding:16px;border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb,var(--surface) 97%,var(--accent))}
+.edit-fieldset legend{padding:0 8px;color:var(--accent);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.edit-fieldset .frow:last-child{margin-bottom:0}
+.edit-actions{position:sticky;bottom:-24px;z-index:9;margin:18px -28px -24px;padding:14px 28px;border-top:1px solid var(--border);background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px)}
 /* pending cards */
 .pcard{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px}
 .pcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
@@ -363,6 +416,9 @@ body.music-dock-open .toast{bottom:116px}
 .admin-btn-detail{padding:5px 10px;font-size:.72rem;background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
 .admin-btn-confirm{padding:5px 10px;font-size:.72rem;background:#3d7a50;color:#fff;border:none}
 .admin-btn-edit{padding:5px 12px;font-size:.76rem}
+.admin-status-rouge{background:#c0392b;color:#fff}
+.admin-status-orange{background:#d4860a;color:#fff}
+.admin-status-vert{background:#3d7a50;color:#fff}
 /* ══ RESPONSIVE MOBILE ══ */
 @media(max-width:860px){
   #burgerBtn{display:flex !important}
@@ -436,6 +492,14 @@ body.music-dock-open .toast{bottom:116px}
   .modal{border-radius:14px}
   .mhdr{padding:18px 18px 12px}
   /* Admin panel */
+  .admin-hero-row{flex-direction:column}
+  .admin-hero-actions{width:100%;justify-content:flex-start}
+  .admin-hero-actions .btn{flex:1;min-width:135px}
+  .admin-summary{grid-template-columns:1fr 1fr}
+  .admin-tabs{top:122px}
+  .admin-tab{min-width:135px}
+  .admin-filterbar{grid-template-columns:1fr}
+  .admin-tool-grid{grid-template-columns:1fr}
   .pcard-top{flex-direction:column;align-items:flex-start;gap:8px}
   .pcard-top > div:last-child{width:100%;display:flex;gap:6px;flex-wrap:wrap}
   .pcard-top > div:last-child .btn{flex:1;min-width:80px;text-align:center;justify-content:center;padding:8px 6px;font-size:.72rem}
@@ -469,6 +533,14 @@ body.music-dock-open .toast{bottom:116px}
   .frow{grid-template-columns:1fr}
   .modal{max-height:95vh}
   /* Cartes admin */
+  .admin-summary{grid-template-columns:1fr}
+  .admin-metric{min-height:88px}
+  .admin-section-head{align-items:flex-start;flex-direction:column}
+  .admin-queue-body{padding:10px}
+  .edit-fieldset{padding:12px}
+  .edit-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px -14px -14px;padding:12px 14px calc(12px + env(safe-area-inset-bottom))}
+  .edit-actions .btn{width:100%;padding-left:8px;padding-right:8px}
+  .edit-actions .btn-primary{grid-column:1/-1}
   .pcard{padding:10px 12px}
   .pword{font-size:.95rem}
   .pfr{font-size:.78rem}
@@ -1771,33 +1843,100 @@ Merci... merci de m'avoir entendu</pre>
   </div>
   <!-- ADMIN PANEL VIEW -->
   <div class="admin-panel" id="adminView">
-    <div class="asec">
-      <button onclick="setView('all')" style="display:none;margin-bottom:16px;width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:.85rem;cursor:pointer;text-align:left" id="adminBackBtn">← Retour au dictionnaire</button>
-      <h3>🔒 Administration</h3>
+    <div class="asec admin-access" id="adminAccess">
+      <button onclick="setView('all')" class="btn btn-secondary" id="adminBackBtn">← Retour au dictionnaire</button>
+      <h3>Administration privée</h3>
       <div class="pinlock" id="pinLock">
-        <p class="pininfo">Entrez le mot de passe administrateur</p>
+        <p class="pininfo">Connecte-toi pour examiner, rechercher et corriger le dictionnaire.</p>
         <input type="password" id="pinIn" placeholder="• • • •" maxlength="64" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkPin()">
         <button class="btn btn-primary" onclick="checkPin()">Accéder</button>
         <p class="pininfo" id="pinErr" style="color:var(--red);display:none">Mot de passe incorrect</p>
       </div>
-      <div id="adminContent" style="display:none">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
-          <button class="btn btn-success" onclick="exportJSON()">📥 Exporter JSON</button>
-          <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📤 Importer JSON</button>
-          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-          <button class="btn btn-secondary" onclick="changePin()">🔑 Changer mot de passe</button>
-          <button class="btn btn-secondary" onclick="runLinguisticAudit()" title="Analyser tous les mots selon les règles grammaticales abenakises">🔬 Audit linguistique</button>
+    </div>
+    <div id="adminContent" class="admin-workbench">
+      <section class="admin-hero">
+        <div class="admin-hero-row">
+          <div>
+            <div class="admin-eyebrow">Centre de travail</div>
+            <h2>Administration du dictionnaire</h2>
+            <p>Commence par les éléments à traiter, puis utilise la recherche pour atteindre directement une fiche. Les outils techniques sont séparés du travail linguistique.</p>
+            <span class="admin-session">Session administrateur active</span>
+          </div>
+          <div class="admin-hero-actions">
+            <button class="btn btn-secondary" onclick="setView('all')">← Voir le dictionnaire</button>
+            <button class="btn btn-secondary" onclick="logoutAdmin()">Fermer la session</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="admin-summary" id="adminSummary" aria-live="polite"></div>
+
+      <nav class="admin-tabs" aria-label="Sections de l'administration">
+        <button class="admin-tab on" type="button" data-admin-tab="queue" onclick="setAdminSection('queue')">À traiter <span class="admin-tab-count" id="adminQueueCount">0</span></button>
+        <button class="admin-tab" type="button" data-admin-tab="dictionary" onclick="setAdminSection('dictionary')">Dictionnaire</button>
+        <button class="admin-tab" type="button" data-admin-tab="quality" onclick="setAdminSection('quality')">Qualité</button>
+        <button class="admin-tab" type="button" data-admin-tab="tools" onclick="setAdminSection('tools')">Outils</button>
+      </nav>
+
+      <section class="admin-workspace" data-admin-section="queue">
+        <div class="admin-section-head">
+          <div><h3>File de travail</h3><p>Chaque groupe est repliable. Ouvre seulement ce que tu veux traiter maintenant.</p></div>
+        </div>
+        <div class="admin-queue">
+          <details class="admin-queue-card" id="adminSuggestionsSection">
+            <summary><span class="admin-queue-icon">💡</span><span class="admin-queue-label">Suggestions de correction<small>Comparer la valeur actuelle et la proposition</small></span><span class="admin-count" id="adminSuggestionsCount">0</span></summary>
+            <div class="admin-queue-body" id="suggestionsList"></div>
+          </details>
+          <details class="admin-queue-card" id="adminPendingSection">
+            <summary><span class="admin-queue-icon">📬</span><span class="admin-queue-label">Nouveaux mots proposés<small>Examiner avant toute publication</small></span><span class="admin-count" id="adminPendingCount">0</span></summary>
+            <div class="admin-queue-body" id="pendingList"></div>
+          </details>
+          <details class="admin-queue-card" id="adminAtelierSection">
+            <summary><span class="admin-queue-icon">🔤</span><span class="admin-queue-label">Formes sans sens établi<small>Atelier de recherche dans les sources</small></span><span class="admin-count" id="adminAtelierCount">0</span></summary>
+            <div class="admin-queue-body" id="atelierBox"></div>
+          </details>
+        </div>
+      </section>
+
+      <section class="admin-workspace" data-admin-section="dictionary" hidden>
+        <div class="admin-section-head">
+          <div><h3>Toutes les fiches</h3><p>Recherche immédiate, filtres de statut et de catégorie, puis modification directe.</p></div>
+        </div>
+        <div class="admin-filterbar">
+          <input type="text" id="adminWordQ" placeholder="Chercher un mot, un sens, une source…" autocomplete="off" oninput="adminWordPage=0;renderAdminWords()">
+          <select id="adminWordLevel" onchange="adminWordPage=0;renderAdminWords()">
+            <option value="all">Tous les statuts</option><option value="vert">Retenu par le projet</option><option value="orange">Dérivé</option><option value="rouge">À examiner</option>
+          </select>
+          <select id="adminWordCat" onchange="adminWordPage=0;renderAdminWords()">
+            <option value="">Toutes les catégories</option><option value="salut">Salutations</option><option value="famille">Famille</option><option value="territoire">Territoire</option><option value="nature">Nature / Ciel</option><option value="animal">Animaux</option><option value="plante">Plantes / Nourriture</option><option value="action">Actions / Valeurs</option><option value="temps">Temps</option><option value="nombre">Nombres</option><option value="description">Description</option><option value="corps">Corps humain</option><option value="couleur">Couleurs</option><option value="grammaire">Grammaire</option><option value="toponymie">Toponymie</option><option value="archive">Archives</option>
+          </select>
+        </div>
+        <div class="admin-result-head" id="adminWordResult"></div>
+        <div id="allWordsList"></div>
+        <div class="admin-pager" id="adminWordPager"></div>
+      </section>
+
+      <section class="admin-workspace" data-admin-section="quality" hidden>
+        <div class="admin-section-head">
+          <div><h3>Contrôle de qualité</h3><p>L'audit signale des éléments à examiner; il ne valide jamais une forme linguistique à lui seul.</p></div>
+          <button class="btn btn-primary" onclick="runLinguisticAudit()">Lancer l'audit</button>
         </div>
         <div id="auditResults" style="display:none;margin-bottom:18px"></div>
-        <h4 style="margin-bottom:12px;color:var(--text2)">🔤 Formes en attente d'un sens</h4>
-      <div id="atelierBox"></div>
-      <h4 style="margin-top:20px;margin-bottom:12px;color:var(--text2)">💡 Suggestions de correction</h4>
-        <div id="suggestionsList"></div>
-        <h4 style="margin-top:20px;margin-bottom:12px;color:var(--text2)">📬 Nouveaux mots en attente</h4>
-        <div id="pendingList"></div>
-        <h4 style="margin-top:20px;margin-bottom:12px;color:var(--text2)">📝 Tous les mots (modifier / supprimer)</h4>
-        <div id="allWordsList"></div>
-      </div>
+        <div class="admin-empty" id="adminAuditEmpty">Aucun audit lancé pendant cette session.</div>
+      </section>
+
+      <section class="admin-workspace" data-admin-section="tools" hidden>
+        <div class="admin-section-head">
+          <div><h3>Outils techniques</h3><p>Sauvegarde, restauration et sécurité sont regroupées ici pour éviter les manipulations accidentelles.</p></div>
+        </div>
+        <div class="admin-tool-grid">
+          <div class="admin-tool-card"><h4>Exporter une sauvegarde</h4><p>Télécharge une copie JSON datée des mots et des propositions en attente.</p><button class="btn btn-success" onclick="exportJSON()">Exporter JSON</button></div>
+          <div class="admin-tool-card"><h4>Importer une sauvegarde</h4><p>Relit un fichier JSON avant de remplacer les données locales du projet.</p><button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Choisir un fichier JSON</button></div>
+          <div class="admin-tool-card"><h4>Sécurité du compte</h4><p>Modifie le mot de passe de l'administrateur actuellement connecté.</p><button class="btn btn-secondary" onclick="changePin()">Changer le mot de passe</button></div>
+          <div class="admin-tool-card"><h4>Quitter proprement</h4><p>Supprime la session de ce navigateur sans modifier le dictionnaire.</p><button class="btn btn-secondary" onclick="logoutAdmin()">Fermer la session</button></div>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+      </section>
     </div>
   </div>
   <!-- ABOUT VIEW -->
@@ -1976,45 +2115,58 @@ Merci... merci de m'avoir entendu</pre>
 <div class="overlay" id="editModal">
   <div class="modal wide">
     <div class="mhdr">
-      <div><h2>✏️ Modifier le mot</h2><p>Mode administrateur</p></div>
+      <div><h2>Modifier la fiche</h2><p id="editWordTitle">Mode administrateur</p><div class="edit-status" id="editWordStatus"></div></div>
       <div style="display:flex;align-items:center;gap:8px">
         <button class="mclose" onclick="closeModal('editModal')" aria-label="Fermer la modification">✕</button>
       </div>
     </div>
     <div class="mbody">
-      <div class="frow">
-        <div class="fg"><label>Mot en Aln8ba *</label><input type="text" id="e-aln8ba"></div>
-        <div class="fg"><label>Phonétique</label><input type="text" id="e-phonetic"></div>
-      </div>
-      <div class="frow">
-        <div class="fg"><label>Traduction française *</label><input type="text" id="e-fr"></div>
-        <div class="fg"><label>English</label><input type="text" id="e-en"></div>
-      </div>
-      <div class="frow">
-        <div class="fg"><label>Catégorie</label>
-          <select id="e-cat">
-            <option value="salut">Salutations</option><option value="famille">Famille</option>
-            <option value="territoire">Territoire</option><option value="nature">Nature / Ciel</option>
-            <option value="animal">Animaux</option><option value="plante">Plantes / Nourriture</option>
-            <option value="action">Actions / Valeurs</option>
-            <option value="temps">Temps</option><option value="nombre">Nombres</option>
-            <option value="description">Description</option><option value="corps">Corps humain</option>
-            <option value="couleur">Couleurs</option><option value="grammaire">Grammaire</option>
-            <option value="toponymie">Toponymie</option>
-          </select>
+      <fieldset class="edit-fieldset">
+        <legend>Essentiel</legend>
+        <div class="frow">
+          <div class="fg"><label>Mot en Aln8ba *</label><input type="text" id="e-aln8ba"></div>
+          <div class="fg"><label>Phonétique écrite</label><input type="text" id="e-phonetic"></div>
         </div>
-        <div class="fg"><label>Type grammatical</label><input type="text" id="e-gram"></div>
-      </div>
-      <div class="frow full"><div class="fg"><label>Exemple Aln8ba</label><input type="text" id="e-exA"></div></div>
-      <div class="frow full"><div class="fg"><label>Traduction exemple</label><input type="text" id="e-exF"></div></div>
-      <div class="frow full"><div class="fg"><label>Notes</label><textarea id="e-notes"></textarea></div></div>
-      <div class="frow full"><div class="fg"><label>Mots associés (virgules)</label><input type="text" id="e-related"></div></div>
-      <input type="hidden" id="e-corrNote">
+        <div class="frow">
+          <div class="fg"><label>Traduction française *</label><input type="text" id="e-fr"></div>
+          <div class="fg"><label>Traduction anglaise</label><input type="text" id="e-en"></div>
+        </div>
+      </fieldset>
+      <fieldset class="edit-fieldset">
+        <legend>Classement</legend>
+        <div class="frow">
+          <div class="fg"><label>Catégorie</label>
+            <select id="e-cat">
+              <option value="salut">Salutations</option><option value="famille">Famille</option>
+              <option value="territoire">Territoire</option><option value="nature">Nature / Ciel</option>
+              <option value="animal">Animaux</option><option value="plante">Plantes / Nourriture</option>
+              <option value="action">Actions / Valeurs</option><option value="temps">Temps</option>
+              <option value="nombre">Nombres</option><option value="description">Description</option>
+              <option value="corps">Corps humain</option><option value="couleur">Couleurs</option>
+              <option value="grammaire">Grammaire</option><option value="toponymie">Toponymie</option>
+              <option value="archive">Archives</option>
+            </select>
+          </div>
+          <div class="fg"><label>Type grammatical</label><input type="text" id="e-gram"></div>
+        </div>
+        <div class="frow full"><div class="fg"><label>Mots associés</label><input type="text" id="e-related" placeholder="Séparer les formes par des virgules"><span class="hint">Utilise seulement des relations déjà documentées.</span></div></div>
+      </fieldset>
+      <fieldset class="edit-fieldset">
+        <legend>Exemple et contexte</legend>
+        <div class="frow full"><div class="fg"><label>Exemple Aln8ba</label><input type="text" id="e-exA"></div></div>
+        <div class="frow full"><div class="fg"><label>Traduction de l'exemple</label><input type="text" id="e-exF"></div></div>
+      </fieldset>
+      <fieldset class="edit-fieldset">
+        <legend>Documentation</legend>
+        <div class="frow full"><div class="fg"><label>Source bibliographique</label><textarea id="e-source" rows="3" placeholder="Auteur, titre, année, page ou entrée précise"></textarea></div></div>
+        <div class="frow full"><div class="fg"><label>Notes de la fiche</label><textarea id="e-notes"></textarea></div></div>
+        <div class="frow full"><div class="fg"><label>Note sur cette correction</label><input type="text" id="e-corrNote" placeholder="Pourquoi cette fiche est-elle modifiée?"><span class="hint">Cette note sera ajoutée à l'historique si une valeur change.</span></div></div>
+      </fieldset>
       <input type="hidden" id="e-id">
-      <div class="btns">
+      <div class="btns edit-actions">
         <button class="btn btn-danger" onclick="deleteWord(document.getElementById('e-id').value)">🗑 Supprimer</button>
         <button class="btn btn-secondary" onclick="closeModal('editModal')">Annuler</button>
-        <button class="btn btn-primary" onclick="saveEdit()">💾 Enregistrer</button>
+        <button class="btn btn-primary" onclick="saveEdit()">Enregistrer la fiche</button>
       </div>
       <div id="corrHistory"></div>
     </div>
@@ -2129,7 +2281,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-28-learning-feedback-016';
+const APP_RESET_VERSION = '2026-08-29-admin-workbench-017';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev'];
 
@@ -3910,8 +4062,10 @@ function activateAdminSession(data,persist=true){
   if(persist) saveAdminSession(data);
   const pinLock=document.getElementById('pinLock');
   const adminContent=document.getElementById('adminContent');
+  const adminAccess=document.getElementById('adminAccess');
   const pinInput=document.getElementById('pinIn');
   if(pinLock) pinLock.style.display='none';
+  if(adminAccess) adminAccess.style.display='none';
   if(adminContent) adminContent.style.display='block';
   if(pinInput) pinInput.value='';
   updateCounts();
@@ -3952,7 +4106,27 @@ function openAdmin(){
   document.getElementById('adminView').className='admin-panel open';
   document.getElementById('viewTitle').textContent='Administration';
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.remove('on'));
-  if(adminUnlocked) renderAdmin();
+  if(adminUnlocked){
+    const access=document.getElementById('adminAccess');
+    const content=document.getElementById('adminContent');
+    if(access) access.style.display='none';
+    if(content) content.style.display='block';
+    renderAdmin();
+  }
+}
+function logoutAdmin(){
+  clearAdminSession();
+  const access=document.getElementById('adminAccess');
+  const pinLock=document.getElementById('pinLock');
+  const content=document.getElementById('adminContent');
+  const pinErr=document.getElementById('pinErr');
+  if(access) access.style.display='block';
+  if(pinLock) pinLock.style.display='flex';
+  if(content) content.style.display='none';
+  if(pinErr) pinErr.style.display='none';
+  updateCounts();
+  toast('Session administrateur fermée');
+  requestAnimationFrame(()=>document.getElementById('pinIn')?.focus());
 }
 async function checkPin(){
   const v=(document.getElementById('pinIn').value||'').trim();
@@ -3994,6 +4168,7 @@ function runLinguisticAudit(){
   const report = LANG.auditAll(WORDS);
   const el = document.getElementById('auditResults');
   if (!el) return;
+  const empty=document.getElementById('adminAuditEmpty'); if(empty) empty.hidden=true;
 
   if (!report.length) {
     el.innerHTML = `<div style="background:rgba(61,122,80,.1);border:1px solid rgba(61,122,80,.3);border-radius:9px;padding:14px 16px;color:var(--green);font-size:.9rem;font-weight:600">
@@ -4037,6 +4212,93 @@ function runLinguisticAudit(){
   toast(`🔬 Audit terminé — ${report.length} mot(s) à vérifier`);
 }
 
+let adminSection='queue', adminWordPage=0;
+const ADMIN_WORDS_PER_PAGE=40;
+function setAdminSection(section,focus=true){
+  const allowed=['queue','dictionary','quality','tools'];
+  adminSection=allowed.includes(section)?section:'queue';
+  document.querySelectorAll('[data-admin-section]').forEach(panel=>{
+    panel.hidden=panel.dataset.adminSection!==adminSection;
+  });
+  document.querySelectorAll('[data-admin-tab]').forEach(button=>{
+    const active=button.dataset.adminTab===adminSection;
+    button.classList.toggle('on',active);
+    button.setAttribute('aria-current',active?'page':'false');
+  });
+  if(adminSection==='dictionary') renderAdminWords();
+  if(focus) document.querySelector(`[data-admin-section="${adminSection}"]`)?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function adminSearchKey(value){
+  return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9'8]+/g,' ').trim();
+}
+function adminWordCard(w){
+  const level=getWordLevel(w);
+  const badgeClass=`admin-status-${level}`;
+  const badgeText={rouge:'À examiner',orange:'Dérivé',vert:'Retenu par le projet'}[level];
+  const borderColor={rouge:'#c0392b',orange:'#d4860a',vert:'transparent'}[level];
+  const eid='adexp_'+w.id;
+  const exA=w.example_a?`<div style="margin-top:8px;padding:8px 10px;background:var(--surface2);border-radius:6px;font-style:italic"><span style="color:var(--accent);font-weight:600">${escH(w.example_a)}</span><br><span style="color:var(--text3);font-size:.82rem">${escH(w.example_f||'')}</span></div>`:'';
+  const noteTxt=w.notes?`<div style="margin-top:7px;font-size:.8rem;color:var(--text3);line-height:1.5">${escH(w.notes)}</div>`:'';
+  const srcTxt=w.source?`<div style="margin-top:6px;font-size:.75rem;color:var(--text3)">Source : ${escH(w.source)}</div>`:'';
+  const relTxt=w.related&&w.related.length?`<div style="margin-top:6px;font-size:.75rem;color:var(--text3)">Associés : ${w.related.map(escH).join(' · ')}</div>`:'';
+  const gramTxt=w.grammar?`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.72rem;color:var(--text2)">${escH(w.grammar)}</span>`:'';
+  return `<article class="pcard" style="margin-bottom:7px;border-left:3px solid ${borderColor}">
+    <div class="pcard-top">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;min-width:0">
+        <div class="pword" style="font-size:1rem">${escH(w.aln8ba)}</div>
+        <span class="${badgeClass}" style="border-radius:6px;padding:2px 7px;font-size:.68rem;font-weight:700">${badgeText}</span>
+        ${gramTxt}
+        <div class="pfr" style="font-size:.84rem;width:100%;margin-top:2px">${escH(w.fr)} <span style="color:var(--text3);font-size:.78rem;font-style:italic">${escH(w.en||'')}</span></div>
+      </div>
+      <div class="admin-btns">
+        <button class="btn admin-btn-detail" type="button" aria-controls="${eid}" aria-expanded="false" onclick="toggleAdminExp('${eid}',event)">Détails</button>
+        ${level!=='vert'?`<button class="btn admin-btn-confirm" type="button" onclick="confirmWord('${w.id}')">Retenir</button>`:''}
+        <button class="btn btn-secondary admin-btn-edit" type="button" onclick="openEdit('${w.id}')">Modifier</button>
+      </div>
+    </div>
+    <div id="${eid}" hidden style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">${exA}${noteTxt}${srcTxt}${relTxt}</div>
+  </article>`;
+}
+function renderAdminWords(){
+  const list=document.getElementById('allWordsList'); if(!list) return;
+  const q=adminSearchKey(document.getElementById('adminWordQ')?.value);
+  const level=document.getElementById('adminWordLevel')?.value||'all';
+  const cat=document.getElementById('adminWordCat')?.value||'';
+  let words=WORDS.filter(w=>w.aln8ba&&w.aln8ba!=='__version__').sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba,'fr'));
+  if(q) words=words.filter(w=>adminSearchKey([w.aln8ba,w.fr,w.en,w.grammar,w.source,w.notes].join(' ')).includes(q));
+  if(level!=='all') words=words.filter(w=>getWordLevel(w)===level);
+  if(cat) words=words.filter(w=>w.cat===cat);
+  const pages=Math.max(1,Math.ceil(words.length/ADMIN_WORDS_PER_PAGE));
+  adminWordPage=Math.min(Math.max(0,adminWordPage),pages-1);
+  const start=adminWordPage*ADMIN_WORDS_PER_PAGE;
+  const page=words.slice(start,start+ADMIN_WORDS_PER_PAGE);
+  const result=document.getElementById('adminWordResult');
+  if(result) result.innerHTML=`<span><strong>${words.length}</strong> fiche${words.length!==1?'s':''} trouvée${words.length!==1?'s':''}</span><span>${words.length?`${start+1}–${start+page.length}`:'0'} affichées</span>`;
+  list.innerHTML=page.length?page.map(adminWordCard).join(''):'<div class="admin-empty">Aucune fiche ne correspond à ces filtres.</div>';
+  const pager=document.getElementById('adminWordPager');
+  if(pager) pager.innerHTML=pages>1?`<button class="btn btn-secondary" type="button" onclick="adminWordMove(-1)" ${adminWordPage===0?'disabled':''}>← Précédent</button><span>Page ${adminWordPage+1} sur ${pages}</span><button class="btn btn-secondary" type="button" onclick="adminWordMove(1)" ${adminWordPage>=pages-1?'disabled':''}>Suivant →</button>`:'';
+}
+function adminWordMove(delta){
+  adminWordPage+=delta;
+  renderAdminWords();
+  document.querySelector('[data-admin-section="dictionary"]')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function refreshAdminDashboard(pending){
+  const entries=WORDS.filter(w=>w.aln8ba&&w.aln8ba!=='__version__');
+  const atelier=entries.filter(enAttente).length;
+  const green=entries.filter(w=>getWordLevel(w)==='vert').length;
+  const review=entries.filter(w=>getWordLevel(w)!=='vert').length;
+  const queue=SUGGESTIONS_CACHE.length+pending.length+atelier;
+  const summary=document.getElementById('adminSummary');
+  if(summary) summary.innerHTML=`
+    <div class="admin-metric"><span>Base complète</span><b>${entries.length}</b><small>fiches consultables et archivées</small></div>
+    <div class="admin-metric"><span>À traiter</span><b>${queue}</b><small>${SUGGESTIONS_CACHE.length} corrections · ${pending.length} propositions · ${atelier} formes</small></div>
+    <div class="admin-metric"><span>À examiner</span><b>${review}</b><small>statut rouge ou dérivé</small></div>
+    <div class="admin-metric"><span>Retenues</span><b>${green}</b><small>formes vertes du projet</small></div>`;
+  const values={adminQueueCount:queue,adminSuggestionsCount:SUGGESTIONS_CACHE.length,adminPendingCount:pending.length,adminAtelierCount:atelier};
+  Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value;});
+}
+
 async function renderAdmin(){
   if(!adminUnlocked) return;
   renderAtelier();
@@ -4044,7 +4306,7 @@ async function renderAdmin(){
   await loadSuggestions();
   const sl=document.getElementById('suggestionsList');
   if(!SUGGESTIONS_CACHE.length){
-    sl.innerHTML=`<p style="color:var(--text3);font-size:.85rem;padding:12px 0">Aucune suggestion en attente. 🎉</p>`;
+    sl.innerHTML='<div class="admin-empty">Aucune suggestion en attente.</div>';
   } else {
     sl.innerHTML=SUGGESTIONS_CACHE.map(s=>`
       <div class="pcard" style="margin-bottom:8px;border-left:3px solid #2d6b8a">
@@ -4073,7 +4335,7 @@ async function renderAdmin(){
   const pend=await loadPending();
   // Pending
   const pl=document.getElementById('pendingList');
-  if(!pend.length){ pl.innerHTML=`<p style="color:var(--text3);font-size:.85rem;padding:12px 0">Aucune soumission en attente. 🎉</p>`; }
+  if(!pend.length){ pl.innerHTML='<div class="admin-empty">Aucune proposition en attente.</div>'; }
   else {
     pl.innerHTML=pend.map(p=>`
       <div class="pcard">
@@ -4093,61 +4355,9 @@ async function renderAdmin(){
         </div>
       </div>`).join('');
   }
-  // All words for editing
-  const awl=document.getElementById('allWordsList');
-  const sorted=[...WORDS].sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba));
-  const needsVerif = sorted.filter(w=>(w.notes||'').includes('⚠️')||(w.source||'').includes('⚠️'));
-  const verified   = sorted.filter(w=>!(w.notes||'').includes('⚠️')&&!(w.source||'').includes('⚠️'));
-  // getWordLevel est maintenant global — défini plus haut dans le fichier
-  const renderWord = w => {
-    const level = getWordLevel(w);
-    const badgeStyle = {
-      rouge:  'background:#c0392b;color:#fff',
-      orange: 'background:#d4860a;color:#fff',
-      vert:   'background:#3d7a50;color:#fff'
-    }[level];
-    const badgeText = {
-      rouge:  '⚠️ Source internet',
-      orange: '🔶 Dérivé',
-      vert:   '● Retenu par le projet'
-    }[level];
-    const borderColor = {rouge:'#c0392b', orange:'#d4860a', vert:'transparent'}[level];
-    const eid = 'adexp_'+w.id;
-    const exA = w.example_a ? `<div style="margin-top:8px;padding:8px 10px;background:var(--surface2);border-radius:6px;font-style:italic"><span style="color:var(--accent);font-weight:600">${escH(w.example_a)}</span><br><span style="color:var(--text3);font-size:.82rem">${escH(w.example_f||'')}</span></div>` : '';
-    const noteTxt = w.notes ? `<div style="margin-top:7px;font-size:.8rem;color:var(--text3);line-height:1.5">${escH(w.notes)}</div>` : '';
-    const srcTxt  = w.source ? `<div style="margin-top:6px;font-size:.75rem;color:var(--text3)">📚 ${escH(w.source)}</div>` : '';
-    const relTxt  = w.related&&w.related.length ? `<div style="margin-top:6px;font-size:.75rem;color:var(--text3)">🔗 ${w.related.map(escH).join(' · ')}</div>` : '';
-    const gramTxt = w.grammar ? `<span style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.72rem;color:var(--text2)">${escH(w.grammar)}</span>` : '';
-    return `
-    <div class="pcard" style="margin-bottom:6px;border-left:3px solid ${borderColor};cursor:pointer" onclick="toggleAdminExp('${eid}',event)">
-      <div class="pcard-top">
-        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-          <div class="pword" style="font-size:1rem">${escH(w.aln8ba)}</div>
-          <span style="${badgeStyle};border-radius:6px;padding:2px 7px;font-size:.68rem;font-weight:700">${badgeText}</span>
-          ${gramTxt}
-          <div class="pfr" style="font-size:.84rem;width:100%;margin-top:2px">${escH(w.fr)} <span style="color:var(--text3);font-size:.78rem;font-style:italic">${escH(w.en||'')}</span></div>
-        </div>
-        <div class="admin-btns">
-          <button class="btn admin-btn-detail" onclick="event.stopPropagation();toggleAdminExp('${eid}',event)">👁 Détails</button>
-          ${level!=='vert'?`<button class="btn admin-btn-confirm" onclick="event.stopPropagation();confirmWord('${w.id}')">✓ Confirmer</button>`:''}
-          <button class="btn btn-secondary admin-btn-edit" onclick="event.stopPropagation();openEdit('${w.id}')">✏️ Modifier</button>
-        </div>
-      </div>
-      <div id="${eid}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-        ${exA}${noteTxt}${srcTxt}${relTxt}
-      </div>
-    </div>`;
-  };
-  const rougeCount  = sorted.filter(w=>getWordLevel(w)==='rouge').length;
-  const orangeCount = sorted.filter(w=>getWordLevel(w)==='orange').length;
-  const vertCount   = sorted.filter(w=>getWordLevel(w)==='vert').length;
-  awl.innerHTML = `
-    <div style="margin-bottom:14px;padding:10px 14px;background:var(--surface2);border-radius:8px;display:flex;gap:16px;flex-wrap:wrap">
-      <span style="color:#c0392b;font-weight:700">⚠️ ${rougeCount} sources internet</span>
-      <span style="color:#d4860a;font-weight:700">🔶 ${orangeCount} dérivés</span>
-      <span style="color:#3d7a50;font-weight:700">✓ ${vertCount} confirmés</span>
-    </div>
-    ${sorted.map(renderWord).join('')}`;
+  refreshAdminDashboard(pend);
+  renderAdminWords();
+  setAdminSection(adminSection,false);
 }
 async function approvePending(id){
   const pend=PENDING_CACHE;
@@ -4272,7 +4482,13 @@ function toggleAdminExp(eid, e){
   if(e) e.stopPropagation();
   const el = document.getElementById(eid);
   if(!el) return;
-  el.style.display = el.style.display==='none' ? 'block' : 'none';
+  const opening=el.hidden;
+  el.hidden=!opening;
+  const button=e?.currentTarget;
+  if(button){
+    button.setAttribute('aria-expanded',opening?'true':'false');
+    button.textContent=opening?'Masquer':'Détails';
+  }
 }
 function openEdit(id){
   const w=WORDS.find(x=>x.id===id);
@@ -4287,16 +4503,21 @@ function openEdit(id){
   document.getElementById('e-exA').value=w.example_a||'';
   document.getElementById('e-exF').value=w.example_f||'';
   document.getElementById('e-notes').value=w.notes||'';
+  document.getElementById('e-source').value=w.source||'';
   document.getElementById('e-related').value=(w.related||[]).join(', ');
   document.getElementById('e-corrNote').value='';
+  const level=getWordLevel(w);
+  const title=document.getElementById('editWordTitle'); if(title) title.textContent=`${w.aln8ba} · ${catLabel(w.cat)}`;
+  const status=document.getElementById('editWordStatus');
+  if(status) status.innerHTML=`<span class="admin-status-${level}" style="border-radius:6px;padding:2px 7px;font-weight:700">${{rouge:'À examiner',orange:'Dérivé',vert:'Retenu par le projet'}[level]}</span><span>Dernière modification : ${escH(w.date_modified||w.date_added||'non indiquée')}</span>`;
   // Show correction history
   const ch=document.getElementById('corrHistory');
   if(w.corrections&&w.corrections.length){
     ch.innerHTML=`<h4 style="margin-bottom:8px;color:var(--text2);font-size:.85rem">Historique des corrections</h4>
       <div class="corr-list">${w.corrections.map(c=>`<div class="corr-item">
-        <strong>${c.field}</strong>: <span class="cf">${c.from}</span> → <span class="ct">${c.to}</span>
-        ${c.note?`<br><em style="font-size:.75rem">${c.note}</em>`:''}
-        <span style="float:right;font-size:.72rem;color:var(--text3)">${c.date} · ${c.by}</span>
+        <strong>${escH(c.field)}</strong>: <span class="cf">${escH(c.from)}</span> → <span class="ct">${escH(c.to)}</span>
+        ${c.note?`<br><em style="font-size:.75rem">${escH(c.note)}</em>`:''}
+        <span style="float:right;font-size:.72rem;color:var(--text3)">${escH(c.date)} · ${escH(c.by)}</span>
       </div>`).join('')}</div>`;
   } else { ch.innerHTML=''; }
   openModal('editModal');
@@ -4305,29 +4526,38 @@ function saveEdit(){
   const id=document.getElementById('e-id').value;
   const w=WORDS.find(x=>x.id===id);
   if(!w) return;
+  const aln8ba=document.getElementById('e-aln8ba').value.trim();
+  const french=document.getElementById('e-fr').value.trim();
+  if(!aln8ba||!french){toast('Le mot aln8ba et la traduction française sont obligatoires.');return;}
   const corrNote=document.getElementById('e-corrNote').value.trim();
   const newCorrs=[];
-  ['aln8ba','fr','en'].forEach(f=>{
-    const newV=document.getElementById('e-'+f).value.trim();
-    if(newV && newV!==(w[f]||'')){
-      newCorrs.push({field:f,from:w[f]||'',to:newV,note:corrNote,date:new Date().toISOString().slice(0,10),by:'Admin'});
+  const tracked={aln8ba:'aln8ba',fr:'fr',en:'en',phonetic:'phonetic',grammar:'gram',example_a:'exA',example_f:'exF',source:'source',notes:'notes'};
+  Object.entries(tracked).forEach(([field,inputId])=>{
+    const newV=document.getElementById('e-'+inputId).value.trim();
+    if(newV!==(w[field]||'')){
+      newCorrs.push({field,from:w[field]||'',to:newV,note:corrNote,date:new Date().toISOString().slice(0,10),by:'Admin'});
     }
   });
+  const nextCat=document.getElementById('e-cat').value;
+  if(nextCat!==(w.cat||'')) newCorrs.push({field:'cat',from:w.cat||'',to:nextCat,note:corrNote,date:new Date().toISOString().slice(0,10),by:'Admin'});
+  const nextRelated=document.getElementById('e-related').value.split(',').map(s=>s.trim()).filter(Boolean);
+  if(nextRelated.join(' · ')!==(w.related||[]).join(' · ')) newCorrs.push({field:'related',from:(w.related||[]).join(', '),to:nextRelated.join(', '),note:corrNote,date:new Date().toISOString().slice(0,10),by:'Admin'});
   Object.assign(w,{
-    aln8ba:document.getElementById('e-aln8ba').value.trim(),
+    aln8ba,
     phonetic:document.getElementById('e-phonetic').value.trim(),
-    fr:document.getElementById('e-fr').value.trim(),
+    fr:french,
     en:document.getElementById('e-en').value.trim(),
-    cat:document.getElementById('e-cat').value,
+    cat:nextCat,
     grammar:document.getElementById('e-gram').value.trim(),
     example_a:document.getElementById('e-exA').value.trim(),
     example_f:document.getElementById('e-exF').value.trim(),
+    source:document.getElementById('e-source').value.trim(),
     notes:document.getElementById('e-notes').value.trim(),
-    related:document.getElementById('e-related').value.split(',').map(s=>s.trim()).filter(Boolean),
+    related:nextRelated,
     date_modified:new Date().toISOString().slice(0,10),
     corrections:[...(w.corrections||[]),...newCorrs],
   });
-  saveWords(WORDS); closeModal('editModal'); renderWords(); updateCounts();
+  saveWords([w]); closeModal('editModal'); renderWords(); updateCounts();
   if(S.view==='admin') renderAdmin();
   toast('✅ Mot mis à jour'+( newCorrs.length?' avec correction enregistrée':''));
 }

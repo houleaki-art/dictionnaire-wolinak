@@ -253,6 +253,17 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Dans ces cas, l'explication est placée dans la zone visible et le bouton devient `Suivant après lecture` afin que l'élève décide quand il a terminé.
 - Une erreur continue toujours d'attendre une action manuelle avant de passer à la question suivante.
 
+## Centre administrateur restructuré — 29 août 2026
+
+- Remplacement de la longue page unique par quatre espaces distincts : file de travail, dictionnaire, qualité et outils.
+- Ajout d'un tableau de bord qui résume la base complète, les éléments à traiter, les fiches à examiner et les formes retenues par le projet.
+- Les suggestions, les nouveaux mots et les formes sans sens établi sont maintenant repliés au départ; leurs compteurs restent visibles sans charger la page de centaines de fiches.
+- Ajout d'une recherche propre à l'administration, de filtres par statut et catégorie et d'une pagination limitée à 40 fiches.
+- Réorganisation de l'éditeur en quatre groupes lisibles, avec la source bibliographique, la note de correction, le statut et la date de dernière modification visibles.
+- Une correction n'envoie plus toute la base à Supabase : seule la fiche modifiée est sauvegardée.
+- Ajout d'actions persistantes pour revenir au dictionnaire ou fermer la session, ainsi que d'une disposition mobile sans débordement horizontal.
+- Validation de 86 tests automatisés et essais réels dans Chrome à 1280 × 720 et 390 × 844, sans erreur JavaScript.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

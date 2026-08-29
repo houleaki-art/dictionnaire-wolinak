@@ -63,3 +63,33 @@ test('la session administrateur survit au rechargement sans conserver le mot de 
   assert.match(loginSource, /activateAdminSession\(d\)/);
   assert.ok(initSource.indexOf('restoreAdminSession()') < initSource.indexOf('loadWords()'));
 });
+
+test('le tableau administrateur separe le travail, la qualite et les outils', () => {
+  for (const section of ['queue', 'dictionary', 'quality', 'tools']) {
+    assert.match(html, new RegExp(`data-admin-section="${section}"`));
+    assert.match(html, new RegExp(`data-admin-tab="${section}"`));
+  }
+  assert.match(html, /id="adminSummary"/);
+  assert.match(html, /function setAdminSection/);
+  assert.match(html, /function refreshAdminDashboard/);
+  assert.match(html, /function logoutAdmin/);
+});
+
+test('la liste administrateur est filtrable et paginee sans rendre toute la base', () => {
+  const source = sourceBetween('function renderAdminWords()', 'function refreshAdminDashboard');
+  assert.match(html, /id="adminWordQ"/);
+  assert.match(html, /id="adminWordLevel"/);
+  assert.match(html, /id="adminWordCat"/);
+  assert.match(html, /const ADMIN_WORDS_PER_PAGE=40/);
+  assert.match(source, /slice\(start,start\+ADMIN_WORDS_PER_PAGE\)/);
+  assert.match(source, /adminWordMove/);
+});
+
+test('l editeur admin expose la source et documente tous les changements', () => {
+  const editor = sourceBetween('function openEdit(id)', 'function deleteWord(id)');
+  assert.match(html, /id="e-source"/);
+  assert.match(html, /id="e-corrNote"/);
+  assert.match(editor, /source:document\.getElementById\('e-source'\)/);
+  assert.match(editor, /tracked=\{aln8ba:/);
+  assert.match(editor, /saveWords\(\[w\]\)/);
+});
