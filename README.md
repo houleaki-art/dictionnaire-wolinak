@@ -25,5 +25,5 @@ Le site est hébergé sur gestionsha.gt.tc.
 - L'entrée `id = "__version__"` dans la base ne doit jamais être
   modifiée et doit être exclue de tout traitement par lot.
 
-© 2026 Guillaum Houle — Première Nation Abénakise de Wôlinak.
+© 2026 Alakws Pamidoo · M8lsem — Abénakis de Wôlinak.
 Tous droits réservés.
