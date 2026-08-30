@@ -93,3 +93,24 @@ test('l editeur admin expose la source et documente tous les changements', () =>
   assert.match(editor, /tracked=\{aln8ba:/);
   assert.match(editor, /saveWords\(\[w\]\)/);
 });
+
+test('les ecritures Supabase signalent un refus au lieu d afficher un faux succes', () => {
+  const wordsPush = sourceBetween('async function pushToSB(words)', 'async function deleteFromSB');
+  const pendingPush = sourceBetween('async function pushPending(entry)', 'async function deletePending');
+  assert.match(wordsPush, /if\(!resp\.ok\)/);
+  assert.match(wordsPush, /return false/);
+  assert.match(wordsPush, /return true/);
+  assert.match(pendingPush, /if\(!resp\.ok\)/);
+  assert.match(pendingPush, /return false/);
+  assert.match(pendingPush, /PENDING_CACHE\.push\(entry\)/);
+});
+
+test('un administrateur ajoute directement une fiche sans proposition intermediaire', () => {
+  const submit = sourceBetween('async function submitWord()', 'function finishSubmit');
+  assert.match(submit, /S\.view==='admin'&&SB_AUTH/);
+  assert.match(submit, /await pushToSB\(\[word\]\)/);
+  assert.match(submit, /delete word\.status/);
+  assert.match(submit, /WORDS\.push\(word\)/);
+  assert.match(submit, /La fiche n\\'a pas été publiée/);
+  assert.match(submit, /const submitted=await pushPending\(entry\)/);
+});

@@ -2677,8 +2677,13 @@ async function pushToSB(words){
       headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
       body:JSON.stringify(forSB)
     });
-    if(!resp.ok){ const err=await resp.text(); console.warn('Supabase push error:',resp.status,err); }
-  }catch(e){ console.warn('Supabase push failed:',e.message); }
+    if(!resp.ok){
+      const err=await resp.text();
+      console.warn('Supabase push error:',resp.status,err);
+      return false;
+    }
+    return true;
+  }catch(e){ console.warn('Supabase push failed:',e.message); return false; }
 }
 async function deleteFromSB(id){
   try{
@@ -2749,13 +2754,19 @@ async function savePending(p){
 }
 async function pushPending(entry){
   try{
-    await fetch(SB_URL+'/rest/v1/pending_words',{
+    const resp=await fetch(SB_URL+'/rest/v1/pending_words',{
       method:'POST',
       headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
       body:JSON.stringify(entry)
     });
+    if(!resp.ok){
+      const err=await resp.text();
+      console.warn('Pending push error:',resp.status,err);
+      return false;
+    }
     PENDING_CACHE.push(entry);
-  }catch(e){ console.warn('Pending push failed:',e.message); }
+    return true;
+  }catch(e){ console.warn('Pending push failed:',e.message); return false; }
 }
 async function deletePending(id){
   try{
@@ -4748,7 +4759,19 @@ async function submitWord(){
     const msgLines = validation.issues.map(i => '• ' + i.replace(/<[^>]+>/g,'')).join('\n\n');
     if (!confirm('⚠️ PROBLÈME LINGUISTIQUE DÉTECTÉ :\n\n' + msgLines + '\n\n─────────────────────\nCes erreurs peuvent créer de fausses réponses dans le quiz.\n\nSoumettre quand même ?')) return;
   }
-  await pushPending(entry);
+  if(S.view==='admin'&&SB_AUTH){
+    const word={...entry};
+    delete word.status; delete word.submitted_date; delete word.contributor;
+    const saved=await pushToSB([word]);
+    if(!saved){ toast('❌ Supabase a refusé l\'ajout. La fiche n\'a pas été publiée.'); return; }
+    WORDS.push(word);
+    closeModal('addModal');
+    updateCounts(); renderAdmin(); updateAdminBadge();
+    toast(`✅ « ${aln} » ajouté directement au dictionnaire.`);
+    return;
+  }
+  const submitted=await pushPending(entry);
+  if(!submitted){ toast('❌ La proposition n\'a pas pu être transmise. Réessaie plus tard.'); return; }
   finishSubmit(aln);
 }
 function finishSubmit(aln){

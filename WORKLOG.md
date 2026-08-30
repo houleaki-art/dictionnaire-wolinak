@@ -274,6 +274,15 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Le bouton flottant de proposition est masqué uniquement sur le tableau du parcours pour ne plus recouvrir les actions sur mobile.
 - Validation de 87 tests automatisés, des changements d'étape et de l'ouverture d'un module. Essais à 1280 × 720 et 390 × 844 sans débordement ni erreur JavaScript.
 
+## Collecte de poissons et écriture Supabase fiable — 30 août 2026
+
+- Transcription de huit noms de poissons relevés sur une affiche photographiée au pow-wow de Wôlinak le 29 août 2026; la photo et ses limites sont consignées dans `research/2026-08-29-wolinak-powwow-fish.md`.
+- Séparation des quatre correspondances déjà présentes (`Kabasa`, `M8lamagws`, `Nah8mo`, `Mskwamagw`) et des quatre graphies à ajouter (`Watagwa`, `Magahaghi`, `Skotam`, `Kwenoza`) afin d'éviter les doublons.
+- Conservation des formes historiques `Scotam` et `Kwnoza`; les graphies de terrain seront reliées comme variantes plutôt que substituées silencieusement.
+- Correction du formulaire Supabase : un refus HTTP n'est plus présenté comme une soumission réussie.
+- Quand la session administrateur est active, le formulaire `+` ajoute maintenant directement une fiche au dictionnaire au lieu de passer par une proposition intermédiaire.
+- Validation de 89 tests automatisés et de la syntaxe JavaScript avant publication.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix
