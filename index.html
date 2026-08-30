@@ -2714,7 +2714,11 @@ async function applyFishFieldMigration(){
   if(!SB_AUTH||localStorage.getItem(FISH_FIELD_MIGRATION_KEY)==='done') return false;
   const fieldSource='Collecte de terrain actuelle du projet — affiche « Identification des poissons » photographiée au pow-wow de Wôlinak, 29 août 2026. Auteur de l’affiche non identifié; la mention du lieu ne signifie aucune approbation du dictionnaire. Revu dans le projet.';
   const fieldNote='Recoupement actuel : graphie et sens également relevés sur l’affiche « Identification des poissons » photographiée au pow-wow de Wôlinak le 29 août 2026. L’affiche ne précise ni prononciation ni pluriel.';
-  const duplicateIds=['mtfpqp7xh5x4','mtfpr4vbw6ei'];
+  const duplicateIds=[];
+  for(const form of ['Watagwa','Magahaghi']){
+    const matches=WORDS.filter(w=>(w.aln8ba||'').normalize('NFC').toLocaleLowerCase('fr')===form.toLocaleLowerCase('fr'));
+    duplicateIds.push(...matches.slice(1).map(w=>w.id));
+  }
   const updates=[];
   const appendUnique=(current,addition)=>current&&current.includes(addition)?current:[current,addition].filter(Boolean).join(' · ');
   const addRelated=(current,form)=>[...new Set([...(current||[]),form])];

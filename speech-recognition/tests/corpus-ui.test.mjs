@@ -121,8 +121,8 @@ test('un administrateur ajoute directement une fiche sans proposition intermedia
 
 test('la collecte de poissons est migree une seule fois et retire seulement ses doublons connus', () => {
   const migration = sourceBetween('const FISH_FIELD_MIGRATION_KEY', '// ── SUGGESTIONS DE MODIFICATION');
-  assert.match(migration, /mtfpqp7xh5x4/);
-  assert.match(migration, /mtfpr4vbw6ei/);
+  assert.match(migration, /for\(const form of \['Watagwa','Magahaghi'\]\)/);
+  assert.match(migration, /matches\.slice\(1\)/);
   assert.match(migration, /nio_043/);
   assert.match(migration, /nio_045/);
   assert.match(migration, /nio_044/);
