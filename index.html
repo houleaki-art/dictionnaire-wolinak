@@ -2687,10 +2687,26 @@ async function pushToSB(words){
 }
 async function deleteFromSB(id){
   try{
-    await fetch(SB_URL+'/rest/v1/words?id=eq.'+encodeURIComponent(id),{
-      method:'DELETE', headers:SB_HEADERS
+    const resp=await fetch(SB_URL+'/rest/v1/words?id=eq.'+encodeURIComponent(id),{
+      method:'DELETE', headers:{...SB_HEADERS,'Prefer':'return=representation'}
     });
-  }catch(e){ console.warn('Supabase delete failed:',e.message); }
+    if(!resp.ok) throw new Error('HTTP '+resp.status+' '+await resp.text());
+    const deleted=await resp.json();
+    return Array.isArray(deleted)&&deleted.some(word=>word.id===id);
+  }catch(e){ console.warn('Supabase delete failed:',e.message); return false; }
+}
+function removeExactDuplicateRows(words){
+  const seen=new Set();
+  return words.filter(word=>{
+    const key=[
+      word.aln8ba,word.fr,word.en,word.pron,word.cat,word.grammar,
+      word.source,word.notes,word.example,word.example_fr,word.status,
+      JSON.stringify(word.related||[])
+    ].map(value=>String(value??'').normalize('NFC').trim()).join('\u0001');
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 async function loadWords(){
   const sbWords=await fetchWordsFromSB();
@@ -2703,21 +2719,24 @@ async function loadWords(){
 
   // 2026-08-18 — La branche d'auto-remplacement (DELETE + push du SEED) a été RETIRÉE :
   // la base Supabase fait toujours foi, quelle que soit la version du code.
-  return applyCurrentUsageOverrides(sbWords.filter(w=>w.id!=='__version__'));
+  const current=applyCurrentUsageOverrides(sbWords.filter(w=>w.id!=='__version__'));
+  return removeExactDuplicateRows(current);
 }
 function saveWords(words){
   pushToSB(words);
 }
 
-const FISH_FIELD_MIGRATION_KEY='aln8ba_fish_field_2026_08_29_v1';
+const FISH_FIELD_MIGRATION_KEY='aln8ba_fish_field_2026_08_29_v2';
 async function applyFishFieldMigration(){
   if(!SB_AUTH||localStorage.getItem(FISH_FIELD_MIGRATION_KEY)==='done') return false;
   const fieldSource='Collecte de terrain actuelle du projet — affiche « Identification des poissons » photographiée au pow-wow de Wôlinak, 29 août 2026. Auteur de l’affiche non identifié; la mention du lieu ne signifie aucune approbation du dictionnaire. Revu dans le projet.';
   const fieldNote='Recoupement actuel : graphie et sens également relevés sur l’affiche « Identification des poissons » photographiée au pow-wow de Wôlinak le 29 août 2026. L’affiche ne précise ni prononciation ni pluriel.';
   const duplicateIds=[];
+  const canonicalIds={Watagwa:'mtfpqp7xh5x4',Magahaghi:'mtfpidj7jnsn'};
   for(const form of ['Watagwa','Magahaghi']){
     const matches=WORDS.filter(w=>(w.aln8ba||'').normalize('NFC').toLocaleLowerCase('fr')===form.toLocaleLowerCase('fr'));
-    duplicateIds.push(...matches.slice(1).map(w=>w.id));
+    const canonical=matches.find(w=>w.id===canonicalIds[form])||matches[0];
+    duplicateIds.push(...matches.filter(w=>w.id!==canonical?.id).map(w=>w.id));
   }
   const updates=[];
   const appendUnique=(current,addition)=>current&&current.includes(addition)?current:[current,addition].filter(Boolean).join(' · ');
@@ -2737,8 +2756,7 @@ async function applyFishFieldMigration(){
   if(pike) updates.push({...pike,related:addRelated(pike.related,'Kwenoza'),date_modified:'2026-08-30'});
   if(!(await pushToSB(updates))){ toast('❌ Migration des poissons interrompue : les fiches existantes n’ont pas été modifiées.'); return false; }
   for(const id of duplicateIds){
-    const resp=await fetch(SB_URL+'/rest/v1/words?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:SB_HEADERS});
-    if(!resp.ok){ toast('❌ Migration des poissons interrompue pendant le retrait des doublons.'); return false; }
+    if(!(await deleteFromSB(id))){ toast('❌ Migration des poissons interrompue pendant le retrait des doublons.'); return false; }
   }
   const updateMap=new Map(updates.map(w=>[w.id,w]));
   WORDS=WORDS.filter(w=>!duplicateIds.includes(w.id)).map(w=>updateMap.get(w.id)||w);
@@ -4190,6 +4208,7 @@ function activateAdminSession(data,persist=true){
   updateCounts();
   if(['all','favorites'].includes(S.view)) renderWords();
   if(S.view==='admin') renderAdmin();
+  if(WORDS.length) setTimeout(()=>applyFishFieldMigration(),0);
   return true;
 }
 async function restoreAdminSession(){

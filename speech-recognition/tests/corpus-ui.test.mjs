@@ -122,7 +122,9 @@ test('un administrateur ajoute directement une fiche sans proposition intermedia
 test('la collecte de poissons est migree une seule fois et retire seulement ses doublons connus', () => {
   const migration = sourceBetween('const FISH_FIELD_MIGRATION_KEY', '// ── SUGGESTIONS DE MODIFICATION');
   assert.match(migration, /for\(const form of \['Watagwa','Magahaghi'\]\)/);
-  assert.match(migration, /matches\.slice\(1\)/);
+  assert.match(migration, /canonicalIds=\{Watagwa:'mtfpqp7xh5x4',Magahaghi:'mtfpidj7jnsn'\}/);
+  assert.match(migration, /matches\.filter\(w=>w\.id!==canonical\?\.id\)/);
+  assert.match(migration, /await deleteFromSB\(id\)/);
   assert.match(migration, /nio_043/);
   assert.match(migration, /nio_045/);
   assert.match(migration, /nio_044/);
@@ -133,4 +135,13 @@ test('la collecte de poissons est migree une seule fois et retire seulement ses 
   assert.match(migration, /addRelated\(pike\.related,'Kwenoza'\)/);
   assert.match(migration, /localStorage\.setItem\(FISH_FIELD_MIGRATION_KEY,'done'\)/);
   assert.match(html, /if\(adminUnlocked\) await applyFishFieldMigration\(\)/);
+  assert.match(html, /if\(WORDS\.length\) setTimeout\(\(\)=>applyFishFieldMigration\(\),0\)/);
+});
+
+test('les doublons strictement identiques ne sont jamais rendus au public', () => {
+  const dedupe = sourceBetween('function removeExactDuplicateRows', 'async function loadWords');
+  assert.match(dedupe, /const seen=new Set\(\)/);
+  assert.match(dedupe, /word\.aln8ba,word\.fr,word\.en/);
+  assert.match(dedupe, /JSON\.stringify\(word\.related\|\|\[\]\)/);
+  assert.match(html, /return removeExactDuplicateRows\(current\)/);
 });
