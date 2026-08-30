@@ -800,6 +800,58 @@ body.music-dock-open .toast{bottom:116px}
 .learning-audit strong{color:var(--green)}
 .learning-audit.failed{border-color:var(--red);background:color-mix(in srgb,var(--red) 7%,var(--surface))}
 .learning-audit.failed strong{color:var(--red)}
+body:has(.apr-path-dashboard) .fab{display:none}
+.apr-path-dashboard{--level-color:var(--green);margin-bottom:16px;padding:clamp(16px,3vw,24px);border:1px solid var(--border);border-top:5px solid var(--level-color);border-radius:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--level-color) 7%,var(--surface)),var(--surface) 48%);box-shadow:var(--shadow)}
+.apr-path-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:18px;margin-bottom:16px}
+.apr-path-kicker{margin-bottom:5px;color:var(--level-color);font-size:.66rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+.apr-path-head h3{margin:0 0 5px;font-size:clamp(1.4rem,3vw,2rem);line-height:1.08}
+.apr-path-head p{max-width:760px;margin:0;color:var(--text2);font-size:.82rem;line-height:1.5}
+.apr-path-score{min-width:126px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--level-color) 35%,var(--border));border-radius:12px;background:var(--surface);text-align:center}
+.apr-path-score strong{display:block;color:var(--level-color);font-size:1.55rem;line-height:1}
+.apr-path-score span{display:block;margin-top:5px;color:var(--text2);font-size:.68rem;line-height:1.3}
+.apr-stage-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-bottom:14px}
+.apr-stage-tab{min-width:0;padding:10px 9px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text2);font-family:inherit;text-align:left;cursor:pointer;transition:var(--tr)}
+.apr-stage-tab:hover{border-color:var(--stage-color);transform:translateY(-1px)}
+.apr-stage-tab.on{border-color:var(--stage-color);background:color-mix(in srgb,var(--stage-color) 10%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--stage-color) 30%,transparent)}
+.apr-stage-tab span{display:block;margin-bottom:4px;color:var(--stage-color);font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.apr-stage-tab b{display:block;overflow:hidden;color:var(--text);font-size:.78rem;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+.apr-stage-tab small{display:block;margin-top:3px;color:var(--text3);font-size:.64rem}
+.apr-path-progress{height:7px;margin-bottom:14px;overflow:hidden;border-radius:999px;background:var(--border)}
+.apr-path-progress>span{display:block;height:100%;border-radius:inherit;background:var(--level-color);transition:width .3s ease}
+.apr-next{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:16px;border:1px solid color-mix(in srgb,var(--level-color) 42%,var(--border));border-radius:13px;background:var(--surface)}
+.apr-next-label{display:block;margin-bottom:4px;color:var(--level-color);font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.apr-next h4{margin:0 0 3px;font-size:1.08rem;color:var(--text)}
+.apr-next p{margin:0;color:var(--text2);font-size:.76rem;line-height:1.45}
+.apr-next-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.apr-next-actions .aprbtn{white-space:nowrap}
+.apr-next-actions .secondary{border:1px solid var(--border);background:var(--surface2);color:var(--text)}
+.apr-path-more{margin-top:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
+.apr-path-more summary{padding:11px 13px;cursor:pointer;color:var(--text2);font-size:.76rem;font-weight:700;list-style-position:inside}
+.apr-path-more summary:hover,.apr-path-more summary:focus-visible{color:var(--level-color)}
+.apr-path-more-body{padding:0 13px 13px;border-top:1px solid var(--border)}
+.apr-path-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:7px;margin:12px 0}
+.apr-path-step{padding:9px 10px;border-radius:9px;background:var(--surface2)}
+.apr-path-step b{display:block;margin-bottom:2px;color:var(--text);font-size:.74rem}
+.apr-path-step span{display:block;color:var(--text2);font-size:.68rem;line-height:1.4}
+.apr-path-note{margin:10px 0 0;color:var(--text2);font-size:.7rem;line-height:1.5}
+.apr-modules-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:18px 2px 10px}
+.apr-modules-head h3{margin:0;font-size:1.18rem}
+.apr-modules-head p{margin:3px 0 0;color:var(--text2);font-size:.74rem}
+.apr-modules-count{flex:0 0 auto;padding:5px 9px;border-radius:999px;background:var(--surface2);color:var(--text2);font-size:.68rem;font-weight:700}
+.apr-module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:10px}
+.apr-module-card{--level-color:var(--green);display:flex;min-width:0;min-height:174px;flex-direction:column;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font-family:inherit;text-align:left;cursor:pointer;transition:var(--tr)}
+.apr-module-card:hover{border-color:var(--level-color);transform:translateY(-2px);box-shadow:var(--shadow)}
+.apr-module-card.is-current{border-color:var(--level-color);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--level-color) 28%,transparent)}
+.apr-module-card.is-mastered{background:color-mix(in srgb,var(--level-color) 5%,var(--surface))}
+.apr-module-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.apr-module-number{color:var(--level-color);font-size:.68rem;font-weight:800;letter-spacing:.1em}
+.apr-module-state{padding:4px 7px;border-radius:999px;background:var(--surface2);color:var(--text3);font-size:.62rem;font-weight:700}
+.apr-module-card.is-current .apr-module-state{background:color-mix(in srgb,var(--level-color) 13%,var(--surface));color:var(--level-color)}
+.apr-module-card.is-mastered .apr-module-state{background:var(--level-color);color:#fff}
+.apr-module-card h4{margin:0 0 6px;color:var(--text);font-size:.98rem;line-height:1.25}
+.apr-module-card p{display:-webkit-box;overflow:hidden;margin:0;color:var(--text2);font-size:.72rem;line-height:1.45;-webkit-box-orient:vertical;-webkit-line-clamp:3}
+.apr-module-card footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:12px;color:var(--text3);font-size:.66rem}
+.apr-module-card footer strong{color:var(--level-color);font-size:.7rem}
 .aprtool{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
 .aprtool input,.aprtool select{font-family:inherit;font-size:.95rem;padding:11px 14px;
   border:1.5px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);flex:1;min-width:150px}
@@ -1002,6 +1054,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .aprnav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible}
   .aprnav button{width:100%;min-height:44px;padding:8px 6px;border-radius:10px;font-size:.78rem;white-space:normal}
   .aprcard{padding:16px}
+  .apr-stage-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .apr-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .aprtab{table-layout:fixed}
   .aprtab th,.aprtab td{overflow-wrap:anywhere;word-break:normal;padding-right:6px}
   .aprtab td.k{width:44%;white-space:normal}
@@ -1045,6 +1099,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   main{padding:11px}
   .music-hero{padding:20px 16px}
   .music-card,.aprcard{padding:14px}
+  .apr-path-dashboard{padding:14px;border-radius:13px}
+  .apr-path-head{grid-template-columns:1fr;gap:10px}
+  .apr-path-score{display:flex;min-width:0;align-items:center;gap:8px;padding:9px 11px;text-align:left}
+  .apr-path-score strong{font-size:1.25rem}
+  .apr-path-score span{margin:0}
+  .apr-stage-tabs{grid-template-columns:1fr 1fr}
+  .apr-stage-tab:last-child:nth-child(odd){grid-column:1/-1}
+  .apr-next{grid-template-columns:1fr;padding:13px}
+  .apr-next-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .apr-next-actions .aprbtn{width:100%;padding-left:8px;padding-right:8px;white-space:normal}
+  .apr-path-steps{grid-template-columns:1fr}
+  .apr-modules-head{align-items:flex-start}
+  .apr-module-grid{grid-template-columns:1fr}
+  .apr-module-card{min-height:154px}
   .apr-method{grid-template-columns:1fr 1fr}
   .apr-origin-body{grid-template-columns:1fr}
   .apr-module-guide{grid-template-columns:1fr}
@@ -2281,7 +2349,7 @@ const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 // À changer uniquement lors d'une mise à jour importante de l'application.
 // Cette version est indépendante des données linguistiques et de __version__.
-const APP_RESET_VERSION = '2026-08-29-admin-workbench-017';
+const APP_RESET_VERSION = '2026-08-30-learning-dashboard-018';
 const APP_RESET_KEY = 'aln8ba_app_reset';
 const PERSISTENT_PROGRESS_KEYS = ['aln8ba_prog','aln8ba_rev'];
 
@@ -7633,11 +7701,36 @@ function aprLearningRuntimeAudit(){
   return {ok:issues.length===0,total:details.length,executable:details.filter(item=>APR_EXERCISE_ROUTES.has(item.exercise)).length,issues,details};
 }
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
-function aprPathHtml(levelId){
+function aprLevelProgress(level,prog){
+  const rows=level.mods.map((module,index)=>{
+    const state=prog[aprProgressKey(level,index)];
+    const done=Boolean(state&&state.retenir>=75&&(!aprModuleNeedsUse(module)||state.utiliser>=75));
+    return {module,index,state,done,perfect:aprModulePerfect(module,state),started:Boolean(state)};
+  });
+  const active=rows.find(row=>row.started&&!row.done)||rows.find(row=>!row.done)||rows[0];
+  return {
+    rows,
+    mastered:rows.filter(row=>row.done).length,
+    started:rows.filter(row=>row.started).length,
+    perfect:rows.filter(row=>row.perfect).length,
+    nextIndex:active?active.index:0,
+    percent:rows.length?Math.round(rows.filter(row=>row.done).length/rows.length*100):0
+  };
+}
+function aprPathHtml(levelId,runtime){
   const phases=APR_LEVEL_PATHS[levelId]||[];
-  return `<div class="aprnote" style="border-left-color:var(--gold);margin-bottom:14px"><b>Chemin d'apprentissage · dans cet ordre</b>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">${phases.map((phase,index)=>
-      `<div style="padding:9px;border:1px solid var(--border);border-radius:9px;background:var(--surface2)"><strong>${index+1}. ${escH(phase[0])}</strong><br><span style="font-size:.78rem;color:var(--text2)">${escH(phase[1])}</span></div>`).join('')}</div></div>`;
+  return `<details class="apr-path-more">
+    <summary>Comprendre cette étape, sa méthode et ses limites</summary>
+    <div class="apr-path-more-body">
+      <div class="apr-path-steps">${phases.map((phase,index)=>
+        `<div class="apr-path-step"><b>${index+1}. ${escH(phase[0])}</b><span>${escH(phase[1])}</span></div>`).join('')}</div>
+      <p class="apr-path-note"><strong>Méthode du projet :</strong> ancrer la forme entière, observer un contraste attesté, retrouver sans regarder, puis produire à l'écrit. Les sources établissent les données linguistiques; les explications, les jeux, les scores et la progression sont le travail pédagogique du projet.</p>
+      <p class="apr-path-note">Les cinq noms d'étapes servent uniquement à organiser ce parcours personnel. Ils ne correspondent à aucun ordre scolaire, diplôme, crédit ou programme ministériel.</p>
+      <div class="learning-audit ${runtime.ok?'':'failed'}" role="status"><strong>${runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> · ${runtime.ok
+        ? `${runtime.executable} modules sur ${runtime.total} disposent d'une leçon, d'un principe, d'un exercice et d'une banque vérifiée lorsqu'elle est nécessaire.`
+        : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} technique${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}.`}</div>
+    </div>
+  </details>`;
 }
 const APR_TASK_GUIDES={
   sons:['Écoute un repère, associe-le à sa lettre, puis retrouve-le dans une forme complète.','Tu distingues CH, J, 8, W et I sans remplacer leur graphie.'],
@@ -7746,45 +7839,46 @@ function aprParcours(){
   aprActivateNav('parcours');
   const prog=progAll();
   const runtime=APR_LAST_AUDIT||aprLearningRuntimeAudit();
+  const level=NIVEAUX.find(candidate=>candidate.id===aprNiv)||NIVEAUX[0];
+  aprNiv=level.id;
+  const allStats=Object.fromEntries(NIVEAUX.map(candidate=>[candidate.id,aprLevelProgress(candidate,prog)]));
+  const stats=allStats[level.id], next=stats.rows[stats.nextIndex]||stats.rows[0];
+  const nextLabel=stats.mastered===level.mods.length?'Revoir cette étape':next.started?'Reprendre ce module':'Commencer ce module';
   document.getElementById('aprBody').innerHTML=`
-   <div class="aprcard"><h3>Parcours</h3>
-     <p class="aprlead">Cinq étapes qui s'appuient l'une sur l'autre. Ces noms appartiennent au projet et
-       ne correspondent à aucun ordre scolaire, diplôme, crédit ou programme ministériel. La méthode a été conçue
-       pour ce projet : <b>ancrer</b> la forme entière, <b>observer</b> un contraste attesté,
-       <b>retrouver</b> sans regarder, puis <b>produire</b> à l'oral ou à l'écrit.
-       Les sources établissent les données linguistiques; la progression, les explications,
-       les jeux, les scores et la révision sont notre propre travail pédagogique.</p>
-     <div class="learning-audit ${runtime.ok?'':'failed'}" role="status">
-       <strong>${runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> ·
-       ${runtime.ok
-         ? `${runtime.executable} modules sur ${runtime.total} possèdent une leçon exécutable, un principe complet, une route d'exercice et une banque vérifiée lorsqu'elle dépend du vocabulaire.`
-         : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}; les modules concernés sont bloqués dans le rapport technique au lieu d'être déclarés prêts.`}
-     </div>
-     <div class="aprnav" style="margin:0">${NIVEAUX.map(n=>
-       `<button data-n="${n.id}" class="${n.id===aprNiv?'on':''}" onclick="aprNiv='${n.id}';aprParcours()">${n.t}</button>`).join('')}</div>
-   </div>
-   ${NIVEAUX.filter(n=>n.id===aprNiv).map(n=>{
-     const maitrises=n.mods.filter((m,i)=>{ const s=prog[aprProgressKey(n,i)];
-       return s && (s.retenir>=75) && (!aprModuleNeedsUse(m) || s.utiliser>=75); }).length;
-     const commences=n.mods.filter((m,i)=>prog[aprProgressKey(n,i)]).length;
-     return `
-     <div class="aprnote" style="border-left-color:${n.c}"><b>${n.t}</b>${n.d}<br>
-       <span style="font-size:.78rem;color:var(--text2)">✓ ${maitrises} module${maitrises>1?'s':''} maîtrisé${maitrises>1?'s':''}
-        · ${commences} commencé${commences>1?'s':''} sur ${n.mods.length}
-        · jusqu'à ${APR_EXERCISE_TARGETS[n.id]} questions par séance selon la banque attestée</span>
-       <div style="height:4px;background:var(--border);border-radius:2px;margin-top:8px">
-         <div style="height:100%;width:${Math.round(maitrises/n.mods.length*100)}%;background:${n.c};border-radius:2px;transition:.3s"></div>
-       </div>
-      <div style="margin-top:12px"><button class="aprbtn" onclick="aprJeux('${n.id}')">🎯 Jeux du niveau ${n.t}</button>
-       <span style="font-size:.75rem;color:var(--text3);margin-left:8px">Une sélection adaptée aux notions de ce niveau.</span></div></div>
-      ${aprPathHtml(n.id)}
-      <div class="lzgrid">${n.mods.map((m,i)=>{ const s=prog[aprProgressKey(n,i)];
-        const done=s&&s.retenir>=75&&(!aprModuleNeedsUse(m)||s.utiliser>=75);
-        const perfect=aprModulePerfect(m,s);
-        const badge=perfect?'↻':done?'✓':(s?'◐':String(i+1).padStart(2,'0'));
-        return `<button class="lz" onclick="aprOpenModule(${i})" aria-label="${escH(m.t)}${perfect?' — terminé à 100 %, ouvrir la révision':''}">
-        <div class="n" style="color:${n.c}">${badge}</div>
-        <b>${m.t}</b><span>${m.d}${perfect?`<br><strong style="color:${n.c}">↻ 100 % — réviser ce module</strong>`:''}</span></button>`;}).join('')}</div>`;}).join('')}`;
+    <section class="apr-path-dashboard" style="--level-color:${level.c}">
+      <div class="apr-path-head">
+        <div><div class="apr-path-kicker">Parcours d'apprentissage · étape ${NIVEAUX.indexOf(level)+1} sur ${NIVEAUX.length}</div>
+          <h3>${escH(level.t)}</h3><p>${escH(level.d)}</p></div>
+        <div class="apr-path-score"><strong>${stats.mastered}/${level.mods.length}</strong><span>modules maîtrisés</span></div>
+      </div>
+      <div class="apr-stage-tabs" role="navigation" aria-label="Étapes du parcours">${NIVEAUX.map((candidate,index)=>{
+        const meta=allStats[candidate.id];
+        return `<button type="button" class="apr-stage-tab ${candidate.id===level.id?'on':''}" style="--stage-color:${candidate.c}" aria-current="${candidate.id===level.id?'step':'false'}" onclick="aprNiv='${candidate.id}';aprParcours()"><span>Étape ${index+1}</span><b>${escH(candidate.t)}</b><small>${meta.mastered}/${candidate.mods.length} maîtrisés</small></button>`;
+      }).join('')}</div>
+      <div class="apr-path-progress" aria-label="Progression de l'étape : ${stats.percent} %"><span style="width:${stats.percent}%"></span></div>
+      <section class="apr-next" aria-label="Prochaine action">
+        <div><span class="apr-next-label">${stats.mastered===level.mods.length?'Étape terminée · révision':'Prochaine action'}</span>
+          <h4>${escH(next.module.t)}</h4><p>${escH(next.module.d)}</p></div>
+        <div class="apr-next-actions"><button class="aprbtn" type="button" onclick="aprOpenModule(${next.index})">${nextLabel} →</button>
+          <button class="aprbtn secondary" type="button" onclick="aprJeux('${level.id}')">Jeux de l'étape</button></div>
+      </section>
+      ${aprPathHtml(level.id,runtime)}
+    </section>
+    <section aria-labelledby="aprModulesTitle">
+      <div class="apr-modules-head"><div><h3 id="aprModulesTitle">Modules de ${escH(level.t)}</h3>
+        <p>Ouvre un module, puis passe à l'exercice · jusqu'à ${APR_EXERCISE_TARGETS[level.id]} questions par séance.</p></div><span class="apr-modules-count">${level.mods.length} modules</span></div>
+      <div class="apr-module-grid">${stats.rows.map(row=>{
+        const stateLabel=row.perfect?'Réviser 100 %':row.done?'Maîtrisé':row.started?'En cours':'À faire';
+        const stateClass=row.done?'is-mastered':row.index===stats.nextIndex?'is-current':'';
+        const memory=row.state&&row.state.retenir!=null?`Retenir ${row.state.retenir}%`:'Quiz à faire';
+        const use=aprModuleNeedsUse(row.module)&&(row.state&&row.state.utiliser!=null)?` · Utiliser ${row.state.utiliser}%`:'';
+        return `<button type="button" class="apr-module-card ${stateClass}" style="--level-color:${level.c}" onclick="aprOpenModule(${row.index})" aria-label="${escH(row.module.t)} · ${stateLabel}">
+          <div class="apr-module-top"><span class="apr-module-number">MODULE ${String(row.index+1).padStart(2,'0')}</span><span class="apr-module-state">${stateLabel}</span></div>
+          <h4>${escH(row.module.t)}</h4><p>${escH(row.module.d)}</p>
+          <footer><span>${memory}${use}</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
+        </button>`;
+      }).join('')}</div>
+    </section>`;
 }
 /* Lance les jeux limités aux catégories de mots d'un niveau du parcours */
 function aprJeux(nivId){

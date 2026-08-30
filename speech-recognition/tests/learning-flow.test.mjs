@@ -210,7 +210,7 @@ test('le parcours contient cinq etapes, 45 modules actifs et preserve la progres
   assert.match(levels, /progressId:'c',progressOffset:6/);
   assert.match(html, /const APR_EXERCISE_TARGETS=\{d:12,f:24,co:24,a:24,au:24\}/);
   assert.match(html, /exTot=APR_EXERCISE_TARGETS\[aprNiv\]\|\|8/);
-  assert.match(html, /jusqu'à \$\{APR_EXERCISE_TARGETS\[n\.id\]\} questions par séance/);
+  assert.match(html, /jusqu'à \$\{APR_EXERCISE_TARGETS\[level\.id\]\} questions par séance/);
 
   const dispatch = sourceBetween('function exSuivant()', 'function exPickUnique');
   for (const type of new Set(exerciseTypes)) {
@@ -444,6 +444,24 @@ test('le site audite les routes et les banques des 45 modules au chargement', ()
   assert.match(html, /APR_LAST_AUDIT=aprLearningRuntimeAudit\(\)/);
   assert.match(html, /Contrôle fonctionnel réussi/);
   assert.match(html, /document\.documentElement\.dataset\.learningAudit/);
+});
+
+test('le parcours montre la prochaine action et les modules avant les explications', () => {
+  const helpers = sourceBetween('function aprModuleNeedsUse', 'const APR_TASK_GUIDES');
+  const view = sourceBetween('function aprParcours()', '/* Lance les jeux');
+  assert.match(helpers, /function aprLevelProgress/);
+  assert.match(helpers, /row\.started&&!row\.done/);
+  assert.match(helpers, /class="apr-path-more"/);
+  assert.match(helpers, /Comprendre cette étape, sa méthode et ses limites/);
+  assert.match(view, /class="apr-stage-tabs"/);
+  assert.match(view, /aria-label="Prochaine action"/);
+  assert.match(view, /class="apr-module-grid"/);
+  assert.match(view, /À faire/);
+  assert.match(view, /En cours/);
+  assert.match(view, /Maîtrisé/);
+  assert.ok(view.indexOf('class="apr-next"') < view.indexOf('class="apr-module-grid"'));
+  assert.match(html, /body:has\(\.apr-path-dashboard\) \.fab\{display:none\}/);
+  assert.doesNotMatch(view, /Cinq étapes qui s'appuient l'une sur l'autre/);
 });
 
 test('le projet fournit une identite visuelle originale au navigateur', () => {

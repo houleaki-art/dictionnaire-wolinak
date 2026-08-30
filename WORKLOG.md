@@ -264,6 +264,16 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Ajout d'actions persistantes pour revenir au dictionnaire ou fermer la session, ainsi que d'une disposition mobile sans débordement horizontal.
 - Validation de 86 tests automatisés et essais réels dans Chrome à 1280 × 720 et 390 × 844, sans erreur JavaScript.
 
+## Parcours recentré sur les modules — 30 août 2026
+
+- Remplacement de l'introduction très textuelle par un tableau de progression compact qui montre immédiatement l'étape actuelle, son avancement et les cinq étapes du parcours.
+- Ajout d'une carte `Prochaine action` qui reprend d'abord un module commencé, propose ensuite le premier module incomplet et devient une révision lorsque l'étape est maîtrisée.
+- Présentation des 45 modules sous forme de cartes avec quatre états compréhensibles : `À faire`, `En cours`, `Maîtrisé` et `Réviser 100 %`.
+- Conservation intégrale de l'ordre pédagogique, des routes d'exercice, des banques, des scores et des clés de progression déjà enregistrées.
+- Regroupement de la méthode, des limites, de la provenance et de l'audit dans un panneau fermé par défaut afin que la lecture détaillée reste accessible sans repousser les modules.
+- Le bouton flottant de proposition est masqué uniquement sur le tableau du parcours pour ne plus recouvrir les actions sur mobile.
+- Validation de 87 tests automatisés, des changements d'étape et de l'ouverture d'un module. Essais à 1280 × 720 et 390 × 844 sans débordement ni erreur JavaScript.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix
