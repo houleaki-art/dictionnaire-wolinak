@@ -121,10 +121,12 @@ test('un administrateur ajoute directement une fiche sans proposition intermedia
 
 test('la collecte de poissons est migree une seule fois et retire seulement ses doublons connus', () => {
   const migration = sourceBetween('const FISH_FIELD_MIGRATION_KEY', '// ── SUGGESTIONS DE MODIFICATION');
+  assert.match(migration, /const sourceWords=await fetchWordsFromSB\(\)/);
   assert.match(migration, /for\(const form of \['Watagwa','Magahaghi'\]\)/);
   assert.match(migration, /canonicalIds=\{Watagwa:'mtfpqp7xh5x4',Magahaghi:'mtfpidj7jnsn'\}/);
   assert.match(migration, /matches\.filter\(w=>w\.id!==canonical\?\.id\)/);
   assert.match(migration, /await deleteFromSB\(id\)/);
+  assert.match(migration, /sourceWords\.filter/);
   assert.match(migration, /nio_043/);
   assert.match(migration, /nio_045/);
   assert.match(migration, /nio_044/);
