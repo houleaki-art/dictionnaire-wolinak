@@ -100,6 +100,8 @@ test('les ecritures Supabase signalent un refus au lieu d afficher un faux succe
   assert.match(wordsPush, /if\(!resp\.ok\)/);
   assert.match(wordsPush, /return false/);
   assert.match(wordsPush, /return true/);
+  assert.match(wordsPush, /familyId \|\| rest\.family_id/);
+  assert.match(wordsPush, /formType \|\| rest\.form_type/);
   assert.match(pendingPush, /if\(!resp\.ok\)/);
   assert.match(pendingPush, /return false/);
   assert.match(pendingPush, /PENDING_CACHE\.push\(entry\)/);
@@ -107,10 +109,28 @@ test('les ecritures Supabase signalent un refus au lieu d afficher un faux succe
 
 test('un administrateur ajoute directement une fiche sans proposition intermediaire', () => {
   const submit = sourceBetween('async function submitWord()', 'function finishSubmit');
+  assert.match(submit, /const duplicate=WORDS\.find/);
+  assert.match(submit, /existe déjà dans le dictionnaire/);
   assert.match(submit, /S\.view==='admin'&&SB_AUTH/);
   assert.match(submit, /await pushToSB\(\[word\]\)/);
   assert.match(submit, /delete word\.status/);
   assert.match(submit, /WORDS\.push\(word\)/);
   assert.match(submit, /La fiche n\\'a pas été publiée/);
   assert.match(submit, /const submitted=await pushPending\(entry\)/);
+});
+
+test('la collecte de poissons est migree une seule fois et retire seulement ses doublons connus', () => {
+  const migration = sourceBetween('const FISH_FIELD_MIGRATION_KEY', '// ── SUGGESTIONS DE MODIFICATION');
+  assert.match(migration, /mtfpqp7xh5x4/);
+  assert.match(migration, /mtfpr4vbw6ei/);
+  assert.match(migration, /nio_043/);
+  assert.match(migration, /nio_045/);
+  assert.match(migration, /nio_044/);
+  assert.match(migration, /mst018/);
+  assert.match(migration, /mst311/);
+  assert.match(migration, /mst121/);
+  assert.match(migration, /addRelated\(trout\.related,'Skotam'\)/);
+  assert.match(migration, /addRelated\(pike\.related,'Kwenoza'\)/);
+  assert.match(migration, /localStorage\.setItem\(FISH_FIELD_MIGRATION_KEY,'done'\)/);
+  assert.match(html, /if\(adminUnlocked\) await applyFishFieldMigration\(\)/);
 });

@@ -281,7 +281,9 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Conservation des formes historiques `Scotam` et `Kwnoza`; les graphies de terrain seront reliées comme variantes plutôt que substituées silencieusement.
 - Correction du formulaire Supabase : un refus HTTP n'est plus présenté comme une soumission réussie.
 - Quand la session administrateur est active, le formulaire `+` ajoute maintenant directement une fiche au dictionnaire au lieu de passer par une proposition intermédiaire.
-- Validation de 89 tests automatisés et de la syntaxe JavaScript avant publication.
+- Ajout d'un verrou qui refuse une graphie déjà présente avant toute nouvelle écriture.
+- Migration administrateur unique : retrait de deux doublons créés pendant l'intégration, enrichissement des quatre correspondances existantes et liaison des variantes `Skotam/Scotam` et `Kwenoza/Kwnoza`.
+- Validation de 90 tests automatisés et de la syntaxe JavaScript avant publication.
 
 ## Principe pour la suite
 
