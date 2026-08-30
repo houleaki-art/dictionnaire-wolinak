@@ -132,8 +132,10 @@ test('la collecte de poissons est migree une seule fois et retire seulement ses 
   assert.match(migration, /nio_044/);
   assert.match(migration, /mst018/);
   assert.match(migration, /mst311/);
+  assert.match(migration, /mtfpi9qcc4st/);
   assert.match(migration, /mst121/);
-  assert.match(migration, /addRelated\(trout\.related,'Skotam'\)/);
+  assert.match(migration, /cat:'archive'/);
+  assert.match(migration, /addRelated\(addRelated\(trout\.related,'Scotam'\),'Skotam'\)/);
   assert.match(migration, /addRelated\(pike\.related,'Kwenoza'\)/);
   assert.match(migration, /localStorage\.setItem\(FISH_FIELD_MIGRATION_KEY,'done'\)/);
   assert.match(html, /if\(adminUnlocked\) await applyFishFieldMigration\(\)/);
@@ -146,4 +148,11 @@ test('les doublons strictement identiques ne sont jamais rendus au public', () =
   assert.match(dedupe, /word\.aln8ba,word\.fr,word\.en/);
   assert.match(dedupe, /JSON\.stringify\(word\.related\|\|\[\]\)/);
   assert.match(html, /return removeExactDuplicateRows\(current\)/);
+});
+
+test('la truite actuelle reste publique et ses graphies historiques vont aux archives', () => {
+  const overrides = sourceBetween('const CURRENT_USAGE_OVERRIDES', 'const INTERROGATIVE_FORM_NOTES');
+  assert.match(overrides, /mst311:\{cat:'archive'/);
+  assert.match(overrides, /mtfpi9qcc4st:\{en:'Trout'/);
+  assert.match(overrides, /related:\['Scotam','Scotama'\]/);
 });

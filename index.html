@@ -2623,6 +2623,10 @@ const FAMILY_MAP = {
 const CURRENT_USAGE_OVERRIDES={
   kdakinna:{cat:'territoire',related:['Ndakina'],note:'Usage actuel signalé par Guillaum Labrecque-Houle.'}
 };
+const CURRENT_ENTRY_OVERRIDES={
+  mst311:{cat:'archive',related:['Scotama','Skotam'],note:'Graphie historique conservée dans les Archives; la forme actuelle relevée sur le terrain est Skotam.'},
+  mtfpi9qcc4st:{en:'Trout',related:['Scotam','Scotama'],note:'Forme actuelle reliée aux graphies historiques Scotam et Scotama, conservées dans les Archives.'}
+};
 const INTERROGATIVE_FORM_NOTES={
   't8ni aliwizian':"Deuxième personne interrogative documentée : la finale écrite -ian réunit le i final de aliwizi et la terminaison -an qui porte ici « tu ». Ne pas ajouter kd'. Manuel de l'étudiant 1, page 34.",
   't8ni alosan':"Deuxième personne interrogative documentée : dans cette forme complète, -an porte « tu ». Ne pas ajouter automatiquement k'- ou kd'. Manuel de l'étudiant 1, page 34.",
@@ -2641,6 +2645,13 @@ function applyCurrentUsageOverrides(words){
       const related=[...new Set([...(w.related||[]),...override.related])];
       const notes=(w.notes||'').includes(override.note)?w.notes:[w.notes,override.note].filter(Boolean).join(' · ');
       next={...w,cat:override.cat,related,notes};
+    }
+    const entryOverride=CURRENT_ENTRY_OVERRIDES[w.id];
+    if(entryOverride){
+      const related=[...new Set([...(next.related||[]),...(entryOverride.related||[])])];
+      const notes=(next.notes||'').includes(entryOverride.note)?next.notes:[next.notes,entryOverride.note].filter(Boolean).join(' · ');
+      next={...next,...entryOverride,related,notes};
+      delete next.note;
     }
     const interrogativeNote=INTERROGATIVE_FORM_NOTES[interrogativeKey];
     if(interrogativeNote&&!((next.notes||'').includes(interrogativeNote)))
@@ -2726,7 +2737,7 @@ function saveWords(words){
   pushToSB(words);
 }
 
-const FISH_FIELD_MIGRATION_KEY='aln8ba_fish_field_2026_08_29_v2';
+const FISH_FIELD_MIGRATION_KEY='aln8ba_fish_field_2026_08_29_v3';
 async function applyFishFieldMigration(){
   if(!SB_AUTH||localStorage.getItem(FISH_FIELD_MIGRATION_KEY)==='done') return false;
   const sourceWords=await fetchWordsFromSB();
@@ -2753,7 +2764,9 @@ async function applyFishFieldMigration(){
     updates.push({...eel,source:fieldSource,notes:appendUnique(appendUnique(eel.notes,historical),fieldNote),date_modified:'2026-08-30'});
   }
   const trout=sourceWords.find(w=>w.id==='mst311');
-  if(trout) updates.push({...trout,related:addRelated(trout.related,'Skotam'),date_modified:'2026-08-30'});
+  if(trout) updates.push({...trout,cat:'archive',related:addRelated(addRelated(trout.related,'Scotam'),'Skotam'),notes:appendUnique(trout.notes,'Graphie historique conservée dans les Archives; la forme actuelle relevée sur le terrain est Skotam.'),date_modified:'2026-08-30'});
+  const currentTrout=sourceWords.find(w=>w.id==='mtfpi9qcc4st');
+  if(currentTrout) updates.push({...currentTrout,en:currentTrout.en||'Trout',related:addRelated(addRelated(currentTrout.related,'Scotam'),'Scotama'),notes:appendUnique(currentTrout.notes,'Forme actuelle reliée aux graphies historiques Scotam et Scotama, conservées dans les Archives.'),date_modified:'2026-08-30'});
   const pike=sourceWords.find(w=>w.id==='mst121');
   if(pike) updates.push({...pike,related:addRelated(pike.related,'Kwenoza'),date_modified:'2026-08-30'});
   if(!(await pushToSB(updates))){ toast('❌ Migration des poissons interrompue : les fiches existantes n’ont pas été modifiées.'); return false; }
