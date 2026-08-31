@@ -2627,7 +2627,11 @@ const FAMILY_MAP = {
 //  DATA LAYER
 // ══════════════════════════════════════════════════════════
 const CURRENT_USAGE_OVERRIDES={
-  kdakinna:{cat:'territoire',related:['Ndakina'],note:'Usage actuel signalé par Alakws Pamidoo · M8lsem.'}
+  kdakinna:{cat:'territoire',related:['Ndakina'],note:'Usage actuel signalé par Alakws Pamidoo · M8lsem.'},
+  mkazal:{aln8ba:'Mkazak',phonetic:'mka-zak',grammar:'Nom de partie du corps — pluriel documenté',related:['Mkaza'],note:'Correction de transcription affichée par le projet : Laurent (1884), page 24, écrit Mkazak pour « The nails ». Le dictionnaire moderne consulté confirme mkaz, pluriel mkazak. Mkazal est plutôt documenté comme pluriel de Mkaza « charbon ».'},
+  mkaza:{related:['Mkazak','Mkazas','Mkazawigen'],note:'Repère lexical : Laurent documente séparément Mkaza « charbon », Mkazas « corneille » et la base Mkazawi- « noir ». Leur rapprochement sert ici à naviguer et à mémoriser, sans présenter ces formes comme interchangeables.'},
+  mkazas:{related:['Mkaza','Mkazawigen'],note:'Repère de mémoire du projet : rapprocher la corneille de Mkazawigen « c’est noir ». Les sources documentent les deux formes séparément; ce lien pédagogique ne permet pas de construire un nouveau mot.'},
+  mkazawigen:{related:['Mkaza','Mkazas'],note:'Repère de mémoire du projet : Laurent donne Mkazawi- « noir », Mkazawigen « c’est noir » et Mkazas « corneille ». Les formes restent des entrées distinctes.'}
 };
 const CURRENT_ENTRY_OVERRIDES={
   mst311:{cat:'archive',related:['Scotama','Skotam'],note:'Graphie historique conservée dans les Archives; la forme actuelle relevée sur le terrain est Skotam.'},
@@ -2648,9 +2652,10 @@ function applyCurrentUsageOverrides(words){
     const override=CURRENT_USAGE_OVERRIDES[key];
     let next=w;
     if(override){
-      const related=[...new Set([...(w.related||[]),...override.related])];
-      const notes=(w.notes||'').includes(override.note)?w.notes:[w.notes,override.note].filter(Boolean).join(' · ');
-      next={...w,cat:override.cat,related,notes};
+      const {related:overrideRelated=[],note:overrideNote='',...fields}=override;
+      const related=[...new Set([...(w.related||[]),...overrideRelated])];
+      const notes=overrideNote&&(w.notes||'').includes(overrideNote)?w.notes:[w.notes,overrideNote].filter(Boolean).join(' · ');
+      next={...w,...fields,related,notes};
     }
     const entryOverride=CURRENT_ENTRY_OVERRIDES[w.id];
     if(entryOverride){
@@ -3389,15 +3394,21 @@ function aprPreviousModuleKeys(cat){
   if(!n||aprMod==null) return used;
   n.mods.slice(0,aprMod).filter(m=>m.cat===cat).forEach(m=>{
     const items=Array.isArray(m.items)?m.items:
-      (typeof m.lec==='string'?aprLessonItems(m,m.lec):[]);
+      (Array.isArray(m.itemNames)?aprNamedModuleItems(m.itemNames):
+      (typeof m.lec==='string'?aprLessonItems(m,m.lec):[]));
     items.forEach(w=>used.add(aprLessonKey(w.aln8ba)));
   });
   return used;
+}
+function aprNamedModuleItems(names){
+  const byName=new Map(aprSur().map(w=>[aprLessonKey(w.aln8ba),w]));
+  return (names||[]).map(name=>byName.get(aprLessonKey(name))).filter(Boolean).map(w=>({...w}));
 }
 /* Lance cartes, voix et exercices sur le vocabulaire propre au module. */
 function aprModulePool(cat){
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
   if(m&&Array.isArray(m.items)) return m.items.map(x=>({...x}));
+  if(m&&Array.isArray(m.itemNames)) return aprNamedModuleItems(m.itemNames);
   if(m){
     const lecHtml=typeof m.lec==='function'?m.lec():m.lec;
     const lessonItems=aprLessonItems(m,lecHtml);
@@ -6747,6 +6758,11 @@ const APR_MODULE_LIBRARY=[
     <tr><td class="k">Wl8wigen</td><td>c'est bleu</td></tr>
     <tr><td class="k">Wiz8wigen</td><td>c'est jaune</td></tr>
     <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>
+  <div class="aprnote"><b>Un lien de mémoire dans le territoire</b>
+   Laurent documente <span class="al8">Mkazawi-</span> « noir »,
+   <span class="al8">Mkazawigen</span> « c'est noir » et <span class="al8">Mkazas</span>
+   « une corneille ». Imagine la corneille noire pour retenir la couleur. Ce rapprochement relie
+   des formes attestées; il ne dit pas qu'elles sont interchangeables et ne sert pas à inventer un mot.</div>
   <div class="aprnote"><b>Notre exercice</b>
    Choisis d'abord une couleur que tu vois réellement. Cache ensuite la colonne aln8ba,
    retrouve la forme complète, puis vérifie les lettres. Le rapprochement visuel aide la mémoire;
@@ -6822,22 +6838,61 @@ const APR_MODULE_LIBRARY=[
    Le changement <span class="al8">dep → dup</span> montre pourquoi « remplacer N par K » serait faux.
    Apprends le paradigme complet seulement lorsqu'il est réellement donné par la source.</div>`},
  {t:"Le corps en entier",d:"Toutes les parties du corps attestées dans le dictionnaire.",cat:'corps',ex:'vocab',activity:'retrieve',lec:aprBodyPossessionLec},
- {t:"Ma famille",d:"Les mots qu'on dit à la maison.",cat:'famille',ex:'vocab',activity:'context',lec:`
-  <table class="aprtab">
-  <tr><td class="k">Nigawes</td><td>ma mère</td></tr><tr><td class="k">Nmit8gwes</td><td>mon père</td></tr>
-  <tr><td class="k">Nokmes</td><td>ma grand-mère</td></tr><tr><td class="k">Nmahom</td><td>mon grand-père</td></tr>
-  <tr><td class="k">Ndoz</td><td>ma fille</td></tr><tr><td class="k">Nnam8n</td><td>mon fils</td></tr>
-  <tr><td class="k">Nid8ba</td><td>mon ami</td></tr><tr><td class="k">Aw8sis</td><td>un enfant</td></tr></table>
-  <div class="aprnote"><b>Frère et sœur, ça dépend de qui parle</b>
-   Un garçon dit <span class="al8">Nijia</span> pour son frère.
-   Une fille dit <span class="al8">Nijakaso</span> pour sa sœur.
-   Et <span class="al8">Nid8pso</span> sert quand c'est l'inverse.</div>`},
- {t:"La famille au grand complet",d:"Toute la parenté attestée : les aînés, les enfants, les liens.",cat:'famille',ex:'vocab',activity:'mixed',lec:aprAutoLec(`
-  <p>Après papa et maman, tout le reste de la parenté. La famille est au cœur de la langue —
-  prends ton temps, c'est le plus gros module de vocabulaire de Fondations.</p>`,'famille',18,`
-  <div class="aprnote"><b>⏱ Deux ou trois visites, c'est normal</b>
-   Personne ne retient 18 mots d'un coup. Fais le quiz, reviens demain, refais-le.
-   Compare tes résultats d'une visite à l'autre pour voir ce qui reste à revoir.</div>`)},
+ {t:"Ma famille par générations",d:"Situer les proches avant, avec ou après sa propre génération.",cat:'famille',ex:'vocab',activity:'context',
+  itemNames:['Nigawes','Ndadan','Nnonon','Nokmes','Nmahom','Niswiakw','Aw8sis','Noses','Wskimos','Wskinnos'],lec:`
+  <section class="morph-primer">
+   <strong>Commence par situer la personne dans la famille</strong>
+   <p>Au lieu d'apprendre une longue liste sans ordre, forme trois repères : les générations qui
+   précèdent la tienne, ta génération, puis celles qui la suivent. Apprends toujours la forme
+   complète avec son lien exact.</p>
+  </section>
+  <table class="aprtab"><tr><th>Repère</th><th>Forme actuelle documentée</th><th>Lien</th></tr>
+   <tr><td rowspan="5"><b>Avant moi</b></td><td class="k">Nigawes</td><td>ma mère</td></tr>
+   <tr><td class="k">Nnonon</td><td>ma maman · forme familière</td></tr>
+   <tr><td class="k">Ndadan</td><td>mon père, papa · forme familière</td></tr>
+   <tr><td class="k">Nokmes</td><td>ma grand-mère</td></tr>
+   <tr><td class="k">Nmahom</td><td>mon grand-père</td></tr>
+   <tr><td><b>Avec moi</b></td><td class="k">Niswiakw</td><td>époux ou épouse</td></tr>
+   <tr><td rowspan="4"><b>Après moi</b></td><td class="k">Aw8sis</td><td>un enfant</td></tr>
+   <tr><td class="k">Wskimos</td><td>un petit garçon</td></tr>
+   <tr><td class="k">Wskinnos</td><td>un garçon</td></tr>
+   <tr><td class="k">Noses</td><td>mon petit-enfant</td></tr>
+  </table>
+  <div class="aprnote"><b>Personne générale ou relation avec moi?</b>
+   <span class="al8">Aw8sis</span> nomme un enfant en général. <span class="al8">Noses</span>
+   exprime une relation familiale avec la personne qui parle : « mon petit-enfant ».
+   Le français peut ajouter « mon » séparément; la forme aln8ba doit être retenue entière.</div>
+  <details class="aprsource"><summary>Formes historiques consultatives</summary>
+   <p><span class="al8">N'doz</span> « ma fille », <span class="al8">N'nam8n</span> « mon fils »,
+   <span class="al8">Nidokan</span> « mon frère aîné », <span class="al8">Nmessis</span> « ma sœur aînée »,
+   <span class="al8">Nleguas</span> « mon neveu » et <span class="al8">N'doz'imis</span> « ma nièce »
+   sont conservés comme attestations historiques à valider dans l'usage actuel. Ils ne sont pas
+   employés comme réponses dans l'exercice actif.</p></details>`,
+  coach:`Situe d'abord la personne : avant moi, avec moi ou après moi. Demande-toi ensuite si la
+   forme nomme une personne en général ou si elle porte déjà une relation avec la personne qui parle.`},
+ {t:"Frère ou sœur : qui parle?",d:"Choisir la forme selon la personne qui parle et le proche nommé.",cat:'famille',ex:'fratrie',activity:'context',
+  itemNames:['Nijia','Nijakaso','Nid8pso','Nid8pson'],lec:`
+  <section class="morph-primer">
+   <strong>Deux renseignements sont nécessaires</strong>
+   <p>Pour choisir entre ces quatre formes, demande d'abord <b>qui parle</b>, puis si cette personne
+   parle de son <b>frère</b> ou de sa <b>sœur</b>. Le français ne montre pas cette différence dans le mot
+   « mon »; les formes aln8ba documentées la montrent.</p>
+  </section>
+  <table class="aprtab"><tr><th>Personne qui parle</th><th>Son frère</th><th>Sa sœur</th></tr>
+   <tr><td><b>Un homme</b></td><td class="k">Nijia</td><td class="k">Nid8pso</td></tr>
+   <tr><td><b>Une femme</b></td><td class="k">Nid8pson</td><td class="k">Nijakaso</td></tr>
+  </table>
+  <div class="aprnote"><b>Une façon simple de lire le tableau</b>
+   <span class="al8">Nijia</span> et <span class="al8">Nijakaso</span> sont les deux relations de même sexe
+   montrées ici. <span class="al8">Nid8pso</span> et <span class="al8">Nid8pson</span> sont les deux relations
+   de sexe opposé. Ce repère aide à mémoriser le tableau; il ne sert pas à fabriquer d'autres mots.</div>
+  <div class="aprnote w"><b>L'âge est une autre information</b>
+   Les formes historiques <span class="al8">Nidokan</span> « mon frère aîné » et
+   <span class="al8">Nmessis</span> « ma sœur aînée » ajoutent un renseignement d'âge. Comme leur usage
+   actuel reste à valider, elles sont présentées pour la lecture des sources, pas dans le quiz actif.</div>
+  <p class="aprsrc">Données linguistiques : Manuel de l'étudiant 1, page 22.</p>`,
+  coach:`Dis le scénario entier avant de répondre : « un homme parle de sa sœur », par exemple.
+   Choisis ensuite une des quatre formes complètes; ne réduis pas le choix au seul mot français.`},
  {t:"L'arbre et ses repères",d:"Le mot général, une espèce et deux parties observables.",cat:'plante',ex:'vocab',activity:'context',lec:`
   <section class="morph-primer">
    <h4>Du tout vers le détail</h4>
@@ -6968,35 +7023,33 @@ const APR_MODULE_LIBRARY=[
   coach:`Pour Niona et Kiona, pose une seule question : est-ce que la personne à qui tu parles
    fait partie du « nous »? Kiona l'inclut; Niona ne l'inclut pas. Vérifie cette distinction
    grammaticale dans chaque exemple.`},
- {t:"Mon, ton, son",d:"Des mots qui ne peuvent jamais rester seuls.",ex:'poss',use:'poss',lec:`
+ {t:"Qui possède la relation?",d:"Lire la personne et les deux formes de « notre » dans des mots complets.",cat:'famille',ex:'possfam',use:'possfam',activity:'context',
+  itemNames:['Nigawes','Ndadan','Nnonon','Nid8baskwa','Nid8bana','Kid8bana','Kid8baw8','Wmitogwesa'],lec:`
   <section class="morph-primer">
-   <strong>Le préfixe donne un indice; la forme complète donne la réponse</strong>
-   <p>Dans les exemples documentés, des marques en N-, K- ou W- permettent souvent de repérer
-   « mon », « ton » ou « son ». Mais la base peut aussi changer. La bonne méthode consiste donc
-   à comparer un <b>paradigme attesté</b>, jamais à fabriquer une forme par substitution.</p>
-   <div class="morph-equation">
-    <div class="morph-piece"><code>Nid8ba</code><small>mon ami · première personne</small></div>
-    <span class="morph-plus">→</span>
-    <div class="morph-piece"><code>Kid8ba</code><small>ton ami · deuxième personne</small></div>
-    <span class="morph-plus">→</span>
-    <div class="morph-piece"><code>Wid8ba</code><small>son ami · troisième personne</small></div>
-   </div>
+   <strong>Le début oriente; la forme complète décide</strong>
+   <p>Dans ces exemples documentés, <b>N-</b>, <b>K-</b> et <b>W-</b> aident à repérer une personne.
+   Ils ne sont toutefois pas des étiquettes que l'on peut déplacer librement : la base, la voyelle,
+   l'apostrophe ou la terminaison peuvent changer. On mémorise donc chaque relation entière.</p>
   </section>
-  <table class="aprtab"><tr><th>Famille documentée</th><th>Moi</th><th>Toi</th><th>Lui ou elle</th></tr>
-  <tr><td>ami</td><td class="k">Nid8ba</td><td class="k">Kid8ba</td><td class="k">Wid8ba</td></tr>
-  <tr><td>tête</td><td class="k">Ndep</td><td class="k">K'dup</td><td class="k">Wdep</td></tr>
-  <tr><td>corps</td><td class="k">N'haga</td><td>non donné ici</td><td class="k">Whaga</td></tr>
-  <tr><td>main</td><td class="k">Nelji</td><td>non donné ici</td><td class="k">Welji</td></tr></table>
-  <div class="aprnote"><b>Pourquoi les apostrophes et les voyelles ne sont pas identiques partout</b>
-   La forme dépend du mot et de sa structure documentée. <span class="al8">K'dup</span> n'est pas
-   <span class="al8">Kdep</span>; une case absente reste « non donnée ici » au lieu d'être calculée.</div>
-  <div class="aprnote w"><b>Préfixes nominaux et préfixes verbaux ne sont pas une seule règle</b>
-   Les marques de personne apparaissent aussi dans des verbes comme <span class="al8">Nd'aliwizi</span>,
-   mais ce module enseigne la <b>possession des noms</b>. Le module suivant étudie séparément la
-   personne dans les verbes affirmatifs.</div>`,
-  coach:`N, K, W — moi, toi, lui. Une fois que tu l'as vu, tu le vois partout. Amuse-toi une semaine
-   à lire le dictionnaire en chassant ces préfixes : tu devineras le sens des mots avant de lire
-   la traduction, et c'est le jour où tu commences à <i>lire</i> la langue au lieu de la traduire.`},
+  <table class="aprtab"><tr><th>Forme complète</th><th>Relation documentée</th><th>Personne repérée</th></tr>
+   <tr><td class="k">Nigawes</td><td>ma mère</td><td>moi</td></tr>
+   <tr><td class="k">Nnonon</td><td>ma maman · familier</td><td>moi</td></tr>
+   <tr><td class="k">Ndadan</td><td>mon père, papa · familier</td><td>moi</td></tr>
+   <tr><td class="k">Nid8baskwa</td><td>mon amie</td><td>moi</td></tr>
+   <tr><td class="k">Nid8bana</td><td>notre ami · exclusif</td><td>nous, sans toi</td></tr>
+   <tr><td class="k">Kid8bana</td><td>notre ami · inclusif</td><td>nous, avec toi</td></tr>
+   <tr><td class="k">Kid8baw8</td><td>votre ami</td><td>vous</td></tr>
+   <tr><td class="k">Wmitogwesa</td><td>son père · à lui ou à elle</td><td>lui ou elle</td></tr>
+  </table>
+  <div class="aprnote"><b>Deux façons de dire « notre »</b>
+   <span class="al8">Nid8bana</span> exclut la personne à qui l'on parle;
+   <span class="al8">Kid8bana</span> l'inclut. C'est la même distinction que
+   <span class="al8">Niona</span> « nous, sans toi » et <span class="al8">Kiona</span> « nous, avec toi ».</div>
+  <div class="aprnote w"><b>Ce que cette leçon n'autorise pas</b>
+   Elle ne permet pas de remplacer automatiquement N par K ou W dans n'importe quel nom.
+   Si une relation complète n'est pas dans la banque actuelle, elle reste absente au lieu d'être inventée.</div>`,
+  coach:`Commence par le sens complet : ma mère, notre ami sans toi, notre ami avec toi, votre ami
+   ou son père. Repère ensuite la personne dans la forme attestée. Ne génère jamais une case manquante.`},
  {t:"La phrase affirmative au présent",d:"Reconnaître la personne dans des formes indépendantes documentées.",ex:'conjp',use:'conjp',lec:`
   <div class="aprnote"><b>Une affirmation présente l'action comme réalisée ou vraie</b>
    <span class="al8">Nd'aloka</span> affirme « je travaille ». Il n'y a ni <span class="al8">Nda</span>
@@ -7599,15 +7652,15 @@ const APR_MODULE_CONTRACTS={
     steps:["localiser la partie","retrouver la forme de la fiche","contraster les formes proches sans déplacer leur préfixe"],
     mastery:"Tu parcours le corps de mémoire et récupères les nouvelles formes possédées sans revenir aux huit formes d'introduction."
   },
-  "Ma famille":{
-    principle:"Comprendre qu'un terme de parenté peut dépendre du lien familial et, dans certains cas documentés, de la personne qui parle.",
-    steps:["identifier le lien","lire la note d'usage","choisir la forme complète correspondant au contexte donné"],
-    mastery:"Tu présentes les proches de base et tu expliques pourquoi les formes de frère ou de sœur ne sont pas interchangeables."
+  "Ma famille par générations":{
+    principle:"Organiser les relations familiales par génération et distinguer un nom général d'une relation déjà liée à la personne qui parle.",
+    steps:["situer la personne avant, avec ou après sa génération","distinguer personne générale et relation possédée","rappeler la forme actuelle complète"],
+    mastery:"Tu situes dix formes familiales actuelles dans les générations et tu expliques la différence entre Aw8sis et Noses."
   },
-  "La famille au grand complet":{
-    principle:"Distinguer la parenté élargie par le lien exact, la génération et l'information de possession conservée dans chaque fiche.",
-    steps:["situer la personne dans la parenté","comparer les sens voisins","rappeler la forme sans simplifier son lien"],
-    mastery:"Tu identifies les nouveaux liens de parenté sans les réduire aux huit membres de la famille immédiate."
+  "Frère ou sœur : qui parle?":{
+    principle:"Choisir une relation fraternelle documentée à partir de deux renseignements : la personne qui parle et le proche qu'elle nomme.",
+    steps:["identifier qui parle","identifier frère ou sœur","choisir une des quatre formes complètes du tableau"],
+    mastery:"Tu emploies correctement Nijia, Nijakaso, Nid8pso et Nid8pson dans les quatre contextes documentés."
   },
   "L'arbre et ses repères":{
     principle:"Passer du mot général de l'arbre à une espèce, une partie et un fruit réellement documentés dans le corpus actif.",
@@ -7659,10 +7712,10 @@ const APR_MODULE_CONTRACTS={
     steps:["identifier les participants","choisir inclusif ou exclusif","relire la forme et son contexte"],
     mastery:"Tu expliques qui est inclus dans chaque « nous » et tu reconnais les sept pronoms du module."
   },
-  "Mon, ton, son":{
-    principle:"Comprendre que les marques de possession font partie de la forme et ne doivent pas être déplacées librement.",
-    steps:["identifier le possesseur","comparer les formes complètes","repérer le préfixe réellement attesté"],
-    mastery:"Tu distingues mon, ton et son dans les exemples sans construire une forme absente du dictionnaire."
+  "Qui possède la relation?":{
+    principle:"Lire la personne dans des relations familiales complètes et distinguer les deux formes documentées de « notre ».",
+    steps:["identifier le possesseur ou le groupe","décider si la personne à qui l'on parle est incluse","retrouver la forme complète sans déplacer un préfixe"],
+    mastery:"Tu distingues moi, nous exclusif, nous inclusif, vous et lui ou elle dans huit relations documentées sans construire de forme absente."
   },
   "La phrase affirmative au présent":{
     principle:"Repérer la personne dans des formes verbales indépendantes documentées au présent.",
@@ -7771,7 +7824,7 @@ const APR_MODULE_CONTRACTS={
   }
 };
 const APR_EXERCISE_ROUTES=new Set([
-  'sons','vocab','genre','plur','poss','conjp','negs','classfx','structure','temps','vta',
+  'sons','vocab','genre','plur','fratrie','possfam','conjp','negs','classfx','structure','temps','vta',
   'inter2','ordre','neg','suf','fam','trad','conversation','dialogue','day','sourcecheck',
   'history','evidence'
 ]);
@@ -7779,7 +7832,8 @@ let APR_LAST_AUDIT=null;
 function aprLearningRuntimeAudit(){
   const previousLevel=aprNiv, previousModule=aprMod, issues=[], details=[];
   const fixedBanks={
-    sons:EXSONS,conversation:EXCONVERSATION,dialogue:EXDIALOGUE,day:EXDAY,
+    sons:EXSONS,fratrie:EXFRATRIE,possfam:EXFAM_POSSESSION,
+    conversation:EXCONVERSATION,dialogue:EXDIALOGUE,day:EXDAY,
     sourcecheck:EXSOURCECHECK,history:EXHISTORY,evidence:EXEVIDENCE
   };
   try{
@@ -7845,7 +7899,8 @@ const APR_TASK_GUIDES={
   dialogue:['Repère le début, les réponses et la fermeture de la conversation avant de la rejouer.','Tu peux remettre tout le dialogue en ordre et expliquer le rôle de chaque réplique.'],
   genre:['Classe chaque nom avec l’étiquette grammaticale documentée sur sa fiche.','Tu justifies animé ou inanimé par la fiche, jamais par une intuition philosophique.'],
   plur:['Associe seulement les singuliers et pluriels explicitement documentés.','Tu rappelles les sept paires approuvées sans fabriquer une terminaison.'],
-  poss:['Compare les formes complètes de personne et repère le préfixe réellement écrit.','Tu distingues mon, ton et son dans les modèles présentés sans déplacer un préfixe.'],
+  fratrie:['Nomme d’abord qui parle, puis le proche dont cette personne parle.','Tu choisis une des quatre relations fraternelles complètes sans les rendre interchangeables.'],
+  possfam:['Lis la relation entière et décide si la personne à qui l’on parle est incluse.','Tu distingues moi, nos deux « nous », vous et lui ou elle sans fabriquer une forme.'],
   conjp:['Repère la personne dans chaque forme indépendante documentée.','Tu identifies la personne et recopies la forme entière sans compléter un paradigme absent.'],
   inter2:['Compare les questions complètes avant de chercher où apparaît « tu ».','Tu distingues les finales -an/-ian des formes qui conservent k’-/kd’-.'],
   negs:['Pars d’une paire affirmative/négative déjà documentée et observe tout ce qui change.','Tu reconnais la négation complète sans ajouter un suffixe à un verbe non attesté.'],
@@ -7879,7 +7934,8 @@ function aprModuleTaskGuide(m){
   ]);
 }
 function aprModuleItemsForGuide(m,lecHtml){
-  const items=Array.isArray(m.items)?m.items:aprLessonItems(m,lecHtml);
+  const items=Array.isArray(m.items)?m.items:
+    (Array.isArray(m.itemNames)?aprNamedModuleItems(m.itemNames):aprLessonItems(m,lecHtml));
   const seen=new Set();
   return items.filter(item=>{
     const key=aprLessonKey(item.aln8ba); if(!key||seen.has(key)) return false;
@@ -8797,7 +8853,7 @@ function aprEx(type,cat,titre,mode){
   exPoolOverride=['vocab','ecris','genre'].includes(type)&&scopedPool.length?scopedPool:null;
   if(exPoolOverride&&exPoolOverride.length) exTot=Math.min(exTot,exPoolOverride.length);
   const fixedCapacity={
-    plur:()=>JPLUR.length, poss:()=>EXPOSS.length, conjp:()=>EXCONJ.length*2,
+    plur:()=>JPLUR.length, fratrie:()=>EXFRATRIE.length, possfam:()=>EXFAM_POSSESSION.length, conjp:()=>EXCONJ.length*2,
     negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length, temps:()=>EXTEMPS.length,
     vta:()=>EXVTA.length*2, inter2:()=>EXINTER2.length, ordre:()=>EXORDRE.length,
     neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
@@ -8881,7 +8937,7 @@ function exFin(){
 function exSuivant(){
   cancelAnswerAdvance();
   if(exQ>=exTot) return exFin();
-  const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, ecrisgram:exGrammarWrite, rev:exRev, genre:exGenre, plur:exPlur, poss:exPoss, conjp:exConjp,
+  const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, ecrisgram:exGrammarWrite, rev:exRev, genre:exGenre, plur:exPlur, fratrie:exFratrie, possfam:exPossFam, conjp:exConjp,
     negs:exNegs, classfx:exClassFx, structure:exStructure, temps:exTemps, vta:exVta, inter2:exInter2, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
     trad:exTrad, conversation:()=>exFixedLesson(EXCONVERSATION), dialogue:()=>exFixedLesson(EXDIALOGUE),
     day:()=>exFixedLesson(EXDAY), sourcecheck:()=>exFixedLesson(EXSOURCECHECK), history:()=>exFixedLesson(EXHISTORY),
@@ -9152,12 +9208,12 @@ function grammarWritingPool(key){
   if(key==='plur') return JPLUR.map(q=>({prompt:`Écris le pluriel documenté de ${q.s}.`,context:q.f,answer:q.p,
     steps:[`Singulier : ${q.s}`,`Classe documentée : ${q.s==='Sata'?'inanimée':'animée'}`,`Paire attestée : ${q.s} → ${q.p}`],
     detail:q.w+' La classe oriente la recherche, mais seule la paire attestée autorise cette forme.',source:'Manuel de l’étudiant 1, pages 16 à 18'}));
-  if(key==='poss') return EXPOSS.map(q=>{
-    const person=['N- · mon/ma','K- · ton/ta','W- · son/sa'][q.r];
-    return {prompt:`Écris en aln8ba : ${aprSentence(q.f)}`,context:`Préfixe attendu : ${person}`,answer:q.m,
-      steps:[`Repère le possesseur dans « ${q.f} »`,`Choisis ${person}`,`Écris la forme complète documentée : ${q.m}`],
-      detail:"Le préfixe est attaché au nom. Le D apparaît dans les formes documentées devant une voyelle.",source:sourceManual};
-  });
+  if(key==='possfam') return EXFAM_POSSESSION.map(q=>({
+    prompt:`Écris en aln8ba : ${aprSentence(q.f)}`,context:'Retrouve la relation complète; ne déplace aucun préfixe.',answer:q.a,
+    steps:[`Repère le possesseur dans « ${q.f} »`,q.why,`Écris la forme complète documentée : ${q.a}`],
+    detail:"La forme entière est mémorisée avec son contexte. Une relation absente de la banque ne doit pas être calculée.",
+    source:"Banque actuelle du dictionnaire · formes issues du Manuel de l'étudiant 1 ou de locuteurs nommés dans leur fiche"
+  }));
   if(key==='conjp') return [
     {prompt:'Écris la phrase affirmative « je mange ».',answer:"N'michi",steps:["Ordre indépendant affirmatif","N'- porte la première personne","michi porte l'action de manger"]},
     {prompt:'Écris la phrase affirmative « tu manges ».',answer:"K'michi",steps:["Ordre indépendant affirmatif","K'- porte la deuxième personne","michi porte l'action de manger"]},
@@ -9344,23 +9400,54 @@ function exRetPlur(){ const q=window._ex;
   return `<b>${q.s} → ${q.p}</b><em>${q.w}</em>
     <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, pages 16 à 18"))}</span>`; }
 
-/* — Consolidation : les possessifs — */
-const EXPOSS=[
- {m:'Ndep',f:'ma tête',r:0},{m:'Kdep',f:'ta tête',r:1},{m:'Wdep',f:'sa tête',r:2},
- {m:'Nid8ba',f:'mon ami',r:0},{m:'Kid8ba',f:'ton ami',r:1},{m:'Wid8ba',f:'son ami',r:2},
- {m:'Nelji',f:'ma main',r:0},{m:'Nzit',f:'mon pied',r:0},{m:'Kigawes',f:'ta mère',r:1},
- {m:'Nigawes',f:'ma mère',r:0},{m:'Wigawesa',f:'sa mère',r:2},{m:'Nhaga',f:'mon corps',r:0}];
-function exPoss(){
-  const q=exPickUnique(EXPOSS,x=>x.m); window._ex=q;
-  exCadre(`
-    <div class="jprompt"><div class="q">À qui est-ce?</div>
-      <div class="w">${q.m}</div></div>
-    <div class="jopts">${['à moi — mon, ma','à toi — ton, ta','à lui ou à elle — son, sa'].map((o,i)=>
-      `<button class="jopt" onclick="exRepond(${q.r},${i},exRetPoss())">${o}</button>`).join('')}</div>
-    <div class="jhint">Regarde la première lettre. N pour moi, K pour toi, W pour lui ou elle.</div>`);
+/* — Fondations : relations entre frère et sœur — */
+const EXFRATRIE=[
+ {q:'Un homme parle de son frère.',a:'Nijia',why:'La personne qui parle et le proche nommé sont tous les deux des hommes.'},
+ {q:'Un homme parle de sa sœur.',a:'Nid8pso',why:'Un homme parle ici de sa sœur : la relation est de sexe opposé.'},
+ {q:'Une femme parle de son frère.',a:'Nid8pson',why:'Une femme parle ici de son frère : la relation est de sexe opposé.'},
+ {q:'Une femme parle de sa sœur.',a:'Nijakaso',why:'La personne qui parle et le proche nommé sont toutes les deux des femmes.'}
+];
+function exFratrie(){
+  const q=exPickUnique(EXFRATRIE,x=>x.q); if(!q) return exFin();
+  const opts=jShuf(EXFRATRIE.map(x=>x.a)), ib=opts.indexOf(q.a);
+  window._ex={...q,aln8ba:q.a};
+  exCadre(`<div class="jprompt"><div class="q">Choisis la relation familiale complète</div>
+      <div class="w" style="font-size:clamp(1.15rem,3.6vw,1.65rem)">${q.q}</div></div>
+    <div class="jopts two">${opts.map((o,i)=>`<button class="jopt" style="text-align:center"
+      onclick="exRepond(${ib},${i},exRetFratrie())"><span class="al">${o}</span></button>`).join('')}</div>
+    <div class="jhint">Deux repères : qui parle, puis frère ou sœur.</div>`);
 }
-function exRetPoss(){ const q=window._ex;
-  return `<b>${q.m} — ${q.f}</b><em>Le préfixe N- dit « mon », K- dit « ton », W- dit « son ».</em>`; }
+function exRetFratrie(){ const q=window._ex;
+  return `<div class="answer-learning-content"><b>${q.a}</b><em>${q.q} ${q.why}</em>
+    <span class="aprsrc">${escH(aprCitationText("Manuel de l'étudiant 1, page 22"))}</span></div>`;
+}
+
+/* — Consolidation : possession dans les relations familiales — */
+const EXFAM_POSSESSION=[
+ {f:'ma mère',a:'Nigawes',why:'La relation complète renvoie à la mère de la personne qui parle.'},
+ {f:'ma maman · forme familière',a:'Nnonon',why:'Cette forme familière renvoie à la maman de la personne qui parle.'},
+ {f:'mon père, papa · forme familière',a:'Ndadan',why:'Cette forme familière renvoie au père de la personne qui parle.'},
+ {f:'mon amie',a:'Nid8baskwa',why:'La relation complète est documentée avec une amie de la personne qui parle.'},
+ {f:'notre ami · sans la personne à qui je parle',a:'Nid8bana',why:'Le « nous » est exclusif : la personne à qui l’on parle ne fait pas partie du groupe.'},
+ {f:'notre ami · avec la personne à qui je parle',a:'Kid8bana',why:'Le « nous » est inclusif : la personne à qui l’on parle fait partie du groupe.'},
+ {f:'votre ami',a:'Kid8baw8',why:'La relation renvoie à l’ami des personnes à qui l’on parle.'},
+ {f:'son père · à lui ou à elle',a:'Wmitogwesa',why:'La relation renvoie au père d’une troisième personne.'}
+];
+function exPossFam(){
+  const q=exPickUnique(EXFAM_POSSESSION,x=>x.f); if(!q) return exFin();
+  const distractors=jShuf(EXFAM_POSSESSION.filter(x=>x.a!==q.a)).slice(0,3).map(x=>x.a);
+  const opts=jShuf([q.a,...distractors]), ib=opts.indexOf(q.a);
+  window._ex={...q,aln8ba:q.a};
+  exCadre(`<div class="jprompt"><div class="q">Retrouve la relation documentée</div>
+      <div class="w" style="font-size:clamp(1.15rem,3.6vw,1.65rem)">${q.f}</div></div>
+    <div class="jopts two">${opts.map((o,i)=>`<button class="jopt" style="text-align:center"
+      onclick="exRepond(${ib},${i},exRetPossFam())"><span class="al">${o}</span></button>`).join('')}</div>
+    <div class="jhint">Lis le sens entier. N-, K- ou W- est un repère, jamais une règle de remplacement automatique.</div>`);
+}
+function exRetPossFam(){ const q=window._ex;
+  return `<div class="answer-learning-content"><b>${q.a} — ${q.f}</b><em>${q.why}</em>
+    <span class="aprsrc">Forme complète issue de la banque actuelle du dictionnaire.</span></div>`;
+}
 
 /* — Consolidation : formes personnelles au présent — */
 const EXCONJ=[
