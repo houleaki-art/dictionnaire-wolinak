@@ -116,7 +116,7 @@ test('les modules grammaticaux exigent une production ecrite', () => {
   assert.match(mastery, /function aprModuleNeedsUse/);
   assert.match(mastery, /state\.utiliser>=100/);
   const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
-  assert.match(lesson, /produis la forme/);
+  assert.match(lesson, /produire sans regarder/);
   assert.match(lesson, /ecrisgram/);
 });
 
@@ -161,22 +161,25 @@ test('chaque module affiche sa mission, sa place et ses formes nouvelles', () =>
   assert.match(lesson, /aprModuleGuideHtml\(n,m,i,lecHtml\)/);
 });
 
-test('les 45 modules enseignent chacun un principe complet et distinct', () => {
-  const source = sourceBetween('const APR_MODULE_CONTRACTS=', 'function aprModuleNeedsUse');
-  const contracts = new Function(`${source}; return APR_MODULE_CONTRACTS;`)();
+test('les 45 chapitres et les 10 grands modules ont des objectifs complets et distincts', () => {
+  const chapterSource = sourceBetween('const APR_MODULE_CONTRACTS=', 'const APR_COURSE_CONTRACTS=');
+  const chapterContracts = new Function(`${chapterSource}; return APR_MODULE_CONTRACTS;`)();
+  const courseSource = sourceBetween('const APR_COURSE_CONTRACTS=', 'function aprModuleContract');
+  const courseContracts = new Function(`${courseSource}; return APR_COURSE_CONTRACTS;`)();
   const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
   const titles = [...library.matchAll(/\{t:"([^"]+)"/g)].map(match => match[1]);
   assert.equal(titles.length, 45);
-  assert.deepEqual(new Set(Object.keys(contracts)), new Set(titles));
-  assert.equal(new Set(Object.values(contracts).map(contract => contract.principle)).size, 45);
-  for (const [title, contract] of Object.entries(contracts)) {
+  assert.deepEqual(new Set(Object.keys(chapterContracts)), new Set(titles));
+  assert.equal(Object.keys(courseContracts).length, 10);
+  assert.equal(new Set(Object.values(courseContracts).map(contract => contract.principle)).size, 10);
+  for (const [title, contract] of Object.entries(courseContracts)) {
     assert.ok(contract.principle.trim().length >= 80, `principe trop court: ${title}`);
     assert.equal(contract.steps.length, 3, `trois étapes requises: ${title}`);
     assert.ok(contract.steps.every(step => step.trim().length >= 12), `étape incomplète: ${title}`);
     assert.match(contract.mastery, /^Tu /, `critère observable absent: ${title}`);
   }
   const guide = sourceBetween('function aprModuleGuideHtml', 'function aprModulePerfect');
-  assert.match(guide, /APR_MODULE_CONTRACTS\[m\.t\]/);
+  assert.match(guide, /aprModuleContract\(m\)/);
   assert.match(guide, /Un principe complet/);
   assert.match(guide, /Entraînement qui vérifie ce principe/);
   assert.match(guide, /contract\.mastery/);
@@ -192,31 +195,40 @@ test('le module des trois ordres avance en trois contrastes avant les approfondi
   assert.ok(lesson.indexOf('1 · Dire un fait') < lesson.indexOf('Interrogation historique'));
 });
 
-test('le parcours contient cinq etapes, 45 modules actifs et preserve la progression existante', () => {
+test('le parcours contient cinq etapes, 10 grands modules et les 45 chapitres une seule fois', () => {
   const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
   const levels = sourceBetween('const NIVEAUX=', 'function aprProgressKey');
   assert.equal([...library.matchAll(/\{t:"/g)].length, 45);
   const exerciseTypes = [...library.matchAll(/ex:'([^']+)'/g)].map(match => match[1]);
   assert.equal(exerciseTypes.length, 45);
   assert.doesNotMatch(library, /ex:null/);
+  assert.equal([...levels.matchAll(/aprCourse\(\{t:/g)].length, 10);
+  const chapterBlocks = [...levels.matchAll(/chapters:\[([\s\S]*?)\]\}\)/g)];
+  assert.equal(chapterBlocks.length, 10);
+  const assignedChapters = chapterBlocks.flatMap(block => [...block[1].matchAll(/"([^"]+)"/g)].map(match => match[1]));
+  assert.equal(assignedChapters.length, 45);
+  assert.equal(new Set(assignedChapters).size, 45);
+  assert.ok(chapterBlocks.every(block => [...block[1].matchAll(/"([^"]+)"/g)].length >= 3));
   for (const [id, title] of [['d','Découverte'],['f','Fondations'],['co','Consolidation'],
     ['a','Approfondissement'],['au','Autonomie']]) {
     assert.match(levels, new RegExp(`id:'${id}',t:'${title}'`));
   }
-  assert.match(levels, /progressId:'p',progressOffset:0/);
-  assert.match(levels, /progressId:'p',progressOffset:7/);
-  assert.match(levels, /progressId:'s',progressOffset:0/);
-  assert.match(levels, /progressId:'c',progressOffset:0/);
-  assert.match(levels, /progressId:'c',progressOffset:6/);
-  assert.match(html, /const APR_EXERCISE_TARGETS=\{d:12,f:24,co:24,a:24,au:24\}/);
+  for (const id of ['d','f','co','a','au']) assert.match(levels, new RegExp(`progressId:'course-${id}'`));
+  assert.match(html, /module\.legacyKey=`\$\{level\.id\}\.\$\{index\}`/);
+  assert.match(html, /function aprCourseProgressState/);
+  assert.match(html, /legacyComplete/);
+  assert.match(html, /const APR_EXERCISE_TARGETS=\{d:20,f:24,co:24,a:24,au:24\}/);
   assert.match(html, /exTot=APR_EXERCISE_TARGETS\[aprNiv\]\|\|8/);
-  assert.match(html, /la séance s'arrête lorsque sa banque distincte est épuisée/);
+  assert.match(html, /Chaque module réunit plusieurs chapitres/);
   assert.match(html, /aprModuleSessionCapacity\(level,row\.module,row\.index\)/);
+  assert.match(html, /aprCourseExercisePlan/);
+  assert.match(html, /Retenir<\/strong> mélange tous les chapitres/);
 
   const dispatch = sourceBetween('function exSuivant()', 'function exPickUnique');
   for (const type of new Set(exerciseTypes)) {
     assert.match(dispatch, new RegExp(`${type}:`), `route d'exercice absente: ${type}`);
   }
+  assert.match(dispatch, /exType==='course'/);
 });
 
 test('les syntheses et les modules de sources ont des exercices distincts', () => {
@@ -437,10 +449,11 @@ test("le module de l'arbre utilise seulement sa banque active verifiee", () => {
   assert.match(lesson, /ne sont\s+pas transformés silencieusement en réponses modernes/);
 });
 
-test('le site audite les routes et les banques des 45 modules au chargement', () => {
+test('le site audite les routes et les banques des 10 grands modules au chargement', () => {
   const audit = sourceBetween('const APR_EXERCISE_ROUTES', 'function aprModuleNeedsUse');
   assert.match(audit, /function aprLearningRuntimeAudit/);
-  assert.match(audit, /aprExerciseCapacity\(module\.ex,module\.cat\|\|'',modulePool\)/);
+  assert.match(audit, /aprExerciseCapacity\(module\.ex,module\.cat\|\|'',modulePool,module\)/);
+  assert.match(audit, /'course'/);
   assert.match(audit, /moins de trois situations distinctes/);
   assert.match(audit, /const dataPending=!WORDS_REMOTE_READY/);
   assert.match(audit, /route d'exercice absente/);

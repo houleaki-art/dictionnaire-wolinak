@@ -778,6 +778,33 @@ body.music-dock-open .toast{bottom:116px}
 .apr-module-contract li{position:relative;min-width:0;padding:9px 10px 9px 34px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text2);font-size:.76rem;line-height:1.42}
 .apr-module-contract li::before{counter-increment:module-step;content:counter(module-step);position:absolute;left:9px;top:9px;width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;text-align:center;font-size:.68rem;font-weight:800;line-height:18px}
 .apr-module-bank{margin:0 0 14px;padding:9px 12px;border-radius:9px;background:rgba(61,122,80,.09);color:var(--text2);font-size:.75rem;line-height:1.5}
+.apr-course-assessment-note{display:flex;align-items:flex-start;gap:12px;margin:14px 0;padding:13px 15px;border:1px solid color-mix(in srgb,var(--gold) 48%,var(--border));border-radius:10px;background:color-mix(in srgb,var(--gold) 7%,var(--surface))}
+.apr-course-assessment-note b{flex:0 0 180px;color:var(--accent);font-size:.82rem}
+.apr-course-assessment-note span{color:var(--text2);font-size:.76rem;line-height:1.55}
+.apr-course-intro{display:grid;grid-template-columns:minmax(220px,.72fr) minmax(0,1.28fr);gap:16px;margin:22px 0 12px;padding:18px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--border));border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,var(--surface)),var(--surface))}
+.apr-course-intro>div>span,.apr-course-synthesis>span{display:block;margin-bottom:4px;color:var(--accent);font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.apr-course-intro h3,.apr-course-synthesis h3{margin:0 0 6px;font-size:1.14rem}
+.apr-course-intro p,.apr-course-synthesis p{margin:0;color:var(--text2);font-size:.78rem;line-height:1.55}
+.apr-course-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.apr-course-index a{display:flex;align-items:center;gap:8px;min-width:0;padding:9px 10px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font-size:.72rem;font-weight:700;line-height:1.3;text-decoration:none}
+.apr-course-index a:hover,.apr-course-index a:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+.apr-course-index a span{flex:0 0 auto;color:var(--accent);font-size:.62rem;letter-spacing:.08em}
+.apr-course-chapters{display:grid;gap:10px}
+.apr-course-chapter{scroll-margin-top:210px;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden}
+.apr-course-chapter[open]{border-color:color-mix(in srgb,var(--accent) 42%,var(--border));box-shadow:0 8px 22px rgba(45,29,17,.05)}
+.apr-course-chapter>summary{position:relative;display:grid;grid-template-columns:140px minmax(0,.6fr) minmax(0,1.2fr);align-items:center;gap:12px;min-height:70px;padding:13px 48px 13px 15px;cursor:pointer;list-style:none;background:var(--surface)}
+.apr-course-chapter>summary::-webkit-details-marker{display:none}
+.apr-course-chapter>summary::after{content:'+';position:absolute;right:17px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:1.35rem;font-weight:400}
+.apr-course-chapter[open]>summary::after{content:'−'}
+.apr-course-chapter>summary span{color:var(--accent);font-size:.65rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.apr-course-chapter>summary strong{font-size:.88rem;line-height:1.3}
+.apr-course-chapter>summary small{color:var(--text2);font-size:.72rem;line-height:1.45}
+.apr-course-chapter-body{padding:18px;border-top:1px solid var(--border);background:var(--bg)}
+.apr-course-chapter-goal{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;margin-bottom:16px;padding:11px 13px;border-left:3px solid var(--green);border-radius:0 8px 8px 0;background:color-mix(in srgb,var(--green) 7%,var(--surface));font-size:.76rem;line-height:1.5}
+.apr-course-chapter-goal b{color:var(--green)}
+.apr-course-chapter-goal span{color:var(--text2)}
+.apr-course-synthesis{margin:12px 0 4px;padding:17px 18px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--border));border-radius:12px;background:color-mix(in srgb,var(--green) 7%,var(--surface))}
+.ex-course-chapter-label{display:block;margin-top:3px;color:var(--text3);font-size:.66rem;font-weight:400;line-height:1.35}
 .morph-primer{margin:14px 0 18px;padding:16px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--border));border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 11%,var(--surface)),var(--surface))}
 .morph-primer>strong{display:block;margin-bottom:4px;color:var(--accent);font-size:1.05rem}
 .morph-primer>p{color:var(--text2)}
@@ -1117,6 +1144,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .apr-origin-body{grid-template-columns:1fr}
   .apr-module-guide{grid-template-columns:1fr}
   .apr-module-contract ol{grid-template-columns:1fr}
+  .apr-course-assessment-note{display:grid;gap:5px}
+  .apr-course-assessment-note b{flex-basis:auto}
+  .apr-course-intro{grid-template-columns:1fr;padding:14px}
+  .apr-course-index{grid-template-columns:1fr}
+  .apr-course-chapter>summary{grid-template-columns:1fr;gap:4px;padding:13px 42px 13px 13px}
+  .apr-course-chapter-body{padding:13px}
+  .apr-course-chapter-goal{grid-template-columns:1fr;gap:3px}
   .morph-steps,.poss-groups{grid-template-columns:1fr}
   .morph-plus{display:none}
   .prat-levels{grid-template-columns:1fr}
@@ -3518,6 +3552,7 @@ function aprNamedModuleItems(names){
 /* Lance cartes, voix et exercices sur le vocabulaire propre au module. */
 function aprModulePool(cat){
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
+  if(m&&Array.isArray(m.chapters)) return aprModuleItemsForGuide(m,'').map(x=>({...x}));
   if(m&&Array.isArray(m.items)) return m.items.map(x=>({...x}));
   if(m&&Array.isArray(m.itemNames)) return aprNamedModuleItems(m.itemNames);
   if(m){
@@ -7750,19 +7785,59 @@ const APR_MODULE_LIBRARY=[
    quelqu'un qui transmet.`}]}];
 
 const APR_LIBRARY_BY_ID=Object.fromEntries(APR_MODULE_LIBRARY.map(level=>[level.id,level]));
+const APR_SOURCE_MODULES={};
+APR_MODULE_LIBRARY.forEach(level=>level.mods.forEach((module,index)=>{
+  module.legacyKey=`${level.id}.${index}`;
+  APR_SOURCE_MODULES[module.t]=module;
+}));
+function aprCourse(definition){
+  const module={...definition,ex:'course',use:'course'};
+  module.chapters=definition.chapters.map(title=>{
+    const chapter=APR_SOURCE_MODULES[title];
+    if(!chapter) throw new Error(`Chapitre d'apprentissage introuvable : ${title}`);
+    return chapter;
+  });
+  module.lec=()=>aprCourseLessonHtml(module);
+  return module;
+}
 const NIVEAUX=[
- {id:'d',t:'Découverte',d:"Écouter les sons, saluer, se présenter, reconnaître les couleurs et construire les premiers nombres.",
-  c:'var(--green)',progressId:'p',progressOffset:0,mods:APR_LIBRARY_BY_ID.p.mods.slice(0,7)},
- {id:'f',t:'Fondations',d:"Ancrer le vocabulaire du territoire, du vivant, du corps, de la famille, du temps et des actions dans une première conversation.",
-  c:'#5f7f3f',progressId:'p',progressOffset:7,mods:APR_LIBRARY_BY_ID.p.mods.slice(7)},
- {id:'co',t:'Consolidation',d:"Comprendre les classes grammaticales, les formes personnelles, le pluriel, la possession, l'interrogation et la négation.",
-  c:'var(--gold)',progressId:'s',progressOffset:0,mods:APR_LIBRARY_BY_ID.s.mods},
- {id:'a',t:'Approfondissement',d:"Comparer les classes verbales, les temps documentés, les ordres et les relations morphologiques sans fabriquer de formes.",
-  c:'var(--accent)',progressId:'c',progressOffset:0,mods:APR_LIBRARY_BY_ID.c.mods.slice(0,6)},
- {id:'au',t:'Autonomie',d:"Lire les sources avec prudence, interpréter des phrases complètes et justifier chaque analyse par une attestation identifiable.",
-  c:'var(--blue)',progressId:'c',progressOffset:6,mods:APR_LIBRARY_BY_ID.c.mods.slice(6)}
+ {id:'d',t:'Découverte',d:"Entrer dans la langue par des échanges complets, l'observation et les premiers nombres.",
+  c:'var(--green)',progressId:'course-d',progressOffset:0,mods:[
+   aprCourse({t:'Prendre la parole',d:"Entendre les repères de la graphie, saluer et se présenter dans de vrais petits échanges.",chapters:[
+    "Les sons d'abord","Kwaï — saluer","Se présenter"]}),
+   aprCourse({t:'Observer et compter',d:"Décrire ce qui est visible, distinguer les états et construire progressivement les nombres.",chapters:[
+    "Les couleurs","Qualités et émotions","Compter jusqu'à dix","Compter plus loin"]})
+  ]},
+ {id:'f',t:'Fondations',d:"Nommer le monde proche et comprendre comment les formes changent selon les relations humaines.",
+  c:'#5f7f3f',progressId:'course-f',progressOffset:0,mods:[
+   aprCourse({t:'Nommer le vivant et le territoire',d:"Relier animaux, plantes, nourriture, nature et lieux dans une même carte du territoire.",chapters:[
+    "Les animaux","Les bêtes de chez nous","L'arbre et ses repères","Les plantes et la nourriture","La nature autour","Le territoire"]}),
+   aprCourse({t:'Parler du corps et de la famille',d:"Lire les formes possédées et choisir les mots de parenté selon la personne qui parle.",chapters:[
+    "Mon corps","Le corps en entier","Ma famille par générations","Frère ou sœur : qui parle?"]})
+  ]},
+ {id:'co',t:'Consolidation',d:"Passer du vocabulaire aux relations entre le temps, les personnes, les noms et les actions.",
+  c:'var(--gold)',progressId:'course-co',progressOffset:0,mods:[
+   aprCourse({t:'Situer une action et tenir un échange',d:"Organiser le temps, les saisons et une journée avant de réunir les formes dans une conversation.",chapters:[
+    "Le temps et les saisons","Les actions de tous les jours","Ma première conversation","Le temps qui passe","Les mois qui racontent l'année","Ma journée en aln8ba"]}),
+   aprCourse({t:'Comprendre les noms et les personnes',d:"Distinguer les classes grammaticales, le nombre, les personnes et les relations possédées.",chapters:[
+    "Animé ou inanimé","Le pluriel","Moi, toi, nous","Qui possède la relation?"]})
+  ]},
+ {id:'a',t:'Approfondissement',d:"Comprendre les mécanismes qui organisent la phrase et le système verbal à partir de formes documentées.",
+  c:'var(--accent)',progressId:'course-a',progressOffset:0,mods:[
+   aprCourse({t:'Construire une phrase complète',d:"Partir de l'affirmation, puis comprendre la question, la négation et les effets de la classe grammaticale.",chapters:[
+    "La phrase affirmative au présent","La deuxième personne interrogative","Dire non","La classe change la phrase","Traduire sans découper le français"]}),
+   aprCourse({t:'Comprendre le système verbal',d:"Comparer les classes de verbes, les temps, les ordres et les négations sans étendre une règle au-delà des attestations.",chapters:[
+    "Les quatre classes de verbes","Aimuk et les temps verbaux","Les trois ordres","La négation complète"]})
+  ]},
+ {id:'au',t:'Autonomie',d:"Analyser une forme, contrôler ses sources et transmettre un raisonnement dont les limites restent visibles.",
+  c:'var(--blue)',progressId:'course-au',progressOffset:0,mods:[
+   aprCourse({t:'Lire la construction des mots et des lieux',d:"Observer les lieux, les racines et les suffixes, puis conduire une analyse morphologique prudente.",chapters:[
+    "Nommer les lieux","Racines et suffixes","Décomposer un mot","Lire des mots construits","Décortiquer ensemble"]}),
+   aprCourse({t:'Lire, vérifier et transmettre',d:"Comparer graphies et époques, lire des phrases complètes et expliquer le niveau de preuve de chaque donnée.",chapters:[
+    "Les sources et les graphies","Lire une phrase complète","Lire les anciens","Les niveaux de vérification"]})
+  ]}
 ];
-const APR_EXERCISE_TARGETS={d:12,f:24,co:24,a:24,au:24};
+const APR_EXERCISE_TARGETS={d:20,f:24,co:24,a:24,au:24};
 function aprProgressKey(level,index){
   return `${level.progressId||level.id}.${(level.progressOffset||0)+index}`;
 }
@@ -8036,10 +8111,65 @@ const APR_MODULE_CONTRACTS={
     mastery:"Tu peux expliquer une analyse du début à la fin et montrer précisément quelles données la soutiennent."
   }
 };
+const APR_COURSE_CONTRACTS={
+  "Prendre la parole":{
+    principle:"Entrer dans un échange en reliant la graphie, l'écoute attentive et des phrases sociales complètes plutôt qu'en récitant des mots isolés.",
+    steps:["reconnaître les cinq repères de graphie","ordonner une salutation et sa réponse","demander puis donner une information personnelle"],
+    mastery:"Tu peux ouvrir un court échange, te présenter et le fermer en conservant les formes complètes documentées."
+  },
+  "Observer et compter":{
+    principle:"Décrire une réalité visible et la dénombrer en distinguant les états de couleur, les qualités et les constructions numériques documentées.",
+    steps:["observer avant de nommer","distinguer couleur, qualité et émotion","construire les nombres par étapes vérifiables"],
+    mastery:"Tu peux décrire un élément visible et compter une quantité sans confondre les catégories ni inventer une construction."
+  },
+  "Nommer le vivant et le territoire":{
+    principle:"Former une carte mentale du territoire en reliant les êtres vivants, les plantes, la nourriture, les phénomènes naturels et les lieux.",
+    steps:["identifier précisément le vivant","relier chaque forme à son milieu","nommer les repères du territoire sans généraliser leur sens"],
+    mastery:"Tu peux parcourir une scène du territoire et nommer des éléments de plusieurs familles de sens avec leur forme exacte."
+  },
+  "Parler du corps et de la famille":{
+    principle:"Comprendre que plusieurs formes du corps et de la parenté portent déjà une relation à la personne qui parle ou à la personne nommée.",
+    steps:["repérer ce qui est possédé","situer la relation dans une génération","choisir la forme selon la personne qui parle"],
+    mastery:"Tu peux expliquer qui possède ou nomme la relation et choisir la forme complète adaptée parmi les contrastes enseignés."
+  },
+  "Situer une action et tenir un échange":{
+    principle:"Relier le moment, l'action et l'ordre d'un échange afin de comprendre une petite séquence vécue plutôt qu'une liste de vocabulaire.",
+    steps:["placer les repères de temps","associer une action à son contexte","ordonner les répliques et raconter une courte journée"],
+    mastery:"Tu peux remettre une séquence temporelle et un dialogue dans l'ordre en expliquant le rôle de chaque forme."
+  },
+  "Comprendre les noms et les personnes":{
+    principle:"Lire ensemble la classe grammaticale, le nombre, la personne et la possession parce que ces renseignements déterminent les relations exprimées.",
+    steps:["vérifier animé ou inanimé sur la fiche","employer seulement un pluriel documenté","distinguer les personnes et les relations possédées"],
+    mastery:"Tu peux analyser un nom ou une relation en donnant sa classe, son nombre documenté et la personne concernée."
+  },
+  "Construire une phrase complète":{
+    principle:"Comprendre la phrase comme une construction entière où affirmation, interrogation, négation et classe grammaticale peuvent modifier plusieurs éléments.",
+    steps:["partir d'une phrase affirmative attestée","comparer la question ou la négation complète","expliquer les changements sans calquer le français"],
+    mastery:"Tu peux lire et analyser une phrase documentée comme un tout, puis justifier chaque changement visible sans fabriquer de forme."
+  },
+  "Comprendre le système verbal":{
+    principle:"Choisir la bonne grille d'analyse verbale en observant les participants, la classe de l'objet, le temps et l'ordre dans les paradigmes disponibles.",
+    steps:["identifier VAI, VII, VTA ou VTI","comparer les temps dans un seul paradigme","distinguer indépendant, impératif, conjonctif et négation"],
+    mastery:"Tu peux situer une forme verbale dans le système documenté et nommer clairement les limites de la comparaison."
+  },
+  "Lire la construction des mots et des lieux":{
+    principle:"Analyser une forme complexe en séparant les ressemblances graphiques des liens morphologiques réellement soutenus par une source identifiable.",
+    steps:["lire le nom de lieu ou la forme entière","repérer les morceaux documentés","comparer une famille sans utiliser un simple pluriel comme preuve"],
+    mastery:"Tu peux présenter une analyse morphologique suivie, citer ses appuis et marquer comme hypothèse tout lien non démontré."
+  },
+  "Lire, vérifier et transmettre":{
+    principle:"Évaluer une donnée linguistique selon son époque, sa graphie, sa source et son niveau de vérification avant de l'expliquer à une autre personne.",
+    steps:["identifier la nature de la source","comparer sans corriger silencieusement","transmettre la donnée avec son statut et sa limite"],
+    mastery:"Tu peux expliquer une fiche ou une phrase en distinguant clairement attestation, choix éditorial, hypothèse et validation externe."
+  }
+};
+function aprModuleContract(module){
+  return module&&module.chapters?APR_COURSE_CONTRACTS[module.t]:APR_MODULE_CONTRACTS[module&&module.t];
+}
 const APR_EXERCISE_ROUTES=new Set([
   'sons','vocab','genre','plur','fratrie','possfam','conjp','negs','classfx','structure','temps','vta',
   'inter2','ordre','neg','suf','fam','trad','conversation','dialogue','day','sourcecheck',
-  'history','evidence'
+  'history','evidence','course'
 ]);
 let APR_LAST_AUDIT=null;
 function aprModulePlacementText(level,index){
@@ -8058,7 +8188,7 @@ function aprLearningRuntimeAudit(){
       const holder=document.createElement('div'); holder.innerHTML=lesson||'';
       const lessonChars=(holder.textContent||'').replace(/\s+/g,' ').trim().length;
       if(lessonChars<80) issues.push(`${level.t} · ${module.t}: contenu pédagogique incomplet`);
-      const contract=APR_MODULE_CONTRACTS[module.t];
+      const contract=aprModuleContract(module);
       if(!contract||contract.steps.length!==3) issues.push(`${level.t} · ${module.t}: contrat pédagogique incomplet`);
       const principleKey=contract&&aprLessonKey(contract.principle);
       if(principleKey){
@@ -8072,9 +8202,9 @@ function aprLearningRuntimeAudit(){
       try{
         const modulePool=aprModulePool(module.cat||'');
         poolSize=modulePool.length;
-        capacity=Math.min(APR_EXERCISE_TARGETS[level.id]||8,aprExerciseCapacity(module.ex,module.cat||'',modulePool));
+        capacity=Math.min(APR_EXERCISE_TARGETS[level.id]||8,aprExerciseCapacity(module.ex,module.cat||'',modulePool,module));
       }catch(error){ issues.push(`${level.t} · ${module.t}: banque inaccessible (${error.message})`); }
-      const dataDependent=['vocab','genre','fam'].includes(module.ex);
+      const dataDependent=['vocab','genre','fam','course'].includes(module.ex);
       if(capacity<3&&!(dataPending&&dataDependent)) issues.push(`${level.t} · ${module.t}: moins de trois situations distinctes (${capacity})`);
       const qualityPassed=lessonChars>=180&&capacity>=3&&Boolean(contract&&contract.mastery&&contract.steps.length===3);
       if(!qualityPassed) warnings.push(`${level.t} · ${module.t}: renforcer ${lessonChars<180?'la leçon':''}${lessonChars<180&&capacity<4?' et ':''}${capacity<4?'la variété de pratique':''}`);
@@ -8087,10 +8217,36 @@ function aprLearningRuntimeAudit(){
     qualityPassed:details.filter(item=>item.qualityPassed).length,issues,warnings,details};
 }
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
+function aprCourseProgressState(level,index,progress){
+  const module=level&&level.mods[index], direct=progress[aprProgressKey(level,index)];
+  if(direct||!module||!Array.isArray(module.chapters)) return direct||null;
+  const chapterStates=module.chapters.map(chapter=>progress[chapter.legacyKey]||null);
+  if(!chapterStates.some(Boolean)) return null;
+  const retainScores=chapterStates.map(state=>state&&Number.isFinite(state.retenir)?state.retenir:0);
+  const useRows=module.chapters.map((chapter,chapterIndex)=>({chapter,state:chapterStates[chapterIndex]}))
+    .filter(row=>aprModuleNeedsUse(row.chapter));
+  const useScores=useRows.map(row=>row.state&&Number.isFinite(row.state.utiliser)?row.state.utiliser:0);
+  return {
+    retenir:Math.round(retainScores.reduce((sum,value)=>sum+value,0)/retainScores.length),
+    utiliser:useScores.length?Math.round(useScores.reduce((sum,value)=>sum+value,0)/useScores.length):100,
+    legacyCourse:true,
+    legacyComplete:chapterStates.every((state,chapterIndex)=>Boolean(state&&state.retenir>=75
+      &&(!aprModuleNeedsUse(module.chapters[chapterIndex])||state.utiliser>=75))),
+    legacyPerfect:chapterStates.every((state,chapterIndex)=>Boolean(state&&state.retenir>=100
+      &&(!aprModuleNeedsUse(module.chapters[chapterIndex])||state.utiliser>=100)))
+  };
+}
+function aprProgressState(level,index,progress){
+  return aprCourseProgressState(level,index,progress||progAll());
+}
+function aprModuleDone(module,state){
+  return Boolean(state&&(state.legacyCourse?state.legacyComplete:
+    state.retenir>=75&&(!aprModuleNeedsUse(module)||state.utiliser>=75)));
+}
 function aprLevelProgress(level,prog){
   const rows=level.mods.map((module,index)=>{
-    const state=prog[aprProgressKey(level,index)];
-    const done=Boolean(state&&state.retenir>=75&&(!aprModuleNeedsUse(module)||state.utiliser>=75));
+    const state=aprProgressState(level,index,prog);
+    const done=aprModuleDone(module,state);
     return {module,index,state,done,perfect:aprModulePerfect(module,state),started:Boolean(state)};
   });
   const active=rows.find(row=>row.started&&!row.done)||rows.find(row=>!row.done)||rows[0];
@@ -8115,7 +8271,7 @@ function aprPathHtml(levelId,runtime){
       <div class="learning-audit ${runtime.ok?'':'failed'}" role="status"><strong>${runtime.pending?'Vérification des banques en cours':runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> · ${runtime.pending
         ? `Les leçons et les routes sont chargées; les banques liées aux entrées actuelles seront contrôlées dès que la base sera disponible.`
         : runtime.ok
-        ? `${runtime.executable} modules sur ${runtime.total} disposent d'un repère de position exact, d'une leçon, d'un principe, d'un exercice et d'une banque vérifiée lorsqu'elle est nécessaire.`
+        ? `${runtime.executable} grands modules sur ${runtime.total} disposent de chapitres ordonnés, d'un objectif, d'une évaluation mixte et d'une banque vérifiée lorsqu'elle est nécessaire.`
         : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} technique${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}.`}</div>
       <p class="apr-path-note"><strong>Plancher pédagogique interne :</strong> ${runtime.pending?'calcul final après le chargement des entrées actuelles':`${runtime.qualityPassed}/${runtime.total} modules possèdent au moins une leçon développée, un objectif mesurable et trois situations documentées distinctes`}. Ce contrôle sert à repérer les écrans trop minces; il ne constitue ni une évaluation ni une approbation ministérielle.</p>
     </div>
@@ -8161,7 +8317,43 @@ function aprModuleTaskGuide(m){
     'Tu peux expliquer ta réponse et nommer la limite de ce que la leçon permet d’affirmer.'
   ]);
 }
+function aprCourseLessonHtml(module){
+  const contract=aprModuleContract(module);
+  const chapterLinks=module.chapters.map((chapter,index)=>
+    `<a href="#apr-course-chapter-${index+1}"><span>${String(index+1).padStart(2,'0')}</span>${escH(chapter.t)}</a>`).join('');
+  const chapters=module.chapters.map((chapter,index)=>{
+    const lesson=typeof chapter.lec==='function'?chapter.lec():chapter.lec;
+    const chapterContract=aprModuleContract(chapter);
+    return `<details class="apr-course-chapter" id="apr-course-chapter-${index+1}" ${index===0?'open':''}>
+      <summary><span>Chapitre ${index+1} sur ${module.chapters.length}</span><strong>${escH(chapter.t)}</strong><small>${escH(chapter.d)}</small></summary>
+      <div class="apr-course-chapter-body">
+        ${chapterContract?`<div class="apr-course-chapter-goal"><b>Ce chapitre te rend capable de</b><span>${escH(chapterContract.mastery.replace(/^Tu\s+/,'').replace(/\.$/,''))}.</span></div>`:''}
+        ${lesson}
+      </div>
+    </details>`;
+  }).join('');
+  return `<section class="apr-course-intro">
+      <div><span>Module complet · ${module.chapters.length} chapitres</span><h3>Le chemin de ce module</h3>
+        <p>Avance dans l'ordre. Chaque chapitre prépare le suivant; l'évaluation finale mélange ensuite toutes les notions au lieu de les isoler.</p></div>
+      <nav class="apr-course-index" aria-label="Chapitres du module">${chapterLinks}</nav>
+    </section>
+    <div class="apr-course-chapters">${chapters}</div>
+    <section class="apr-course-synthesis">
+      <span>Synthèse</span><h3>Réunir les chapitres</h3>
+      <p>${escH(contract.mastery)} L'évaluation mélange les ${module.chapters.length} chapitres et la phase Utiliser demande ensuite de retrouver ou produire les formes sans regarder la leçon.</p>
+    </section>`;
+}
 function aprModuleItemsForGuide(m,lecHtml){
+  if(m&&Array.isArray(m.chapters)){
+    const seen=new Set();
+    return m.chapters.flatMap(chapter=>{
+      const lesson=typeof chapter.lec==='function'?chapter.lec():chapter.lec;
+      return aprModuleItemsForGuide(chapter,lesson||'');
+    }).filter(item=>{
+      const key=aprLessonKey(item.aln8ba); if(!key||seen.has(key)) return false;
+      seen.add(key); return true;
+    });
+  }
   const items=Array.isArray(m.items)?m.items:
     (Array.isArray(m.itemNames)?aprNamedModuleItems(m.itemNames):aprLessonItems(m,lecHtml));
   const seen=new Set();
@@ -8182,7 +8374,7 @@ function aprEarlierModuleKeys(level,index){
   return keys;
 }
 function aprModuleGuideHtml(level,m,index,lecHtml){
-  const guide=aprModuleTaskGuide(m), contract=APR_MODULE_CONTRACTS[m.t];
+  const guide=aprModuleTaskGuide(m), contract=aprModuleContract(m);
   const items=aprModuleItemsForGuide(m,lecHtml), earlier=aprEarlierModuleKeys(level,index);
   const repeated=items.filter(item=>earlier.has(aprLessonKey(item.aln8ba)));
   const fresh=items.filter(item=>!earlier.has(aprLessonKey(item.aln8ba)));
@@ -8200,9 +8392,46 @@ function aprModuleGuideHtml(level,m,index,lecHtml){
   </div>${bank}`;
 }
 function aprModulePerfect(m,state){
-  return Boolean(m&&m.ex&&state&&state.retenir>=100&&(!aprModuleNeedsUse(m)||state.utiliser>=100));
+  return Boolean(m&&m.ex&&state&&(state.legacyCourse?state.legacyPerfect:
+    state.retenir>=100&&(!aprModuleNeedsUse(m)||state.utiliser>=100)));
 }
-function aprExerciseCapacity(type,cat,modulePool){
+function aprChapterPool(chapter){
+  if(!chapter) return [];
+  if(Array.isArray(chapter.items)) return chapter.items.map(item=>({...item}));
+  if(Array.isArray(chapter.itemNames)) return aprNamedModuleItems(chapter.itemNames);
+  const lesson=typeof chapter.lec==='function'?chapter.lec():chapter.lec;
+  const lessonItems=aprModuleItemsForGuide(chapter,lesson||'');
+  return lessonItems.length?lessonItems:aprSur().filter(word=>word.cat===chapter.cat);
+}
+function aprCourseExerciseDescriptors(module,mode){
+  if(!module||!Array.isArray(module.chapters)) return [];
+  return module.chapters.map((chapter,index)=>{
+    if(mode==='utiliser'){
+      if(chapter.use) return {chapter,index,type:'ecrisgram',cat:chapter.use,pool:aprChapterPool(chapter)};
+      if(chapter.cat&&chapter.ex!=='sons') return {chapter,index,type:'ecris',cat:chapter.cat,pool:aprChapterPool(chapter)};
+      return null;
+    }
+    return chapter.ex?{chapter,index,type:chapter.ex,cat:chapter.cat||chapter.use||'',pool:aprChapterPool(chapter)}:null;
+  }).filter(Boolean).map(descriptor=>({...descriptor,
+    capacity:aprExerciseCapacity(descriptor.type,descriptor.cat,descriptor.pool,descriptor.chapter)}));
+}
+function aprCourseExercisePlan(module,mode,target){
+  const descriptors=aprCourseExerciseDescriptors(module,mode).filter(descriptor=>descriptor.capacity>0);
+  const counts=descriptors.map(()=>0), plan=[];
+  const limit=Math.min(target,descriptors.reduce((sum,descriptor)=>sum+descriptor.capacity,0));
+  while(plan.length<limit){
+    let added=false;
+    descriptors.forEach((descriptor,index)=>{
+      if(plan.length>=limit||counts[index]>=descriptor.capacity) return;
+      plan.push(descriptor); counts[index]++; added=true;
+    });
+    if(!added) break;
+  }
+  return plan;
+}
+function aprExerciseCapacity(type,cat,modulePool,module){
+  if(type==='course') return aprCourseExerciseDescriptors(module,'retenir')
+    .reduce((sum,descriptor)=>sum+descriptor.capacity,0);
   const fixed={
     plur:()=>JPLUR.length,fratrie:()=>EXFRATRIE.length,possfam:()=>EXFAM_POSSESSION.length,
     conjp:()=>EXCONJ.length*2,negs:()=>EXNEGS.length,classfx:()=>EXCLASSFX.length,
@@ -8225,14 +8454,14 @@ function aprModuleSessionCapacity(level,m,index){
   aprNiv=level.id; aprMod=index;
   try{
     const pool=aprModulePool(m.cat||'');
-    return Math.min(APR_EXERCISE_TARGETS[level.id]||8,aprExerciseCapacity(m.ex,m.cat||'',pool));
+    return Math.min(APR_EXERCISE_TARGETS[level.id]||8,aprExerciseCapacity(m.ex,m.cat||'',pool,m));
   }finally{
     aprNiv=previousLevel; aprMod=previousModule;
   }
 }
 function aprOpenModule(i){
   aprMod=i;
-  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[i], state=n?progGet(aprProgressKey(n,i)):null;
+  const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[i], state=n?aprProgressState(n,i):null;
   if(aprModulePerfect(m,state)){
     aprRevScope={nivId:aprNiv,modIndex:i,title:m.t};
     aprActivateNav('rev');
@@ -8284,7 +8513,7 @@ function aprParcours(){
     </section>
     <section aria-labelledby="aprModulesTitle">
       <div class="apr-modules-head"><div><h3 id="aprModulesTitle">Modules de ${escH(level.t)}</h3>
-        <p>Chaque module enseigne un principe complet; la séance s'arrête lorsque sa banque distincte est épuisée.</p></div><span class="apr-modules-count">${level.mods.length} modules</span></div>
+        <p>Chaque module réunit plusieurs chapitres, une synthèse et une évaluation qui mélange réellement les notions.</p></div><span class="apr-modules-count">${level.mods.length} grands modules</span></div>
       <div class="apr-module-grid">${stats.rows.map(row=>{
         const stateLabel=row.perfect?'Réviser 100 %':row.done?'Maîtrisé':row.started?'En cours':'À faire';
         const stateClass=row.done?'is-mastered':row.index===stats.nextIndex?'is-current':'';
@@ -8294,7 +8523,7 @@ function aprParcours(){
         return `<button type="button" class="apr-module-card ${stateClass}" style="--level-color:${level.c}" onclick="aprOpenModule(${row.index})" aria-label="${escH(row.module.t)} · ${stateLabel}">
           <div class="apr-module-top"><span class="apr-module-number">MODULE ${String(row.index+1).padStart(2,'0')}</span><span class="apr-module-state">${stateLabel}</span></div>
           <h4>${escH(row.module.t)}</h4><p>${escH(row.module.d)}</p>
-          <footer><span>${memory}${use} · ${capacity} question${capacity!==1?'s':''}</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
+          <footer><span>${row.module.chapters.length} chapitres · ${memory}${use} · ${capacity} questions</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
         </button>`;
       }).join('')}</div>
     </section>`;
@@ -8309,7 +8538,8 @@ function aprJeux(nivId){
     a:['genre','negat','plur','fam'],
     au:['territoire','negat','fam']
   };
-  jCtx={label:n.t,cats:[...new Set(n.mods.map(m=>m.cat).filter(Boolean))],games:games[nivId]||[]};
+  const chapters=n.mods.flatMap(module=>module.chapters||[module]);
+  jCtx={label:n.t,cats:[...new Set(chapters.map(module=>module.cat).filter(Boolean))],games:games[nivId]||[]};
   setView('jeux',true);
 }
 function aprLecon(i){
@@ -8318,7 +8548,7 @@ function aprLecon(i){
   aprActivateNav('parcours');
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n.mods[i];
   const lecHtml = typeof m.lec==='function' ? m.lec() : m.lec;
-  const st=progGet(aprProgressKey(n,i)), tt=m.t.replace(/'/g,"\\'"), canWrite=aprModuleNeedsUse(m);
+  const st=aprProgressState(n,i), tt=m.t.replace(/'/g,"\\'"), canWrite=aprModuleNeedsUse(m);
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="aprParcours()">← ${n.t}</button>
     <div class="aprcard">
@@ -8326,25 +8556,25 @@ function aprLecon(i){
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
       ${aprModuleGuideHtml(n,m,i,lecHtml)}
-      ${m.ex?aprMethodHtml(m):
+      ${m.ex?(m.chapters?`<div class="apr-course-assessment-note"><b>Deux passages pour maîtriser le module</b><span><strong>Retenir</strong> mélange tous les chapitres. <strong>Utiliser</strong> demande ensuite de retrouver ou produire les formes sans regarder. Un résultat de 75 % est requis à chaque passage.</span></div>`:aprMethodHtml(m)):
         `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
         Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
         comme réponses dans les exercices actifs et ne remplacent pas les graphies actuelles.</div>`}
       ${aprProvenanceHtml(m,lecHtml)}
       ${lecHtml}
-      ${st?`<div class="aprnote"><b>Ta progression dans ce module</b>
+      ${st?`<div class="aprnote"><b>Ta progression dans ce module${st.legacyCourse?' · acquis antérieurs conservés':''}</b>
         🧠 Retenir : ${st.retenir!=null?st.retenir+'%':'pas encore fait'} ·
         ✍️ Utiliser : ${st.utiliser!=null?st.utiliser+'%':'pas encore fait'}</div>`:''}
       <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
         ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
       <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        ${m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
-          onclick="aprFC('${m.cat}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
+        ${m.chapters||m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
+          onclick="aprFC('${m.cat||''}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
         ${m.ex?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||m.use||''}','${tt}','retenir')">
           🧠 Retenir — le quiz</button>`:''}
         ${canWrite?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
-          onclick="aprEx('${m.use?'ecrisgram':'ecris'}','${m.use||m.cat}','${tt}','utiliser')">
-          ✍️ Utiliser — ${m.use?'produis la forme':'écris le mot'}</button>`:''}
+          onclick="aprEx('${m.chapters?'course':m.use?'ecrisgram':'ecris'}','${m.chapters?'':m.use||m.cat}','${tt}','utiliser')">
+          ✍️ Utiliser — produire sans regarder</button>`:''}
       </div>
     </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
@@ -9070,12 +9300,23 @@ const EXEVIDENCE=[
  {q:"Que faut-il indiquer lorsqu'on cite une forme du dictionnaire?",f:"Bonne pratique",o:["Sa source et la limite signalée par sa fiche","Seulement sa traduction française","Seulement l'année la plus récente","Aucune information si la forme est verte"],r:0,e:"La source et le statut permettent au lecteur de comprendre ce qui est attesté, recoupé ou encore à valider."}
 ];
 let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exUseKey='', exVariant='mixed', exPoolOverride=null;
-let exAsked=[], exSonsQueue=[];
+let exAsked=[], exSonsQueue=[], exCoursePlan=[], exCourseChapterTitle='';
 
 function aprEx(type,cat,titre,mode){
   exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
-  exQ=0; exOk=0; exTot=APR_EXERCISE_TARGETS[aprNiv]||8; exAsked=[]; exSonsQueue=[];
+  exQ=0; exOk=0; exTot=APR_EXERCISE_TARGETS[aprNiv]||8; exAsked=[]; exSonsQueue=[]; exCoursePlan=[]; exCourseChapterTitle='';
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
+  if(type==='course'){
+    exCoursePlan=aprCourseExercisePlan(m,exMode,exTot);
+    exTot=exCoursePlan.length;
+    exUseKey='course'; exVariant='mixed'; exPoolOverride=null;
+    if(!exTot){
+      document.getElementById('aprBody').innerHTML='<div class="aprcard"><div class="aprnote w"><b>Évaluation indisponible</b>Aucune banque sûre n’est disponible pour ce passage.</div></div>';
+      return;
+    }
+    exSuivant();
+    return;
+  }
   exUseKey=(m&&m.use)||'';
   exVariant=(m&&m.activity)||'mixed';
   const modulePool=m?aprModulePool(cat):[];
@@ -9093,7 +9334,7 @@ function exCadre(corps){
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="aprLecon(aprMod)">← Revenir à la leçon</button>
     <div class="aprcard">
-      <div class="jbar"><h3>${exTitre}</h3>
+      <div class="jbar"><h3>${exTitre}${exCourseChapterTitle?`<small class="ex-course-chapter-label">Chapitre · ${escH(exCourseChapterTitle)}</small>`:''}</h3>
         <span class="jscore" role="status" aria-live="polite" aria-atomic="true">Question ${Math.min(exQ+1,exTot)} sur ${exTot} &nbsp;·&nbsp;
           Score <b>${exOk} / ${exQ}</b></span></div>
       <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:20px">
@@ -9128,7 +9369,9 @@ function exFin(){
   cancelAnswerAdvance();
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   const pc=Math.round(exOk/exTot*100);
-  const canUse=exMode==='retenir' && Boolean(exUseKey||exCat);
+  const module=n&&n.mods[aprMod];
+  const canUse=exMode==='retenir' && (exType==='course'
+    ?aprCourseExerciseDescriptors(module,'utiliser').length>0:Boolean(exUseKey||exCat));
   if(exMode!=='rev' && aprMod!==null && aprMod!==undefined){
     const level=NIVEAUX.find(item=>item.id===aprNiv);
     if(level) progRecord(aprProgressKey(level,aprMod), exMode, pc);
@@ -9145,7 +9388,7 @@ function exFin(){
       <p class="aprlead" style="margin:14px 0 22px;font-size:.95rem">${msg}</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         ${canUse?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
-          onclick="aprEx('${exUseKey?'ecrisgram':'ecris'}','${exUseKey||exCat}',exTitre,'utiliser')">✍️ Utiliser — ${exUseKey?'produire les formes':'écrire les mots'}</button>`:''}
+          onclick="aprEx('${exType==='course'?'course':exUseKey?'ecrisgram':'ecris'}','${exType==='course'?'':exUseKey||exCat}',exTitre,'utiliser')">✍️ Utiliser — produire les formes</button>`:''}
         <button class="aprbtn" style="${canUse?'background:var(--surface2);color:var(--text)':''}"
           onclick="${exMode==='rev'?'aprRevStart()':'aprEx(exType,exCat,exTitre,exMode)'}">Refaire</button>
         <button class="aprbtn" style="background:var(--surface2);color:var(--text)"
@@ -9159,11 +9402,20 @@ function exFin(){
 function exSuivant(){
   cancelAnswerAdvance();
   if(exQ>=exTot) return exFin();
+  let activeType=exType;
+  if(exType==='course'){
+    const descriptor=exCoursePlan[exQ];
+    if(!descriptor) return exFin();
+    activeType=descriptor.type; exCat=descriptor.cat; exUseKey=descriptor.chapter.use||'';
+    exVariant=descriptor.chapter.activity||'mixed'; exCourseChapterTitle=descriptor.chapter.t;
+    exPoolOverride=['vocab','ecris','genre'].includes(activeType)&&descriptor.pool.length?descriptor.pool:null;
+    if(activeType==='sons'&&!exSonsQueue.length) exSonsQueue=jShuf(EXSONS);
+  }else exCourseChapterTitle='';
   const handler=({sons:exSons, vocab:exVocab, ecris:exEcris, ecrisgram:exGrammarWrite, rev:exRev, genre:exGenre, plur:exPlur, fratrie:exFratrie, possfam:exPossFam, conjp:exConjp,
     negs:exNegs, classfx:exClassFx, structure:exStructure, temps:exTemps, vta:exVta, inter2:exInter2, ordre:exOrdre, neg:exNeg, suf:exSuf, fam:exFam,
     trad:exTrad, conversation:()=>exFixedLesson(EXCONVERSATION), dialogue:()=>exFixedLesson(EXDIALOGUE),
     day:()=>exFixedLesson(EXDAY), sourcecheck:()=>exFixedLesson(EXSOURCECHECK), history:()=>exFixedLesson(EXHISTORY),
-    evidence:()=>exFixedLesson(EXEVIDENCE)})[exType];
+    evidence:()=>exFixedLesson(EXEVIDENCE)})[activeType];
   if(handler) handler();
   else exCadre('<div class="aprnote w"><b>Exercice indisponible</b>Ce module a été bloqué proprement au lieu de laisser une page vide.</div>');
 }
@@ -9192,7 +9444,7 @@ function exRetFixedLesson(){
 }
 
 function exSons(){
-  const q=exSonsQueue[exQ]; window._ex=q;
+  const q=exType==='course'?exPickUnique(EXSONS,item=>item.m):exSonsQueue[exQ]; window._ex=q;
   const idx=q.o.map((_,i)=>i), ordre=jShuf(idx), opts=ordre.map(i=>q.o[i]), bonne=ordre.indexOf(q.r);
   exCadre(`
     <div class="jprompt"><div class="q">${q.q}</div><div class="w">${q.m}</div></div>
