@@ -95,7 +95,9 @@ test('tu travailles fort utilise la forme complète documentée', () => {
   assert.match(sentences, /fr:\['Tu travailles','Tu travailles fort','Tu mets des efforts'\],aln8ba:"K'milaloka"/);
   assert.match(sentences, /« Fort » n'est pas traduit séparément/);
   assert.match(sentences, /fr:\['Tu as déjà beaucoup travaillé','Tu travailles tellement'\],aln8ba:"K'milaloka kizi"/);
-  assert.match(html, /APP_RESET_VERSION = '2026-08-30-learning-dashboard-018'/);
+  assert.match(html, /const APP_RELEASE_KEY = 'aln8ba_release_fingerprint'/);
+  assert.match(html, /publishedReleaseFingerprint\(\)/);
+  assert.match(html, /purgeTechnicalCaches\(\)/);
 });
 
 test('un mot français connu est protégé contre une correction verbale hasardeuse', () => {

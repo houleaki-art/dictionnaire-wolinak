@@ -50,7 +50,8 @@ test('legal notices distinguish sources and third-party rights', () => {
 });
 
 test('public identity presents a personal Wôlinak project without institutional representation', () => {
-  assert.match(html, /Projet personnel de Guillaum Labrecque-Houle · Abénakis de Wôlinak/);
+  assert.match(html, /Projet personnel d'Alakws Pamidoo · clan M8lsem · Abénakis de Wôlinak/);
+  assert.match(html, /nom administratif : Guillaum Labrecque-Houle/);
   assert.match(html, /Un projet personnel de Wôlinak/);
   assert.match(html, /ni approuvé dans son ensemble par des professionnels, une Nation, un conseil de bande/);
   assert.doesNotMatch(html, /Dictionnaire vivant · Abenakis d'Odanak et Wôlinak/);
@@ -78,7 +79,8 @@ test('public contributions are anonymous and never collect or publish a voice', 
 
 test('privacy notice identifies the processor, purposes and withdrawal contact', () => {
   assert.match(html, /proposition linguistique anonyme à la base Supabase du projet/);
-  assert.match(html, /Responsable : <strong>Guillaum Labrecque-Houle<\/strong>/);
+  assert.match(html, /Responsable : <strong>Alakws Pamidoo · M8lsem<\/strong>/);
+  assert.match(html, /nom administratif : Guillaum Labrecque-Houle/);
   assert.match(html, /mailto:houle\.aki@gmail\.com/);
   assert.match(html, /demander l'accès, la rectification ou le retrait/);
 });

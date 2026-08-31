@@ -119,27 +119,13 @@ test('un administrateur ajoute directement une fiche sans proposition intermedia
   assert.match(submit, /const submitted=await pushPending\(entry\)/);
 });
 
-test('la collecte de poissons est migree une seule fois et retire seulement ses doublons connus', () => {
-  const migration = sourceBetween('const FISH_FIELD_MIGRATION_KEY', '// ── SUGGESTIONS DE MODIFICATION');
-  assert.match(migration, /const sourceWords=await fetchWordsFromSB\(\)/);
-  assert.match(migration, /for\(const form of \['Watagwa','Magahaghi'\]\)/);
-  assert.match(migration, /canonicalIds=\{Watagwa:'mtfpqp7xh5x4',Magahaghi:'mtfpidj7jnsn'\}/);
-  assert.match(migration, /matches\.filter\(w=>w\.id!==canonical\?\.id\)/);
-  assert.match(migration, /await deleteFromSB\(id\)/);
-  assert.match(migration, /sourceWords\.filter/);
-  assert.match(migration, /nio_043/);
-  assert.match(migration, /nio_045/);
-  assert.match(migration, /nio_044/);
-  assert.match(migration, /mst018/);
-  assert.match(migration, /mst311/);
-  assert.match(migration, /mtfpi9qcc4st/);
-  assert.match(migration, /mst121/);
-  assert.match(migration, /cat:'archive'/);
-  assert.match(migration, /addRelated\(addRelated\(trout\.related,'Scotam'\),'Skotam'\)/);
-  assert.match(migration, /addRelated\(pike\.related,'Kwenoza'\)/);
-  assert.match(migration, /localStorage\.setItem\(FISH_FIELD_MIGRATION_KEY,'done'\)/);
-  assert.match(html, /if\(adminUnlocked\) await applyFishFieldMigration\(\)/);
-  assert.match(html, /if\(WORDS\.length\) setTimeout\(\(\)=>applyFishFieldMigration\(\),0\)/);
+test('la collecte de poissons ne conserve aucun script de migration public', () => {
+  assert.doesNotMatch(html, /FISH_FIELD_MIGRATION_KEY/);
+  assert.doesNotMatch(html, /applyFishFieldMigration/);
+  const overrides = sourceBetween('const CURRENT_ENTRY_OVERRIDES', 'const INTERROGATIVE_FORM_NOTES');
+  assert.match(overrides, /mst311:\{cat:'archive'/);
+  assert.match(overrides, /mtfpi9qcc4st:\{en:'Trout'/);
+  assert.match(overrides, /related:\['Scotam','Scotama'\]/);
 });
 
 test('les doublons strictement identiques ne sont jamais rendus au public', () => {

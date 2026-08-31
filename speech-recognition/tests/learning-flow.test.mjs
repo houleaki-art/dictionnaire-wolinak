@@ -102,7 +102,7 @@ test('les modules grammaticaux exigent une production ecrite', () => {
   for (const marker of [
     'ex:\'genre\',use:\'genre\'',
     'ex:\'plur\',use:\'plur\'',
-    'ex:\'poss\',use:\'poss\'',
+    'ex:\'possfam\',use:\'possfam\'',
     'ex:\'conjp\',use:\'conjp\'',
     'ex:\'inter2\',use:\'inter2\'',
     'ex:\'negs\',use:\'neg\'',
@@ -122,7 +122,7 @@ test('les modules grammaticaux exigent une production ecrite', () => {
 
 test('la production grammaticale suit une procedure documentee', () => {
   const writing = sourceBetween('function grammarWritingPool', '/* — révision espacée');
-  for (const key of ['genre','plur','poss','conjp','inter2','neg','classfx','structure','vta','temps','ordre','suf','fam','trad']) {
+  for (const key of ['genre','plur','possfam','conjp','inter2','neg','classfx','structure','vta','temps','ordre','suf','fam','trad']) {
     assert.match(writing, new RegExp(`key==='${key}'`), `banque absente: ${key}`);
   }
   assert.match(writing, /DOCUMENTED_NEGATION_PARADIGMS\.map/);
@@ -145,7 +145,7 @@ test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
 
 test('chaque module affiche sa mission, sa place et ses formes nouvelles', () => {
   const guide = sourceBetween('const APR_TASK_GUIDES', 'function aprModulePerfect');
-  for (const type of ['sons','conversation','dialogue','genre','plur','poss','conjp','inter2',
+  for (const type of ['sons','conversation','dialogue','genre','plur','possfam','conjp','inter2',
     'negs','classfx','day','structure','vta','temps','ordre','neg','suf','fam','sourcecheck',
     'trad','history','evidence']) {
     assert.match(guide, new RegExp(`\\b${type}:\\[`), `guidage absent: ${type}`);
@@ -210,7 +210,8 @@ test('le parcours contient cinq etapes, 45 modules actifs et preserve la progres
   assert.match(levels, /progressId:'c',progressOffset:6/);
   assert.match(html, /const APR_EXERCISE_TARGETS=\{d:12,f:24,co:24,a:24,au:24\}/);
   assert.match(html, /exTot=APR_EXERCISE_TARGETS\[aprNiv\]\|\|8/);
-  assert.match(html, /jusqu'à \$\{APR_EXERCISE_TARGETS\[level\.id\]\} questions par séance/);
+  assert.match(html, /la séance s'arrête lorsque sa banque distincte est épuisée/);
+  assert.match(html, /aprModuleSessionCapacity\(level,row\.module,row\.index\)/);
 
   const dispatch = sourceBetween('function exSuivant()', 'function exPickUnique');
   for (const type of new Set(exerciseTypes)) {
@@ -362,9 +363,9 @@ test('le jeu du territoire relie observation et vocabulaire vert actuel', () => 
   assert.match(gameSource, /stop\.words\.length===4/);
   assert.match(gameSource, /stops\.length!==TERRITORY_TRAIL\.length/);
   assert.match(gameSource, /Toutes les réponses proposées sont des entrées vertes actuelles/);
-  assert.match(html, /d:\['sens','caches'\]/);
-  assert.match(html, /f:\['territoire','sens','caches'\]/);
-  assert.match(html, /co:\['territoire','genre','sens','negat','plur','caches'\]/);
+  assert.match(html, /d:\['caches'\]/);
+  assert.match(html, /f:\['territoire','caches'\]/);
+  assert.match(html, /co:\['territoire','genre','negat','plur','caches'\]/);
   assert.match(html, /a:\['genre','negat','plur','fam'\]/);
   assert.match(html, /au:\['territoire','negat','fam'\]/);
 
@@ -388,14 +389,15 @@ test('la forme locative wigw8mek reste coherente partout', () => {
 });
 
 test('les noms du corps enseignent la possession sans substitution automatique', () => {
-  const body = sourceBetween('{t:"Mon corps"', '{t:"Ma famille"');
+  const body = sourceBetween('{t:"Mon corps",d:', '{t:"Le corps en entier"');
   assert.match(body, /Avant les mots : pourquoi la forme porte déjà « mon »/);
   assert.match(body, /Ndep<\/span> « ma tête »/);
   assert.match(body, /K'dup<\/span> « ta tête »/);
   assert.match(body, /Wdep<\/span> « sa tête »/);
   assert.match(body, /dep → dup/);
   assert.doesNotMatch(body, /Change le N pour un K/);
-  assert.match(body, /lec:aprBodyPossessionLec/);
+  const fullBody = sourceBetween('{t:"Le corps en entier"', '{t:"Ma famille par générations"');
+  assert.match(fullBody, /lec:aprBodyPossessionLec/);
   const grouping = sourceBetween('function aprBodyPossessionLec', 'function aprGenreReviewLec');
   assert.match(grouping, /Avec moi/);
   assert.match(grouping, /Avec lui ou elle/);
@@ -403,14 +405,14 @@ test('les noms du corps enseignent la possession sans substitution automatique',
   assert.match(grouping, /une ressemblance n'est pas une règle automatique/i);
 });
 
-test('la possession compare des paradigmes attestes et laisse les cases manquantes ouvertes', () => {
-  const lesson = sourceBetween('{t:"Mon, ton, son"', '{t:"La phrase affirmative au présent"');
-  for (const form of ['Nid8ba','Kid8ba','Wid8ba','Ndep',"K'dup",'Wdep',"N'haga",'Whaga','Nelji','Welji']) {
+test('la possession compare des relations attestees et laisse les cases manquantes ouvertes', () => {
+  const lesson = sourceBetween('{t:"Qui possède la relation?"', '{t:"La phrase affirmative au présent"');
+  for (const form of ['Nigawes','Nnonon','Ndadan','Nid8baskwa','Nid8bana','Kid8bana','Kid8baw8','Wmitogwesa']) {
     assert.ok(lesson.includes(form), `forme absente: ${form}`);
   }
-  assert.match(lesson, /non donné ici/);
-  assert.match(lesson, /Préfixes nominaux et préfixes verbaux ne sont pas une seule règle/);
-  assert.doesNotMatch(lesson, /<td class="k">Kdep<\/td>/);
+  assert.match(lesson, /Deux façons de dire « notre »/);
+  assert.match(lesson, /relation complète n'est pas dans la banque actuelle/);
+  assert.match(lesson, /ne permet pas de remplacer automatiquement N par K ou W/);
 });
 
 test('la morphologie definit prefixe base et suffixe avant les tableaux', () => {
@@ -438,8 +440,9 @@ test("le module de l'arbre utilise seulement sa banque active verifiee", () => {
 test('le site audite les routes et les banques des 45 modules au chargement', () => {
   const audit = sourceBetween('const APR_EXERCISE_ROUTES', 'function aprModuleNeedsUse');
   assert.match(audit, /function aprLearningRuntimeAudit/);
-  assert.match(audit, /aprModulePool\(module\.cat\)\.length/);
-  assert.match(audit, /banque de vocabulaire trop petite/);
+  assert.match(audit, /aprExerciseCapacity\(module\.ex,module\.cat\|\|'',modulePool\)/);
+  assert.match(audit, /moins de trois situations distinctes/);
+  assert.match(audit, /const dataPending=!WORDS_REMOTE_READY/);
   assert.match(audit, /route d'exercice absente/);
   assert.match(html, /APR_LAST_AUDIT=aprLearningRuntimeAudit\(\)/);
   assert.match(html, /Contrôle fonctionnel réussi/);

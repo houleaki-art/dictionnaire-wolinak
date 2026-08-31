@@ -309,6 +309,19 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Ajout de ce repère au contrôle fonctionnel automatique des 45 modules afin qu'une position incohérente soit désormais signalée au chargement.
 - Vérification particulière de `Qualités et émotions`, maintenant affiché comme module 5 sur 7 de l'étape Découverte sans référence trompeuse à `Compter jusqu'à dix`.
 
+## Audit rigoureux des 45 modules — 31 août 2026
+
+- Application d'une grille interne à neuf critères : principe distinct, place dans la progression, leçon développée, exemples documentés, procédure guidée, maîtrise mesurable, situations distinctes, exercice exécutable et affichage mobile.
+- Séparation du contrôle technique et du plancher pédagogique; ce dernier est explicitement présenté comme un outil interne, jamais comme une approbation ministérielle.
+- Résultat après correction : 45 modules sur 45 exécutables et 45 sur 45 au-dessus du plancher interne, sans route ni banque manquante.
+- Renforcement de `La nature autour`, `Compter jusqu'à dix`, `Dire non`, `La négation complète` et `Décortiquer ensemble`.
+- Clarification des paires qui pouvaient sembler être des clones : animaux, corps, nombres, temps, négation, morphologie et lecture des sources.
+- Affichage du nombre réel de questions distinctes sur chaque carte; une séance s'arrête lorsque sa banque est épuisée au lieu de répéter artificiellement jusqu'à 12 ou 24.
+- Relance automatique de l'audit après le chargement Supabase pour éviter un faux échec pendant que les entrées actuelles ne sont pas encore disponibles.
+- Rapport durable : `research/2026-08-31-audit-parcours-apprentissage.md`.
+- Validation finale : 92 tests automatisés réussis, 45 leçons et 45 exercices ouverts
+  dans le navigateur, puis contrôle mobile à 390 × 844 sans débordement.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

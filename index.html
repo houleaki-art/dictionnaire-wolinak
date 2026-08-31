@@ -2983,6 +2983,7 @@ const S = {
   fcWords:[], fcIdx:0,
 };
 let WORDS = SEED.map(w=>{const f=FAMILY_MAP[w.id];return f?{...w,...f}:w;});
+let WORDS_REMOTE_READY = false;
 let FAVS  = loadFavs();
 let WORD_RENDER_LIMIT = 0;
 let WORD_RENDER_KEY = '';
@@ -5099,9 +5100,16 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       const w = await loadWords();
       if(w && w.length){
         WORDS = w;
+        WORDS_REMOTE_READY = true;
         updateCounts(); renderWords(); if(adminUnlocked) renderAdmin();
         refreshPracticeCoverage();
         if(S.view==='pratique'){ PS.queue=[]; buildQueue(); }
+        if(S.view==='apprendre'){
+          APR_LAST_AUDIT=aprLearningRuntimeAudit();
+          document.documentElement.dataset.learningAudit=APR_LAST_AUDIT.ok?'ready':'failed';
+          document.documentElement.dataset.learningAuditIssues=APR_LAST_AUDIT.issues.join(' | ');
+          if(aprMod===null) aprParcours();
+        }
       }
     }catch(e){ console.warn('Supabase init error:', e); }
   })();
@@ -6795,7 +6803,7 @@ function aprInit(){
   });
   const box=document.getElementById('aprBody');
   APR_LAST_AUDIT=aprLearningRuntimeAudit();
-  document.documentElement.dataset.learningAudit=APR_LAST_AUDIT.ok?'ready':'failed';
+  document.documentElement.dataset.learningAudit=APR_LAST_AUDIT.pending?'pending':APR_LAST_AUDIT.ok?'ready':'failed';
   document.documentElement.dataset.learningAuditIssues=APR_LAST_AUDIT.issues.join(' | ');
   if(!APR_LAST_AUDIT.ok) console.error('Audit fonctionnel du parcours: '+APR_LAST_AUDIT.issues.join(' | '));
   if(box && !box.innerHTML.trim()) aprParcours();
@@ -6883,21 +6891,33 @@ const APR_MODULE_LIBRARY=[
    Choisis cinq formes aujourd'hui et classe-les d'abord comme qualité ou émotion.
    L'onglet <b>🔁 Révision</b> te les resservira ensuite au bon moment.</div>`)},
  {t:"Compter jusqu'à dix",d:"Les dix premiers chiffres.",cat:'nombre',ex:'vocab',activity:'retrieve',lec:`
-  <table class="aprtab">
+  <p>Ce premier module numérique sert à <b>réciter ou nommer un nombre seul</b>. Il ne demande pas
+  encore d'accorder un nombre avec un nom animé ou inanimé. Apprends d'abord ces onze formes de
+  base, de zéro à dix; le module suivant montrera les constructions plus longues et leurs limites.</p>
+  <table class="aprtab"><tr><th>Forme de base</th><th>Quantité</th></tr>
+  <tr><td class="k">Ndakagwi</td><td>0</td></tr>
   <tr><td class="k">Pazokw</td><td>1</td></tr><tr><td class="k">Nis</td><td>2</td></tr>
   <tr><td class="k">Nas</td><td>3</td></tr><tr><td class="k">Iaw</td><td>4</td></tr>
   <tr><td class="k">N8lan</td><td>5</td></tr><tr><td class="k">Ngwed8s</td><td>6</td></tr>
   <tr><td class="k">T8baw8s</td><td>7</td></tr><tr><td class="k">Ns8zek</td><td>8</td></tr>
   <tr><td class="k">Noliwi</td><td>9</td></tr><tr><td class="k">Mdala</td><td>10</td></tr></table>
   <div class="aprnote"><b>Zéro se dit Ndakagwi</b>
-   C'est le même mot que « rien » et que « de rien » quand on répond à un merci.</div>`},
+   C'est le même mot que « rien » et que « de rien » quand on répond à un merci.</div>
+  <div class="aprnote"><b>Trois passages pour vérifier la mémoire</b>
+   1. Compte de zéro à dix avec la table. 2. Compte dix objets réels dans un ordre différent.
+   3. Cache les formes et tire au hasard un chiffre de zéro à dix. Ce module est réussi lorsque
+   tu retrouves la forme sans réciter toute la série depuis le début.</div>
+  <div class="aprnote w"><b>Nombre seul ou nombre devant un nom?</b>
+   Les formes de cette table sont les formes de base. Devant un nom, de un à cinq, la forme peut
+   dépendre de la classe grammaticale. Cette nouvelle décision appartient au module des nombres
+   avancés; elle n'est pas mélangée au premier exercice.</div>`},
  {t:"Compter plus loin",d:"Toute la famille des nombres, au-delà de dix.",cat:'nombre',ex:'vocab',activity:'mixed',lec:aprAutoLec(`
   <p>Tu connais déjà <span class="al8">Pazokw</span> à <span class="al8">Mdala</span>. Voici le reste
   des nombres attestés du dictionnaire — les plus courts d'abord.</p>`,'nombre',18,`
   <div class="aprnote"><b>Compte ce qui t'entoure</b>
    Les arbres dehors, les tasses dans l'armoire, les autos qui passent. Un nombre qu'on utilise
    est un nombre qu'on garde.</div>`)},
- {t:"Les animaux",d:"Vingt-quatre animaux courants avant d'élargir à toute la faune.",cat:'animal',ex:'vocab',activity:'recognize',lec:`
+ {t:"Les animaux",d:"Reconnaître 24 animaux courants avec leur sens précis et leur classe affichée.",cat:'animal',ex:'vocab',activity:'recognize',lec:`
   <p>Ce premier groupe contient <b>24 animaux distincts</b>. Apprends le nom avec son sens complet;
   le module suivant prendra les autres fiches animales sûres sans recommencer cette liste.</p>
   <table class="aprtab">
@@ -6916,14 +6936,14 @@ const APR_MODULE_LIBRARY=[
   <div class="aprnote"><b>Une classe grammaticale, pas une interprétation.</b>
    Les fiches indiquent leur classe lorsqu'elle est documentée. On la vérifie mot par mot;
    on ne déduit aucune propriété philosophique du fait qu'un nom soit grammaticalement animé.</div>`},
- {t:"Les bêtes de chez nous",d:"Toute la faune du territoire, du plus petit au plus grand.",cat:'animal',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
+ {t:"Les bêtes de chez nous",d:"Retrouver les autres espèces actuelles sans revoir la liste d'introduction.",cat:'animal',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
   <p>Tu as rencontré les 24 formes du premier groupe. Voici les <b>autres animaux</b> retenus
   par la banque verte actuelle, du nom le plus court au plus long, sans répéter le premier module.</p>`,'animal',64,`
   <div class="aprnote"><b>Retiens la classe avec le mot</b>
    La classe grammaticale et le pluriel sont deux informations distinctes. Un pluriel ne doit
    être utilisé que lorsque sa forme est documentée dans le dictionnaire.</div>`,
    w=>!/esprit|aulne/i.test(w.fr||''))},
- {t:"Mon corps",d:"De la tête aux pieds.",cat:'corps',ex:'vocab',activity:'recognize',lec:`
+ {t:"Mon corps",d:"Comprendre huit parties du corps dont la forme porte déjà « mon ».",cat:'corps',ex:'vocab',activity:'recognize',lec:`
   <section class="morph-primer">
    <strong>Avant les mots : pourquoi la forme porte déjà « mon »</strong>
    <p>Plusieurs noms de parties du corps sont enseignés comme des <b>noms dépendants</b> : la fiche
@@ -6945,7 +6965,7 @@ const APR_MODULE_LIBRARY=[
    <span class="al8">K'dup</span> « ta tête » et <span class="al8">Wdep</span> « sa tête ».
    Le changement <span class="al8">dep → dup</span> montre pourquoi « remplacer N par K » serait faux.
    Apprends le paradigme complet seulement lorsqu'il est réellement donné par la source.</div>`},
- {t:"Le corps en entier",d:"Toutes les parties du corps attestées dans le dictionnaire.",cat:'corps',ex:'vocab',activity:'retrieve',lec:aprBodyPossessionLec},
+ {t:"Le corps en entier",d:"Cartographier les autres parties attestées et comparer leurs formes possédées.",cat:'corps',ex:'vocab',activity:'retrieve',lec:aprBodyPossessionLec},
  {t:"Ma famille par générations",d:"Situer les proches avant, avec ou après sa propre génération.",cat:'famille',ex:'vocab',activity:'context',
   itemNames:['Nigawes','Ndadan','Nnonon','Nokmes','Nmahom','Niswiakw','Aw8sis','Noses','Wskimos','Wskinnos'],lec:`
   <section class="morph-primer">
@@ -7028,11 +7048,33 @@ const APR_MODULE_LIBRARY=[
    Beaucoup de ces mots racontent la récolte et la saison. Quand tu en apprends un,
    demande-toi où tu l'as déjà vu pousser — le souvenir s'accroche à l'image.</div>`)},
  {t:"La nature autour",d:"Le soleil, la rivière, la montagne.",cat:'nature',ex:'vocab',activity:'recognize',lec:`
-  <table class="aprtab">
-  <tr><td class="k">Kizos</td><td>le soleil</td></tr><tr><td class="k">P8guas</td><td>la lune</td></tr>
-  <tr><td class="k">Alakws</td><td>une étoile</td></tr><tr><td class="k">Nebi</td><td>l'eau</td></tr>
-  <tr><td class="k">Watzo</td><td>la montagne</td></tr><tr><td class="k">Aki</td><td>la terre</td></tr>
-  <tr><td class="k">Skweda</td><td>le feu</td></tr></table>`},
+  <section class="morph-primer">
+   <strong>Construis une carte du monde visible</strong>
+   <p>Cette leçon n'est pas une liste de lieux. Elle apprend sept <b>grands repères naturels</b>
+   qui permettent ensuite de décrire ce qu'on observe autour de soi. Le module suivant portera
+   plutôt sur des lieux, des eaux et des chemins particuliers du territoire.</p>
+   <div class="morph-steps">
+    <div class="morph-step"><b>1 · Lève les yeux</b><span>Soleil, lune et étoile sont des repères du ciel.</span></div>
+    <div class="morph-step"><b>2 · Regarde devant toi</b><span>Eau et montagne structurent le paysage.</span></div>
+    <div class="morph-step"><b>3 · Regarde près de toi</b><span>Terre et feu sont deux repères du sol; le feu exige toujours un contexte sécuritaire.</span></div>
+   </div>
+  </section>
+  <table class="aprtab"><tr><th>Zone observée</th><th>Forme aln8ba</th><th>Repère</th></tr>
+  <tr><td rowspan="3"><b>Ciel</b></td><td class="k">Kizos</td><td>le soleil</td></tr>
+  <tr><td class="k">P8guas</td><td>la lune</td></tr>
+  <tr><td class="k">Alakws</td><td>une étoile</td></tr>
+  <tr><td rowspan="2"><b>Paysage</b></td><td class="k">Nebi</td><td>l'eau</td></tr>
+  <tr><td class="k">Watzo</td><td>la montagne</td></tr>
+  <tr><td rowspan="2"><b>Sol</b></td><td class="k">Aki</td><td>la terre</td></tr>
+  <tr><td class="k">Skweda</td><td>le feu</td></tr></table>
+  <div class="aprnote"><b>Exercice d'observation en trois passages</b>
+   1. Choisis une zone sans lire la table. 2. Nomme tous les repères que tu peux réellement voir
+   ou situer. 3. Reviens à la table et vérifie chaque lettre. Une image mentale précise vaut mieux
+   que sept traductions apprises dans le désordre.</div>
+  <div class="aprnote w"><b>Élément naturel ou nom de lieu?</b>
+   <span class="al8">Nebi</span> nomme ici l'eau. Un nom de rivière ou un toponyme est une autre
+   forme et peut porter une histoire ou une construction locative propre. Le module « Le territoire »
+   enseignera cette différence sans transformer automatiquement un élément en nom de lieu.</div>`},
  {t:"Le territoire",d:"Les lieux, les eaux et les chemins — nommer le pays.",cat:'territoire',ex:'vocab',activity:'retrieve',lec:aprAutoLec(`
   <p>Le territoire se nomme morceau par morceau. Ces mots-là ont été prononcés ici
   pendant des générations avant toi — tu les remets en marche.</p>`,'territoire',16,`
@@ -7040,7 +7082,7 @@ const APR_MODULE_LIBRARY=[
    La prochaine fois que tu passes près de l'eau, dis <span class="al8">Nebi</span>.
    Relie chaque forme à un lieu, une eau ou un chemin que tu peux réellement situer.</div>`,
    w=>/(?:lieu|territoire|terre|village|ville|rue|chemin|route|rivière|fleuve|ruisseau|lac|baie|rive|rivage|île|montagne|forêt|bois|champ|marais|source|plage|pont|endroit|amont|aval)/i.test(w.fr||''))},
- {t:"Le temps et les saisons",d:"Hier, demain, l'hiver, le printemps.",cat:'temps',ex:'vocab',activity:'context',lec:aprAutoLec(`
+ {t:"Le temps et les saisons",d:"Classer les repères comme moment, jour ou saison avant de les retenir.",cat:'temps',ex:'vocab',activity:'context',lec:aprAutoLec(`
   <p>Tu connais déjà <span class="al8">Pamkizgak</span> (aujourd'hui) — voici toute la famille
   du temps : les saisons, les jours, les moments.</p>`,'temps',16,`
   <div class="aprnote"><b>Réflexe du matin</b>
@@ -7210,7 +7252,7 @@ const APR_MODULE_LIBRARY=[
   coach:`Lis d'abord la question entière. Ensuite seulement, repère « tu » : parfois dans
    <span class="al8">-an/-ian</span>, parfois dans <span class="al8">k'-/kd'-</span>.
    Ne retire ni n'ajoute un préfixe par analogie : mémorise les six modèles attestés.`},
- {t:"Le temps qui passe",d:"Les jours, les mois, les saisons.",cat:'temps',ex:'vocab',activity:'recognize',lec:`
+ {t:"Le temps qui passe",d:"Placer avant, maintenant et après sur une ligne du temps.",cat:'temps',ex:'vocab',activity:'recognize',lec:`
   <table class="aprtab">
   <tr><td class="k">Sigwan</td><td>le printemps</td></tr><tr><td class="k">Niben</td><td>l'été</td></tr>
   <tr><td class="k">Tagw8gw</td><td>l'automne</td></tr><tr><td class="k">Pbon</td><td>l'hiver</td></tr>
@@ -7225,14 +7267,26 @@ const APR_MODULE_LIBRARY=[
   coach:`Les saisons se collent au territoire : apprends-les en regardant dehors, pas dans l'écran.
    Quand les feuilles tomberont, pense <span class="al8">Pnibagos</span>. Une langue qui colle
    au pays s'apprend dans le pays — c'est ta grand-force à Wôlinak.`},
- {t:"Dire non",d:"Passer d'une affirmation documentée à sa négation complète.",ex:'negs',use:'neg',lec:`
-  <p>Pour dire le contraire, on met <b>Nda</b> devant le verbe, et on ajoute un petit suffixe au bout.</p>
+ {t:"Dire non",d:"Comparer trois couples en -i et reconnaître leur négation en -w.",ex:'negs',use:'neg',lec:`
+  <p>Ce module enseigne un seul contraste contrôlé : trois verbes documentés qui finissent par
+  <b>-i</b>. Il prépare la comparaison des autres finales, mais il ne donne pas encore une règle
+  générale applicable à n'importe quel verbe.</p>
   <table class="aprtab"><tr><th>Affirmatif</th><th>Négatif</th></tr>
   <tr><td class="k">Nd'aliwizi</td><td class="k">Nda nd'aliwizi<b>w</b></td></tr>
   <tr><td class="k">N'wal8wzi</td><td class="k">Nda n'wal8wzi<b>w</b></td></tr>
   <tr><td class="k">Nd'agakimzi</td><td class="k">Nda nd'agakimzi<b>w</b></td></tr></table>
+  <section class="morph-primer">
+   <strong>Compare avant de produire</strong>
+   <div class="morph-steps">
+    <div class="morph-step"><b>1 · Garde l'affirmation entière</b><span>Ne retire ni le préfixe de personne ni une lettre du radical.</span></div>
+    <div class="morph-step"><b>2 · Place Nda devant</b><span>Dans les trois couples, la négation commence par la même forme.</span></div>
+    <div class="morph-step"><b>3 · Observe la finale</b><span>Ces trois radicaux finissent par -i et les formes documentées prennent -w.</span></div>
+   </div>
+  </section>
   <div class="aprnote"><b>Ici, le suffixe est toujours -W</b>
-   Parce que ces verbes finissent tous par <b>-i</b>. Dans Approfondissement, tu compareras seulement les autres cas documentés.</div>`,
+   Parce que ces verbes finissent tous par <b>-i</b>. Dans « La négation complète », tu compareras
+   cette série avec les cas documentés en <b>-a</b> et en <b>-aldam-</b>. Si une forme n'est pas dans
+   une série attestée, le parcours refuse de la fabriquer.</div>`,
   coach:`La négation est un sandwich : <span class="al8">Nda</span> devant, le petit suffixe derrière.
    Dis les paires à voix haute, affirmative puis négative, comme un refrain — l'oreille apprend
    le rythme avant que la tête apprenne la règle.`},
@@ -7492,18 +7546,35 @@ const APR_MODULE_LIBRARY=[
   coach:`Dans ces exemples, distingue la phrase indépendante, l'impératif et la forme
    conjonctive employée dans une question. Le suffixe <span class='al8'>-oda</span> marque ici
    une action proposée collectivement.`},
- {t:"La négation complète",d:"Trois suffixes selon la voyelle du radical.",ex:'neg',use:'neg',lec:`
+ {t:"La négation complète",d:"Comparer les trois familles documentées en -w, -wi et -owen.",ex:'neg',use:'neg',lec:`
+  <p>Tu as déjà appris trois couples en <b>-i → -w</b>. Cette leçon ajoute deux contrastes
+  documentés afin de savoir <b>quelle information vérifier</b> avant de lire une négation.
+  Le tableau est un outil de comparaison de formes attestées, pas un conjugueur universel.</p>
   <table class="aprtab"><tr><th>Le radical finit par</th><th>Suffixe</th><th>Exemple</th></tr>
   <tr><td class="k">-i</td><td class="k">-w</td><td class="k">Nda nd'aliwiziw</td></tr>
   <tr><td class="k">-a</td><td class="k">-wi</td><td class="k">Nda nd'alokawi</td></tr>
   <tr><td class="k">-aldam-</td><td class="k">-owen</td><td class="k">Nda n'mikwaldamowen</td></tr></table>
+  <section class="morph-primer">
+   <strong>Procédure de lecture en quatre décisions</strong>
+   <div class="morph-steps">
+    <div class="morph-step"><b>1 · Trouve Nda</b><span>Il place la construction dans la série négative montrée ici.</span></div>
+    <div class="morph-step"><b>2 · Repère la personne</b><span>Conserve N'- ou Nd'- avec le verbe complet.</span></div>
+    <div class="morph-step"><b>3 · Identifie le radical</b><span>Compare sa fin à une des trois familles réellement documentées.</span></div>
+    <div class="morph-step"><b>4 · Vérifie la paire</b><span>La fiche ou la leçon doit confirmer toute la forme avant qu'elle serve de modèle.</span></div>
+   </div>
+  </section>
+  <div class="aprnote"><b>Trois exemples, trois décisions différentes</b>
+   <span class="al8">aliwizi-</span> mène ici à <span class="al8">-w</span> ·
+   <span class="al8">aloka-</span> mène ici à <span class="al8">-wi</span> ·
+   la famille <span class="al8">-aldam-</span> est documentée ici avec <span class="al8">-owen</span>.
+   L'exercice demande de reconnaître ces contrastes, jamais de compléter un paradigme absent.</div>
   <div class="aprnote w"><b>Formes exactes seulement</b>
    Les exercices utilisent les exemples actuels documentés du parcours. Le traducteur ne fabrique
    pas une négation absente du dictionnaire et les graphies anciennes restent dans Archives.</div>`,
   coach:`Les trois suffixes suivent la voyelle du radical — c'est elle qui décide. Entraîne ton
    oreille à entendre cette voyelle finale avant ta mémoire : dis le verbe, allonge la dernière
    voyelle, et le bon suffixe se pose tout seul.`},
- {t:"Racines et suffixes",d:"Un mot se construit. Apprends à le démonter.",ex:'suf',use:'suf',lec:`
+ {t:"Racines et suffixes",d:"Comprendre la fonction de sept suffixes dans des exemples attestés.",ex:'suf',use:'suf',lec:`
   <section class="morph-primer">
    <strong>Trois morceaux possibles, trois fonctions différentes</strong>
    <p>On commence toujours par une <b>forme complète documentée</b>. Ensuite seulement, on observe
@@ -7551,7 +7622,7 @@ const APR_MODULE_LIBRARY=[
    <span class="al8">-gamikw</span> le lieu, <span class="al8">-winno</span> la personne. Collectionne-les
    comme des outils dans ta boîte de mécanicien — un mot long n'est plus un obstacle,
    c'est un assemblage que tu sais démonter.`},
- {t:"Décomposer un mot",d:"Préfixe, racine, suffixe — et la famille.",familyGroup:'derivation',ex:'fam',use:'fam',lec:`
+ {t:"Décomposer un mot",d:"Appliquer l'analyse préfixe-base-suffixe à trois familles documentées.",familyGroup:'derivation',ex:'fam',use:'fam',lec:`
   <p>Chaque mot long est un assemblage. Prends <span class="al8">Agakimzowinno</span> :
   la racine <i>agakimzo-</i> qui parle de l'étude, plus <i>-winno</i>, le suffixe de la personne.
   Le mot désigne <b>la personne qui étudie</b>.</p>
@@ -7566,7 +7637,7 @@ const APR_MODULE_LIBRARY=[
   coach:`Un mot par jour dans le Décortiqueur. La famille affichée en bas montre comment les
    formes documentées partagent une racine et se combinent avec des affixes. Compare les morceaux
    avant de mémoriser le mot complet.`},
- {t:"Les sources et les graphies",d:"Cinq graphies documentées du même mot, de 1691 à 2018.",ex:'sourcecheck',lec:`
+ {t:"Les sources et les graphies",d:"Suivre un même mot dans cinq graphies datées, sans les fusionner.",ex:'sourcecheck',lec:`
   <p>Le mot « enfant » à travers les auteurs :</p>
   <table class="aprtab">
   <tr><td class="k">A8añsis</td><td>Rasles, 1691</td></tr>
@@ -7601,7 +7672,7 @@ const APR_MODULE_LIBRARY=[
   coach:`Ouvre le Décortiqueur avec <span class="al8">Agakimzowinno</span> puis avec
    <span class="al8">Nodab8nkat</span>. L'objectif est de repérer les morceaux du mot, pas d'inventer
    des familles qui ne sont pas documentées.`},
- {t:"Lire les anciens",d:"Laurent 1884, Masta 1932 : comparer les graphies sans les confondre.",ex:'history',lec:`
+ {t:"Lire les anciens",d:"Comparer plusieurs auteurs et plusieurs mots en gardant chaque époque distincte.",ex:'history',lec:`
   <p>Les sources emploient différentes conventions d'écriture selon l'auteur et l'époque.
   Compare uniquement ce qui est documenté :</p>
   <table class="aprtab"><tr><th>Forme retenue par le projet</th><th>Graphie de la source</th><th>Source</th></tr>
@@ -7630,16 +7701,37 @@ const APR_MODULE_LIBRARY=[
   coach:`Distingue toujours « attesté dans une source », « recoupé par le projet » et
    « validé dans l'usage actuel ». Seules des personnes compétentes peuvent confirmer l'emploi,
    le sens et la prononciation dans leur contexte.`},
- {t:"Décortiquer ensemble",d:"La mission finale d'Autonomie : démonter deux mots longs, morceau par morceau.",ex:'fam',lec:`
-  <h3>Pakholigan — le tambour</h3>
-  <p><i>pakhol-</i> frapper + <i>-igan</i> l'instrument → <b>la chose avec laquelle on frappe</b>.</p>
-  <h3>Nodab8nkat — le boulanger</h3>
-  <p><i>nod-</i> celui qui fait habituellement + <i>ab8n</i> le pain + <i>-kat</i> qui produit
-  → <b>celui qui fait le pain</b>.</p>
-  <h3>À toi maintenant</h3>
-  <p>Ouvre le Décortiqueur et entre <span class="al8">Aln8ba8dwaw8gan</span>. Écris ce que tu vois
-  sur un papier : préfixes, racine, suffixes, famille. Puis explique chaque morceau à quelqu'un
-  d'autre, à voix haute. Si tu y arrives, reprends ensuite l'analyse sans regarder les réponses.</p>`,
+ {t:"Décortiquer ensemble",d:"Produire et transmettre une analyse complète, sourcée et vérifiable.",ex:'fam',lec:`
+  <section class="morph-primer">
+   <strong>Mission finale : produire une analyse que quelqu'un d'autre peut vérifier</strong>
+   <p>Une analyse complète ne consiste pas seulement à couper un mot. Elle doit nommer la forme,
+   expliquer chaque morceau autorisé par les données, comparer une forme apparentée et citer la
+   source ou la fiche qui soutient le rapprochement.</p>
+  </section>
+  <h3>Modèle 1 · Pakholigan — le tambour</h3>
+  <div class="morph-equation">
+   <div class="morph-piece"><code>pakhol-</code><small>frapper</small></div><span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-higan</code><small>objet ou instrument documenté</small></div><span class="morph-plus">=</span>
+   <div class="morph-piece"><code>Pakholigan</code><small>le tambour</small></div>
+  </div>
+  <h3>Modèle 2 · Nodab8nkat — le boulanger</h3>
+  <div class="morph-equation">
+   <div class="morph-piece"><code>nod-</code><small>celui qui fait habituellement</small></div><span class="morph-plus">+</span>
+   <div class="morph-piece"><code>ab8n</code><small>le pain</small></div><span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-kat</code><small>celui qui produit</small></div><span class="morph-plus">=</span>
+   <div class="morph-piece"><code>Nodab8nkat</code><small>le boulanger</small></div>
+  </div>
+  <h3>Épreuve autonome en quatre traces</h3>
+  <ol>
+   <li>Ouvre le Décortiqueur avec <span class="al8">Aln8ba8dwaw8gan</span>.</li>
+   <li>Recopie la forme entière, puis seulement les morceaux que l'outil relie à une donnée documentée.</li>
+   <li>Choisis une autre forme de la famille affichée et explique le lien sans employer un pluriel comme preuve morphologique.</li>
+   <li>Note la source et une limite : ce que l'analyse permet d'affirmer, puis ce qu'elle ne permet pas d'inventer.</li>
+  </ol>
+  <div class="aprnote w"><b>Critère de réussite</b>
+   Une autre personne doit pouvoir suivre tes quatre traces et retrouver les mêmes renseignements
+   dans le dictionnaire. Si un morceau repose seulement sur une ressemblance de lettres, marque-le
+   comme hypothèse au lieu de le présenter comme une racine établie.</div>`,
   coach:`Enseigner est la dernière marche de l'apprentissage. Le jour où tu expliques un mot
    à quelqu'un sans hésiter, il t'appartient pour de bon — et tu es devenu à ton tour
    quelqu'un qui transmet.`}]}];
@@ -7942,39 +8034,44 @@ function aprModulePlacementText(level,index){
   return `Étape « ${level.t} » · module ${index+1} sur ${level.mods.length}. Ce numéro indique l'ordre du parcours; le principe enseigné est celui décrit dans cette fiche.`;
 }
 function aprLearningRuntimeAudit(){
-  const previousLevel=aprNiv, previousModule=aprMod, issues=[], details=[];
-  const fixedBanks={
-    sons:EXSONS,fratrie:EXFRATRIE,possfam:EXFAM_POSSESSION,
-    conversation:EXCONVERSATION,dialogue:EXDIALOGUE,day:EXDAY,
-    sourcecheck:EXSOURCECHECK,history:EXHISTORY,evidence:EXEVIDENCE
-  };
+  const previousLevel=aprNiv, previousModule=aprMod, issues=[], warnings=[], details=[], principles=new Map();
+  const dataPending=!WORDS_REMOTE_READY;
   try{
     NIVEAUX.forEach(level=>level.mods.forEach((module,index)=>{
       aprNiv=level.id; aprMod=index;
-      let lesson='', poolSize=null;
+      let lesson='', poolSize=null, capacity=0;
       try{ lesson=typeof module.lec==='function'?module.lec():module.lec; }
       catch(error){ issues.push(`${level.t} · ${module.t}: la leçon ne s'exécute pas (${error.message})`); }
       const holder=document.createElement('div'); holder.innerHTML=lesson||'';
-      if((holder.textContent||'').trim().length<80) issues.push(`${level.t} · ${module.t}: contenu pédagogique incomplet`);
+      const lessonChars=(holder.textContent||'').replace(/\s+/g,' ').trim().length;
+      if(lessonChars<80) issues.push(`${level.t} · ${module.t}: contenu pédagogique incomplet`);
       const contract=APR_MODULE_CONTRACTS[module.t];
       if(!contract||contract.steps.length!==3) issues.push(`${level.t} · ${module.t}: contrat pédagogique incomplet`);
+      const principleKey=contract&&aprLessonKey(contract.principle);
+      if(principleKey){
+        if(principles.has(principleKey)) issues.push(`${level.t} · ${module.t}: principe identique à « ${principles.get(principleKey)} »`);
+        else principles.set(principleKey,module.t);
+      }
       const placement=aprModulePlacementText(level,index);
       if(!placement.includes(`Étape « ${level.t} »`)||!placement.includes(`module ${index+1} sur ${level.mods.length}`))
         issues.push(`${level.t} · ${module.t}: repère de position incohérent`);
       if(!APR_EXERCISE_ROUTES.has(module.ex)) issues.push(`${level.t} · ${module.t}: route d'exercice absente (${module.ex||'aucune'})`);
-      if(module.ex==='vocab'){
-        try{ poolSize=aprModulePool(module.cat).length; }
-        catch(error){ issues.push(`${level.t} · ${module.t}: banque inaccessible (${error.message})`); }
-        if((poolSize||0)<4) issues.push(`${level.t} · ${module.t}: banque de vocabulaire trop petite (${poolSize||0})`);
-      }else if(fixedBanks[module.ex]&&fixedBanks[module.ex].length<4){
-        issues.push(`${level.t} · ${module.t}: banque fixe trop petite (${fixedBanks[module.ex].length})`);
-      }
-      details.push({level:level.id,title:module.t,exercise:module.ex,poolSize,placement});
+      try{
+        const modulePool=aprModulePool(module.cat||'');
+        poolSize=modulePool.length;
+        capacity=Math.min(APR_EXERCISE_TARGETS[level.id]||8,aprExerciseCapacity(module.ex,module.cat||'',modulePool));
+      }catch(error){ issues.push(`${level.t} · ${module.t}: banque inaccessible (${error.message})`); }
+      const dataDependent=['vocab','genre','fam'].includes(module.ex);
+      if(capacity<3&&!(dataPending&&dataDependent)) issues.push(`${level.t} · ${module.t}: moins de trois situations distinctes (${capacity})`);
+      const qualityPassed=lessonChars>=180&&capacity>=3&&Boolean(contract&&contract.mastery&&contract.steps.length===3);
+      if(!qualityPassed) warnings.push(`${level.t} · ${module.t}: renforcer ${lessonChars<180?'la leçon':''}${lessonChars<180&&capacity<4?' et ':''}${capacity<4?'la variété de pratique':''}`);
+      details.push({level:level.id,title:module.t,exercise:module.ex,poolSize,capacity,lessonChars,qualityPassed,placement});
     }));
   }finally{
     aprNiv=previousLevel; aprMod=previousModule;
   }
-  return {ok:issues.length===0,total:details.length,executable:details.filter(item=>APR_EXERCISE_ROUTES.has(item.exercise)).length,issues,details};
+  return {ok:issues.length===0,pending:dataPending,total:details.length,executable:details.filter(item=>APR_EXERCISE_ROUTES.has(item.exercise)).length,
+    qualityPassed:details.filter(item=>item.qualityPassed).length,issues,warnings,details};
 }
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
 function aprLevelProgress(level,prog){
@@ -8002,9 +8099,12 @@ function aprPathHtml(levelId,runtime){
         `<div class="apr-path-step"><b>${index+1}. ${escH(phase[0])}</b><span>${escH(phase[1])}</span></div>`).join('')}</div>
       <p class="apr-path-note"><strong>Méthode du projet :</strong> ancrer la forme entière, observer un contraste attesté, retrouver sans regarder, puis produire à l'écrit. Les sources établissent les données linguistiques; les explications, les jeux, les scores et la progression sont le travail pédagogique du projet.</p>
       <p class="apr-path-note">Les cinq noms d'étapes servent uniquement à organiser ce parcours personnel. Ils ne correspondent à aucun ordre scolaire, diplôme, crédit ou programme ministériel.</p>
-      <div class="learning-audit ${runtime.ok?'':'failed'}" role="status"><strong>${runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> · ${runtime.ok
+      <div class="learning-audit ${runtime.ok?'':'failed'}" role="status"><strong>${runtime.pending?'Vérification des banques en cours':runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> · ${runtime.pending
+        ? `Les leçons et les routes sont chargées; les banques liées aux entrées actuelles seront contrôlées dès que la base sera disponible.`
+        : runtime.ok
         ? `${runtime.executable} modules sur ${runtime.total} disposent d'un repère de position exact, d'une leçon, d'un principe, d'un exercice et d'une banque vérifiée lorsqu'elle est nécessaire.`
         : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} technique${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}.`}</div>
+      <p class="apr-path-note"><strong>Plancher pédagogique interne :</strong> ${runtime.pending?'calcul final après le chargement des entrées actuelles':`${runtime.qualityPassed}/${runtime.total} modules possèdent au moins une leçon développée, un objectif mesurable et trois situations documentées distinctes`}. Ce contrôle sert à repérer les écrans trop minces; il ne constitue ni une évaluation ni une approbation ministérielle.</p>
     </div>
   </details>`;
 }
@@ -8089,6 +8189,34 @@ function aprModuleGuideHtml(level,m,index,lecHtml){
 function aprModulePerfect(m,state){
   return Boolean(m&&m.ex&&state&&state.retenir>=100&&(!aprModuleNeedsUse(m)||state.utiliser>=100));
 }
+function aprExerciseCapacity(type,cat,modulePool){
+  const fixed={
+    plur:()=>JPLUR.length,fratrie:()=>EXFRATRIE.length,possfam:()=>EXFAM_POSSESSION.length,
+    conjp:()=>EXCONJ.length*2,negs:()=>EXNEGS.length,classfx:()=>EXCLASSFX.length,
+    structure:()=>EXSTRUCT.length,temps:()=>EXTEMPS.length,vta:()=>EXVTA.length*2,
+    inter2:()=>EXINTER2.length,ordre:()=>EXORDRE.length,neg:()=>JNEG.length,
+    suf:()=>EXSUF.length,fam:()=>exerciseRootFamilies().length,trad:()=>EXTRAD.length,
+    conversation:()=>EXCONVERSATION.length,dialogue:()=>EXDIALOGUE.length,day:()=>EXDAY.length,
+    sourcecheck:()=>EXSOURCECHECK.length,history:()=>EXHISTORY.length,evidence:()=>EXEVIDENCE.length,
+    ecrisgram:()=>grammarWritingPool(cat).length,sons:()=>EXSONS.length
+  }[type];
+  if(fixed) return fixed();
+  if(type==='genre'){
+    const scoped=(modulePool||[]).filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''));
+    return (scoped.length?scoped:aprSur().filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''))).length;
+  }
+  return (modulePool||[]).length;
+}
+function aprModuleSessionCapacity(level,m,index){
+  const previousLevel=aprNiv, previousModule=aprMod;
+  aprNiv=level.id; aprMod=index;
+  try{
+    const pool=aprModulePool(m.cat||'');
+    return Math.min(APR_EXERCISE_TARGETS[level.id]||8,aprExerciseCapacity(m.ex,m.cat||'',pool));
+  }finally{
+    aprNiv=previousLevel; aprMod=previousModule;
+  }
+}
 function aprOpenModule(i){
   aprMod=i;
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[i], state=n?progGet(aprProgressKey(n,i)):null;
@@ -8143,16 +8271,17 @@ function aprParcours(){
     </section>
     <section aria-labelledby="aprModulesTitle">
       <div class="apr-modules-head"><div><h3 id="aprModulesTitle">Modules de ${escH(level.t)}</h3>
-        <p>Ouvre un module, puis passe à l'exercice · jusqu'à ${APR_EXERCISE_TARGETS[level.id]} questions par séance.</p></div><span class="apr-modules-count">${level.mods.length} modules</span></div>
+        <p>Chaque module enseigne un principe complet; la séance s'arrête lorsque sa banque distincte est épuisée.</p></div><span class="apr-modules-count">${level.mods.length} modules</span></div>
       <div class="apr-module-grid">${stats.rows.map(row=>{
         const stateLabel=row.perfect?'Réviser 100 %':row.done?'Maîtrisé':row.started?'En cours':'À faire';
         const stateClass=row.done?'is-mastered':row.index===stats.nextIndex?'is-current':'';
         const memory=row.state&&row.state.retenir!=null?`Retenir ${row.state.retenir}%`:'Quiz à faire';
         const use=aprModuleNeedsUse(row.module)&&(row.state&&row.state.utiliser!=null)?` · Utiliser ${row.state.utiliser}%`:'';
+        const capacity=aprModuleSessionCapacity(level,row.module,row.index);
         return `<button type="button" class="apr-module-card ${stateClass}" style="--level-color:${level.c}" onclick="aprOpenModule(${row.index})" aria-label="${escH(row.module.t)} · ${stateLabel}">
           <div class="apr-module-top"><span class="apr-module-number">MODULE ${String(row.index+1).padStart(2,'0')}</span><span class="apr-module-state">${stateLabel}</span></div>
           <h4>${escH(row.module.t)}</h4><p>${escH(row.module.d)}</p>
-          <footer><span>${memory}${use}</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
+          <footer><span>${memory}${use} · ${capacity} question${capacity!==1?'s':''}</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
         </button>`;
       }).join('')}</div>
     </section>`;
@@ -8941,18 +9070,8 @@ function aprEx(type,cat,titre,mode){
     ?modulePool.filter(w=>/nom (animé|inanimé)/i.test(w.grammar||'')&&!/pluriel/i.test(w.grammar||''))
     :modulePool;
   exPoolOverride=['vocab','ecris','genre'].includes(type)&&scopedPool.length?scopedPool:null;
-  if(exPoolOverride&&exPoolOverride.length) exTot=Math.min(exTot,exPoolOverride.length);
-  const fixedCapacity={
-    plur:()=>JPLUR.length, fratrie:()=>EXFRATRIE.length, possfam:()=>EXFAM_POSSESSION.length, conjp:()=>EXCONJ.length*2,
-    negs:()=>EXNEGS.length, classfx:()=>EXCLASSFX.length, structure:()=>EXSTRUCT.length, temps:()=>EXTEMPS.length,
-    vta:()=>EXVTA.length*2, inter2:()=>EXINTER2.length, ordre:()=>EXORDRE.length,
-    neg:()=>JNEG.length, suf:()=>EXSUF.length, fam:()=>exerciseRootFamilies().length,
-    trad:()=>EXTRAD.length, conversation:()=>EXCONVERSATION.length, dialogue:()=>EXDIALOGUE.length,
-    day:()=>EXDAY.length, sourcecheck:()=>EXSOURCECHECK.length, history:()=>EXHISTORY.length,
-    evidence:()=>EXEVIDENCE.length, ecrisgram:()=>grammarWritingPool(cat).length
-  }[type];
-  if(fixedCapacity) exTot=Math.min(exTot,fixedCapacity());
-  if(type==='sons'){ exSonsQueue=jShuf(EXSONS); exTot=exSonsQueue.length; }
+  exTot=Math.min(exTot,aprExerciseCapacity(type,cat,modulePool));
+  if(type==='sons') exSonsQueue=jShuf(EXSONS);
   exSuivant();
 }
 function exCadre(corps){
