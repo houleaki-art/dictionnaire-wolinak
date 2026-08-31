@@ -285,6 +285,15 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Migration administrateur unique : retrait de deux doublons créés pendant l'intégration, enrichissement des quatre correspondances existantes et liaison des variantes `Skotam/Scotam` et `Kwenoza/Kwnoza`.
 - Validation de 90 tests automatisés et de la syntaxe JavaScript avant publication.
 
+## Wig8damoda et mise à jour forcée — 31 août 2026
+
+- Remplacement de la chanson par `Wig8damoda — Kiona W8banakiak`, limitée à la partie demandée de 4 min 41 s.
+- Ajout de la pratique avec les paroles en graphie aln8ba du dictionnaire et de repères séparant les sens documentés des constructions poétiques qui restent à confirmer.
+- Détection automatique de chaque nouvelle publication à partir de l'empreinte réelle de `index.html`, sans numéro de version à modifier manuellement.
+- Purge des caches techniques et ajout de l'empreinte courante aux images et aux audios après une mise à jour; les médias restent chargés seulement à la demande.
+- Conservation des favoris, du thème et de toute la progression pédagogique pendant l'actualisation forcée.
+- Validation de la syntaxe JavaScript, du lecteur de 281 secondes, du renouvellement automatique de l'URL et de la disposition mobile à 390 × 844 dans Chrome.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix
