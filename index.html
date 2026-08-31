@@ -1177,6 +1177,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     </div>
     <div class="hdr-controls">
       <div class="badge"><strong id="hTot">0</strong> mots</div>
+      <button class="music-shortcut" onclick="setView('jeux')" title="Jeux libres" aria-label="Ouvrir les jeux libres">🎲 <span>Jeux</span></button>
       <button class="music-shortcut" onclick="setView('musique')" title="Chansons et pratique avec les paroles" aria-label="Chansons et pratique avec les paroles">🎵 <span>Chansons</span></button>
       <button class="ibtn pending-dot header-secondary" id="adminBtn" title="Administration" aria-label="Administration" onclick="openAdmin()">⚙️</button>
       <button class="ibtn" id="themeBtn" title="Mode sombre/clair" aria-label="Changer le thème sombre ou clair">🌙</button>
@@ -1208,7 +1209,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <button class="sb" data-view="favorites" onclick="setView('favorites')"><span class="ic">⭐</span>Favoris<span class="cn" id="cn-fav">0</span></button>
     <button class="sb" data-view="stats" onclick="setView('stats')"><span class="ic">📊</span>Statistiques</button>
     <button class="sb" data-view="apprendre" onclick="setView('apprendre')"><span class="ic">🎓</span>Apprendre</button>
-    <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique</button>
+    <button class="sb" data-view="pratique" onclick="setView('pratique')"><span class="ic">🧩</span>Pratique guidée</button>
+    <button class="sb" data-view="jeux" onclick="setView('jeux')"><span class="ic">🎲</span>Jeux libres</button>
     <button class="sb" data-view="musique" onclick="setView('musique')"><span class="ic">🎵</span>Musique</button>
     <button class="sb" data-view="archives" onclick="setView('archives')"><span class="ic">📜</span>Archives<span class="cn" id="cn-arch">0</span></button>
 
@@ -1282,12 +1284,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <button class="btn btn-secondary" onclick="fcNext()">Mot suivant →</button>
     </div>
   </div>
-  <!-- PRATIQUE GRAMMAIRE VIEW -->
+  <!-- PRATIQUE GUIDÉE VIEW -->
   <div class="pratique-view" id="pratiqueView">
     <div class="prat-header">
       <div>
-        <h2>🧩 Pratique · Aln8ba8dwaw8gan</h2>
-        <p>Avance du repérage vers l'autonomie avec les formes vertes actuelles du dictionnaire.</p>
+        <h2>🧩 Pratique guidée</h2>
+        <p>Des séances graduées, un score et une progression, du repérage vers l'autonomie.</p>
       </div>
       <div class="prat-score" role="status" aria-live="polite" aria-atomic="true">
         <div class="pscore"><div class="pscore-num" id="pScoreOk">0 / 0</div><div class="pscore-lbl">Score</div></div>
@@ -1296,6 +1298,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
     </div>
     <div class="prat-coverage" id="practiceCoverage" role="status" aria-live="polite">Chargement de la banque de pratique...</div>
+    <div class="aprnote" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <span><b>Pratique guidée ou Jeux libres?</b> Ici, les questions suivent une difficulté précise et enregistrent ta progression. Les jeux sont des activités libres aux mécaniques différentes.</span>
+      <button class="btn btn-secondary" type="button" onclick="setView('jeux')">Ouvrir les jeux libres →</button>
+    </div>
     <div class="prat-levels" id="pratLevels">
       <button class="plvl lvl-1 on" type="button" data-lvl="1" onclick="selectLevel(1)">
         <div class="plvl-icon">🌱</div>
@@ -1352,6 +1358,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div id="aprBody"></div>
   </div>
   <div class="jeu" id="jeuxView">
+    <div class="prat-header">
+      <div>
+        <h2>🎲 Jeux libres</h2>
+        <p>Choisis directement une activité. Aucun ordre imposé et aucun niveau scolaire caché.</p>
+      </div>
+      <button class="btn btn-secondary" type="button" onclick="setView('pratique')">Pratique guidée →</button>
+    </div>
+    <div class="aprnote" style="margin-bottom:16px">
+      <b>Un espace distinct.</b> Les jeux font travailler l'observation, les classes grammaticales, la négation, les pluriels documentés, les familles de mots et la recherche visuelle. Le questionnaire de vocabulaire reste dans Pratique guidée pour éviter les doublons.
+    </div>
     <div id="jCtxBar"></div>
     <div class="jmenu" id="jMenu"></div>
     <div class="jstage" id="jStage"><div style="text-align:center;color:var(--text3);padding:40px 20px">
@@ -2362,7 +2378,8 @@ Merci... merci de m'avoir entendu</pre>
       <button class="sb" onclick="mobileNav('favorites')"><span class="ic">⭐</span>Favoris</button>
       <button class="sb" onclick="mobileNav('stats')"><span class="ic">📊</span>Statistiques</button>
       <button class="sb" onclick="mobileNav('apprendre')"><span class="ic">🎓</span>Apprendre</button>
-      <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique</button>
+      <button class="sb" onclick="mobileNav('pratique')"><span class="ic">🧩</span>Pratique guidée</button>
+      <button class="sb" onclick="mobileNav('jeux')"><span class="ic">🎲</span>Jeux libres</button>
       <button class="sb" onclick="mobileNav('musique')"><span class="ic">🎵</span>Musique</button>
       <button class="sb" onclick="mobileNav('archives')"><span class="ic">📜</span>Archives</button>
       <div class="sl" style="margin-top:12px">Outils</div>
@@ -3382,10 +3399,10 @@ function setView(v,keepGameContext=false){
   cancelAnswerAdvance();
   // Le traducteur reste en chantier dans le code, mais n'est plus une vue publique.
   if(v==='traducteur') v='all';
-  if(v==='jeux'&&!keepGameContext){ jCtx=null; jCat='toutes'; }
+  if(v==='jeux'&&!keepGameContext) jCtx=null;
   S.view=v; S.cat=''; S.letter='';
   document.body.classList.toggle('compact-mobile-header',!['all','favorites'].includes(v));
-  const gv=['flashcard','jeux'].includes(v)?'apprendre':v;
+  const gv=v==='flashcard'?'apprendre':v;
   document.querySelectorAll('.sb[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===gv));
   document.querySelectorAll('.ab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.sb[data-cat]').forEach(b=>b.classList.remove('on'));
@@ -3400,7 +3417,7 @@ function setView(v,keepGameContext=false){
   document.getElementById('jeuxView').className      = 'jeu'+(v==='jeux'?' show':'');
   document.getElementById('musiqueView').className   = 'music-view'+(v==='musique'?' show':'');
   document.getElementById('archivesView').style.display = v==='archives'?'block':'none';
-  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique grammaire',apprendre:'Apprendre la langue',jeux:'Jeux',musique:'Musique',archives:'Archives — les mots des ancêtres'}[v]||'';
+  document.getElementById('viewTitle').textContent   = {all:'Tous les mots',favorites:'Mes favoris',flashcard:'Cartes mémoire',stats:'Statistiques',admin:'Administration',about:'À propos',pratique:'Pratique guidée',apprendre:'Apprendre la langue',jeux:'Jeux libres',musique:'Musique',archives:'Archives — les mots des ancêtres'}[v]||'';
   if(['all','favorites'].includes(v)) renderWords();
   if(v==='flashcard') initFC();
   if(v==='stats') renderStats();
@@ -8114,7 +8131,7 @@ function aprParcours(){
         <div><span class="apr-next-label">${stats.mastered===level.mods.length?'Étape terminée · révision':'Prochaine action'}</span>
           <h4>${escH(next.module.t)}</h4><p>${escH(next.module.d)}</p></div>
         <div class="apr-next-actions"><button class="aprbtn" type="button" onclick="aprOpenModule(${next.index})">${nextLabel} →</button>
-          <button class="aprbtn secondary" type="button" onclick="aprJeux('${level.id}')">Jeux de l'étape</button></div>
+          <button class="aprbtn secondary" type="button" onclick="aprJeux('${level.id}')">Ouvrir les jeux adaptés</button></div>
       </section>
       ${aprPathHtml(level.id,runtime)}
     </section>
@@ -8138,14 +8155,13 @@ function aprParcours(){
 function aprJeux(nivId){
   const n=NIVEAUX.find(x=>x.id===nivId);
   const games={
-    d:['sens','caches'],
-    f:['territoire','sens','caches'],
-    co:['territoire','genre','sens','negat','plur','caches'],
+    d:['caches'],
+    f:['territoire','caches'],
+    co:['territoire','genre','negat','plur','caches'],
     a:['genre','negat','plur','fam'],
     au:['territoire','negat','fam']
   };
   jCtx={label:n.t,cats:[...new Set(n.mods.map(m=>m.cat).filter(Boolean))],games:games[nivId]||[]};
-  jCat='toutes';
   setView('jeux',true);
 }
 function aprLecon(i){
@@ -8458,8 +8474,8 @@ function aprGramView(){
 /* ═══════════════════════════════════════════════════════
    JEUX
    ═══════════════════════════════════════════════════════ */
-let jCur=null, jSc={ok:0,no:0}, jCat='toutes', jInv=false, jWS='animal';
-let jAsked={genre:[],sens:[],negat:[],plur:[],fam:[]};
+let jCur=null, jSc={ok:0,no:0}, jWS='animal';
+let jAsked={genre:[],negat:[],plur:[],fam:[]};
 /* Contexte niveau : rempli par aprJeux() quand on vient du parcours */
 let jCtx=null;
 function jPoolSur(){
@@ -8529,7 +8545,6 @@ let jTrailStep=0;
 const JEUX_L=[
  {id:'territoire',t:'Marche sur le territoire',d:'Sept haltes visuelles : observe, choisis le mot documenté, puis refais le geste dehors.',n:'Observation'},
  {id:'genre',t:'Animé ou inanimé?',d:"Retrouve la classe grammaticale indiquée dans le dictionnaire.",n:'Grammaire'},
- {id:'sens',t:'Devinette',d:"Un mot, quatre sens. Ou l'inverse. Filtrable par catégorie.",n:'Vocabulaire'},
  {id:'negat',t:'La négation',d:"Nda plus quel suffixe? Trois règles selon la voyelle du radical.",n:'Grammaire'},
  {id:'plur',t:'Le bon pluriel',d:"Choisis une forme complète parmi des paires documentées.",n:'Grammaire'},
  {id:'fam',t:'Familles de mots',d:"Relie des formes d'une même famille morphologique documentée.",n:'Racines'},
@@ -8541,14 +8556,14 @@ function jeuInit(){
   const cb=document.getElementById('jCtxBar');
   if(cb) cb.innerHTML=jCtx?`<div class="aprnote" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
     <button class="btn btn-secondary" style="font-size:.78rem" onclick="setView('apprendre')">← Retour au parcours</button>
-    <span style="font-size:.85rem"><b>🎯 Jeux du niveau ${jCtx.label}</b> — sélection adaptée aux notions de ce niveau.</span></div>`:'';
+    <span style="font-size:.85rem"><b>🎯 Filtre du parcours : ${jCtx.label}</b> — tu es dans le même espace Jeux, limité aux notions déjà rencontrées à cette étape.</span></div>`:'';
   document.getElementById('jMenu').innerHTML=jeux.map(j=>
     `<button class="gcard" data-j="${j.id}"><b>${j.t}</b><span>${j.d}</span><i>${j.n}</i></button>`).join('');
   document.querySelectorAll('#jMenu .gcard').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('#jMenu .gcard').forEach(x=>x.classList.remove('on'));
     b.classList.add('on'); jCur=b.dataset.j; jSc={ok:0,no:0}; jAsked[jCur]=[];
     if(jCur==='territoire') jTrailStep=0;
-    ({territoire:jTerritory,genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam,caches:jCaches})[jCur]();
+    ({territoire:jTerritory,genre:jGenre,negat:jNegat,plur:jPlur,fam:jFam,caches:jCaches})[jCur]();
   });
   const st=document.getElementById('jStage');
   jCur=null; jSc={ok:0,no:0};
@@ -8577,7 +8592,7 @@ function jScoreMarkup(){
 function jNext(){
   cancelAnswerAdvance();
   if(jCur==='territoire') jTrailStep++;
-  const handler=({territoire:jTerritory,genre:jGenre,sens:jSens,negat:jNegat,plur:jPlur,fam:jFam})[jCur];
+  const handler=({territoire:jTerritory,genre:jGenre,negat:jNegat,plur:jPlur,fam:jFam})[jCur];
   if(handler) handler();
 }
 function jAns(bon,i,retour){
@@ -8666,28 +8681,6 @@ function jRetGenre(){ const w=window._jw,an=window._jan;
     <div style="margin-top:7px;font-size:1.05rem">Pluriel : <b class="al8" style="color:var(--accent)">${pl.form}</b> <span style="font-size:.72rem;color:var(--text2)">(${pl.type})</span></div>
     ${w.example_a?`<div style="margin-top:7px">${w.example_a} — <em>${w.example_f||''}</em></div>`:''}
     <span class="aprsrc">${aprSrc(w.source)}</span>`; }
-function jSens(){
-  let pool=jPoolSur(); if(jCat!=='toutes') pool=pool.filter(w=>w.cat===jCat);
-  if(pool.length<4) return jFrame('Devinette','<p style="text-align:center;color:var(--text2)">Pas assez de mots dans cette catégorie.</p>');
-  const cats=[...new Set(jPoolSur().map(w=>w.cat))].sort();
-  const ctrl=`<select onchange="jCat=this.value;jSens()" style="font-family:inherit;font-size:.78rem;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text)">
-      ${['toutes',...cats].map(c=>`<option ${c===jCat?'selected':''}>${c}</option>`).join('')}</select>
-    <button class="chip" onclick="jInv=!jInv;jSens()">${jInv?'Sens → Mot':'Mot → Sens'}</button>`;
-  const bon=jPickFresh('sens',pool,x=>x.id||x.aln8ba), key=w=>jInv?w.aln8ba:w.fr;
-  const autres=jUniqueBy(pool.filter(w=>w.id!==bon.id),key,3,[key(bon)]);
-  if(autres.length<3) return jFrame('Devinette','<p style="text-align:center;color:var(--text2)">Pas assez de réponses distinctes dans cette catégorie.</p>',ctrl);
-  const tous=jShuf([bon,...autres]);
-  const ib=tous.indexOf(bon); window._jb=bon;
-  jFrame('Devinette',`
-    <div class="jprompt"><div class="q">${jInv?'Quel mot dit cela?':'Que veut dire ce mot?'}</div>
-      <div class="w">${jInv?bon.fr:bon.aln8ba}</div></div>
-    <div class="jopts">${tous.map((w,i)=>`<button class="jopt" onclick="jAns(${ib},${i},jRetSens())">${
-      jInv?`<span class="al">${w.aln8ba}</span>`:w.fr}</button>`).join('')}</div>`,ctrl);
-}
-function jRetSens(){ const b=window._jb;
-  return `<b>${b.aln8ba} — ${b.fr}</b>${b.grammar?`<em>${b.grammar}</em>`:''}
-    ${b.example_a?`<div style="margin-top:7px">${b.example_a} — <em>${b.example_f||''}</em></div>`:''}
-    <span class="aprsrc">${aprSrc(b.source)}</span>`; }
 const JNEG=DOCUMENTED_NEGATION_PARADIGMS.map(p=>({
   v:p.positive,f:p.positiveFr,r:p.answer,n:p.negative,w:p.rule
 }));

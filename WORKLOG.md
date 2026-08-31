@@ -294,6 +294,14 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Conservation des favoris, du thème et de toute la progression pédagogique pendant l'actualisation forcée.
 - Validation de la syntaxe JavaScript, du lecteur de 281 secondes, du renouvellement automatique de l'URL et de la disposition mobile à 390 × 844 dans Chrome.
 
+## Jeux libres visibles et distincts — 31 août 2026
+
+- Ajout d'un accès direct à `Jeux libres` dans l'en-tête, la navigation principale et le tiroir mobile.
+- Renommage de `Pratique` en `Pratique guidée`, avec une explication de la différence entre les séances graduées et les activités libres.
+- Retrait complet de `Devinette`, qui répétait le questionnaire de vocabulaire déjà présent dans la pratique guidée.
+- Conservation du bouton du parcours comme filtre vers le même espace Jeux; il ne crée plus l'impression d'un deuxième système caché.
+- Validation de la syntaxe JavaScript et essais réels des accès directs, du filtre Découverte et de la disposition à 390 × 844, sans débordement ni erreur JavaScript.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix
