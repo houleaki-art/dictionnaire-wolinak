@@ -23,7 +23,7 @@ Ajoutée le 27 août 2026 à partir du fichier fourni par Guillaum. Les paroles 
 
 Nouveau titre : l'ancien `Nikwonbi N'Wonolonwzé` est abandonné. La nouvelle chanson prend pour titre l'exemple pédagogique documenté « Maintenant je parle abénakis ».
 
-### Paroles d'apprentissage
+### Paroles de la version actuelle
 
 ```text
 [Intro]
@@ -70,42 +70,60 @@ Nouveau titre : l'ancien guide phonétique `Wla Won Gan x Wô-ban Ki-zoss` est a
 ### Paroles d'apprentissage
 
 ```text
-[Intro]
-Kwaï mziwi!
-Wligen, païa.
+[Appel]
+Kwaï! Kwaï! Kwaï mziwi!
+Paakuin8gwzian.
+Wligen, païa!
+Nia achi!
 
-[Couplet 1]
-Pakholigan.
-Lintow8gan.
-Pemegaw8gan.
-N'pemeg8.
+[Montée]
+Spiwi mziwi.
+Losada.
+Spiwi mziwi.
+Wig8damoda!
 
 [Refrain]
-Wig8damoda!
-Niona W8banakiak.
-Odanak. W8linak.
-Ndakina. Kdakinna.
+Wig8damoda! Wig8damoda!
+Nia achi, Wig8damoda!
+Spiwi mziwi, Wig8damoda!
+Wligen, Wig8damoda!
 
-[Couplet 2]
-Sigwan. Niben.
-Tagw8gw. Pbon.
-Kizos. Kizosoo.
-Wligen.
+[Couplet]
+Pakholigan. Lintow8gan.
+Pakholigan. Pemegaw8gan.
+Spiwi mziwi.
+Losada.
+Lintow8gan. Pemegaw8gan.
+Nia achi.
+Wig8damoda!
 
 [Pont]
-W8linaktegw.
-Sibo. Nebes.
-Kakasakw. Alakwsak.
-Kzelomsen.
+Nid8bak! Kwaï mziwi!
+Paakuin8gwzian.
+Wliwni, nijia.
+Kchi wliwni.
+Spiwi mziwi.
+Losada.
+Nia achi.
+Wig8damoda!
+
+[Refrain final]
+Wig8damoda! Wig8damoda!
+Nia achi, Wig8damoda!
+Spiwi mziwi, Wig8damoda!
+Wligen, Wig8damoda!
+Losada! Losada!
+Spiwi mziwi!
+Wig8damoda!
 
 [Finale]
-Kwaï mziwi!
-Wig8damoda!
+Wliwni, nijia.
+Kchi wliwni.
 Wli nanawalmezi.
 Adio.
 ```
 
-Traçabilité : `Kwaï mziwi`, `Wig8damoda`, les saisons, les lieux et les termes de nature sont des entrées documentées. `Lintow8gan`, `Pemegaw8gan` et `N'pemeg8` viennent de Laurent (1884). Les noms juxtaposés sont des appels poétiques, pas des phrases traduites.
+Traçabilité : le MP3 exporté le 31 août 2026 contient ces paroles dans ses métadonnées. La version publique rétablit la graphie aln8ba : `8` remplace les guides phonétiques en `on`, `achi` remplace `atsi`, et les `i` finaux restent écrits `i`. `Paakuin8gwzian`, `Lintow8gan` et `Pemegaw8gan` sont conservés avec leur graphie historique documentée.
 
 ## 5. Kikas
 
@@ -169,7 +187,7 @@ Pour chaque nouvelle génération :
 | Chanson | Durée du fichier publié | Génération Suno retenue |
 |---|---:|---|
 | Nikw8bi nd'aln8ba8dwa | 1:58 | https://suno.com/song/27a8bff1-a867-4c0b-be9c-9d06e3a55e12 |
-| Wig8damoda | 2:47 | https://suno.com/song/7c394b39-e6ac-45c6-9c35-fd62ec0d61ba |
+| Wig8damoda | 2:49 | https://suno.com/song/19e62efe-57a8-4aeb-986a-13204be83948 |
 | Kikas | 1:19 | https://suno.com/song/86979f10-61bb-459b-a5d2-d28ea9042fe4 |
 
 Les quatre fichiers conservés ont été chargés et démarrés dans Chrome sans erreur. Un repérage automatique de la parole a aussi servi à écarter une variante qui comprimait ou omettait la finale de `Nikw8bi nd'aln8ba8dwa`. Ce repérage vérifie la présence générale des sections; il ne peut pas attester la prononciation aln8ba. Le site qualifie donc explicitement chaque piste d'« audio IA à valider ».
