@@ -39,7 +39,7 @@ un objectif générique de 12 ou 24 questions.
 
 ## Validation technique
 
-- 92 tests automatisés sur 92 réussissent.
+- 93 tests automatisés sur 93 réussissent.
 - Les 45 leçons et les 45 routes d'exercice ont été ouvertes dans le navigateur.
 - La plus petite banque active contient 3 situations distinctes; la plus grande séance
   de module en contient 23 avec les données chargées lors du contrôle.
@@ -144,6 +144,8 @@ compétence. Le contrôle automatisé doit empêcher cette régression.
 - La négation complète enseigne une procédure de décision en quatre étapes.
 - Décortiquer ensemble exige une analyse complète, vérifiable et sourcée.
 - Les cartes annoncent le nombre réel de questions distinctes.
+- La pratique guidée exclut les indices qui répètent la réponse; Odanak est demandé
+  avec son sens documenté « au village » plutôt qu'avec son propre nom.
 - Le chargement Supabase relance le contrôle afin d'éviter un faux échec avant la
   disponibilité des données.
 - Le contrôle sépare désormais exécution technique et plancher pédagogique.

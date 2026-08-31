@@ -3575,9 +3575,21 @@ const PRACTICE_FORM_CLASSES=[
   'Pronom, particule ou mot-outil',
   'Expression, formule ou adverbe'
 ];
+const PRACTICE_FRENCH_LABEL_OVERRIDES={
+  odanak:'au village'
+};
 
 function practiceFrenchLabel(w){
+  const override=PRACTICE_FRENCH_LABEL_OVERRIDES[practiceWordKey(w)];
+  if(override) return override;
   return ((w&&w.fr)||'').split(/\s*(?:[·;]|[—–])\s*|\s*\(/)[0].trim();
+}
+function practicePromptKey(value){
+  return (value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+    .replace(/8/g,'o').replace(/[^a-z0-9]/g,'');
+}
+function practiceHasDistinctPrompt(w){
+  return practicePromptKey(practiceFrenchLabel(w))!==practicePromptKey(w&&w.aln8ba);
 }
 function practiceLetterCount(w){
   return ((w&&w.aln8ba)||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -3620,7 +3632,8 @@ function practiceConfirmedEntries(words){
   return words.filter(w=>{
     const key=practiceWordKey(w);
     if(!isExerciseSafe(w) || !key || w.aln8ba.length<=1 || !w.fr
-      || practiceFrenchLabel(w).length<=1 || !practiceIsSingleEntry(w) || seenForms.has(key)) return false;
+      || practiceFrenchLabel(w).length<=1 || !practiceHasDistinctPrompt(w)
+      || !practiceIsSingleEntry(w) || seenForms.has(key)) return false;
     seenForms.add(key);
     return true;
   });
@@ -3951,7 +3964,7 @@ function renderLvl2(arena, w, idx, total, pct){
   arena.innerHTML = `
     ${progressBar(pct)}
     <div class="prat-question-lbl">Question ${idx+1} / ${total} · Choisis la forme aln8ba</div>
-    <div class="prat-word"><span class="prat-word-question">Quel mot signifie</span>« ${practiceFrenchLabel(w)} » ?</div>
+    <div class="prat-word"><span class="prat-word-question">Quel mot signifie</span> « ${practiceFrenchLabel(w)} » ?</div>
     ${practiceMeaningHint(w)?`<div class="prat-hint">Indice de sens : ${practiceMeaningHint(w)}</div>`:''}
     <div class="prat-choices">${choiceHTML}</div>
     <div class="prat-feedback" id="pratFb"></div>

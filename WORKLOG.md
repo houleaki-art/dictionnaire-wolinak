@@ -319,7 +319,9 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Affichage du nombre réel de questions distinctes sur chaque carte; une séance s'arrête lorsque sa banque est épuisée au lieu de répéter artificiellement jusqu'à 12 ou 24.
 - Relance automatique de l'audit après le chargement Supabase pour éviter un faux échec pendant que les entrées actuelles ne sont pas encore disponibles.
 - Rapport durable : `research/2026-08-31-audit-parcours-apprentissage.md`.
-- Validation finale : 92 tests automatisés réussis, 45 leçons et 45 exercices ouverts
+- Retrait des questions circulaires où l'indice français répétait la forme aln8ba;
+  `Odanak` est désormais présenté avec l'indice documenté `au village`.
+- Validation finale : 93 tests automatisés réussis, 45 leçons et 45 exercices ouverts
   dans le navigateur, puis contrôle mobile à 390 × 844 sans débordement.
 
 ## Principe pour la suite

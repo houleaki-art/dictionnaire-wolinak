@@ -33,7 +33,8 @@ function practiceApi() {
     return {
       PRACTICE_LEVELS, practiceConfirmedEntries, practicePoolsByLevel, practicePoolForLevel,
       practiceLevelForWord, practiceHasAdvancedGrammar, practiceMeaningHint, practiceMeaningNote,
-      practiceRotationSlice, practiceExpertQueue, practiceFormClass
+      practiceRotationSlice, practiceExpertQueue, practiceFormClass, practiceFrenchLabel,
+      practiceHasDistinctPrompt
     };
   `)();
 }
@@ -107,6 +108,17 @@ test('une meme forme aln8ba napparait jamais deux fois dans une seance', () => {
     word('wolf', 'M8lsem', 'Loup', 'animal', 'Nom animé')
   ];
   assert.deepEqual(practiceConfirmedEntries(words).map(item => item.id), ['dog-1', 'wolf']);
+});
+
+test('aucune question ne repete la forme aln8ba comme indice francais', () => {
+  const { practiceConfirmedEntries, practiceFrenchLabel, practiceHasDistinctPrompt } = practiceApi();
+  const place = word('place', 'Odanak', 'Odanak', 'toponymie', 'Nom de lieu');
+  const circular = word('circular', 'W8linak', 'Wôlinak', 'toponymie', 'Nom de lieu');
+  const village = word('village', 'Odana', 'Village', 'territoire', 'Nom');
+  assert.equal(practiceFrenchLabel(place), 'au village');
+  assert.equal(practiceHasDistinctPrompt(place), true);
+  assert.equal(practiceHasDistinctPrompt(circular), false);
+  assert.deepEqual(practiceConfirmedEntries([place, circular, village]).map(item => item.id), ['place', 'village']);
 });
 
 test('la rotation sert 50 formes differentes puis continue dans la banque', () => {
