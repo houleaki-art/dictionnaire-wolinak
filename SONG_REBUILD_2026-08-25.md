@@ -67,63 +67,9 @@ Traçabilité : les quatre paires du deuxième couplet sont les exemples VTA/VTI
 
 Nouveau titre : l'ancien guide phonétique `Wla Won Gan x Wô-ban Ki-zoss` est abandonné. `Wig8damoda!` est l'impératif collectif documenté « Réjouissons-nous! ».
 
-### Paroles d'apprentissage
+### État des paroles
 
-```text
-[Appel]
-Kwaï! Kwaï! Kwaï mziwi!
-Paakuin8gwzian.
-Wligen, païa!
-Nia achi!
-
-[Montée]
-Spiwi mziwi.
-Losada.
-Spiwi mziwi.
-Wig8damoda!
-
-[Refrain]
-Wig8damoda! Wig8damoda!
-Nia achi, Wig8damoda!
-Spiwi mziwi, Wig8damoda!
-Wligen, Wig8damoda!
-
-[Couplet]
-Pakholigan. Lintow8gan.
-Pakholigan. Pemegaw8gan.
-Spiwi mziwi.
-Losada.
-Lintow8gan. Pemegaw8gan.
-Nia achi.
-Wig8damoda!
-
-[Pont]
-Nid8bak! Kwaï mziwi!
-Paakuin8gwzian.
-Wliwni, nijia.
-Kchi wliwni.
-Spiwi mziwi.
-Losada.
-Nia achi.
-Wig8damoda!
-
-[Refrain final]
-Wig8damoda! Wig8damoda!
-Nia achi, Wig8damoda!
-Spiwi mziwi, Wig8damoda!
-Wligen, Wig8damoda!
-Losada! Losada!
-Spiwi mziwi!
-Wig8damoda!
-
-[Finale]
-Wliwni, nijia.
-Kchi wliwni.
-Wli nanawalmezi.
-Adio.
-```
-
-Traçabilité : le MP3 exporté le 31 août 2026 contient ces paroles dans ses métadonnées. La version publique rétablit la graphie aln8ba : `8` remplace les guides phonétiques en `on`, `achi` remplace `atsi`, et les `i` finaux restent écrits `i`. `Paakuin8gwzian`, `Lintow8gan` et `Pemegaw8gan` sont conservés avec leur graphie historique documentée.
+Les paroles précédemment associées à ce fichier ont été retirées le 31 août 2026. Elles provenaient des métadonnées du MP3 et ne constituaient pas une transcription vérifiée de ce qui est réellement chanté. L'audio retenu demeure publié, mais aucun texte ne doit lui être associé avant une transcription complète, écoutée et validée ligne par ligne.
 
 ## 5. Kikas
 
