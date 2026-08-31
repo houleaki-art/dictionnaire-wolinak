@@ -187,7 +187,7 @@ Pour chaque nouvelle génération :
 | Chanson | Durée du fichier publié | Génération Suno retenue |
 |---|---:|---|
 | Nikw8bi nd'aln8ba8dwa | 1:58 | https://suno.com/song/27a8bff1-a867-4c0b-be9c-9d06e3a55e12 |
-| Wig8damoda | 2:49 | https://suno.com/song/19e62efe-57a8-4aeb-986a-13204be83948 |
+| Wig8damoda | 3:16 | export original retenu le 2026-08-31 |
 | Kikas | 1:19 | https://suno.com/song/86979f10-61bb-459b-a5d2-d28ea9042fe4 |
 
 Les quatre fichiers conservés ont été chargés et démarrés dans Chrome sans erreur. Un repérage automatique de la parole a aussi servi à écarter une variante qui comprimait ou omettait la finale de `Nikw8bi nd'aln8ba8dwa`. Ce repérage vérifie la présence générale des sections; il ne peut pas attester la prononciation aln8ba. Le site qualifie donc explicitement chaque piste d'« audio IA à valider ».
