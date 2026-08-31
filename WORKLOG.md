@@ -302,6 +302,13 @@ banque de données. Il conserve seulement les grandes étapes du travail.
 - Conservation du bouton du parcours comme filtre vers le même espace Jeux; il ne crée plus l'impression d'un deuxième système caché.
 - Validation de la syntaxe JavaScript et essais réels des accès directs, du filtre Découverte et de la disposition à 390 × 844, sans débordement ni erreur JavaScript.
 
+## Repères de modules sans faux liens — 31 août 2026
+
+- Retrait du texte automatique affirmant qu'un module « prépare » toujours le suivant, même lorsque les deux principes étaient sans rapport.
+- Remplacement par un repère factuel indiquant l'étape, le numéro du module et le nombre total de modules dans cette étape.
+- Ajout de ce repère au contrôle fonctionnel automatique des 45 modules afin qu'une position incohérente soit désormais signalée au chargement.
+- Vérification particulière de `Qualités et émotions`, maintenant affiché comme module 5 sur 7 de l'étape Découverte sans référence trompeuse à `Compter jusqu'à dix`.
+
 ## Principe pour la suite
 
 Chaque amélioration doit rester petite, vérifiable et réversible. Les choix

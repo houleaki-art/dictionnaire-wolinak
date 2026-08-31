@@ -7937,6 +7937,10 @@ const APR_EXERCISE_ROUTES=new Set([
   'history','evidence'
 ]);
 let APR_LAST_AUDIT=null;
+function aprModulePlacementText(level,index){
+  if(!level||!Array.isArray(level.mods)||!level.mods[index]) return '';
+  return `Étape « ${level.t} » · module ${index+1} sur ${level.mods.length}. Ce numéro indique l'ordre du parcours; le principe enseigné est celui décrit dans cette fiche.`;
+}
 function aprLearningRuntimeAudit(){
   const previousLevel=aprNiv, previousModule=aprMod, issues=[], details=[];
   const fixedBanks={
@@ -7954,6 +7958,9 @@ function aprLearningRuntimeAudit(){
       if((holder.textContent||'').trim().length<80) issues.push(`${level.t} · ${module.t}: contenu pédagogique incomplet`);
       const contract=APR_MODULE_CONTRACTS[module.t];
       if(!contract||contract.steps.length!==3) issues.push(`${level.t} · ${module.t}: contrat pédagogique incomplet`);
+      const placement=aprModulePlacementText(level,index);
+      if(!placement.includes(`Étape « ${level.t} »`)||!placement.includes(`module ${index+1} sur ${level.mods.length}`))
+        issues.push(`${level.t} · ${module.t}: repère de position incohérent`);
       if(!APR_EXERCISE_ROUTES.has(module.ex)) issues.push(`${level.t} · ${module.t}: route d'exercice absente (${module.ex||'aucune'})`);
       if(module.ex==='vocab'){
         try{ poolSize=aprModulePool(module.cat).length; }
@@ -7962,7 +7969,7 @@ function aprLearningRuntimeAudit(){
       }else if(fixedBanks[module.ex]&&fixedBanks[module.ex].length<4){
         issues.push(`${level.t} · ${module.t}: banque fixe trop petite (${fixedBanks[module.ex].length})`);
       }
-      details.push({level:level.id,title:module.t,exercise:module.ex,poolSize});
+      details.push({level:level.id,title:module.t,exercise:module.ex,poolSize,placement});
     }));
   }finally{
     aprNiv=previousLevel; aprMod=previousModule;
@@ -7996,7 +8003,7 @@ function aprPathHtml(levelId,runtime){
       <p class="apr-path-note"><strong>Méthode du projet :</strong> ancrer la forme entière, observer un contraste attesté, retrouver sans regarder, puis produire à l'écrit. Les sources établissent les données linguistiques; les explications, les jeux, les scores et la progression sont le travail pédagogique du projet.</p>
       <p class="apr-path-note">Les cinq noms d'étapes servent uniquement à organiser ce parcours personnel. Ils ne correspondent à aucun ordre scolaire, diplôme, crédit ou programme ministériel.</p>
       <div class="learning-audit ${runtime.ok?'':'failed'}" role="status"><strong>${runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> · ${runtime.ok
-        ? `${runtime.executable} modules sur ${runtime.total} disposent d'une leçon, d'un principe, d'un exercice et d'une banque vérifiée lorsqu'elle est nécessaire.`
+        ? `${runtime.executable} modules sur ${runtime.total} disposent d'un repère de position exact, d'une leçon, d'un principe, d'un exercice et d'une banque vérifiée lorsqu'elle est nécessaire.`
         : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} technique${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}.`}</div>
     </div>
   </details>`;
@@ -8063,7 +8070,6 @@ function aprEarlierModuleKeys(level,index){
 }
 function aprModuleGuideHtml(level,m,index,lecHtml){
   const guide=aprModuleTaskGuide(m), contract=APR_MODULE_CONTRACTS[m.t];
-  const previous=level.mods[index-1], next=level.mods[index+1];
   const items=aprModuleItemsForGuide(m,lecHtml), earlier=aprEarlierModuleKeys(level,index);
   const repeated=items.filter(item=>earlier.has(aprLessonKey(item.aln8ba)));
   const fresh=items.filter(item=>!earlier.has(aprLessonKey(item.aln8ba)));
@@ -8075,7 +8081,7 @@ function aprModuleGuideHtml(level,m,index,lecHtml){
     <ol>${contract.steps.map(step=>`<li>${escH(step)}</li>`).join('')}</ol>
   </section>`:'';
   return `${contractHtml}<div class="apr-module-guide" aria-label="Progression propre à ce module">
-    <div><strong>Place dans le parcours</strong><span>${previous?`Après « ${escH(previous.t)} »`:'Point de départ de cette étape'} · ${next?`prépare « ${escH(next.t)} »`:'prépare la synthèse et la révision'}.</span></div>
+    <div><strong>Place dans le parcours</strong><span>${escH(aprModulePlacementText(level,index))}</span></div>
     <div><strong>Entraînement qui vérifie ce principe</strong><span>${escH(guide[0])}</span></div>
     <div><strong>Tu peux avancer quand</strong><span>${escH(contract?contract.mastery:guide[1])}</span></div>
   </div>${bank}`;
