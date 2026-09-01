@@ -1529,6 +1529,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
         <p class="music-credit"><strong>Paroles et conception artistique : Alakws Pamidoo · M8lsem.</strong><br>Maquette sonore présentée sous réserve des licences applicables.</p>
       </article>
       <article class="music-card">
+        <img class="music-cover" src="audio/kd-askawiholji.jpg" loading="lazy" alt="Pochette de la chanson K'd-askawiholji, un canot au bord d'une rivière à l'aube">
+        <h3>K'd-askawiholji</h3>
+        <span class="music-badge">Chanson · 4:46</span>
+        <audio id="musicAskawiholji" controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="none" aria-label="Écouter la chanson K'd-askawiholji" oncontextmenu="return false" onended="musicStopped('musicAskawiholji','Lecture terminée')">
+          <source src="audio/kd-askawiholji.mp3" type="audio/mpeg">
+          Votre navigateur ne prend pas en charge la lecture audio.
+        </audio>
+        <div class="music-controls" aria-label="Commandes pour K'd-askawiholji">
+          <button type="button" onclick="musicStart('musicAskawiholji')">▶ Démarrer</button>
+          <button type="button" onclick="musicPause('musicAskawiholji')">Ⅱ Pause</button>
+          <button type="button" onclick="musicStop('musicAskawiholji')">■ Arrêter</button>
+        </div>
+        <div class="music-status" id="musicAskawiholjiStatus" role="status" aria-live="polite">Prête à écouter.</div>
+        <button class="music-practice-link" type="button" onclick="openMusicPractice('practiceAskawiholji')">📝 Pratiquer avec les paroles</button>
+        <p class="music-credit"><strong>Paroles et conception artistique : Alakws Pamidoo · M8lsem.</strong><br>Maquette sonore présentée sous réserve des licences applicables.</p>
+      </article>
+      <article class="music-card">
         <img class="music-cover" src="audio/nikwonbi-nwonolonwze.jpg" loading="lazy" alt="Pochette de la chanson Nikw8bi nd'aln8ba8dwa">
         <h3>Nikw8bi nd'aln8ba8dwa</h3>
         <span class="music-badge">Chanson · 1:58</span>
@@ -1757,6 +1774,81 @@ Nda kd'alosaw mina, Aw8sis.
 Nda n'wanalmu majimiwi.
 Wli nanawalmezi. N'nanawalmel.
 Askwa yudali nd'aibena.</pre>
+        </div>
+      </details>
+
+      <details class="song-lyrics" id="practiceAskawiholji">
+        <summary>K'd-askawiholji · paroles chantées en graphie aln8ba · création à valider</summary>
+        <div class="lyrics-body">
+          <div class="lyrics-player" role="group" aria-label="Lecteur de pratique K'd-askawiholji">
+            <strong>🎧 K'd-askawiholji</strong>
+            <div class="lyrics-player-controls">
+              <button type="button" onclick="musicStart('musicAskawiholji')">▶ Démarrer</button>
+              <button type="button" onclick="musicPause('musicAskawiholji')">Ⅱ Pause</button>
+              <button type="button" onclick="musicStop('musicAskawiholji')">■ Arrêter</button>
+            </div>
+            <div class="music-status" id="musicAskawiholjiPracticeStatus" role="status" aria-live="polite">Prête à écouter.</div>
+          </div>
+          <div class="lyrics-note"><strong>Graphie du dictionnaire.</strong> Le texte affiche les formes aln8ba écrites, notamment <span class="al8">K'd-askawiholji</span>, <span class="al8">Nikw8bi</span>, <span class="al8">S8biwi</span>, <span class="al8">N'wijoka</span>, <span class="al8">Wijokadimuk</span> et <span class="al8">Paakuin8gwzian</span>.</div>
+          <div class="lyrics-note"><strong>Repères documentés.</strong> Le titre signifie « Je t'attendrai ». Le voyage, la rivière, la brume, le vent, le canot d'écorce, le portage, l'aide et l'entraide sont exprimés avec des entrées présentes dans le corpus du projet.</div>
+          <div class="lyrics-note"><strong>Création artistique à valider.</strong> Plusieurs lignes assemblent des formes documentées dans un ordre poétique sans constituer des phrases complètes attestées. <span class="al8">Madonban</span> est conservé parce qu'il appartient au texte chanté, mais son sens isolé n'est pas établi dans le corpus actuel. Il ne doit pas être appris comme un mot confirmé.</div>
+          <pre class="song-lyrics-raw">[Introduction]
+Sobhoban, Waji-nahilot.
+Kizoban Sibo.
+K'd-askawiholji.
+Nkodmaw8n.
+
+[Couplet 1]
+Nikw8bi n'Pemkanni.
+Nspiwi Sibo, nspiwi Nebi.
+S8biwi Bagw, s8biwi Sibo.
+N'Pemkanni wji Madonban.
+
+[Refrain]
+Wzomi k'Pemkanni,
+K'd-askawiholji.
+Ta n'Pemkanni, k'd-askawiholji;
+Ni nkodmaw8n.
+
+[Passage instrumental sur la rivière]
+
+[Couplet 2]
+Kskamiwi Pesgawan, n'Pemkanni.
+Kzelomsen ta Tegw.
+Kagalnakwimek; n'wijoka.
+Wji Kzelomsen, Wijokadimuk.
+
+[Refrain]
+Wzomi k'Pemkanni,
+K'd-askawiholji Wnigan.
+Nkodmaw8n s8biwi Sibo.
+N'Pemkanni; k'd-askawiholji.
+
+[Couplet 3]
+Padawian Wigwaol.
+N'ponem Wigwaol Madonban.
+Wnigan spiwi Wijokadimuk.
+N'wijoka; k'milaloka.
+
+[Pont]
+Ni Kizoban.
+Ni Kwaï mziwi!
+Paakuin8gwzian.
+Nikw8bi spiwi.
+
+[Refrain final]
+Wzomi k'Pemkanni,
+K'd-askawiholji.
+Wji Kzelomsen,
+Wijokadimuk.
+S8biwi Sibo, Wnigan,
+Nikw8bi spiwi.
+Kwaï mziwi!
+Paakuin8gwzian!
+
+[Finale]
+K'd-askawiholji.
+Ni mziwi.</pre>
         </div>
       </details>
 
@@ -2476,7 +2568,7 @@ window.addEventListener('resize',syncMobileUi,{passive:true});
 // ══════════════════════════════════════════════════════════
 //  STORAGE KEYS
 // ══════════════════════════════════════════════════════════
-const DATA_VERSION = '2026-08-18-001'; // Géré par Claude
+const DATA_VERSION = '2026-09-01-001';
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 const APP_RELEASE_KEY = 'aln8ba_release_fingerprint';
 
@@ -3315,7 +3407,7 @@ function searchBy(term){
 // ══════════════════════════════════════════════════════════
 //  VIEWS
 // ══════════════════════════════════════════════════════════
-const MUSIC_TRACK_IDS=['musicSkweda','musicAskwa','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
+const MUSIC_TRACK_IDS=['musicSkweda','musicAskwa','musicAskawiholji','musicNikwonbi','musicWlaWonGan','musicKikas','musicEntends'];
 let activeMusicId='';
 function musicSetStatus(id,message){
   [id+'Status',id+'PracticeStatus'].forEach(statusId=>{

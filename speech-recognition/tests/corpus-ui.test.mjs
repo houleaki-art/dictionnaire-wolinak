@@ -39,6 +39,7 @@ test('les lecteurs musicaux restent disponibles sans réactiver la diction', () 
   for (const id of [
     'musicSkweda',
     'musicAskwa',
+    'musicAskawiholji',
     'musicNikwonbi',
     'musicWlaWonGan',
     'musicKikas',
@@ -48,6 +49,9 @@ test('les lecteurs musicaux restent disponibles sans réactiver la diction', () 
   assert.match(html, /Wig8damoda — Kiona W8banakiak<\/h3>\s*<span class="music-badge">Chanson · 4:43<\/span>/);
   assert.match(html, /partie conservée de l'enregistrement, qui se termine à 4:43/);
   assert.ok(fs.statSync(path.resolve(here, '..', '..', 'audio', 'wig8damoda-kiona-w8banakiak.mp3')).size > 6_000_000);
+  assert.match(html, /K'd-askawiholji<\/h3>\s*<span class="music-badge">Chanson · 4:46<\/span>/);
+  assert.match(html, /Madonban[\s\S]*son sens isolé n'est pas établi dans le corpus actuel/);
+  assert.ok(fs.statSync(path.resolve(here, '..', '..', 'audio', 'kd-askawiholji.mp3')).size > 6_000_000);
 });
 
 test('la confidentialité annonce clairement l absence de collecte vocale', () => {
