@@ -20,7 +20,7 @@ Les recus d'abonnement, dates de generation, exports originaux et pages Suno doi
 | --- | --- | --- |
 | `audio/skweda.mp3` | a consigner | URL Suno, date, formule active, export original |
 | `audio/askwa-yudali.mp3` | a consigner | URL Suno, date, formule active, export original |
-| `audio/kd-askawiholji.mp3` | export original recu le 2026-09-01 | URL de generation a consigner; formule active confirmee par l'auteur; export original conserve |
+| `audio/kd-askawiholji.mp3` | export original recu le 2026-09-01; version publique arretee a 3:34 le 2026-09-01 | URL de generation a consigner; formule active confirmee par l'auteur; export original recuperable dans l'historique Git |
 | `audio/nikw8bi-aln8ba8dwa-v2.mp3` | `https://suno.com/song/27a8bff1-a867-4c0b-be9c-9d06e3a55e12` | recu et capture de la formule active |
 | `audio/wig8damoda-version-retenue-20260831.mp3` | export original retenu le 2026-08-31 | fichier original conserve; paroles integrees non considerees comme transcription du chant |
 | `audio/kikas-v2.mp3` | `https://suno.com/song/86979f10-61bb-459b-a5d2-d28ea9042fe4` | recu et capture de la formule active |
