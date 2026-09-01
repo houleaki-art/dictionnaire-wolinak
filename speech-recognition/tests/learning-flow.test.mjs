@@ -94,8 +94,27 @@ test("l'ecriture explique aliwizian avant de passer a la suite", () => {
   assert.match(writing, /APR_WRITING_ANALYSES\.get/);
   assert.match(writing, /exWritingAnalysisAnswer/);
   assert.match(writing, /state\.writingOk&&correct/);
-  assert.match(writing, /finishAnsweredStep\(ok,'#exBody',exSuivant,4500\)/);
+  assert.match(writing, /exWritingCorrectionHtml/);
+  assert.match(writing, /exAppendWritingNext/);
   assert.match(writing, /Aucun découpage n'est affiché sans analyse documentée/);
+});
+
+test("une erreur ecrite exige la recopie correcte avant d'afficher suivant", () => {
+  const practice = sourceBetween('function checkLvl4Write', '// ── HELPERS');
+  assert.match(practice, /practiceWritingFinish\(correct,answer,'aln8ba'\)/);
+  assert.match(practice, /Correction obligatoire avant de continuer/);
+  assert.match(practice, /if\(nav\) nav\.style\.display='none'/);
+  assert.match(practice, /verifyPracticeWritingCorrection/);
+  assert.match(practice, /aprNorm\(input\.value\)===aprNorm\(answer\)/);
+  const correction = sourceBetween('function verifyPracticeWritingCorrection', '// ── HELPERS');
+  assert.ok(correction.indexOf("nav.style.display='flex'") > correction.indexOf('if(!correct)'));
+
+  const lessonWriting = sourceBetween('function exWritingAnalysisAnswer', '/* — révision espacée');
+  assert.match(lessonWriting, /correctionDone:ok/);
+  assert.match(lessonWriting, /if\(!state\|\|state\.nextShown\|\|!state\.correctionDone/);
+  assert.match(lessonWriting, /aprNorm\(input\.value\)!==aprNorm\(state\.answer\)/);
+  assert.match(lessonWriting, /Correction écrite correctement/);
+  assert.match(lessonWriting, /exWritingCorrectionHtml\(q\.answer\)/);
 });
 
 test('les modules grammaticaux exigent une production ecrite', () => {
@@ -129,7 +148,8 @@ test('la production grammaticale suit une procedure documentee', () => {
   assert.match(writing, /pair=>pair\.oa\.exact&&pair\.oi\.exact/);
   assert.match(writing, /APR_WRITING_ANALYSES\.get/);
   assert.match(writing, /Raisonnement complet/);
-  assert.match(writing, /finishAnsweredStep\(ok,'#exBody',exSuivant,6500\)/);
+  assert.match(writing, /exWritingCorrectionHtml\(q\.answer\)/);
+  assert.match(writing, /exAppendWritingNext\(\)/);
 });
 
 test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
@@ -358,34 +378,47 @@ test('les banques automatiques respectent le principe annonce par leur module', 
 test('le jeu du territoire relie observation et vocabulaire vert actuel', () => {
   const trailSource = sourceBetween('const TERRITORY_TRAIL', 'let jTrailStep');
   const trail = new Function(`${trailSource}; return TERRITORY_TRAIL;`)();
-  assert.equal(trail.length, 7);
+  assert.equal(trail.length, 20);
   assert.deepEqual(trail.map(stop => stop.target), [
-    'Aki', 'W8linaktegw', 'Koa', 'Nolka', 'Mskikwimen', 'Skweda', 'Alakws'
+    'Aki', 'W8linaktegw', 'Koa', 'Nolka', 'Mskikwimen', 'Skweda', 'Alakws',
+    'Awassos', 'M8lsem', 'Moz', 'Asban', 'K8gw',
+    'Tolba', 'Chegwal', 'Mgezo', 'Sips',
+    'Koa', 'Sata', 'Mamij8la', 'Mamselabika'
   ]);
+  assert.equal(new Set(trail.map(stop => stop.id)).size, trail.length);
+  assert.ok(new Set(trail.map(stop => stop.image)).size >= 7);
   for (const stop of trail) {
     assert.equal(stop.options.length, 4, `quatre choix requis: ${stop.id}`);
     assert.equal(new Set(stop.options).size, 4, `choix distincts requis: ${stop.id}`);
     assert.ok(stop.options.includes(stop.target), `bonne réponse absente: ${stop.id}`);
     assert.match(stop.field, /\S/);
+    assert.match(stop.memory, /\S/);
   }
-  assert.doesNotMatch(trailSource, /\b(?:Sibo|Sata|Tmakwa)\b/);
+  assert.doesNotMatch(trailSource, /\b(?:Sibo|Tmakwa)\b/);
 
   const gameSource = sourceBetween('function jTerritoryStops', 'function jGenre');
   assert.match(gameSource, /new Map\(aprSur\(\)/);
   assert.match(gameSource, /stop\.words\.length===4/);
   assert.match(gameSource, /stops\.length!==TERRITORY_TRAIL\.length/);
   assert.match(gameSource, /Toutes les réponses proposées sont des entrées vertes actuelles/);
+  assert.match(gameSource, /function jMemoryBuild/);
+  assert.match(gameSource, /queue\.length<12/);
+  assert.match(gameSource, /setTimeout\(jMemoryAsk,5000\)/);
+  assert.match(gameSource, /answer-learning-content/);
   assert.match(html, /d:\['caches'\]/);
-  assert.match(html, /f:\['territoire','caches'\]/);
-  assert.match(html, /co:\['territoire','genre','negat','plur','caches'\]/);
+  assert.match(html, /f:\['territoire','memoire','caches'\]/);
+  assert.match(html, /co:\['territoire','memoire','genre','negat','plur','caches'\]/);
   assert.match(html, /a:\['genre','negat','plur','fam'\]/);
-  assert.match(html, /au:\['territoire','negat','fam'\]/);
+  assert.match(html, /au:\['territoire','memoire','negat','fam'\]/);
 
   for (const file of [
     'couleurs-territoire.webp',
     'territoire-riviere.webp',
     'territoire-pin-chevreuil.webp',
-    'territoire-feu-etoiles.webp'
+    'territoire-feu-etoiles.webp',
+    'territoire-foret-animaux.webp',
+    'territoire-marais-vivant.webp',
+    'territoire-clairiere-vivant.webp'
   ]) {
     const asset = path.resolve(here, '..', '..', 'assets', 'learning', file);
     assert.ok(fs.existsSync(asset), `image pédagogique absente: ${file}`);

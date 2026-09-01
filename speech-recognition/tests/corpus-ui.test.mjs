@@ -45,6 +45,9 @@ test('les lecteurs musicaux restent disponibles sans réactiver la diction', () 
     'musicEntends'
   ]) assert.match(html, new RegExp(`<audio id="${id}"`));
   assert.match(html, /const MUSIC_TRACK_IDS=/);
+  assert.match(html, /Wig8damoda — Kiona W8banakiak<\/h3>\s*<span class="music-badge">Chanson · 4:43<\/span>/);
+  assert.match(html, /partie conservée de l'enregistrement, qui se termine à 4:43/);
+  assert.ok(fs.statSync(path.resolve(here, '..', '..', 'audio', 'wig8damoda-kiona-w8banakiak.mp3')).size > 6_000_000);
 });
 
 test('la confidentialité annonce clairement l absence de collecte vocale', () => {
