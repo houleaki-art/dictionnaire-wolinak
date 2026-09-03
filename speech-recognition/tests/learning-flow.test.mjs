@@ -64,7 +64,9 @@ test('la deuxieme personne interrogative est enseignee sans regle inventee', () 
   assert.match(html, /INTERROGATIVE_FORM_NOTES/);
   assert.match(html, /deuxième personne interrogative',\s*notes:/);
   const search = sourceBetween('function filtered()', "// ── Ordre d'affichage");
-  assert.match(search, /w\.grammar,w\.notes/);
+  assert.match(search, /wordSearchText\(w\)/);
+  const searchText = sourceBetween('function wordSearchText', '// Étiquette affichée');
+  assert.match(searchText, /w\.grammar,w\.notes/);
 });
 
 test('le quiz interrogatif utilise seulement les contrastes documentes', () => {
@@ -574,6 +576,57 @@ test('le parcours public cache les controles techniques et laisse respirer la le
   assert.match(lesson, /aprcard apr-lesson-shell/);
   assert.ok(lesson.indexOf('${lecHtml}') < lesson.indexOf('aprModuleGuideHtml(n,m,i,lecHtml)'));
   assert.doesNotMatch(lesson, /COACH_TIPS\[i%COACH_TIPS\.length\]/);
+});
+
+test('le dictionnaire limite et differe le travail invisible sur tous les appareils', () => {
+  const render = sourceBetween('function wordBatchSize', 'function showMoreWords');
+  assert.match(render, /window\.innerWidth<=520\) return 18/);
+  assert.match(render, /isMobileUi\(\)\) return 24/);
+  assert.match(render, /return 42/);
+  assert.doesNotMatch(render, /return isMobileUi\(\)\?30:160/);
+
+  const cards = sourceBetween('function makeFamilyCard', 'function hl');
+  assert.match(cards, /renderDetails=isExp\|\|PRINT_WORD_DETAILS/);
+  assert.match(cards, /renderDetails\?`<div class="cdet">/);
+  assert.match(html, /content-visibility:auto/);
+  assert.match(html, /WORD_RENDER_LIMIT=filtered\(\)\.length/);
+
+  const init = sourceBetween("document.addEventListener('DOMContentLoaded'", '// ===== TRADUCTEUR IA =====');
+  assert.match(init, /const cachedWords=loadCachedPublicWords\(\)/);
+  assert.match(init, /const wordsPromise=loadWords\(\)/);
+  assert.match(init, /if\(\['all','favorites'\]\.includes\(S\.view\)\) renderWords\(\)/);
+  assert.match(init, /scheduleIdleWork\(\(\)=>refreshPracticeCoverage\(\)\)/);
+  assert.match(init, /scheduleWordRender\(\)/);
+  assert.doesNotMatch(init, /loadPending\(\); \/\/ Charge les pending/);
+
+  const learnInit = sourceBetween('function aprInit', 'const APR_MODULE_LIBRARY');
+  assert.ok(learnInit.indexOf('aprParcours()') < learnInit.indexOf('scheduleAprLearningAudit()'));
+  assert.doesNotMatch(learnInit, /APR_LAST_AUDIT=aprLearningRuntimeAudit\(\)/);
+  const auditSchedule = sourceBetween('function scheduleAprLearningAudit', 'function aprModuleNeedsUse');
+  assert.match(auditSchedule, /adminUnlocked\|\|location\.hostname==='127\.0\.0\.1'/);
+  assert.match(auditSchedule, /learningAudit='deferred'/);
+});
+
+test('les donnees et banques couteuses sont reutilisees sans devenir perimees', () => {
+  const cache = sourceBetween('function preparePublicWords', 'function saveWords');
+  assert.match(cache, /loadCachedPublicWords/);
+  assert.match(cache, /cachePublicWords/);
+  assert.match(cache, /requestIdleCallback/);
+  assert.match(html, /localStorage\.removeItem\(PUBLIC_WORDS_CACHE_KEY\)/);
+
+  const filters = sourceBetween('function filtered', "// ── Ordre d'affichage");
+  assert.match(filters, /FILTER_CACHE_KEY/);
+  assert.match(filters, /wordSearchText\(w\)/);
+  const practice = sourceBetween('function practicePoolsByLevel', 'function practicePoolForLevel');
+  assert.match(practice, /PRACTICE_POOL_CACHE_REV===WORDS_REVISION/);
+  assert.match(practice, /PRACTICE_POOL_CACHE=result/);
+  const learningPools = sourceBetween('const APR_META', 'function aprReserve');
+  assert.match(learningPools, /APR_POOL_CACHE_REV!==WORDS_REVISION/);
+  assert.match(learningPools, /return APR_SAFE_POOL_CACHE/);
+  const lookup = sourceBetween('let APR_WORD_LOOKUP_REV', 'function aprLessonItems');
+  assert.match(lookup, /APR_WORD_LOOKUP_REV!==WORDS_REVISION/);
+  const favorites = sourceBetween('function toggleFav', 'function audioPlaybackBlocked');
+  assert.match(favorites, /FILTER_CACHE_KEY=''/);
 });
 
 test('le projet fournit une identite visuelle originale au navigateur', () => {

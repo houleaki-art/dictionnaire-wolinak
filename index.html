@@ -85,7 +85,7 @@ main{flex:1;padding:24px 28px;min-width:0}
 /* ── CARDS ── */
 .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .wlist{display:flex;flex-direction:column;gap:8px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:var(--tr);cursor:pointer;position:relative;overflow:hidden}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:var(--tr);cursor:pointer;position:relative;overflow:hidden;content-visibility:auto;contain-intrinsic-size:auto 190px}
 .card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent);opacity:0;transition:var(--tr)}
 .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);border-color:var(--accent)}
 .card:hover::before,.card.exp::before{opacity:1}
@@ -2592,6 +2592,8 @@ window.addEventListener('resize',syncMobileUi,{passive:true});
 const DATA_VERSION = '2026-09-01-001';
 const SK = {version:'aln8ba_version', words:'aln8ba_v3_words', pending:'aln8ba_v3_pending', favs:'aln8ba_v3_favs', theme:'aln8ba_v3_theme'};
 const APP_RELEASE_KEY = 'aln8ba_release_fingerprint';
+const PUBLIC_WORDS_CACHE_KEY = 'aln8ba_public_words_snapshot_v1';
+const PUBLIC_WORDS_CACHE_MAX_AGE = 7*24*60*60*1000;
 
 // L'empreinte vient directement du index.html publié. Elle change donc à chaque
 // mise à jour réelle, sans dépendre d'un numéro de version modifié à la main.
@@ -2622,6 +2624,7 @@ async function publishedReleaseFingerprint(){
   return compactReleaseFingerprint(await response.text());
 }
 async function purgeTechnicalCaches(){
+  try{ localStorage.removeItem(PUBLIC_WORDS_CACHE_KEY); }catch(error){}
   try{
     if('serviceWorker' in navigator){
       const registrations=await navigator.serviceWorker.getRegistrations();
@@ -2645,10 +2648,11 @@ function versionLocalAsset(element,attribute,release){
   element.setAttribute(attribute,url.href);
   return true;
 }
+const RELEASE_ASSET_SELECTOR='img[src],audio[src],audio source[src],video[src],video source[src],link[rel="manifest"][href],link[rel~="icon"][href]';
 function versionStaticAssets(release,root=document){
   const nodes=[];
-  if(root.nodeType===1&&root.matches?.('img[src],audio[src],audio source[src],video[src],video source[src],link[rel="manifest"][href],link[rel~="icon"][href]')) nodes.push(root);
-  root.querySelectorAll?.('img[src],audio[src],audio source[src],video[src],video source[src],link[rel="manifest"][href],link[rel~="icon"][href]').forEach(node=>nodes.push(node));
+  if(root.nodeType===1&&root.matches?.(RELEASE_ASSET_SELECTOR)) nodes.push(root);
+  root.querySelectorAll?.(RELEASE_ASSET_SELECTOR).forEach(node=>nodes.push(node));
   nodes.forEach(node=>{
     const attribute=node.hasAttribute('src')?'src':'href';
     versionLocalAsset(node,attribute,release);
@@ -2656,14 +2660,23 @@ function versionStaticAssets(release,root=document){
 }
 let releaseAssetObserver=null;
 let activeAssetRelease='';
+let releaseAssetScanPending=false;
 function activateReleaseAssetVersioning(release){
   versionStaticAssets(release);
   if(releaseAssetObserver&&activeAssetRelease===release) return;
   releaseAssetObserver?.disconnect();
   activeAssetRelease=release;
-  releaseAssetObserver=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{
-    if(node.nodeType===1) versionStaticAssets(release,node);
-  })));
+  releaseAssetObserver=new MutationObserver(records=>{
+    const hasNewAsset=records.some(record=>[...record.addedNodes].some(node=>node.nodeType===1
+      &&!node.closest?.('#wordsContainer')
+      &&(node.matches?.(RELEASE_ASSET_SELECTOR)||node.querySelector?.(RELEASE_ASSET_SELECTOR))));
+    if(!hasNewAsset||releaseAssetScanPending) return;
+    releaseAssetScanPending=true;
+    requestAnimationFrame(()=>{
+      releaseAssetScanPending=false;
+      versionStaticAssets(activeAssetRelease);
+    });
+  });
   releaseAssetObserver.observe(document.documentElement,{childList:true,subtree:true});
 }
 async function checkPublishedRelease(){
@@ -3025,6 +3038,8 @@ async function fetchWordsFromSB(){
     if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
     return data.map(w=>({...w,
+      familyId:w.familyId||w.family_id||'',
+      formType:w.formType||w.form_type||'',
       related:Array.isArray(w.related)?w.related:(w.related?JSON.parse(w.related):[]),
       corrections:Array.isArray(w.corrections)?w.corrections:(w.corrections?JSON.parse(w.corrections):[])
     }));
@@ -3074,6 +3089,26 @@ function removeExactDuplicateRows(words){
     return true;
   });
 }
+function preparePublicWords(words){
+  const current=applyCurrentUsageOverrides((words||[]).filter(w=>w.id!=='__version__'));
+  return removeExactDuplicateRows(current);
+}
+function loadCachedPublicWords(){
+  try{
+    const snapshot=JSON.parse(localStorage.getItem(PUBLIC_WORDS_CACHE_KEY)||'null');
+    if(!snapshot||!Array.isArray(snapshot.words)||Date.now()-Number(snapshot.savedAt)>PUBLIC_WORDS_CACHE_MAX_AGE)
+      return [];
+    return preparePublicWords(snapshot.words);
+  }catch(error){ return []; }
+}
+function cachePublicWords(words){
+  const save=()=>{
+    try{ localStorage.setItem(PUBLIC_WORDS_CACHE_KEY,JSON.stringify({savedAt:Date.now(),words})); }
+    catch(error){ console.warn('Copie locale du dictionnaire non enregistrée:',error); }
+  };
+  if('requestIdleCallback' in window) requestIdleCallback(save,{timeout:3000});
+  else setTimeout(save,250);
+}
 async function loadWords(){
   const sbWords=await fetchWordsFromSB();
 
@@ -3085,8 +3120,8 @@ async function loadWords(){
 
   // 2026-08-18 — La branche d'auto-remplacement (DELETE + push du SEED) a été RETIRÉE :
   // la base Supabase fait toujours foi, quelle que soit la version du code.
-  const current=applyCurrentUsageOverrides(sbWords.filter(w=>w.id!=='__version__'));
-  return removeExactDuplicateRows(current);
+  cachePublicWords(sbWords);
+  return preparePublicWords(sbWords);
 }
 function saveWords(words){
   pushToSB(words);
@@ -3177,11 +3212,40 @@ let WORDS_REMOTE_READY = false;
 let FAVS  = loadFavs();
 let WORD_RENDER_LIMIT = 0;
 let WORD_RENDER_KEY = '';
+let WORDS_REVISION = 0;
+let FILTER_CACHE_KEY = '';
+let FILTER_CACHE_RESULT = [];
+let PRINT_WORD_DETAILS = false;
+let PRINT_WORD_LIMIT = 0;
 
-function wordBatchSize(){ return isMobileUi()?30:160; }
+function markWordsChanged(){
+  WORDS_REVISION++;
+  WORD_RENDER_KEY='';
+  FILTER_CACHE_KEY='';
+  WORD_LEVEL_CACHE=new WeakMap();
+  WORD_SEARCH_CACHE=new WeakMap();
+}
+function wordBatchSize(){
+  if(window.innerWidth<=520) return 18;
+  if(isMobileUi()) return 24;
+  if(window.innerWidth<=1300) return 30;
+  return 42;
+}
 function showMoreWords(){
   WORD_RENDER_LIMIT += wordBatchSize();
   renderWords();
+}
+let WORD_SEARCH_TIMER=0;
+function scheduleWordRender(delay=70){
+  clearTimeout(WORD_SEARCH_TIMER);
+  WORD_SEARCH_TIMER=setTimeout(()=>{
+    WORD_SEARCH_TIMER=0;
+    if(['all','favorites'].includes(S.view)) renderWords();
+  },delay);
+}
+function scheduleIdleWork(task,timeout=1200){
+  if('requestIdleCallback' in window) requestIdleCallback(()=>task(),{timeout});
+  else setTimeout(task,40);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3216,8 +3280,10 @@ function projectReviewedSource(value){
   return (source?source+' · ':'')+'Revu dans le projet (validation interne seulement)';
 }
 // ── NIVEAU DE CONFIANCE — source unique de vérité ──
-// Utilisé par le filtre public ET les badges admin
-function getWordLevel(w){
+// Les longues notes ne sont analysées qu'une fois par objet.
+let WORD_LEVEL_CACHE=new WeakMap();
+let WORD_SEARCH_CACHE=new WeakMap();
+function computeWordLevel(w){
   const source = (w.source||'').toLowerCase();
   const notes  = (w.notes ||'').toLowerCase();
   if(notes.includes('usage actuel signalé par guillaum labrecque-houle')) return 'vert';
@@ -3231,6 +3297,19 @@ function getWordLevel(w){
     return 'vert';
   if(['hypoth','morpholog','deriv'].some(k=>notes.includes(k))) return 'orange';
   return 'rouge';
+}
+function getWordLevel(w){
+  if(!w||typeof w!=='object') return 'rouge';
+  if(WORD_LEVEL_CACHE.has(w)) return WORD_LEVEL_CACHE.get(w);
+  const level=computeWordLevel(w);
+  WORD_LEVEL_CACHE.set(w,level);
+  return level;
+}
+function wordSearchText(w){
+  if(WORD_SEARCH_CACHE.has(w)) return WORD_SEARCH_CACHE.get(w);
+  const value=[w.aln8ba,w.fr,w.en,w.grammar,w.notes].filter(Boolean).join(' ').toLowerCase();
+  WORD_SEARCH_CACHE.set(w,value);
+  return value;
 }
 // Étiquette affichée sur les fiches oranges
 function levelBadge(w){
@@ -3257,21 +3336,24 @@ function isExerciseSafe(w){
     && getWordLevel(w)==='vert' && !EXERCISE_DOUTE.test(w.notes||'');
 }
 function filtered(){
+  const sv = document.getElementById('sortSel').value;
+  const q = S.q.trim().toLowerCase();
+  const cacheKey=[WORDS_REVISION,S.view,S.cat,S.letter,q,sv,adminUnlocked].join('\u0001');
+  if(cacheKey===FILTER_CACHE_KEY) return FILTER_CACHE_RESULT;
   // Les formes en attente ne figurent jamais dans le dictionnaire, même pour l'admin
   let r = WORDS.filter(w => !enAttente(w));
   // Visiteurs publics : afficher uniquement les mots confirmés
   if(!adminUnlocked) r = r.filter(w => isConfirmed(w));
-  const q = S.q.trim().toLowerCase();
-  if(q) r = r.filter(w=>[w.aln8ba,w.fr,w.en,w.grammar,w.notes]
-    .filter(Boolean).join(' ').toLowerCase().includes(q));
+  if(q) r = r.filter(w=>wordSearchText(w).includes(q));
   if(S.view==='favorites') r = r.filter(w=>FAVS.includes(w.id));
   if(S.cat) r = r.filter(w=>w.cat===S.cat);
   if(S.letter) r = r.filter(w=>w.aln8ba.toUpperCase().startsWith(S.letter));
-  const sv = document.getElementById('sortSel').value;
   if(sv==='alpha')    r.sort((a,b)=>a.aln8ba.localeCompare(b.aln8ba));
   if(sv==='alpha-fr') r.sort((a,b)=>a.fr.localeCompare(b.fr));
   if(sv==='cat')      r.sort((a,b)=>a.cat.localeCompare(b.cat)||a.aln8ba.localeCompare(b.aln8ba));
   if(sv==='recent')   r.sort((a,b)=>b.date_added.localeCompare(a.date_added));
+  FILTER_CACHE_KEY=cacheKey;
+  FILTER_CACHE_RESULT=r;
   return r;
 }
 
@@ -3320,7 +3402,8 @@ function makeFamilyCard(members){
   const id=base.id;
   const isFav=FAVS.includes(id);
   const isExp=S.expanded.has(id);
-  const related=(base.related||[]).filter(r=>r&&!members.some(m=>m.aln8ba===r)).map(r=>`<span class="rchip" onclick="searchBy('${escH(escQ(r))}');event.stopPropagation()">${escH(r)}</span>`).join('');
+  const renderDetails=isExp||PRINT_WORD_DETAILS;
+  const related=renderDetails?(base.related||[]).filter(r=>r&&!members.some(m=>m.aln8ba===r)).map(r=>`<span class="rchip" onclick="searchBy('${escH(escQ(r))}');event.stopPropagation()">${escH(r)}</span>`).join(''):'';
   const formsHtml=members.map(m=>`<div class="family-form-row">
     <span class="form-lbl">${escH(FORM_LABELS[m.formType]||m.formType)}</span>
     <span class="form-val">${hl(m.aln8ba)}</span>
@@ -3341,12 +3424,12 @@ function makeFamilyCard(members){
       <span class="family-badge">🔤 ${members.length} forme${members.length>1?'s':''}</span>
     </div>
     <div class="family-forms">${formsHtml}</div>
-    <div class="cdet">
+    ${renderDetails?`<div class="cdet">
       ${base.example_a?`<div class="dr"><span class="dl">Exemple</span><div class="dv"><span class="ex-a">${escH(base.example_a)}</span>${base.example_f?`<br><span style="font-style:italic;color:var(--text3);font-size:.82rem">${escH(base.example_f)}</span>`:''}</div></div>`:''}
       ${base.notes?`<div class="dr"><span class="dl">Note</span><span class="dv">${escH(publicNoteText(base.notes))}</span></div>`:''}
       ${related?`<div class="dr"><span class="dl">Voir aussi</span><div class="dv"><div class="rwords">${related}</div></div></div>`:''}
       ${base.source?`<div class="dr"><span class="dl">Source consultée</span><span class="dv" style="font-size:.78rem">${escH(publicSourceLabel(base.source))}</span></div>`:''}
-    </div>
+    </div>`:''}
   </div>`;
 }
 
@@ -3355,7 +3438,8 @@ function makeSingleCard(w){
   const isFav=FAVS.includes(w.id);
   const isExp=S.expanded.has(w.id);
   const hasCorrBadge=w.corrections&&w.corrections.length>0;
-  const related=(w.related||[]).filter(Boolean).map(r=>`<span class="rchip" onclick="searchBy('${escH(escQ(r))}');event.stopPropagation()">${escH(r)}</span>`).join('');
+  const renderDetails=isExp||PRINT_WORD_DETAILS;
+  const related=renderDetails?(w.related||[]).filter(Boolean).map(r=>`<span class="rchip" onclick="searchBy('${escH(escQ(r))}');event.stopPropagation()">${escH(r)}</span>`).join(''):'';
   return `<div class="card${isExp?' exp':''}" id="c${w.id}" onclick="toggleCard('${w.id}',event)">
     <div class="card-top">
       <div><div class="word">${hl(w.aln8ba)}</div>${cardPhonetic(w)}</div>
@@ -3371,7 +3455,7 @@ function makeSingleCard(w){
       ${hasCorrBadge?`<span class="corr-badge" title="Ce mot a été corrigé">✓ Corrigé (${w.corrections.length})</span>`:''}
       ${levelBadge(w)}
     </div>
-    <div class="cdet">
+    ${renderDetails?`<div class="cdet">
       ${w.example_a?`<div class="dr"><span class="dl">Exemple</span><div class="dv"><span class="ex-a">${escH(w.example_a)}</span>${w.example_f?`<br><span style="font-style:italic;color:var(--text3);font-size:.82rem">${escH(w.example_f)}</span>`:''}</div></div>`:''}
       ${w.notes?`<div class="dr"><span class="dl">Note</span><span class="dv">${escH(publicNoteText(w.notes))}</span></div>`:''}
       ${related?`<div class="dr"><span class="dl">Voir aussi</span><div class="dv"><div class="rwords">${related}</div></div></div>`:''}
@@ -3379,7 +3463,7 @@ function makeSingleCard(w){
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
         <button class="btn" style="font-size:.72rem;padding:5px 12px;background:var(--surface2);color:var(--text3);border:1px solid var(--border)" onclick="openSuggestion('${w.id}','${escQ(w.aln8ba)}','${escQ(w.fr)}');event.stopPropagation()">💡 Suggérer une correction</button>
       </div>
-    </div>
+    </div>`:''}
   </div>`;
 }
 
@@ -3410,6 +3494,21 @@ function renderWords(){
   }
   c.innerHTML=html;
 }
+window.addEventListener('beforeprint',()=>{
+  PRINT_WORD_DETAILS=true;
+  if(['all','favorites'].includes(S.view)){
+    PRINT_WORD_LIMIT=WORD_RENDER_LIMIT;
+    WORD_RENDER_LIMIT=filtered().length;
+    renderWords();
+  }
+});
+window.addEventListener('afterprint',()=>{
+  PRINT_WORD_DETAILS=false;
+  if(['all','favorites'].includes(S.view)){
+    WORD_RENDER_LIMIT=PRINT_WORD_LIMIT;
+    renderWords();
+  }
+});
 
 function hl(text){
   const safe=escH(text||'');
@@ -3429,6 +3528,7 @@ function toggleCard(id,e){
 function toggleFav(id){
   const i=FAVS.indexOf(id);
   i===-1?(FAVS.push(id),toast('⭐ Ajouté aux favoris')):(FAVS.splice(i,1),toast('Retiré des favoris'));
+  FILTER_CACHE_KEY='';
   saveFavs(FAVS); updateCounts(); renderWords();
 }
 function audioPlaybackBlocked(message){
@@ -3668,10 +3768,19 @@ function aprLessonKey(value){
   return (value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[’]/g,"'").replace(/[^a-z0-9'8]+/g,' ').trim();
 }
+let APR_WORD_LOOKUP_REV=-1;
+let APR_WORD_LOOKUP=new Map();
+function aprWordLookup(){
+  if(APR_WORD_LOOKUP_REV!==WORDS_REVISION){
+    APR_WORD_LOOKUP=new Map(aprSur().map(w=>[aprLessonKey(w.aln8ba),w]));
+    APR_WORD_LOOKUP_REV=WORDS_REVISION;
+  }
+  return APR_WORD_LOOKUP;
+}
 function aprLessonItems(m,lecHtml){
   if(!m||!lecHtml) return [];
   const holder=document.createElement('div'); holder.innerHTML=lecHtml;
-  const byWord=new Map(aprSur().map(w=>[aprLessonKey(w.aln8ba),w]));
+  const byWord=aprWordLookup();
   const byPhrase=new Map(DOCUMENTED_SENTENCES.map((p,i)=>[
     aprLessonKey(p.aln8ba),
     {id:'phrase-documentee-'+i,aln8ba:p.aln8ba,fr:p.fr[0],cat:m.cat||'grammaire',source:'Phrase complète documentée'}
@@ -3702,7 +3811,7 @@ function aprPreviousModuleKeys(cat){
   return used;
 }
 function aprNamedModuleItems(names){
-  const byName=new Map(aprSur().map(w=>[aprLessonKey(w.aln8ba),w]));
+  const byName=aprWordLookup();
   return (names||[]).map(name=>byName.get(aprLessonKey(name))).filter(Boolean).map(w=>({...w}));
 }
 /* Lance cartes, voix et exercices sur le vocabulaire propre au module. */
@@ -3863,15 +3972,21 @@ function practiceCurriculumKeysByStage(){
   }
   return stages;
 }
+let PRACTICE_POOL_CACHE_REV=-1;
+let PRACTICE_POOL_CACHE=null;
 function practicePoolsByLevel(words){
+  const usesLiveWords=typeof WORDS!=='undefined'&&words===WORDS;
+  if(usesLiveWords&&PRACTICE_POOL_CACHE&&PRACTICE_POOL_CACHE_REV===WORDS_REVISION)
+    return PRACTICE_POOL_CACHE;
   const confirmed=practiceConfirmedEntries(words);
   const curriculum=practiceCurriculumKeysByStage();
+  let result;
   if(curriculum){
     const core=new Set(PRACTICE_DISCOVERY_FORMS);
     const foundations=new Set([...core,...curriculum.d,...curriculum.f]);
     const consolidation=new Set([...foundations,...curriculum.co]);
     const advanced=new Set([...consolidation,...curriculum.a]);
-    return {
+    result={
       1:confirmed.filter(word=>core.has(practiceWordKey(word))),
       2:confirmed.filter(word=>foundations.has(practiceWordKey(word))),
       3:confirmed.filter(word=>consolidation.has(practiceWordKey(word))
@@ -3879,15 +3994,21 @@ function practicePoolsByLevel(words){
       4:confirmed.filter(word=>advanced.has(practiceWordKey(word))),
       5:confirmed
     };
+  }else{
+    const stage=word=>practiceLevelForWord(word);
+    result={
+      1:confirmed.filter(word=>stage(word)===1),
+      2:confirmed.filter(word=>stage(word)<=2),
+      3:confirmed.filter(word=>stage(word)<=3&&!PRACTICE_CLASS_EXCLUDED_CATEGORIES.has(word.cat||'')&&practiceFormClass(word)),
+      4:confirmed.filter(word=>stage(word)<=4),
+      5:confirmed
+    };
   }
-  const stage=word=>practiceLevelForWord(word);
-  return {
-    1:confirmed.filter(word=>stage(word)===1),
-    2:confirmed.filter(word=>stage(word)<=2),
-    3:confirmed.filter(word=>stage(word)<=3&&!PRACTICE_CLASS_EXCLUDED_CATEGORIES.has(word.cat||'')&&practiceFormClass(word)),
-    4:confirmed.filter(word=>stage(word)<=4),
-    5:confirmed
-  };
+  if(usesLiveWords){
+    PRACTICE_POOL_CACHE_REV=WORDS_REVISION;
+    PRACTICE_POOL_CACHE=result;
+  }
+  return result;
 }
 function practicePoolForLevel(level,words){
   return practicePoolsByLevel(words)[level]||[];
@@ -4892,7 +5013,7 @@ async function approvePending(id){
   // L'audio public sert uniquement à l'examen; sa publication exige une autorisation distincte.
   delete word.audio;
   delete word.status; delete word.submitted_date; delete word.contributor;
-  WORDS.push(word); saveWords([word]);
+  WORDS.push(word); markWordsChanged(); saveWords([word]);
   await deletePending(id);
   updateCounts(); renderAdmin(); toast('✅ Mot approuvé et publié!');
   updateAdminBadge();
@@ -4962,6 +5083,7 @@ async function applySuggestion(id){
   WORDS[idx] = {...w, [s.field]: s.suggested_value,
     corrections:[...(w.corrections||[]),{field:s.field,from:s.current_value,to:s.suggested_value,note:'Suggestion publique examinée et approuvée',date:new Date().toISOString().slice(0,10),by:'Admin'}]
   };
+  markWordsChanged();
   saveWords([WORDS[idx]]);
   await deleteSuggestion(id);
   renderAdmin();
@@ -4984,6 +5106,7 @@ function confirmWord(id){
   };
   const idx = WORDS.findIndex(x=>x.id===id);
   WORDS[idx] = confirmed;
+  markWordsChanged();
   saveWords([confirmed]);
   renderAdmin();
   toast('Mot retenu par le projet — visible pour les visiteurs.');
@@ -5080,6 +5203,7 @@ function saveEdit(){
     date_modified:new Date().toISOString().slice(0,10),
     corrections:[...(w.corrections||[]),...newCorrs],
   });
+  markWordsChanged();
   saveWords([w]); closeModal('editModal'); renderWords(); updateCounts();
   if(S.view==='admin') renderAdmin();
   toast('✅ Mot mis à jour'+( newCorrs.length?' avec correction enregistrée':''));
@@ -5087,6 +5211,7 @@ function saveEdit(){
 function deleteWord(id){
   if(!confirm('Supprimer définitivement ce mot?')) return;
   WORDS=WORDS.filter(w=>w.id!==id);
+  markWordsChanged();
   deleteFromSB(id);
   closeModal('editModal'); renderWords(); updateCounts();
   if(S.view==='admin') renderAdmin();
@@ -5211,6 +5336,7 @@ async function submitWord(){
     const saved=await pushToSB([word]);
     if(!saved){ toast('❌ Supabase a refusé l\'ajout. La fiche n\'a pas été publiée.'); return; }
     WORDS.push(word);
+    markWordsChanged();
     closeModal('addModal');
     updateCounts(); renderAdmin(); updateAdminBadge();
     toast(`✅ « ${aln} » ajouté directement au dictionnaire.`);
@@ -5246,6 +5372,7 @@ function importJSON(e){
       if(!confirm(`⚠️ REMPLACEMENT COMPLET\n\nCeci va supprimer les ${WORDS.length} mots existants et les remplacer par les ${data.words.length} mots du fichier.\n\nContinuer?`)) return;
       WORDS.length=0;
       data.words.forEach(w=>WORDS.push(w));
+      markWordsChanged();
       saveWords(WORDS); updateCounts(); renderWords();
       toast(`✅ Dictionnaire remplacé — ${WORDS.length} mots chargés`);
     } catch(err){ toast('❌ Erreur: '+err.message); }
@@ -5343,21 +5470,32 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 document.addEventListener('DOMContentLoaded', async ()=>{
   initEntryWarning();
   initMusicPlayers();
-  await restoreAdminSession();
+  const cachedWords=loadCachedPublicWords();
+  if(cachedWords.length){
+    WORDS=cachedWords;
+    markWordsChanged();
+    updateCounts();
+    renderWords();
+  }
+  // La requête principale démarre immédiatement, en parallèle de la restauration admin.
+  const sessionPromise=restoreAdminSession();
+  const wordsPromise=loadWords();
+  await sessionPromise;
   // Chargement depuis Supabase (source unique des mots depuis le 2026-08-18)
   (async()=>{
     try{
-      const w = await loadWords();
+      const w = await wordsPromise;
       if(w && w.length){
         WORDS = w;
+        markWordsChanged();
         WORDS_REMOTE_READY = true;
-        updateCounts(); renderWords(); if(adminUnlocked) renderAdmin();
-        refreshPracticeCoverage();
+        updateCounts();
+        if(['all','favorites'].includes(S.view)) renderWords();
+        if(adminUnlocked&&S.view==='admin') renderAdmin();
+        scheduleIdleWork(()=>refreshPracticeCoverage());
         if(S.view==='pratique'){ PS.queue=[]; buildQueue(); }
         if(S.view==='apprendre'){
-          APR_LAST_AUDIT=aprLearningRuntimeAudit();
-          document.documentElement.dataset.learningAudit=APR_LAST_AUDIT.ok?'ready':'failed';
-          document.documentElement.dataset.learningAuditIssues=APR_LAST_AUDIT.issues.join(' | ');
+          scheduleAprLearningAudit();
           if(aprMod===null) aprParcours();
         }
       }
@@ -5367,10 +5505,10 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   const si=document.getElementById('searchIn'), sx=document.getElementById('searchX');
   si.addEventListener('input',()=>{
     S.q=si.value; sx.style.display=si.value?'block':'none';
-    if(!['all','favorites'].includes(S.view)) setView('all');
-    renderWords();
+    if(!['all','favorites'].includes(S.view)){ setView('all'); return; }
+    scheduleWordRender();
   });
-  sx.addEventListener('click',()=>{si.value='';S.q='';sx.style.display='none';renderWords();});
+  sx.addEventListener('click',()=>{clearTimeout(WORD_SEARCH_TIMER);si.value='';S.q='';sx.style.display='none';renderWords();});
   // Lang toggle
   document.getElementById('ltog').addEventListener('click',e=>{
     if(!e.target.dataset.l) return;
@@ -5394,9 +5532,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   // Close overlays on Escape
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
   // Init
-  loadPending(); // Charge les pending depuis Supabase en arrière-plan
-  loadSuggestions(); // Charge les suggestions de correction
-  updateCounts(); renderWords();
+  if(!cachedWords.length){ updateCounts(); renderWords(); }
 });
 
 // ===== TRADUCTEUR IA =====
@@ -6822,11 +6958,21 @@ function tradGoto(mot,lang){
    ═══════════════════════════════════════════════════════ */
 const APR_META=/^(RÈGLE|SUFFIXE|RACINE|DIVERGENCE|CORPUS|PRONONCIATION|HISTOIRE)/;
 const APR_DOUTE=EXERCISE_DOUTE;
+let APR_POOL_CACHE_REV=-1;
+let APR_POOL_CACHE=[];
+let APR_SAFE_POOL_CACHE=[];
 /* pool large — pour le décortiqueur et la consultation */
-function aprPool(){ return WORDS.filter(w=>w.aln8ba&&!APR_META.test(w.aln8ba)&&w.fr
-  &&!w.fr.includes('⚠')&&w.cat!=='corpus'&&w.cat!=='archive'&&w.aln8ba!=='__version__'); }
+function aprPool(){
+  if(APR_POOL_CACHE_REV!==WORDS_REVISION){
+    APR_POOL_CACHE=WORDS.filter(w=>w.aln8ba&&!APR_META.test(w.aln8ba)&&w.fr
+      &&!w.fr.includes('⚠')&&w.cat!=='corpus'&&w.cat!=='archive'&&w.aln8ba!=='__version__');
+    APR_SAFE_POOL_CACHE=APR_POOL_CACHE.filter(isExerciseSafe);
+    APR_POOL_CACHE_REV=WORDS_REVISION;
+  }
+  return APR_POOL_CACHE;
+}
 /* pool sûr — pour les jeux : uniquement ce qui est attesté sans réserve */
-function aprSur(){ return aprPool().filter(isExerciseSafe); }
+function aprSur(){ aprPool(); return APR_SAFE_POOL_CACHE; }
 /* un mot porte-t-il une réserve ? */
 function aprReserve(w){ return APR_DOUTE.test((w&&w.notes)||''); }
 function aprNorm(s){ return (s||'').toLowerCase().replace(/['’\-\s.,!?;:«»"()[\]]/g,'')
@@ -7052,11 +7198,8 @@ function aprInit(){
     ({parcours:aprParcours,rev:aprRevView,decor:aprDecorView,conj:aprConjView,nomb:aprNombView,gram:aprGramView})[section]();
   });
   const box=document.getElementById('aprBody');
-  APR_LAST_AUDIT=aprLearningRuntimeAudit();
-  document.documentElement.dataset.learningAudit=APR_LAST_AUDIT.pending?'pending':APR_LAST_AUDIT.ok?'ready':'failed';
-  document.documentElement.dataset.learningAuditIssues=APR_LAST_AUDIT.issues.join(' | ');
-  if(!APR_LAST_AUDIT.ok) console.error('Audit fonctionnel du parcours: '+APR_LAST_AUDIT.issues.join(' | '));
   if(box && !box.innerHTML.trim()) aprParcours();
+  scheduleAprLearningAudit();
 }
 const APR_MODULE_LIBRARY=[
 {id:'p',t:'Base vocabulaire',d:"Vingt modules, des sons jusqu'à une première conversation.",
@@ -8453,6 +8596,8 @@ const APR_EXERCISE_ROUTES=new Set([
   'history','evidence','course'
 ]);
 let APR_LAST_AUDIT=null;
+let APR_AUDIT_REV=-1;
+let APR_AUDIT_QUEUED=false;
 function aprModulePlacementText(level,index){
   if(!level||!Array.isArray(level.mods)||!level.mods[index]) return '';
   return `Étape « ${level.t} » · module ${index+1} sur ${level.mods.length}. Ce numéro indique l'ordre du parcours; le principe enseigné est celui décrit dans cette fiche.`;
@@ -8496,6 +8641,30 @@ function aprLearningRuntimeAudit(){
   }
   return {ok:issues.length===0,pending:dataPending,total:details.length,executable:details.filter(item=>APR_EXERCISE_ROUTES.has(item.exercise)).length,
     qualityPassed:details.filter(item=>item.qualityPassed).length,issues,warnings,details};
+}
+function runAprLearningAudit(){
+  if(APR_AUDIT_REV===WORDS_REVISION&&APR_LAST_AUDIT&&!APR_LAST_AUDIT.pending) return APR_LAST_AUDIT;
+  APR_LAST_AUDIT=aprLearningRuntimeAudit();
+  APR_AUDIT_REV=WORDS_REVISION;
+  document.documentElement.dataset.learningAudit=APR_LAST_AUDIT.pending?'pending':APR_LAST_AUDIT.ok?'ready':'failed';
+  document.documentElement.dataset.learningAuditIssues=APR_LAST_AUDIT.issues.join(' | ');
+  if(!APR_LAST_AUDIT.ok) console.error('Audit fonctionnel du parcours: '+APR_LAST_AUDIT.issues.join(' | '));
+  return APR_LAST_AUDIT;
+}
+function scheduleAprLearningAudit(){
+  const params=new URLSearchParams(location.search);
+  const enabled=adminUnlocked||location.hostname==='127.0.0.1'||location.hostname==='localhost'||params.has('audit');
+  if(!enabled){
+    document.documentElement.dataset.learningAudit='deferred';
+    return;
+  }
+  if(APR_AUDIT_QUEUED||(APR_AUDIT_REV===WORDS_REVISION&&APR_LAST_AUDIT&&!APR_LAST_AUDIT.pending)) return;
+  APR_AUDIT_QUEUED=true;
+  document.documentElement.dataset.learningAudit='pending';
+  scheduleIdleWork(()=>{
+    APR_AUDIT_QUEUED=false;
+    runAprLearningAudit();
+  },2500);
 }
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
 function aprChapterProgressKey(level,moduleIndex,chapterIndex){
@@ -11050,6 +11219,7 @@ async function atlValider(id){
   try{
     await pushToSB([w2]);
     WORDS = WORDS.map(x=>x.id===id?w2:x);
+    markWordsChanged();
     const el = document.getElementById('atl-'+id);
     if(el){ el.style.opacity='.35'; el.style.pointerEvents='none';
       el.querySelector('.atl-form').innerHTML =
@@ -11067,6 +11237,7 @@ async function atlEcarter(id){
     await fetch(SB_URL+'/rest/v1/words?id=eq.'+encodeURIComponent(id),
       {method:'DELETE', headers:{...SB_HEADERS,'Prefer':'return=minimal'}});
     WORDS = WORDS.filter(x=>x.id!==id);
+    markWordsChanged();
     const el = document.getElementById('atl-'+id); if(el) el.remove();
     updateCounts();
     toast(`${w.aln8ba} écarté`);
