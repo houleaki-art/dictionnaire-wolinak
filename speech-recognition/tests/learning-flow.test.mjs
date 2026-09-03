@@ -135,7 +135,7 @@ test('les modules grammaticaux exigent une production ecrite', () => {
   assert.match(mastery, /function aprModuleNeedsUse/);
   assert.match(mastery, /state\.utiliser>=100/);
   const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
-  assert.match(lesson, /produire sans regarder/);
+  assert.match(lesson, /Écrire sans regarder/);
   assert.match(lesson, /ecrisgram/);
 });
 
@@ -175,8 +175,8 @@ test('chaque module affiche sa mission, sa place et ses formes nouvelles', () =>
   }
   assert.match(guide, /aprEarlierModuleKeys/);
   assert.match(guide, /NIVEAUX\.slice\(0,levelIndex\)\.flatMap/);
-  assert.match(guide, /forme.*nouvelle.*dans ce parcours/);
-  assert.match(guide, /reprise.*volontairement pour consolider/);
+  assert.match(guide, /forme.*nouvelle/);
+  assert.match(guide, /reprise/);
   const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
   assert.match(lesson, /aprModuleGuideHtml\(n,m,i,lecHtml\)/);
 });
@@ -200,8 +200,8 @@ test('les 45 chapitres et les 10 grands modules ont des objectifs complets et di
   }
   const guide = sourceBetween('function aprModuleGuideHtml', 'function aprModulePerfect');
   assert.match(guide, /aprModuleContract\(m\)/);
-  assert.match(guide, /Un principe complet/);
-  assert.match(guide, /Entraînement qui vérifie ce principe/);
+  assert.match(guide, /Repères de ce chemin/);
+  assert.match(guide, /<strong>Pratique\.<\/strong>/);
   assert.match(guide, /contract\.mastery/);
 });
 
@@ -239,10 +239,10 @@ test('le parcours contient cinq etapes, 10 grands modules et les 45 chapitres un
   assert.match(html, /chapterComplete/);
   assert.match(html, /const APR_EXERCISE_TARGETS=\{d:20,f:24,co:24,a:24,au:24\}/);
   assert.match(html, /exTot=APR_EXERCISE_TARGETS\[aprNiv\]\|\|8/);
-  assert.match(html, /Chaque grand module se travaille chapitre par chapitre/);
+  assert.match(html, /Prends une halte à la fois/);
   assert.match(html, /aprCourseChapterCapacity\(row\.module,chapterIndex,'retenir'\)/);
   assert.match(html, /aprCourseExercisePlan/);
-  assert.match(html, /Un chapitre à la fois/);
+  assert.match(html, /Prends une halte à la fois/);
   assert.doesNotMatch(html, /Retenir<\/strong> mélange tous les chapitres/);
 
   const dispatch = sourceBetween('function exSuivant()', 'function exPickUnique');
@@ -260,9 +260,9 @@ test('chaque chapitre est appris et teste dans sa propre banque avant la synthes
 
   assert.match(html, /const APR_CHAPTER_QUESTION_TARGET=6/);
   assert.match(html, /const APR_SYNTHESIS_QUESTIONS_PER_CHAPTER=2/);
-  assert.match(lesson, /Tester ce chapitre/);
-  assert.match(lesson, /uniquement sur/);
-  assert.match(lesson, /Révision générale facultative/);
+  assert.match(lesson, /Pratiquer cette halte/);
+  assert.match(lesson, /porte seulement sur/);
+  assert.match(lesson, /Revoir tout le chemin/);
   assert.match(lesson, /synthesisReady\?'':`disabled/);
   assert.match(planning, /chapterIndex==null\|\|descriptor\.index===chapterIndex/);
   assert.match(planning, /APR_CHAPTER_QUESTION_TARGET,chapterIndex/);
@@ -515,7 +515,7 @@ test('le site audite les routes et les banques des 10 grands modules au chargeme
   assert.match(audit, /const dataPending=!WORDS_REMOTE_READY/);
   assert.match(audit, /route d'exercice absente/);
   assert.match(html, /APR_LAST_AUDIT=aprLearningRuntimeAudit\(\)/);
-  assert.match(html, /Contrôle fonctionnel réussi/);
+  assert.doesNotMatch(html, /Contrôle fonctionnel réussi/);
   assert.match(html, /document\.documentElement\.dataset\.learningAudit/);
 });
 
@@ -525,16 +525,27 @@ test('le parcours montre la prochaine action et les modules avant les explicatio
   assert.match(helpers, /function aprLevelProgress/);
   assert.match(helpers, /row\.started&&!row\.done/);
   assert.match(helpers, /class="apr-path-more"/);
-  assert.match(helpers, /Comprendre cette étape, sa méthode et ses limites/);
+  assert.match(helpers, /Voir le chemin complet/);
   assert.match(view, /class="apr-stage-tabs"/);
   assert.match(view, /aria-label="Prochaine action"/);
   assert.match(view, /class="apr-module-grid"/);
-  assert.match(view, /À faire/);
-  assert.match(view, /En cours/);
-  assert.match(view, /Maîtrisé/);
+  assert.match(view, /À découvrir/);
+  assert.match(view, /En chemin/);
+  assert.match(view, /Bien ancré/);
   assert.ok(view.indexOf('class="apr-next"') < view.indexOf('class="apr-module-grid"'));
   assert.match(html, /body:has\(\.apr-path-dashboard\) \.fab\{display:none\}/);
   assert.doesNotMatch(view, /Cinq étapes qui s'appuient l'une sur l'autre/);
+});
+
+test('le parcours public cache les controles techniques et laisse respirer la lecon', () => {
+  const path = sourceBetween('function aprPathHtml', 'const APR_TASK_GUIDES');
+  const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
+  assert.doesNotMatch(path, /learning-audit/);
+  assert.doesNotMatch(path, /Contrôle fonctionnel|Plancher pédagogique|approbation ministérielle/);
+  assert.match(path, /apprendre à son rythme/);
+  assert.match(lesson, /aprcard apr-lesson-shell/);
+  assert.ok(lesson.indexOf('${lecHtml}') < lesson.indexOf('aprModuleGuideHtml(n,m,i,lecHtml)'));
+  assert.doesNotMatch(lesson, /COACH_TIPS\[i%COACH_TIPS\.length\]/);
 });
 
 test('le projet fournit une identite visuelle originale au navigateur', () => {

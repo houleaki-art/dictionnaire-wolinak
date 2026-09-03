@@ -150,19 +150,21 @@ main{flex:1;padding:24px 28px;min-width:0}
 /* ── AVERTISSEMENT D'ENTRÉE ── */
 body.warning-open{overflow:hidden}
 .entry-warning{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
-  padding:20px;background:radial-gradient(circle at 50% 15%,rgba(125,70,28,.38),rgba(16,9,5,.9) 58%);
+  padding:20px;background:radial-gradient(circle at 50% 12%,rgba(91,113,64,.34),rgba(16,9,5,.86) 62%);
   backdrop-filter:blur(9px)}
 .entry-warning[hidden]{display:none}
-.warning-card{width:min(680px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:var(--surface);
-  border:1px solid color-mix(in srgb,var(--accent) 55%,var(--border));border-top:7px solid var(--accent);
-  border-radius:18px;padding:clamp(24px,5vw,42px);box-shadow:0 24px 80px rgba(0,0,0,.48)}
+.warning-card{width:min(590px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:var(--surface);
+  border:1px solid color-mix(in srgb,var(--green) 42%,var(--border));border-top:5px solid var(--green);
+  border-radius:20px;padding:clamp(22px,4vw,34px);box-shadow:0 24px 80px rgba(0,0,0,.42)}
 .warning-kicker{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:9px}
 .warning-card h2{font-size:clamp(1.55rem,5vw,2.35rem);line-height:1.08;margin-bottom:15px;color:var(--text)}
-.warning-lead{font-size:1rem;line-height:1.55;color:var(--text);margin-bottom:18px}
-.warning-copy{border-left:4px solid var(--gold);background:var(--surface2);border-radius:0 12px 12px 0;padding:16px 18px}
-.warning-copy p{font-size:.88rem;line-height:1.65;color:var(--text2);margin-bottom:10px}
+.warning-lead{font-size:.96rem;line-height:1.6;color:var(--text2);margin-bottom:18px}
+.warning-copy{border:1px solid var(--border);background:color-mix(in srgb,var(--green) 4%,var(--surface));border-radius:12px;overflow:hidden}
+.warning-copy summary{padding:11px 13px;cursor:pointer;color:var(--text2);font-size:.76rem;font-weight:700;list-style-position:inside}
+.warning-copy>div{padding:2px 14px 13px;border-top:1px solid var(--border)}
+.warning-copy p{font-size:.78rem;line-height:1.55;color:var(--text2);margin:10px 0 0}
 .warning-copy p:last-child{margin-bottom:0}
-.warning-accept{display:block;width:100%;margin-top:22px;border:0;border-radius:10px;padding:14px 18px;
+.warning-accept{display:block;width:100%;margin-top:16px;border:0;border-radius:10px;padding:14px 18px;
   background:var(--accent);color:#fff;font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer;transition:var(--tr)}
 .warning-accept:hover{background:var(--accent-h);transform:translateY(-1px)}
 .warning-accept:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
@@ -731,6 +733,12 @@ body.music-dock-open .toast{bottom:116px}
 .aprnav button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
 .aprcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
   padding:22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.apr-lesson-shell{max-width:1180px;margin:0 auto 28px;padding:clamp(18px,3vw,34px);border:0;border-radius:22px;background:linear-gradient(180deg,color-mix(in srgb,var(--green) 3%,var(--surface)),var(--surface) 260px);box-shadow:none}
+.apr-lesson-head{max-width:820px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid color-mix(in srgb,var(--green) 24%,var(--border))}
+.apr-lesson-head .aprlead{margin-bottom:0}
+.apr-lesson-tools{margin-top:30px;padding-top:18px;border-top:1px solid var(--border)}
+.apr-learning-progress{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;color:var(--text2);font-size:.74rem}
+.apr-learning-progress strong{color:var(--green)}
 .aprcard h3{font-size:1.25rem;margin:16px 0 8px;color:var(--text)}
 .aprcard h3:first-child{margin-top:0}
 .aprcard p{font-size:.9rem;margin-bottom:9px;line-height:1.6}
@@ -752,7 +760,7 @@ body.music-dock-open .toast{bottom:116px}
 .aprtab td{padding:7px 10px 7px 0;border-bottom:1px solid var(--border);vertical-align:top}
 .aprtab td.k{font-weight:700;white-space:nowrap;color:var(--text)}
 .aprtab small{color:var(--text2);font-size:.74rem}
-.aprnote{background:var(--surface2);border-left:3px solid var(--green);padding:12px 14px;
+.aprnote{background:color-mix(in srgb,var(--green) 5%,transparent);border-left:2px solid var(--green);padding:11px 14px;
   font-size:.83rem;line-height:1.6;margin:12px 0;border-radius:0 8px 8px 0}
 .aprnote.w{border-left-color:var(--accent)}
 .aprnote b{font-size:1rem;display:block;margin-bottom:3px}
@@ -761,12 +769,18 @@ body.music-dock-open .toast{bottom:116px}
 .apr-method-step{min-width:0;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)}
 .apr-method-step strong{display:block;color:var(--accent);font-size:.76rem;letter-spacing:.04em;margin-bottom:4px}
 .apr-method-step span{display:block;color:var(--text2);font-size:.72rem;line-height:1.45}
-.apr-origin{margin:12px 0;border:1px solid var(--border);border-radius:10px;background:var(--surface2);overflow:hidden}
+.apr-origin{margin:9px 0;border:1px solid var(--border);border-radius:10px;background:transparent;overflow:hidden}
 .apr-origin summary{cursor:pointer;padding:11px 13px;font-size:.78rem;font-weight:700;color:var(--text2);list-style-position:inside}
 .apr-origin summary:hover,.apr-origin summary:focus-visible{color:var(--accent)}
 .apr-origin-body{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--border);padding:12px 13px;background:var(--surface)}
 .apr-origin-body div{font-size:.74rem;line-height:1.5;color:var(--text2)}
 .apr-origin-body strong{display:block;color:var(--text);margin-bottom:3px}
+.apr-module-compass-body{padding:14px;border-top:1px solid var(--border);background:color-mix(in srgb,var(--green) 3%,var(--surface))}
+.apr-module-compass-body>p{margin:0 0 10px;color:var(--text2);font-size:.76rem;line-height:1.55}
+.apr-module-compass-body>p strong{color:var(--text)}
+.apr-module-compass-body ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 12px;padding:0;list-style:none;counter-reset:quiet-step}
+.apr-module-compass-body li{position:relative;padding:9px 9px 9px 31px;border-left:1px solid color-mix(in srgb,var(--green) 38%,var(--border));color:var(--text2);font-size:.72rem;line-height:1.42}
+.apr-module-compass-body li::before{counter-increment:quiet-step;content:counter(quiet-step);position:absolute;left:8px;top:9px;color:var(--green);font-weight:800}
 .apr-module-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}
 .apr-module-guide>div{min-width:0;padding:12px 13px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
 .apr-module-guide strong{display:block;margin-bottom:4px;color:var(--accent);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase}
@@ -812,6 +826,10 @@ body.music-dock-open .toast{bottom:116px}
 .apr-course-synthesis-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px;padding-top:13px;border-top:1px solid color-mix(in srgb,var(--green) 28%,var(--border))}
 .apr-course-synthesis-actions small{color:var(--text2);font-size:.72rem;line-height:1.4}
 .aprbtn:disabled{cursor:not-allowed;opacity:.48;filter:grayscale(.35)}
+.music-notice{margin:0 0 20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.music-notice summary{padding:12px 2px;cursor:pointer;color:var(--text2);font-size:.78rem;font-weight:700}
+.music-notice-body{padding:2px 0 14px;columns:2;column-gap:28px}
+.music-notice-body p{break-inside:avoid;margin:0 0 10px;color:var(--text2);font-size:.76rem;line-height:1.55}
 .ex-course-chapter-label{display:block;margin-top:3px;color:var(--text3);font-size:.66rem;font-weight:400;line-height:1.35}
 .morph-primer{margin:14px 0 18px;padding:16px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--border));border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 11%,var(--surface)),var(--surface))}
 .morph-primer>strong{display:block;margin-bottom:4px;color:var(--accent);font-size:1.05rem}
@@ -1175,6 +1193,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .apr-origin-body{grid-template-columns:1fr}
   .apr-module-guide{grid-template-columns:1fr}
   .apr-module-contract ol{grid-template-columns:1fr}
+  .apr-module-compass-body ol{grid-template-columns:1fr}
   .apr-course-assessment-note{display:grid;gap:5px}
   .apr-course-assessment-note b{flex-basis:auto}
   .apr-course-intro{grid-template-columns:1fr;padding:14px}
@@ -1186,6 +1205,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .apr-course-chapter-actions{justify-content:stretch}
   .apr-course-chapter-actions .aprbtn{width:100%}
   .apr-course-synthesis-actions{align-items:stretch;flex-direction:column}
+  .music-notice-body{columns:1}
   .morph-steps,.poss-groups{grid-template-columns:1fr}
   .morph-plus{display:none}
   .prat-levels{grid-template-columns:1fr}
@@ -1218,18 +1238,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="entry-warning" id="entryWarning" role="dialog" aria-modal="true"
      aria-labelledby="entryWarningTitle" aria-describedby="entryWarningText">
   <section class="warning-card">
-    <div class="warning-kicker">Avant de consulter le dictionnaire</div>
-    <h2 id="entryWarningTitle">Avertissement important</h2>
-    <p class="warning-lead"><strong>Ce dictionnaire est, à ce stade, un projet 100&nbsp;% personnel et en construction.</strong></p>
-    <div class="warning-copy" id="entryWarningText">
-      <p>Son contenu, sa compilation, ses traductions, ses prononciations et ses outils pédagogiques n'ont pas été attestés, révisés ni approuvés dans leur ensemble par un professionnel.</p>
-      <p><strong>Ne prenez rien pour acquis.</strong> Toute graphie, définition, règle, phrase, prononciation ou réponse produite automatiquement doit être vérifiée auprès de sources fiables et de personnes compétentes.</p>
-      <p>Ce site ne constitue pas une référence officielle et ne représente aucune validation officielle des Premières Nations Abénakises d'Odanak ou de Wôlinak.</p>
-      <p>La mention d'une personne, d'un ouvrage ou d'un organisme indique uniquement une source consultée. Elle ne signifie ni participation au projet, ni attestation, ni approbation de son contenu.</p>
-      <p><strong>Déclaration de financement de l'auteur.</strong> Ce dictionnaire a été monté et financé entièrement avec l'argent personnel d'Alakws Pamidoo, du clan M8lsem (nom administratif : Guillaum Labrecque-Houle). Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Il ne s'agit ni d'une subvention, ni d'une commandite, ni d'une approbation institutionnelle du dictionnaire.</p>
-    </div>
+    <div class="warning-kicker">Bienvenue</div>
+    <h2 id="entryWarningTitle">Entre avec curiosité</h2>
+    <p class="warning-lead" id="entryWarningText"><strong>Ce dictionnaire est un projet personnel en construction.</strong> Les mots gardent leurs sources et certaines formes demandent encore d'être confirmées. Explore, écoute et vérifie lorsque l'usage compte.</p>
+    <details class="warning-copy">
+      <summary>Sources et repères</summary>
+      <div>
+        <p>Son contenu, sa compilation, ses traductions, ses prononciations et ses outils pédagogiques n'ont pas été attestés, révisés ni approuvés dans leur ensemble par un professionnel.</p>
+        <p>Ce site ne constitue pas une référence officielle et ne représente aucune validation officielle des Premières Nations Abénakises d'Odanak ou de Wôlinak. La mention d'une personne, d'un ouvrage ou d'un organisme indique uniquement une source consultée; elle ne signifie ni participation au projet, ni attestation, ni approbation de son contenu.</p>
+      </div>
+    </details>
     <button class="warning-accept" id="entryWarningAccept" type="button" onclick="acceptEntryWarning()">
-      J'ai compris — consulter avec prudence
+      Entrer dans le dictionnaire
     </button>
   </section>
 </div>
@@ -1367,10 +1387,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
     </div>
     <div class="prat-coverage" id="practiceCoverage" role="status" aria-live="polite">Chargement de la banque de pratique...</div>
-    <div class="aprnote" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-      <span><b>Pratique guidée ou Jeux libres?</b> Ici, les questions suivent une difficulté précise et enregistrent ta progression. Les jeux sont des activités libres aux mécaniques différentes.</span>
-      <button class="btn btn-secondary" type="button" onclick="setView('jeux')">Ouvrir les jeux libres →</button>
-    </div>
     <div class="prat-levels" id="pratLevels">
       <button class="plvl lvl-1 on" type="button" data-lvl="1" onclick="selectLevel(1)">
         <div class="plvl-icon">🌱</div>
@@ -1434,9 +1450,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
       <button class="btn btn-secondary" type="button" onclick="setView('pratique')">Pratique guidée →</button>
     </div>
-    <div class="aprnote" style="margin-bottom:16px">
-      <b>Un espace distinct.</b> Les jeux font travailler l'observation, les classes grammaticales, la négation, les pluriels documentés, les familles de mots et la recherche visuelle. Le questionnaire de vocabulaire reste dans Pratique guidée pour éviter les doublons.
-    </div>
     <div id="jCtxBar"></div>
     <div class="jmenu" id="jMenu"></div>
     <div class="jstage" id="jStage"><div style="text-align:center;color:var(--text3);padding:40px 20px">
@@ -1493,18 +1506,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <button type="button" onclick="musicGoTo('musicListen')">🎧 Écouter les chansons</button>
       <button type="button" onclick="musicGoTo('musicPractice')">📝 Suivre les paroles sourcées</button>
     </nav>
-    <div class="music-warning" role="note">
-      <strong>Œuvres artistiques en évolution.</strong> Ces chansons ne constituent pas une attestation linguistique ni un modèle officiel de prononciation. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.
-    </div>
-    <div class="music-warning music-rights" role="note">
-      <strong>© 2026 Alakws Pamidoo · M8lsem (nom administratif : Guillaum Labrecque-Houle) — écoute seulement.</strong> Les droits sont réservés sur ses paroles et ses choix créatifs originaux, sous réserve des droits et licences applicables aux outils et aux éléments tiers. La mise en écoute sur ce site n'accorde aucune licence de copie, de modification ou de redistribution.
-    </div>
-    <div class="music-warning" role="note">
-      <strong>Projet personnel indépendant.</strong> L'emploi du nom W8linak décrit l'origine, le lieu ou le sujet de certaines œuvres. Il n'implique aucune commande, autorisation, commandite ni approbation du Conseil des Abénakis de Wôlinak, et aucun symbole officiel de la Nation n'est employé comme identité de ces chansons.
-    </div>
-    <div class="music-warning" role="status">
-      <strong>Révisions du 25 août 2026.</strong> Les anciennes versions contenant des formes douteuses ont été retirées. Les versions conservées emploient des phrases ou des mots documentés et demeurent sujettes à révision.
-    </div>
+    <details class="music-notice">
+      <summary>À propos des chansons, des sources et des droits</summary>
+      <div class="music-notice-body">
+        <p><strong>Œuvres artistiques en évolution.</strong> Ces chansons ne constituent pas une attestation linguistique ni un modèle officiel de prononciation. Certaines paroles et prononciations pourront être révisées après consultation de personnes qualifiées.</p>
+        <p><strong>© 2026 Alakws Pamidoo · M8lsem (nom administratif : Guillaum Labrecque-Houle) — écoute seulement.</strong> Les droits sont réservés sur ses paroles et ses choix créatifs originaux, sous réserve des droits et licences applicables aux outils et aux éléments tiers. La mise en écoute sur ce site n'accorde aucune licence de copie, de modification ou de redistribution.</p>
+        <p><strong>Projet personnel indépendant.</strong> L'emploi du nom W8linak décrit l'origine, le lieu ou le sujet de certaines œuvres. Il n'implique aucune commande, autorisation, commandite ni approbation du Conseil des Abénakis de Wôlinak, et aucun symbole officiel de la Nation n'est employé comme identité de ces chansons.</p>
+        <p><strong>Versions révisées.</strong> Les anciennes versions contenant des formes douteuses ont été retirées. Les versions conservées emploient des phrases ou des mots documentés et demeurent sujettes à révision.</p>
+      </div>
+    </details>
     <div class="music-grid" id="musicListen">
       <article class="music-card">
         <img class="music-cover" src="audio/skweda.jpg" loading="lazy" alt="Pochette de la chanson Skweda">
@@ -2256,7 +2266,6 @@ Merci... merci de m'avoir entendu</pre>
         <table class="ptable"><tr><td>Chaque lettre</td><td>= se prononce; une consonne finale ne doit pas disparaître</td></tr><tr><td>i</td><td>= un seul I intérieur reste I; le dernier I tend vers É s'il termine le mot ou si le mot contient plusieurs I. <b>Kizi</b> garde I.</td></tr><tr><td>o</td><td>= O comme dans « zéro »; <b>-on</b> final tend vers « oun » et <b>o</b> devant <b>z</b> vers « au »</td></tr><tr><td>w</td><td>= <b>o doux</b> devant une consonne (Wli = oli) · <b>glissement w</b> devant une voyelle (W8linak = wanlinak) · <b>très doux à la fin</b>, sans former une syllabe « ou ». Après G ou K, il arrondit légèrement la consonne : <em>Alsig8ntegw</em> se termine comme « tègue », pas « té-gou ».</td></tr><tr><td>8</td><td>= A nasal entre « an » et « on »; le guide français reste approximatif</td></tr><tr><td>Ch</td><td>= son ts</td></tr><tr><td>J</td><td>= son dz</td></tr><tr><td>-ak</td><td>= terminaison d'un pluriel animé documenté</td></tr><tr><td>-al</td><td>= terminaison d'un pluriel inanimé documenté</td></tr><tr><td>j8n</td><td>= le nez</td></tr></table>
       </div>
       <div class="acard"><h3>📍 Odanak et Wôlinak</h3><p>Deux communautés abenakises du Québec. Odanak (Saint-François-du-Lac) et Wôlinak (près de Bécancour — W8linaktegw). Gardiennes de la langue Aln8ba8dwaw8gan.</p></div>
-      <div class="acard"><h3>💰 Financement personnel</h3><p>Ce dictionnaire a été monté et financé entièrement avec l'argent personnel d'<strong>Alakws Pamidoo · M8lsem</strong> (nom administratif : Guillaum Labrecque-Houle). Une partie de ces fonds provient de la compensation qu'il a reçue du gouvernement du Canada en lien avec l'utilisation historique, sans consentement, des terres et des ressources naturelles de sa Nation. Ce financement personnel n'est ni une subvention, ni une commandite, ni une approbation institutionnelle du projet.</p></div>
       <div class="acard"><h3>📚 Sources, noms et droits</h3><p>Les références bibliographiques et les noms servent à identifier les sources consultées. Ils n'indiquent aucune participation au projet ni aucune approbation de celui-ci. Les ouvrages, citations et contributions de tiers demeurent soumis aux droits de leurs titulaires. Ce site ne remplace pas les manuels ni les publications d'origine.</p></div>
       <div class="acard"><h3>🔐 Confidentialité</h3><p>Le site n'utilise aucun outil d'analytique publicitaire. Les formulaires publics transmettent uniquement une proposition linguistique anonyme à la base Supabase du projet; ils ne demandent ni nom ni voix. N'inscrivez aucun renseignement personnel dans les champs libres. La soumission en attente est supprimée après la décision. Le dictionnaire ne demande pas l’accès au microphone, n’enregistre aucune voix et n’utilise aucun moteur vocal. GitHub Pages et Supabase peuvent traiter des journaux techniques standards selon leurs propres politiques. Responsable : <strong>Alakws Pamidoo · M8lsem</strong> (nom administratif : Guillaum Labrecque-Houle) · <a href="mailto:houle.aki@gmail.com">houle.aki@gmail.com</a>. Vous pouvez demander l'accès, la rectification ou le retrait d'une soumission encore en attente.</p></div>
       <div class="acard"><h3>➕ Contribuer</h3><p>Cliquez le bouton <strong>+</strong> pour proposer un mot.
@@ -5278,15 +5287,22 @@ function setEntryWarningActive(active){
     if(el.id!=='entryWarning'&&el.tagName!=='SCRIPT') el.inert=active;
   });
 }
+const ENTRY_WARNING_KEY='aln8ba_entry_welcome_seen';
 function acceptEntryWarning(){
   const warning=document.getElementById('entryWarning');
   if(!warning) return;
+  try{ localStorage.setItem(ENTRY_WARNING_KEY,'1'); }catch(_error){}
   warning.hidden=true; setEntryWarningActive(false);
   const search=document.getElementById('searchIn'); if(search) search.focus();
 }
 function initEntryWarning(){
   const warning=document.getElementById('entryWarning'), accept=document.getElementById('entryWarningAccept');
   if(!warning||!accept) return;
+  try{
+    if(localStorage.getItem(ENTRY_WARNING_KEY)==='1'){
+      warning.hidden=true; setEntryWarningActive(false); return;
+    }
+  }catch(_error){}
   setEntryWarningActive(true);
   warning.addEventListener('keydown',e=>{
     if(e.key==='Tab'){e.preventDefault();accept.focus();}
@@ -6833,7 +6849,7 @@ function aprLessonReferences(m,lecHtml){
 }
 function aprProvenanceHtml(m,lecHtml){
   const refs=aprLessonReferences(m,lecHtml).map(escH).join(' · ');
-  return `<details class="apr-origin"><summary>Origine des données et création de la leçon</summary>
+  return `<details class="apr-origin"><summary>Sources et création</summary>
     <div class="apr-origin-body"><div><strong>Données linguistiques consultées</strong>${refs}.
       La référence indique une source consultée; elle ne signifie ni participation ni approbation du projet.</div>
       <div><strong>Travail propre au projet</strong>${APR_PROJECT_PEDAGOGY}
@@ -8440,21 +8456,14 @@ function aprLevelProgress(level,prog){
     percent:rows.length?Math.round(rows.filter(row=>row.done).length/rows.length*100):0
   };
 }
-function aprPathHtml(levelId,runtime){
+function aprPathHtml(levelId){
   const phases=APR_LEVEL_PATHS[levelId]||[];
   return `<details class="apr-path-more">
-    <summary>Comprendre cette étape, sa méthode et ses limites</summary>
+    <summary>Voir le chemin complet</summary>
     <div class="apr-path-more-body">
       <div class="apr-path-steps">${phases.map((phase,index)=>
         `<div class="apr-path-step"><b>${index+1}. ${escH(phase[0])}</b><span>${escH(phase[1])}</span></div>`).join('')}</div>
-      <p class="apr-path-note"><strong>Méthode du projet :</strong> ancrer la forme entière, observer un contraste attesté, retrouver sans regarder, puis produire à l'écrit. Les sources établissent les données linguistiques; les explications, les jeux, les scores et la progression sont le travail pédagogique du projet.</p>
-      <p class="apr-path-note">Les cinq noms d'étapes servent uniquement à organiser ce parcours personnel. Ils ne correspondent à aucun ordre scolaire, diplôme, crédit ou programme ministériel.</p>
-      <div class="learning-audit ${runtime.ok?'':'failed'}" role="status"><strong>${runtime.pending?'Vérification des banques en cours':runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> · ${runtime.pending
-        ? `Les leçons et les routes sont chargées; les banques liées aux entrées actuelles seront contrôlées dès que la base sera disponible.`
-        : runtime.ok
-        ? `${runtime.executable} grands modules sur ${runtime.total} disposent de chapitres ordonnés, d'un objectif, de tests séparés et d'une banque vérifiée lorsqu'elle est nécessaire.`
-        : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} technique${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}.`}</div>
-      <p class="apr-path-note"><strong>Plancher pédagogique interne :</strong> ${runtime.pending?'calcul final après le chargement des entrées actuelles':`${runtime.qualityPassed}/${runtime.total} modules possèdent au moins une leçon développée, un objectif mesurable et trois situations documentées distinctes`}. Ce contrôle sert à repérer les écrans trop minces; il ne constitue ni une évaluation ni une approbation ministérielle.</p>
+      <p class="apr-path-note">Un chemin créé ici pour apprendre à son rythme : voir ou entendre, observer, retrouver, puis utiliser. Il organise ce projet personnel sans imposer un programme scolaire.</p>
     </div>
   </details>`;
 }
@@ -8499,7 +8508,6 @@ function aprModuleTaskGuide(m){
   ]);
 }
 function aprCourseLessonHtml(module){
-  const contract=aprModuleContract(module);
   const level=NIVEAUX.find(candidate=>candidate.id===aprNiv), moduleIndex=aprMod;
   const progress=progAll();
   const chapterStates=module.chapters.map((_chapter,index)=>level?aprChapterProgressState(level,moduleIndex,index,progress):null);
@@ -8515,36 +8523,36 @@ function aprCourseLessonHtml(module){
     const useScore=state&&Number.isFinite(state.utiliser)?state.utiliser:null;
     const retainCapacity=aprCourseChapterCapacity(module,index,'retenir');
     const useCapacity=aprCourseChapterCapacity(module,index,'utiliser');
-    const status=retainScore==null?'Pas encore testé':retainScore>=75?`Mémoire réussie à ${retainScore} %`:`À reprendre · ${retainScore} %`;
+    const status=retainScore==null?'À découvrir':retainScore>=75?`Bien ancrée · ${retainScore} %`:`À reprendre doucement · ${retainScore} %`;
     return `<details class="apr-course-chapter" id="apr-course-chapter-${index+1}" ${index===0?'open':''}>
-      <summary><span>Chapitre ${index+1} sur ${module.chapters.length}</span><strong>${escH(chapter.t)}</strong><small>${escH(chapter.d)}</small></summary>
+      <summary><span>Halte ${index+1} sur ${module.chapters.length}</span><strong>${escH(chapter.t)}</strong><small>${escH(chapter.d)}</small></summary>
       <div class="apr-course-chapter-body">
-        ${chapterContract?`<div class="apr-course-chapter-goal"><b>Ce chapitre te rend capable de</b><span>${escH(chapterContract.mastery.replace(/^Tu\s+/,'').replace(/\.$/,''))}.</span></div>`:''}
+        ${chapterContract?`<div class="apr-course-chapter-goal"><b>À la fin de cette halte</b><span>${escH(chapterContract.mastery.replace(/^Tu\s+/,'').replace(/\.$/,''))}.</span></div>`:''}
         ${lesson}
         <div class="apr-course-chapter-practice">
-          <div><strong>${escH(status)}</strong><span>Le test porte uniquement sur « ${escH(chapter.t)} ». Tu n'as pas à retenir les autres chapitres maintenant.</span></div>
+          <div><strong>${escH(status)}</strong><span>La pratique porte seulement sur « ${escH(chapter.t)} ». Rien d'autre à retenir maintenant.</span></div>
           <div class="apr-course-chapter-actions">
             ${aprChapterPool(chapter).length>=2?`<button class="aprbtn" type="button" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)" onclick="aprFCChapter(${index})">Voir les cartes</button>`:''}
-            ${retainCapacity?`<button class="aprbtn" type="button" onclick="aprStartCourseChapter(${index},'retenir')">Tester ce chapitre · ${retainCapacity}</button>`:''}
-            ${useCapacity?`<button class="aprbtn" type="button" style="background:var(--gold);color:#1a1208" ${retainScore>=75?'':`disabled title="Réussis d'abord le test de mémoire"`} onclick="aprStartCourseChapter(${index},'utiliser')">Écrire ce chapitre${useScore!=null?` · ${useScore}%`:''}</button>`:''}
+            ${retainCapacity?`<button class="aprbtn" type="button" onclick="aprStartCourseChapter(${index},'retenir')">Pratiquer cette halte · ${retainCapacity}</button>`:''}
+            ${useCapacity?`<button class="aprbtn" type="button" style="background:var(--gold);color:#1a1208" ${retainScore>=75?'':`disabled title="Ancre d'abord les formes de cette halte"`} onclick="aprStartCourseChapter(${index},'utiliser')">Écrire cette halte${useScore!=null?` · ${useScore}%`:''}</button>`:''}
           </div>
         </div>
       </div>
     </details>`;
   }).join('');
   return `<section class="apr-course-intro">
-      <div><span>Module complet · ${module.chapters.length} chapitres</span><h3>Le chemin de ce module</h3>
-        <p>Avance un chapitre à la fois : observe, teste seulement ce chapitre, puis passe au suivant. Aucun test ne mélange les notions pendant l'apprentissage.</p></div>
-      <nav class="apr-course-index" aria-label="Chapitres du module">${chapterLinks}</nav>
+      <div><span>Chemin · ${module.chapters.length} haltes</span><h3>Prends une halte à la fois</h3>
+        <p>Observe, pratique, puis avance quand tu te sens prêt. Les autres haltes peuvent attendre.</p></div>
+      <nav class="apr-course-index" aria-label="Haltes du chemin">${chapterLinks}</nav>
     </section>
     <div class="apr-course-chapters">${chapters}</div>
     <section class="apr-course-synthesis">
-      <span>Après les tests séparés</span><h3>Révision générale facultative</h3>
-      <p>${escH(contract.mastery)} Cette courte révision réunit les ${module.chapters.length} chapitres seulement quand chacun a déjà été testé séparément.</p>
+      <span>Quand les haltes sont solides</span><h3>Revoir tout le chemin</h3>
+      <p>Cette courte pratique d'ensemble reste facultative. Elle s'ouvre seulement après avoir pris chaque halte séparément.</p>
       <div class="apr-course-synthesis-actions"><small>${synthesisReady
-        ? `${module.chapters.length}/${module.chapters.length} chapitres prêts${synthesisState&&Number.isFinite(synthesisState.retenir)?` · meilleur résultat ${synthesisState.retenir} %`:''}`
-        : `${retainedCount}/${module.chapters.length} tests de mémoire réussis · continue chapitre par chapitre`}</small>
-        <button class="aprbtn" type="button" ${synthesisReady?'':`disabled title="Termine d'abord les tests séparés"`} onclick="aprStartCourseSynthesis()">Réviser l'ensemble · ${aprCourseSynthesisCapacity(module)}</button></div>
+        ? `${module.chapters.length}/${module.chapters.length} haltes prêtes${synthesisState&&Number.isFinite(synthesisState.retenir)?` · meilleure trace ${synthesisState.retenir} %`:''}`
+        : `${retainedCount}/${module.chapters.length} haltes ancrées · continue à ton rythme`}</small>
+        <button class="aprbtn" type="button" ${synthesisReady?'':`disabled title="Prends d'abord chaque halte séparément"`} onclick="aprStartCourseSynthesis()">Revoir ensemble · ${aprCourseSynthesisCapacity(module)}</button></div>
     </section>`;
 }
 function aprModuleItemsForGuide(m,lecHtml){
@@ -8583,17 +8591,17 @@ function aprModuleGuideHtml(level,m,index,lecHtml){
   const repeated=items.filter(item=>earlier.has(aprLessonKey(item.aln8ba)));
   const fresh=items.filter(item=>!earlier.has(aprLessonKey(item.aln8ba)));
   const bank=items.length
-    ? `<div class="apr-module-bank"><strong>${fresh.length} forme${fresh.length>1?'s':''} nouvelle${fresh.length>1?'s':''} dans ce parcours</strong>${repeated.length?` · ${repeated.length} forme${repeated.length>1?'s':''} reprise${repeated.length>1?'s':''} volontairement pour consolider un lien précis`:''}. L'exercice reste limité à la banque de cette leçon.</div>`
-    : `<div class="apr-module-bank"><strong>Module de structure</strong> · la nouveauté porte ici sur le raisonnement et les contrastes documentés, pas sur une nouvelle liste de mots.</div>`;
-  const contractHtml=contract?`<section class="apr-module-contract" aria-label="Principe complet de ce module">
-    <div class="apr-module-contract-title"><span>Un principe complet</span><strong>${escH(contract.principle)}</strong></div>
-    <ol>${contract.steps.map(step=>`<li>${escH(step)}</li>`).join('')}</ol>
-  </section>`:'';
-  return `${contractHtml}<div class="apr-module-guide" aria-label="Progression propre à ce module">
-    <div><strong>Place dans le parcours</strong><span>${escH(aprModulePlacementText(level,index))}</span></div>
-    <div><strong>Entraînement qui vérifie ce principe</strong><span>${escH(guide[0])}</span></div>
-    <div><strong>Tu peux avancer quand</strong><span>${escH(contract?contract.mastery:guide[1])}</span></div>
-  </div>${bank}`;
+    ? `${fresh.length} forme${fresh.length>1?'s':''} nouvelle${fresh.length>1?'s':''}${repeated.length?` et ${repeated.length} reprise${repeated.length>1?'s':''}`:''}; chaque pratique reste limitée aux formes de sa halte.`
+    : `Ici, on apprend surtout une manière de raisonner à partir des exemples documentés.`;
+  return `<details class="apr-origin apr-module-compass">
+    <summary>Repères de ce chemin</summary>
+    <div class="apr-module-compass-body">
+      ${contract?`<p><strong>Intention.</strong> ${escH(contract.principle)}</p><ol>${contract.steps.map(step=>`<li>${escH(step)}</li>`).join('')}</ol>`:''}
+      <p><strong>Pratique.</strong> ${escH(guide[0])}</p>
+      <p><strong>Pour avancer.</strong> ${escH(contract?contract.mastery:guide[1])}</p>
+      <p><strong>Formes.</strong> ${escH(bank)}</p>
+    </div>
+  </details>`;
 }
 function aprModulePerfect(m,state){
   return Boolean(m&&m.ex&&state&&(state.chapterCourse?state.chapterPerfect:
@@ -8694,8 +8702,8 @@ function aprStartCourseSynthesis(){
     const state=aprChapterProgressState(level,aprMod,index,progress);
     return Boolean(state&&state.retenir>=75);
   });
-  if(!ready){ toast('Termine d’abord les tests de mémoire, un chapitre à la fois.'); return; }
-  aprEx('course','',`${module.t} · révision générale`,'retenir');
+  if(!ready){ toast('Prends d’abord chaque halte séparément, à ton rythme.'); return; }
+  aprEx('course','',`${module.t} · revoir tout le chemin`,'retenir');
 }
 function aprFCChapter(chapterIndex){
   const level=NIVEAUX.find(candidate=>candidate.id===aprNiv), module=level&&level.mods[aprMod];
@@ -8710,7 +8718,7 @@ function aprOpenModule(i){
     aprRevScope={nivId:aprNiv,modIndex:i,title:m.t};
     aprActivateNav('rev');
     aprRevView();
-    toast('🔁 Module à 100 % — révision ciblée ouverte');
+    toast('Ce chemin est bien ancré — révision ouverte');
     return;
   }
   aprRevScope=null;
@@ -8729,45 +8737,44 @@ function aprParcours(){
   aprRevScope=null;
   aprActivateNav('parcours');
   const prog=progAll();
-  const runtime=APR_LAST_AUDIT||aprLearningRuntimeAudit();
   const level=NIVEAUX.find(candidate=>candidate.id===aprNiv)||NIVEAUX[0];
   aprNiv=level.id;
   const allStats=Object.fromEntries(NIVEAUX.map(candidate=>[candidate.id,aprLevelProgress(candidate,prog)]));
   const stats=allStats[level.id], next=stats.rows[stats.nextIndex]||stats.rows[0];
-  const nextLabel=stats.mastered===level.mods.length?'Revoir cette étape':next.started?'Reprendre ce module':'Commencer ce module';
+  const nextLabel=stats.mastered===level.mods.length?'Revoir ce passage':next.started?'Reprendre ce chemin':'Ouvrir ce chemin';
   document.getElementById('aprBody').innerHTML=`
     <section class="apr-path-dashboard" style="--level-color:${level.c}">
       <div class="apr-path-head">
-        <div><div class="apr-path-kicker">Parcours d'apprentissage · étape ${NIVEAUX.indexOf(level)+1} sur ${NIVEAUX.length}</div>
+        <div><div class="apr-path-kicker">Chemin d'apprentissage · passage ${NIVEAUX.indexOf(level)+1} sur ${NIVEAUX.length}</div>
           <h3>${escH(level.t)}</h3><p>${escH(level.d)}</p></div>
-        <div class="apr-path-score"><strong>${stats.mastered}/${level.mods.length}</strong><span>modules maîtrisés</span></div>
+        <div class="apr-path-score"><strong>${stats.mastered}/${level.mods.length}</strong><span>chemins bien ancrés</span></div>
       </div>
-      <div class="apr-stage-tabs" role="navigation" aria-label="Étapes du parcours">${NIVEAUX.map((candidate,index)=>{
+      <div class="apr-stage-tabs" role="navigation" aria-label="Passages du chemin">${NIVEAUX.map((candidate,index)=>{
         const meta=allStats[candidate.id];
-        return `<button type="button" class="apr-stage-tab ${candidate.id===level.id?'on':''}" style="--stage-color:${candidate.c}" aria-current="${candidate.id===level.id?'step':'false'}" onclick="aprNiv='${candidate.id}';aprParcours()"><span>Étape ${index+1}</span><b>${escH(candidate.t)}</b><small>${meta.mastered}/${candidate.mods.length} maîtrisés</small></button>`;
+        return `<button type="button" class="apr-stage-tab ${candidate.id===level.id?'on':''}" style="--stage-color:${candidate.c}" aria-current="${candidate.id===level.id?'step':'false'}" onclick="aprNiv='${candidate.id}';aprParcours()"><span>Passage ${index+1}</span><b>${escH(candidate.t)}</b><small>${meta.mastered}/${candidate.mods.length} bien ancrés</small></button>`;
       }).join('')}</div>
-      <div class="apr-path-progress" aria-label="Progression de l'étape : ${stats.percent} %"><span style="width:${stats.percent}%"></span></div>
+      <div class="apr-path-progress" aria-label="Trace du passage : ${stats.percent} %"><span style="width:${stats.percent}%"></span></div>
       <section class="apr-next" aria-label="Prochaine action">
-        <div><span class="apr-next-label">${stats.mastered===level.mods.length?'Étape terminée · révision':'Prochaine action'}</span>
+        <div><span class="apr-next-label">${stats.mastered===level.mods.length?'Passage parcouru · revoir':'Prochaine halte'}</span>
           <h4>${escH(next.module.t)}</h4><p>${escH(next.module.d)}</p></div>
         <div class="apr-next-actions"><button class="aprbtn" type="button" onclick="aprOpenModule(${next.index})">${nextLabel} →</button>
           <button class="aprbtn secondary" type="button" onclick="aprJeux('${level.id}')">Ouvrir les jeux adaptés</button></div>
       </section>
-      ${aprPathHtml(level.id,runtime)}
+      ${aprPathHtml(level.id)}
     </section>
     <section aria-labelledby="aprModulesTitle">
-      <div class="apr-modules-head"><div><h3 id="aprModulesTitle">Modules de ${escH(level.t)}</h3>
-        <p>Chaque grand module se travaille chapitre par chapitre. Le test de chaque chapitre reste isolé; la révision générale vient seulement à la fin.</p></div><span class="apr-modules-count">${level.mods.length} grands modules</span></div>
+      <div class="apr-modules-head"><div><h3 id="aprModulesTitle">Chemins de ${escH(level.t)}</h3>
+        <p>Prends une halte à la fois. Chaque pratique reste près de ce que tu viens d'observer.</p></div><span class="apr-modules-count">${level.mods.length} chemins</span></div>
       <div class="apr-module-grid">${stats.rows.map(row=>{
-        const stateLabel=row.perfect?'Réviser 100 %':row.done?'Maîtrisé':row.started?'En cours':'À faire';
+        const stateLabel=row.perfect?'Revoir':row.done?'Bien ancré':row.started?'En chemin':'À découvrir';
         const stateClass=row.done?'is-mastered':row.index===stats.nextIndex?'is-current':'';
-        const memory=row.state&&row.state.retenir!=null?`Retenir ${row.state.retenir}%`:'Quiz à faire';
-        const use=aprModuleNeedsUse(row.module)&&(row.state&&row.state.utiliser!=null)?` · Utiliser ${row.state.utiliser}%`:'';
+        const memory=row.state&&row.state.retenir!=null?`Mémoire ${row.state.retenir}%`:'Première halte à ouvrir';
+        const use=aprModuleNeedsUse(row.module)&&(row.state&&row.state.utiliser!=null)?` · Écriture ${row.state.utiliser}%`:'';
         const capacity=Math.max(...row.module.chapters.map((_chapter,chapterIndex)=>aprCourseChapterCapacity(row.module,chapterIndex,'retenir')));
         return `<button type="button" class="apr-module-card ${stateClass}" style="--level-color:${level.c}" onclick="aprOpenModule(${row.index})" aria-label="${escH(row.module.t)} · ${stateLabel}">
-          <div class="apr-module-top"><span class="apr-module-number">MODULE ${String(row.index+1).padStart(2,'0')}</span><span class="apr-module-state">${stateLabel}</span></div>
+          <div class="apr-module-top"><span class="apr-module-number">CHEMIN ${String(row.index+1).padStart(2,'0')}</span><span class="apr-module-state">${stateLabel}</span></div>
           <h4>${escH(row.module.t)}</h4><p>${escH(row.module.d)}</p>
-          <footer><span>${row.module.chapters.length} chapitres · ${memory}${use} · jusqu'à ${capacity} questions par test</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
+          <footer><span>${row.module.chapters.length} haltes · ${memory}${use} · jusqu'à ${capacity} questions</span><strong>${row.perfect?'Revoir ↻':'Ouvrir →'}</strong></footer>
         </button>`;
       }).join('')}</div>
     </section>`;
@@ -8795,30 +8802,25 @@ function aprLecon(i){
   const st=aprProgressState(n,i), tt=m.t.replace(/'/g,"\\'"), canWrite=aprModuleNeedsUse(m);
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="aprParcours()">← ${n.t}</button>
-    <div class="aprcard">
-      <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
-        ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
-      <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
-      ${aprModuleGuideHtml(n,m,i,lecHtml)}
-      ${m.ex?(m.chapters?`<div class="apr-course-assessment-note"><b>Un chapitre à la fois</b><span>Lis un seul chapitre, puis fais son test de mémoire limité à sa propre banque. Après 75 %, tu peux écrire ses formes ou ouvrir le chapitre suivant. La révision générale demeure séparée à la fin.</span></div>`:aprMethodHtml(m)):
-        `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
-        Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
-        comme réponses dans les exercices actifs et ne remplacent pas les graphies actuelles.</div>`}
-      ${aprProvenanceHtml(m,lecHtml)}
+    <div class="aprcard apr-lesson-shell">
+      <div class="apr-lesson-head">
+        <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:${n.c};font-weight:700">
+          ${n.t} · chemin ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
+        <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
+      </div>
       ${lecHtml}
-      ${st?`<div class="aprnote"><b>Ta progression dans ce module${st.chapterCourse?' · calculée chapitre par chapitre':''}</b>
-        🧠 Retenir : ${st.retenir!=null?st.retenir+'%':'pas encore fait'} ·
-        ✍️ Utiliser : ${st.utiliser!=null?st.utiliser+'%':'pas encore fait'}</div>`:''}
-      <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
-        ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
-      <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        ${!m.chapters&&m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
-          onclick="aprFC('${m.cat||''}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
-        ${m.ex&&!m.chapters?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||m.use||''}','${tt}','retenir')">
-          🧠 Retenir — le quiz</button>`:''}
-        ${canWrite&&!m.chapters?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
-          onclick="aprEx('${m.chapters?'course':m.use?'ecrisgram':'ecris'}','${m.chapters?'':m.use||m.cat}','${tt}','utiliser')">
-          ✍️ Utiliser — produire sans regarder</button>`:''}
+      <div class="apr-lesson-tools">
+        ${st?`<div class="apr-learning-progress"><strong>Ta trace dans ce chemin</strong><span>Mémoire ${st.retenir!=null?st.retenir+' %':'à venir'} · Écriture ${st.utiliser!=null?st.utiliser+' %':'à venir'}</span></div>`:''}
+        ${aprModuleGuideHtml(n,m,i,lecHtml)}
+        ${aprProvenanceHtml(m,lecHtml)}
+        ${!m.ex?`<div class="aprnote w" style="border-left-color:${n.c}"><b>À consulter</b>Ces formes historiques aident à comprendre les sources sans remplacer les graphies actuelles.</div>`:''}
+        ${m.ex&&!m.chapters?aprMethodHtml(m):''}
+        ${m.coach?`<div class="aprnote" style="border-left-color:var(--gold)"><b>Un conseil</b>${m.coach}</div>`:''}
+        <div style="text-align:center;margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          ${!m.chapters&&m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)" onclick="aprFC('${m.cat||''}','${tt}')">Cartes mémoire</button>`:''}
+          ${m.ex&&!m.chapters?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||m.use||''}','${tt}','retenir')">Pratiquer</button>`:''}
+          ${canWrite&&!m.chapters?`<button class="aprbtn" style="background:var(--gold);color:#1a1208" onclick="aprEx('${m.use?'ecrisgram':'ecris'}','${m.use||m.cat}','${tt}','utiliser')">Écrire sans regarder</button>`:''}
+        </div>
       </div>
     </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
@@ -9720,7 +9722,7 @@ function exCadre(corps){
   document.getElementById('aprBody').innerHTML=`
     <button type="button" class="aprback" onclick="${exType==='course'&&exCourseChapterIndex!=null?`aprReturnToCourseChapter(${exCourseChapterIndex})`:'aprLecon(aprMod)'}">← Revenir à la leçon</button>
     <div class="aprcard">
-      <div class="jbar"><h3>${exTitre}${exCourseChapterTitle?`<small class="ex-course-chapter-label">Chapitre · ${escH(exCourseChapterTitle)}</small>`:''}</h3>
+      <div class="jbar"><h3>${exTitre}${exCourseChapterTitle?`<small class="ex-course-chapter-label">Halte · ${escH(exCourseChapterTitle)}</small>`:''}</h3>
         <span class="jscore" role="status" aria-live="polite" aria-atomic="true">Question ${Math.min(exQ+1,exTot)} sur ${exTot} &nbsp;·&nbsp;
           Score <b>${exOk} / ${exQ}</b></span></div>
       <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:20px">
@@ -9768,8 +9770,8 @@ function exFin(){
       progRecord(progressKey, exMode, pc);
     }
   }
-  const msg = isCourseChapter&&pc>=75 ? "Ce chapitre est retenu. Tu peux l'écrire maintenant ou avancer au chapitre suivant."
-            : exType==='course'&&pc>=75 ? "Révision générale réussie. Tous les chapitres avaient déjà été travaillés séparément."
+  const msg = isCourseChapter&&pc>=75 ? "Cette halte est bien ancrée. Tu peux l'écrire maintenant ou avancer tranquillement."
+            : exType==='course'&&pc>=75 ? "Le chemin tient ensemble. Chaque halte avait déjà été prise séparément."
             : canUse && pc>=75 ? "Le sens est bien retenu. Passe maintenant à l'utilisation : écris les mots de mémoire."
             : canUse           ? "Quiz terminé. L'étape Utiliser te permet maintenant d'écrire les mots de mémoire."
             : pc===100 ? "Parfait. Tu peux passer au module suivant."
@@ -9782,8 +9784,8 @@ function exFin(){
       <p class="aprlead" style="margin:14px 0 22px;font-size:.95rem">${msg}</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         ${canUse?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
-          onclick="aprEx('${exType==='course'?'course':exUseKey?'ecrisgram':'ecris'}','${exType==='course'?'':exUseKey||exCat}',exTitre,'utiliser',exCourseChapterIndex)">✍️ Écrire seulement ce chapitre</button>`:''}
-        ${isCourseChapter&&pc>=75&&exCourseChapterIndex<module.chapters.length-1?`<button class="aprbtn" onclick="aprReturnToCourseChapter(${exCourseChapterIndex+1})">Chapitre suivant →</button>`:''}
+          onclick="aprEx('${exType==='course'?'course':exUseKey?'ecrisgram':'ecris'}','${exType==='course'?'':exUseKey||exCat}',exTitre,'utiliser',exCourseChapterIndex)">Écrire seulement cette halte</button>`:''}
+        ${isCourseChapter&&pc>=75&&exCourseChapterIndex<module.chapters.length-1?`<button class="aprbtn" onclick="aprReturnToCourseChapter(${exCourseChapterIndex+1})">Halte suivante →</button>`:''}
         <button class="aprbtn" style="${canUse?'background:var(--surface2);color:var(--text)':''}"
           onclick="${exMode==='rev'?'aprRevStart()':'aprEx(exType,exCat,exTitre,exMode,exCourseChapterIndex)'}">Refaire</button>
         <button class="aprbtn" style="background:var(--surface2);color:var(--text)"

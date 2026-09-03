@@ -49,6 +49,29 @@ test('legal notices distinguish sources and third-party rights', () => {
   assert.doesNotMatch(html, /Toute reproduction identique est illégale/);
 });
 
+test('la bienvenue reste legere et ne revient pas a chaque visite', () => {
+  const warning = sourceBetween('<div class="entry-warning"', '<!-- HEADER -->');
+  const behavior = sourceBetween('const ENTRY_WARNING_KEY', 'function openAbout');
+  assert.match(warning, /Entre avec curiosité/);
+  assert.match(warning, /<details class="warning-copy">/);
+  assert.match(warning, /Sources et repères/);
+  assert.doesNotMatch(warning, /financement/i);
+  assert.doesNotMatch(warning, /Avertissement important/);
+  assert.match(behavior, /localStorage\.setItem\(ENTRY_WARNING_KEY,'1'\)/);
+  assert.match(behavior, /localStorage\.getItem\(ENTRY_WARNING_KEY\)==='1'/);
+});
+
+test("le financement personnel ne parait nulle part sur le site public", () => {
+  assert.doesNotMatch(html, /Financement personnel/i);
+  assert.doesNotMatch(html, /monté et financé entièrement/i);
+});
+
+test('les avis des chansons sont regroupes dans un seul volet', () => {
+  assert.equal((html.match(/<details class="music-notice">/g)||[]).length, 1);
+  assert.equal((html.match(/<div class="music-warning/g)||[]).length, 0);
+  assert.match(html, /À propos des chansons, des sources et des droits/);
+});
+
 test('public identity presents a personal Wôlinak project without institutional representation', () => {
   assert.match(html, /Projet personnel d'Alakws Pamidoo · clan M8lsem · Abénakis de Wôlinak/);
   assert.match(html, /nom administratif : Guillaum Labrecque-Houle/);

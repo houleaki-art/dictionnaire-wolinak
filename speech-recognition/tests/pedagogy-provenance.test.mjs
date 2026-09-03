@@ -30,7 +30,8 @@ test('chaque lecon affiche methode et provenance sans modifier ses formes', () =
   const lesson = sourceBetween('function aprLecon', 'function aprDecorView');
   assert.match(lesson, /aprMethodHtml\(m\)/);
   assert.match(lesson, /aprProvenanceHtml\(m,lecHtml\)/);
-  assert.ok(lesson.indexOf('aprProvenanceHtml(m,lecHtml)') < lesson.indexOf('${lecHtml}'));
+  assert.ok(lesson.indexOf('aprProvenanceHtml(m,lecHtml)') > lesson.indexOf('${lecHtml}'));
+  assert.match(lesson, /class="apr-lesson-tools"/);
 });
 
 test('les outils autonomes affichent aussi leur provenance', () => {
