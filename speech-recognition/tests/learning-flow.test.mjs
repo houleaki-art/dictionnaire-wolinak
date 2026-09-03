@@ -236,19 +236,43 @@ test('le parcours contient cinq etapes, 10 grands modules et les 45 chapitres un
   for (const id of ['d','f','co','a','au']) assert.match(levels, new RegExp(`progressId:'course-${id}'`));
   assert.match(html, /module\.legacyKey=`\$\{level\.id\}\.\$\{index\}`/);
   assert.match(html, /function aprCourseProgressState/);
-  assert.match(html, /legacyComplete/);
+  assert.match(html, /chapterComplete/);
   assert.match(html, /const APR_EXERCISE_TARGETS=\{d:20,f:24,co:24,a:24,au:24\}/);
   assert.match(html, /exTot=APR_EXERCISE_TARGETS\[aprNiv\]\|\|8/);
-  assert.match(html, /Chaque module réunit plusieurs chapitres/);
-  assert.match(html, /aprModuleSessionCapacity\(level,row\.module,row\.index\)/);
+  assert.match(html, /Chaque grand module se travaille chapitre par chapitre/);
+  assert.match(html, /aprCourseChapterCapacity\(row\.module,chapterIndex,'retenir'\)/);
   assert.match(html, /aprCourseExercisePlan/);
-  assert.match(html, /Retenir<\/strong> mélange tous les chapitres/);
+  assert.match(html, /Un chapitre à la fois/);
+  assert.doesNotMatch(html, /Retenir<\/strong> mélange tous les chapitres/);
 
   const dispatch = sourceBetween('function exSuivant()', 'function exPickUnique');
   for (const type of new Set(exerciseTypes)) {
     assert.match(dispatch, new RegExp(`${type}:`), `route d'exercice absente: ${type}`);
   }
   assert.match(dispatch, /exType==='course'/);
+});
+
+test('chaque chapitre est appris et teste dans sa propre banque avant la synthese', () => {
+  const lesson = sourceBetween('function aprCourseLessonHtml', 'function aprModuleItemsForGuide');
+  const planning = sourceBetween('function aprCourseExerciseDescriptors', 'function aprExerciseCapacity');
+  const launch = sourceBetween('function aprFocusCourseChapter', 'function aprOpenModule');
+  const exercise = sourceBetween("let exQ=0", 'function exPickUnique');
+
+  assert.match(html, /const APR_CHAPTER_QUESTION_TARGET=6/);
+  assert.match(html, /const APR_SYNTHESIS_QUESTIONS_PER_CHAPTER=2/);
+  assert.match(lesson, /Tester ce chapitre/);
+  assert.match(lesson, /uniquement sur/);
+  assert.match(lesson, /Révision générale facultative/);
+  assert.match(lesson, /synthesisReady\?'':`disabled/);
+  assert.match(planning, /chapterIndex==null\|\|descriptor\.index===chapterIndex/);
+  assert.match(planning, /APR_CHAPTER_QUESTION_TARGET,chapterIndex/);
+  assert.match(launch, /aprStartCourseChapter/);
+  assert.match(launch, /aprStartCourseSynthesis/);
+  assert.match(launch, /state&&state\.retenir>=75/);
+  assert.match(exercise, /exCourseChapterIndex=Number\.isInteger\(chapterIndex\)/);
+  assert.match(exercise, /aprChapterProgressKey\(level,aprMod,exCourseChapterIndex\)/);
+  assert.match(exercise, /aprCourseSynthesisProgressKey\(level,aprMod\)/);
+  assert.match(exercise, /m\.chapters\.length\*APR_SYNTHESIS_QUESTIONS_PER_CHAPTER/);
 });
 
 test('les syntheses et les modules de sources ont des exercices distincts', () => {

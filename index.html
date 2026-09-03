@@ -803,7 +803,15 @@ body.music-dock-open .toast{bottom:116px}
 .apr-course-chapter-goal{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;margin-bottom:16px;padding:11px 13px;border-left:3px solid var(--green);border-radius:0 8px 8px 0;background:color-mix(in srgb,var(--green) 7%,var(--surface));font-size:.76rem;line-height:1.5}
 .apr-course-chapter-goal b{color:var(--green)}
 .apr-course-chapter-goal span{color:var(--text2)}
+.apr-course-chapter-practice{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;margin-top:18px;padding:14px 15px;border:1px solid color-mix(in srgb,var(--accent) 34%,var(--border));border-radius:11px;background:var(--surface)}
+.apr-course-chapter-practice strong{display:block;margin-bottom:3px;color:var(--accent);font-size:.82rem}
+.apr-course-chapter-practice span{display:block;color:var(--text2);font-size:.74rem;line-height:1.45}
+.apr-course-chapter-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.apr-course-chapter-actions .aprbtn{padding:9px 13px;font-size:.76rem}
 .apr-course-synthesis{margin:12px 0 4px;padding:17px 18px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--border));border-radius:12px;background:color-mix(in srgb,var(--green) 7%,var(--surface))}
+.apr-course-synthesis-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px;padding-top:13px;border-top:1px solid color-mix(in srgb,var(--green) 28%,var(--border))}
+.apr-course-synthesis-actions small{color:var(--text2);font-size:.72rem;line-height:1.4}
+.aprbtn:disabled{cursor:not-allowed;opacity:.48;filter:grayscale(.35)}
 .ex-course-chapter-label{display:block;margin-top:3px;color:var(--text3);font-size:.66rem;font-weight:400;line-height:1.35}
 .morph-primer{margin:14px 0 18px;padding:16px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--border));border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 11%,var(--surface)),var(--surface))}
 .morph-primer>strong{display:block;margin-bottom:4px;color:var(--accent);font-size:1.05rem}
@@ -1174,6 +1182,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .apr-course-chapter>summary{grid-template-columns:1fr;gap:4px;padding:13px 42px 13px 13px}
   .apr-course-chapter-body{padding:13px}
   .apr-course-chapter-goal{grid-template-columns:1fr;gap:3px}
+  .apr-course-chapter-practice{grid-template-columns:1fr}
+  .apr-course-chapter-actions{justify-content:stretch}
+  .apr-course-chapter-actions .aprbtn{width:100%}
+  .apr-course-synthesis-actions{align-items:stretch;flex-direction:column}
   .morph-steps,.poss-groups{grid-template-columns:1fr}
   .morph-plus{display:none}
   .prat-levels{grid-template-columns:1fr}
@@ -7992,6 +8004,8 @@ const NIVEAUX=[
   ]}
 ];
 const APR_EXERCISE_TARGETS={d:20,f:24,co:24,a:24,au:24};
+const APR_CHAPTER_QUESTION_TARGET=6;
+const APR_SYNTHESIS_QUESTIONS_PER_CHAPTER=2;
 function aprProgressKey(level,index){
   return `${level.progressId||level.id}.${(level.progressOffset||0)+index}`;
 }
@@ -8371,30 +8385,43 @@ function aprLearningRuntimeAudit(){
     qualityPassed:details.filter(item=>item.qualityPassed).length,issues,warnings,details};
 }
 function aprModuleNeedsUse(m){ return Boolean(m&&(m.cat||m.use)); }
+function aprChapterProgressKey(level,moduleIndex,chapterIndex){
+  return `${aprProgressKey(level,moduleIndex)}.chapter.${chapterIndex}`;
+}
+function aprCourseSynthesisProgressKey(level,moduleIndex){
+  return `${aprProgressKey(level,moduleIndex)}.synthesis`;
+}
+function aprChapterProgressState(level,moduleIndex,chapterIndex,progress){
+  const module=level&&level.mods[moduleIndex], chapter=module&&module.chapters&&module.chapters[chapterIndex];
+  if(!chapter) return null;
+  return progress[aprChapterProgressKey(level,moduleIndex,chapterIndex)]||progress[chapter.legacyKey]||null;
+}
 function aprCourseProgressState(level,index,progress){
   const module=level&&level.mods[index], direct=progress[aprProgressKey(level,index)];
-  if(direct||!module||!Array.isArray(module.chapters)) return direct||null;
-  const chapterStates=module.chapters.map(chapter=>progress[chapter.legacyKey]||null);
-  if(!chapterStates.some(Boolean)) return null;
+  if(!module||!Array.isArray(module.chapters)) return direct||null;
+  const chapterStates=module.chapters.map((_chapter,chapterIndex)=>aprChapterProgressState(level,index,chapterIndex,progress));
+  if(!chapterStates.some(Boolean)) return direct||null;
   const retainScores=chapterStates.map(state=>state&&Number.isFinite(state.retenir)?state.retenir:0);
   const useRows=module.chapters.map((chapter,chapterIndex)=>({chapter,state:chapterStates[chapterIndex]}))
     .filter(row=>aprModuleNeedsUse(row.chapter));
   const useScores=useRows.map(row=>row.state&&Number.isFinite(row.state.utiliser)?row.state.utiliser:0);
+  const chapterComplete=chapterStates.every((state,chapterIndex)=>Boolean(state&&state.retenir>=75
+    &&(!aprModuleNeedsUse(module.chapters[chapterIndex])||state.utiliser>=75)));
+  const chapterPerfect=chapterStates.every((state,chapterIndex)=>Boolean(state&&state.retenir>=100
+    &&(!aprModuleNeedsUse(module.chapters[chapterIndex])||state.utiliser>=100)));
   return {
     retenir:Math.round(retainScores.reduce((sum,value)=>sum+value,0)/retainScores.length),
     utiliser:useScores.length?Math.round(useScores.reduce((sum,value)=>sum+value,0)/useScores.length):100,
-    legacyCourse:true,
-    legacyComplete:chapterStates.every((state,chapterIndex)=>Boolean(state&&state.retenir>=75
-      &&(!aprModuleNeedsUse(module.chapters[chapterIndex])||state.utiliser>=75))),
-    legacyPerfect:chapterStates.every((state,chapterIndex)=>Boolean(state&&state.retenir>=100
-      &&(!aprModuleNeedsUse(module.chapters[chapterIndex])||state.utiliser>=100)))
+    chapterCourse:true,
+    chapterComplete,
+    chapterPerfect
   };
 }
 function aprProgressState(level,index,progress){
   return aprCourseProgressState(level,index,progress||progAll());
 }
 function aprModuleDone(module,state){
-  return Boolean(state&&(state.legacyCourse?state.legacyComplete:
+  return Boolean(state&&(state.chapterCourse?state.chapterComplete:
     state.retenir>=75&&(!aprModuleNeedsUse(module)||state.utiliser>=75)));
 }
 function aprLevelProgress(level,prog){
@@ -8425,7 +8452,7 @@ function aprPathHtml(levelId,runtime){
       <div class="learning-audit ${runtime.ok?'':'failed'}" role="status"><strong>${runtime.pending?'Vérification des banques en cours':runtime.ok?'Contrôle fonctionnel réussi':'Parcours temporairement incomplet'}</strong> · ${runtime.pending
         ? `Les leçons et les routes sont chargées; les banques liées aux entrées actuelles seront contrôlées dès que la base sera disponible.`
         : runtime.ok
-        ? `${runtime.executable} grands modules sur ${runtime.total} disposent de chapitres ordonnés, d'un objectif, d'une évaluation mixte et d'une banque vérifiée lorsqu'elle est nécessaire.`
+        ? `${runtime.executable} grands modules sur ${runtime.total} disposent de chapitres ordonnés, d'un objectif, de tests séparés et d'une banque vérifiée lorsqu'elle est nécessaire.`
         : `${runtime.issues.length} problème${runtime.issues.length>1?'s':''} technique${runtime.issues.length>1?'s':''} détecté${runtime.issues.length>1?'s':''}.`}</div>
       <p class="apr-path-note"><strong>Plancher pédagogique interne :</strong> ${runtime.pending?'calcul final après le chargement des entrées actuelles':`${runtime.qualityPassed}/${runtime.total} modules possèdent au moins une leçon développée, un objectif mesurable et trois situations documentées distinctes`}. Ce contrôle sert à repérer les écrans trop minces; il ne constitue ni une évaluation ni une approbation ministérielle.</p>
     </div>
@@ -8473,28 +8500,51 @@ function aprModuleTaskGuide(m){
 }
 function aprCourseLessonHtml(module){
   const contract=aprModuleContract(module);
+  const level=NIVEAUX.find(candidate=>candidate.id===aprNiv), moduleIndex=aprMod;
+  const progress=progAll();
+  const chapterStates=module.chapters.map((_chapter,index)=>level?aprChapterProgressState(level,moduleIndex,index,progress):null);
+  const retainedCount=chapterStates.filter(state=>state&&state.retenir>=75).length;
+  const synthesisReady=retainedCount===module.chapters.length;
+  const synthesisState=level?progress[aprCourseSynthesisProgressKey(level,moduleIndex)]||null:null;
   const chapterLinks=module.chapters.map((chapter,index)=>
     `<a href="#apr-course-chapter-${index+1}"><span>${String(index+1).padStart(2,'0')}</span>${escH(chapter.t)}</a>`).join('');
   const chapters=module.chapters.map((chapter,index)=>{
     const lesson=typeof chapter.lec==='function'?chapter.lec():chapter.lec;
     const chapterContract=aprModuleContract(chapter);
+    const state=chapterStates[index], retainScore=state&&Number.isFinite(state.retenir)?state.retenir:null;
+    const useScore=state&&Number.isFinite(state.utiliser)?state.utiliser:null;
+    const retainCapacity=aprCourseChapterCapacity(module,index,'retenir');
+    const useCapacity=aprCourseChapterCapacity(module,index,'utiliser');
+    const status=retainScore==null?'Pas encore testé':retainScore>=75?`Mémoire réussie à ${retainScore} %`:`À reprendre · ${retainScore} %`;
     return `<details class="apr-course-chapter" id="apr-course-chapter-${index+1}" ${index===0?'open':''}>
       <summary><span>Chapitre ${index+1} sur ${module.chapters.length}</span><strong>${escH(chapter.t)}</strong><small>${escH(chapter.d)}</small></summary>
       <div class="apr-course-chapter-body">
         ${chapterContract?`<div class="apr-course-chapter-goal"><b>Ce chapitre te rend capable de</b><span>${escH(chapterContract.mastery.replace(/^Tu\s+/,'').replace(/\.$/,''))}.</span></div>`:''}
         ${lesson}
+        <div class="apr-course-chapter-practice">
+          <div><strong>${escH(status)}</strong><span>Le test porte uniquement sur « ${escH(chapter.t)} ». Tu n'as pas à retenir les autres chapitres maintenant.</span></div>
+          <div class="apr-course-chapter-actions">
+            ${aprChapterPool(chapter).length>=2?`<button class="aprbtn" type="button" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)" onclick="aprFCChapter(${index})">Voir les cartes</button>`:''}
+            ${retainCapacity?`<button class="aprbtn" type="button" onclick="aprStartCourseChapter(${index},'retenir')">Tester ce chapitre · ${retainCapacity}</button>`:''}
+            ${useCapacity?`<button class="aprbtn" type="button" style="background:var(--gold);color:#1a1208" ${retainScore>=75?'':`disabled title="Réussis d'abord le test de mémoire"`} onclick="aprStartCourseChapter(${index},'utiliser')">Écrire ce chapitre${useScore!=null?` · ${useScore}%`:''}</button>`:''}
+          </div>
+        </div>
       </div>
     </details>`;
   }).join('');
   return `<section class="apr-course-intro">
       <div><span>Module complet · ${module.chapters.length} chapitres</span><h3>Le chemin de ce module</h3>
-        <p>Avance dans l'ordre. Chaque chapitre prépare le suivant; l'évaluation finale mélange ensuite toutes les notions au lieu de les isoler.</p></div>
+        <p>Avance un chapitre à la fois : observe, teste seulement ce chapitre, puis passe au suivant. Aucun test ne mélange les notions pendant l'apprentissage.</p></div>
       <nav class="apr-course-index" aria-label="Chapitres du module">${chapterLinks}</nav>
     </section>
     <div class="apr-course-chapters">${chapters}</div>
     <section class="apr-course-synthesis">
-      <span>Synthèse</span><h3>Réunir les chapitres</h3>
-      <p>${escH(contract.mastery)} L'évaluation mélange les ${module.chapters.length} chapitres et la phase Utiliser demande ensuite de retrouver ou produire les formes sans regarder la leçon.</p>
+      <span>Après les tests séparés</span><h3>Révision générale facultative</h3>
+      <p>${escH(contract.mastery)} Cette courte révision réunit les ${module.chapters.length} chapitres seulement quand chacun a déjà été testé séparément.</p>
+      <div class="apr-course-synthesis-actions"><small>${synthesisReady
+        ? `${module.chapters.length}/${module.chapters.length} chapitres prêts${synthesisState&&Number.isFinite(synthesisState.retenir)?` · meilleur résultat ${synthesisState.retenir} %`:''}`
+        : `${retainedCount}/${module.chapters.length} tests de mémoire réussis · continue chapitre par chapitre`}</small>
+        <button class="aprbtn" type="button" ${synthesisReady?'':`disabled title="Termine d'abord les tests séparés"`} onclick="aprStartCourseSynthesis()">Réviser l'ensemble · ${aprCourseSynthesisCapacity(module)}</button></div>
     </section>`;
 }
 function aprModuleItemsForGuide(m,lecHtml){
@@ -8546,7 +8596,7 @@ function aprModuleGuideHtml(level,m,index,lecHtml){
   </div>${bank}`;
 }
 function aprModulePerfect(m,state){
-  return Boolean(m&&m.ex&&state&&(state.legacyCourse?state.legacyPerfect:
+  return Boolean(m&&m.ex&&state&&(state.chapterCourse?state.chapterPerfect:
     state.retenir>=100&&(!aprModuleNeedsUse(m)||state.utiliser>=100)));
 }
 function aprChapterPool(chapter){
@@ -8569,8 +8619,9 @@ function aprCourseExerciseDescriptors(module,mode){
   }).filter(Boolean).map(descriptor=>({...descriptor,
     capacity:aprExerciseCapacity(descriptor.type,descriptor.cat,descriptor.pool,descriptor.chapter)}));
 }
-function aprCourseExercisePlan(module,mode,target){
-  const descriptors=aprCourseExerciseDescriptors(module,mode).filter(descriptor=>descriptor.capacity>0);
+function aprCourseExercisePlan(module,mode,target,chapterIndex){
+  const descriptors=aprCourseExerciseDescriptors(module,mode)
+    .filter(descriptor=>descriptor.capacity>0&&(chapterIndex==null||descriptor.index===chapterIndex));
   const counts=descriptors.map(()=>0), plan=[];
   const limit=Math.min(target,descriptors.reduce((sum,descriptor)=>sum+descriptor.capacity,0));
   while(plan.length<limit){
@@ -8582,6 +8633,12 @@ function aprCourseExercisePlan(module,mode,target){
     if(!added) break;
   }
   return plan;
+}
+function aprCourseChapterCapacity(module,chapterIndex,mode){
+  return aprCourseExercisePlan(module,mode,APR_CHAPTER_QUESTION_TARGET,chapterIndex).length;
+}
+function aprCourseSynthesisCapacity(module){
+  return aprCourseExercisePlan(module,'retenir',module.chapters.length*APR_SYNTHESIS_QUESTIONS_PER_CHAPTER).length;
 }
 function aprExerciseCapacity(type,cat,modulePool,module){
   if(type==='course') return aprCourseExerciseDescriptors(module,'retenir')
@@ -8612,6 +8669,39 @@ function aprModuleSessionCapacity(level,m,index){
   }finally{
     aprNiv=previousLevel; aprMod=previousModule;
   }
+}
+function aprFocusCourseChapter(chapterIndex){
+  const target=document.getElementById(`apr-course-chapter-${chapterIndex+1}`);
+  if(!target) return;
+  document.querySelectorAll('.apr-course-chapter').forEach((chapter,index)=>{ chapter.open=index===chapterIndex; });
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function aprReturnToCourseChapter(chapterIndex){
+  aprLecon(aprMod);
+  requestAnimationFrame(()=>aprFocusCourseChapter(chapterIndex));
+}
+function aprStartCourseChapter(chapterIndex,mode){
+  const level=NIVEAUX.find(candidate=>candidate.id===aprNiv), module=level&&level.mods[aprMod];
+  const chapter=module&&module.chapters&&module.chapters[chapterIndex];
+  if(!chapter) return;
+  aprEx('course','',`${chapter.t} · ${mode==='utiliser'?'écriture':'mémoire'}`,mode||'retenir',chapterIndex);
+}
+function aprStartCourseSynthesis(){
+  const level=NIVEAUX.find(candidate=>candidate.id===aprNiv), module=level&&level.mods[aprMod];
+  if(!module) return;
+  const progress=progAll();
+  const ready=module.chapters.every((_chapter,index)=>{
+    const state=aprChapterProgressState(level,aprMod,index,progress);
+    return Boolean(state&&state.retenir>=75);
+  });
+  if(!ready){ toast('Termine d’abord les tests de mémoire, un chapitre à la fois.'); return; }
+  aprEx('course','',`${module.t} · révision générale`,'retenir');
+}
+function aprFCChapter(chapterIndex){
+  const level=NIVEAUX.find(candidate=>candidate.id===aprNiv), module=level&&level.mods[aprMod];
+  const chapter=module&&module.chapters&&module.chapters[chapterIndex], pool=aprChapterPool(chapter);
+  if(!chapter||pool.length<2){ toast('Pas assez de mots dans ce chapitre pour les cartes.'); return; }
+  setView('flashcard'); initFC(pool,{label:chapter.t});
 }
 function aprOpenModule(i){
   aprMod=i;
@@ -8667,17 +8757,17 @@ function aprParcours(){
     </section>
     <section aria-labelledby="aprModulesTitle">
       <div class="apr-modules-head"><div><h3 id="aprModulesTitle">Modules de ${escH(level.t)}</h3>
-        <p>Chaque module réunit plusieurs chapitres, une synthèse et une évaluation qui mélange réellement les notions.</p></div><span class="apr-modules-count">${level.mods.length} grands modules</span></div>
+        <p>Chaque grand module se travaille chapitre par chapitre. Le test de chaque chapitre reste isolé; la révision générale vient seulement à la fin.</p></div><span class="apr-modules-count">${level.mods.length} grands modules</span></div>
       <div class="apr-module-grid">${stats.rows.map(row=>{
         const stateLabel=row.perfect?'Réviser 100 %':row.done?'Maîtrisé':row.started?'En cours':'À faire';
         const stateClass=row.done?'is-mastered':row.index===stats.nextIndex?'is-current':'';
         const memory=row.state&&row.state.retenir!=null?`Retenir ${row.state.retenir}%`:'Quiz à faire';
         const use=aprModuleNeedsUse(row.module)&&(row.state&&row.state.utiliser!=null)?` · Utiliser ${row.state.utiliser}%`:'';
-        const capacity=aprModuleSessionCapacity(level,row.module,row.index);
+        const capacity=Math.max(...row.module.chapters.map((_chapter,chapterIndex)=>aprCourseChapterCapacity(row.module,chapterIndex,'retenir')));
         return `<button type="button" class="apr-module-card ${stateClass}" style="--level-color:${level.c}" onclick="aprOpenModule(${row.index})" aria-label="${escH(row.module.t)} · ${stateLabel}">
           <div class="apr-module-top"><span class="apr-module-number">MODULE ${String(row.index+1).padStart(2,'0')}</span><span class="apr-module-state">${stateLabel}</span></div>
           <h4>${escH(row.module.t)}</h4><p>${escH(row.module.d)}</p>
-          <footer><span>${row.module.chapters.length} chapitres · ${memory}${use} · ${capacity} questions</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
+          <footer><span>${row.module.chapters.length} chapitres · ${memory}${use} · jusqu'à ${capacity} questions par test</span><strong>${row.perfect?'Réviser ↻':'Ouvrir →'}</strong></footer>
         </button>`;
       }).join('')}</div>
     </section>`;
@@ -8710,23 +8800,23 @@ function aprLecon(i){
         ${n.t} · module ${String(i+1).padStart(2,'0')} sur ${n.mods.length}</div>
       <h3 style="margin-top:6px">${m.t}</h3><p class="aprlead">${m.d}</p>
       ${aprModuleGuideHtml(n,m,i,lecHtml)}
-      ${m.ex?(m.chapters?`<div class="apr-course-assessment-note"><b>Deux passages pour maîtriser le module</b><span><strong>Retenir</strong> mélange tous les chapitres. <strong>Utiliser</strong> demande ensuite de retrouver ou produire les formes sans regarder. Un résultat de 75 % est requis à chaque passage.</span></div>`:aprMethodHtml(m)):
+      ${m.ex?(m.chapters?`<div class="apr-course-assessment-note"><b>Un chapitre à la fois</b><span>Lis un seul chapitre, puis fais son test de mémoire limité à sa propre banque. Après 75 %, tu peux écrire ses formes ou ouvrir le chapitre suivant. La révision générale demeure séparée à la fin.</span></div>`:aprMethodHtml(m)):
         `<div class="aprnote w" style="border-left-color:${n.c}"><b>Module consultatif</b>
         Ces formes historiques servent à comprendre les sources. Elles ne sont pas proposées
         comme réponses dans les exercices actifs et ne remplacent pas les graphies actuelles.</div>`}
       ${aprProvenanceHtml(m,lecHtml)}
       ${lecHtml}
-      ${st?`<div class="aprnote"><b>Ta progression dans ce module${st.legacyCourse?' · acquis antérieurs conservés':''}</b>
+      ${st?`<div class="aprnote"><b>Ta progression dans ce module${st.chapterCourse?' · calculée chapitre par chapitre':''}</b>
         🧠 Retenir : ${st.retenir!=null?st.retenir+'%':'pas encore fait'} ·
         ✍️ Utiliser : ${st.utiliser!=null?st.utiliser+'%':'pas encore fait'}</div>`:''}
       <div class="aprnote" style="border-left-color:var(--gold)"><b>💬 Ton accompagnant</b>
         ${m.coach||COACH_TIPS[i%COACH_TIPS.length]}</div>
       <div style="text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        ${m.chapters||m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
+        ${!m.chapters&&m.cat?`<button class="aprbtn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)"
           onclick="aprFC('${m.cat||''}','${tt}')">🃏 Cartes mémoire du module</button>`:''}
-        ${m.ex?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||m.use||''}','${tt}','retenir')">
+        ${m.ex&&!m.chapters?`<button class="aprbtn" onclick="aprEx('${m.ex}','${m.cat||m.use||''}','${tt}','retenir')">
           🧠 Retenir — le quiz</button>`:''}
-        ${canWrite?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
+        ${canWrite&&!m.chapters?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
           onclick="aprEx('${m.chapters?'course':m.use?'ecrisgram':'ecris'}','${m.chapters?'':m.use||m.cat}','${tt}','utiliser')">
           ✍️ Utiliser — produire sans regarder</button>`:''}
       </div>
@@ -9592,13 +9682,18 @@ const EXEVIDENCE=[
 ];
 let exQ=0, exOk=0, exTot=8, exType='', exCat='', exTitre='', exMode='retenir', exUseKey='', exVariant='mixed', exPoolOverride=null;
 let exAsked=[], exSonsQueue=[], exCoursePlan=[], exCourseChapterTitle='';
+let exCourseChapterIndex=null;
 
-function aprEx(type,cat,titre,mode){
+function aprEx(type,cat,titre,mode,chapterIndex){
   exType=type; exCat=cat; exTitre=titre; exMode=mode||'retenir';
   exQ=0; exOk=0; exTot=APR_EXERCISE_TARGETS[aprNiv]||8; exAsked=[]; exSonsQueue=[]; exCoursePlan=[]; exCourseChapterTitle='';
+  exCourseChapterIndex=Number.isInteger(chapterIndex)?chapterIndex:null;
   const n=NIVEAUX.find(x=>x.id===aprNiv), m=n&&n.mods[aprMod];
   if(type==='course'){
-    exCoursePlan=aprCourseExercisePlan(m,exMode,exTot);
+    const target=exCourseChapterIndex==null
+      ?m.chapters.length*APR_SYNTHESIS_QUESTIONS_PER_CHAPTER
+      :APR_CHAPTER_QUESTION_TARGET;
+    exCoursePlan=aprCourseExercisePlan(m,exMode,target,exCourseChapterIndex);
     exTot=exCoursePlan.length;
     exUseKey='course'; exVariant='mixed'; exPoolOverride=null;
     if(!exTot){
@@ -9623,7 +9718,7 @@ function exCadre(corps){
   cancelAnswerAdvance();
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   document.getElementById('aprBody').innerHTML=`
-    <button type="button" class="aprback" onclick="aprLecon(aprMod)">← Revenir à la leçon</button>
+    <button type="button" class="aprback" onclick="${exType==='course'&&exCourseChapterIndex!=null?`aprReturnToCourseChapter(${exCourseChapterIndex})`:'aprLecon(aprMod)'}">← Revenir à la leçon</button>
     <div class="aprcard">
       <div class="jbar"><h3>${exTitre}${exCourseChapterTitle?`<small class="ex-course-chapter-label">Chapitre · ${escH(exCourseChapterTitle)}</small>`:''}</h3>
         <span class="jscore" role="status" aria-live="polite" aria-atomic="true">Question ${Math.min(exQ+1,exTot)} sur ${exTot} &nbsp;·&nbsp;
@@ -9661,13 +9756,21 @@ function exFin(){
   const n=NIVEAUX.find(x=>x.id===aprNiv);
   const pc=Math.round(exOk/exTot*100);
   const module=n&&n.mods[aprMod];
+  const isCourseChapter=exType==='course'&&exCourseChapterIndex!=null;
   const canUse=exMode==='retenir' && (exType==='course'
-    ?aprCourseExerciseDescriptors(module,'utiliser').length>0:Boolean(exUseKey||exCat));
+    ?isCourseChapter&&aprCourseChapterCapacity(module,exCourseChapterIndex,'utiliser')>0:Boolean(exUseKey||exCat));
   if(exMode!=='rev' && aprMod!==null && aprMod!==undefined){
     const level=NIVEAUX.find(item=>item.id===aprNiv);
-    if(level) progRecord(aprProgressKey(level,aprMod), exMode, pc);
+    if(level){
+      const progressKey=exType==='course'
+        ?isCourseChapter?aprChapterProgressKey(level,aprMod,exCourseChapterIndex):aprCourseSynthesisProgressKey(level,aprMod)
+        :aprProgressKey(level,aprMod);
+      progRecord(progressKey, exMode, pc);
+    }
   }
-  const msg = canUse && pc>=75 ? "Le sens est bien retenu. Passe maintenant à l'utilisation : écris les mots de mémoire."
+  const msg = isCourseChapter&&pc>=75 ? "Ce chapitre est retenu. Tu peux l'écrire maintenant ou avancer au chapitre suivant."
+            : exType==='course'&&pc>=75 ? "Révision générale réussie. Tous les chapitres avaient déjà été travaillés séparément."
+            : canUse && pc>=75 ? "Le sens est bien retenu. Passe maintenant à l'utilisation : écris les mots de mémoire."
             : canUse           ? "Quiz terminé. L'étape Utiliser te permet maintenant d'écrire les mots de mémoire."
             : pc===100 ? "Parfait. Tu peux passer au module suivant."
             : pc>=75  ? "Bien joué. Le mécanisme est en place."
@@ -9679,11 +9782,12 @@ function exFin(){
       <p class="aprlead" style="margin:14px 0 22px;font-size:.95rem">${msg}</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         ${canUse?`<button class="aprbtn" style="background:var(--gold);color:#1a1208"
-          onclick="aprEx('${exType==='course'?'course':exUseKey?'ecrisgram':'ecris'}','${exType==='course'?'':exUseKey||exCat}',exTitre,'utiliser')">✍️ Utiliser — produire les formes</button>`:''}
+          onclick="aprEx('${exType==='course'?'course':exUseKey?'ecrisgram':'ecris'}','${exType==='course'?'':exUseKey||exCat}',exTitre,'utiliser',exCourseChapterIndex)">✍️ Écrire seulement ce chapitre</button>`:''}
+        ${isCourseChapter&&pc>=75&&exCourseChapterIndex<module.chapters.length-1?`<button class="aprbtn" onclick="aprReturnToCourseChapter(${exCourseChapterIndex+1})">Chapitre suivant →</button>`:''}
         <button class="aprbtn" style="${canUse?'background:var(--surface2);color:var(--text)':''}"
-          onclick="${exMode==='rev'?'aprRevStart()':'aprEx(exType,exCat,exTitre,exMode)'}">Refaire</button>
+          onclick="${exMode==='rev'?'aprRevStart()':'aprEx(exType,exCat,exTitre,exMode,exCourseChapterIndex)'}">Refaire</button>
         <button class="aprbtn" style="background:var(--surface2);color:var(--text)"
-          onclick="${exMode==='rev'?(aprRevScope?'aprLecon(aprRevScope.modIndex)':'aprRevView()'):'aprLecon(aprMod)'}">${exMode==='rev'?(aprRevScope?'Relire la leçon':'Retour à la révision'):'Relire la leçon'}</button>
+          onclick="${exMode==='rev'?(aprRevScope?'aprLecon(aprRevScope.modIndex)':'aprRevView()'):isCourseChapter?`aprReturnToCourseChapter(${exCourseChapterIndex})`:'aprLecon(aprMod)'}">${exMode==='rev'?(aprRevScope?'Relire la leçon':'Retour à la révision'):'Relire la leçon'}</button>
         <button class="aprbtn" style="background:var(--surface2);color:var(--text)"
           onclick="aprParcours()">Retour au parcours</button>
       </div>
