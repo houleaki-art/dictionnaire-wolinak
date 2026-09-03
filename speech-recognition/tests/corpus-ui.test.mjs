@@ -116,7 +116,7 @@ test('les ecritures Supabase signalent un refus au lieu d afficher un faux succe
 
 test('un administrateur ajoute directement une fiche sans proposition intermediaire', () => {
   const submit = sourceBetween('async function submitWord()', 'function finishSubmit');
-  assert.match(submit, /const duplicate=WORDS\.find/);
+  assert.match(submit, /const duplicate=findDictionaryForm\(aln\)/);
   assert.match(submit, /existe déjà dans le dictionnaire/);
   assert.match(submit, /S\.view==='admin'&&SB_AUTH/);
   assert.match(submit, /await pushToSB\(\[word\]\)/);
@@ -124,6 +124,41 @@ test('un administrateur ajoute directement une fiche sans proposition intermedia
   assert.match(submit, /WORDS\.push\(word\)/);
   assert.match(submit, /La fiche n\\'a pas été publiée/);
   assert.match(submit, /const submitted=await pushPending\(entry\)/);
+});
+
+test('l atelier accepte une forme actuelle et fusionne les doublons', () => {
+  const identity = sourceBetween('function dictionaryFormKey', '// ══════════════════════════════════════════════════════════\n//  STATE');
+  const card = sourceBetween('function atlFiche', 'function atlFormStatus');
+  const status = sourceBetween('function atlFormStatus', 'async function atlValider');
+  const validation = sourceBetween('async function atlValider', 'async function atlEcarter');
+  assert.match(identity, /normalize\('NFC'\)/);
+  assert.match(identity, /replace\(\/\[’\]\/g,"'"\)/);
+  assert.match(card, /id="aln-\$\{w\.id\}"/);
+  assert.match(card, /Forme à publier \(aln8ba\)/);
+  assert.match(status, /findDictionaryForm\(form,id,true\)/);
+  assert.match(status, /sans créer de doublon/);
+  assert.match(validation, /const duplicate=findDictionaryForm\(aln,id,true\)/);
+  assert.match(validation, /await pushToSB\(\[merged\]\)/);
+  assert.match(validation, /await deleteFromSB\(id\)/);
+  assert.match(validation, /field:'aln8ba'/);
+  assert.match(validation, /const saved=await pushToSB\(\[w2\]\)/);
+  assert.match(validation, /if\(!saved\)/);
+});
+
+test('Ndaaba est la forme actuelle et 8daaba demeure tracable', () => {
+  const override = sourceBetween('const NDAABA_CURRENT_USAGE', 'const CURRENT_ENTRY_OVERRIDES');
+  assert.match(override, /aln8ba:'Ndaaba'/);
+  assert.match(override, /phonetic:'n-da-a-ba'/);
+  assert.match(override, /graphie historique 8daaba/);
+  assert.match(override, /'8daaba':NDAABA_CURRENT_USAGE/);
+  assert.match(override, /ndaaba:NDAABA_CURRENT_USAGE/);
+});
+
+test('le compteur distingue les formes des fiches regroupees', () => {
+  const render = sourceBetween('function renderWords()', "window.addEventListener('beforeprint'");
+  assert.match(render, /\$\{r\.length\} forme/);
+  assert.match(render, /\$\{items\.length\} fiche/);
+  assert.match(render, /fiches affichées · \$\{r\.length\} formes au total/);
 });
 
 test('la collecte de poissons ne conserve aucun script de migration public', () => {

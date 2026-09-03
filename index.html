@@ -1071,11 +1071,17 @@ body:has(.apr-path-dashboard) .fab{display:none}
   font-size:.8rem;line-height:1.55}
 .atl-ctx .a{font-weight:600;display:block;margin-bottom:4px}
 .atl-ctx .f{color:var(--text2);font-style:italic}
-.atl-form{display:grid;grid-template-columns:1fr 1fr auto auto;gap:7px;align-items:center}
+.atl-form{display:grid;grid-template-columns:minmax(170px,.9fr) minmax(210px,1.1fr) minmax(160px,.75fr) auto auto;gap:7px;align-items:end}
 @media(max-width:640px){.atl-form{grid-template-columns:1fr}}
 .atl-form input,.atl-form select{font-family:inherit;font-size:.85rem;padding:9px 11px;
   border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);width:100%}
 .atl-form input:focus{outline:none;border-color:var(--green)}
+.atl-field{display:grid;gap:4px;min-width:0}
+.atl-field>span{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-weight:700}
+.atl-form-help{grid-column:1/-1;font-size:.72rem;color:var(--text2);line-height:1.45;margin-bottom:2px}
+.atl-duplicate{grid-column:1/-1;display:none;padding:8px 10px;border-radius:7px;font-size:.75rem;line-height:1.4}
+.atl-duplicate.show{display:block;background:rgba(45,107,69,.08);border-left:3px solid var(--green);color:var(--text2)}
+.atl-duplicate.existing{display:block;background:rgba(194,116,25,.1);border-left:3px solid var(--gold);color:var(--text)}
 .atl-ok{font-family:inherit;font-size:.8rem;font-weight:700;padding:9px 15px;border:none;
   border-radius:8px;background:var(--green);color:#fff;cursor:pointer;white-space:nowrap}
 .atl-no{font-family:inherit;font-size:.8rem;font-weight:700;padding:9px 13px;border:1px solid var(--border);
@@ -2963,7 +2969,16 @@ const FAMILY_MAP = {
 // ══════════════════════════════════════════════════════════
 //  DATA LAYER
 // ══════════════════════════════════════════════════════════
+const NDAABA_CURRENT_USAGE={
+  aln8ba:'Ndaaba',
+  phonetic:'n-da-a-ba',
+  source:'Usage actuel signalé par Alakws Pamidoo · M8lsem · Jos. Laurent, New Familiar Abenakis and English Dialogues (1884), graphie historique 8daaba',
+  related:['Nda','8daaba'],
+  replaceNotes:'✓ FORME ACTUELLE signalée par Alakws Pamidoo · M8lsem : Ndaaba. Laurent (1884) écrit la graphie historique 8daaba dans trois dialogues exprimant « je ne pourrais pas » ou « je ne le ferai pas ». La forme historique demeure visible ici pour assurer la traçabilité sans être présentée comme la graphie actuelle.'
+};
 const CURRENT_USAGE_OVERRIDES={
+  '8daaba':NDAABA_CURRENT_USAGE,
+  ndaaba:NDAABA_CURRENT_USAGE,
   kdakinna:{cat:'territoire',related:['Ndakina'],note:'Usage actuel signalé par Alakws Pamidoo · M8lsem.'},
   mkazal:{aln8ba:'Mkazak',phonetic:'mka-zak',grammar:'Nom de partie du corps — pluriel documenté',related:['Mkaza'],note:'Correction de transcription affichée par le projet : Laurent (1884), page 24, écrit Mkazak pour « The nails ». Le dictionnaire moderne consulté confirme mkaz, pluriel mkazak. Mkazal est plutôt documenté comme pluriel de Mkaza « charbon ».'},
   mkaza:{related:['Mkazak','Mkazas','Mkazawigen'],note:'Repère lexical : Laurent documente séparément Mkaza « charbon », Mkazas « corneille » et la base Mkazawi- « noir ». Leur rapprochement sert ici à naviguer et à mémoriser, sans présenter ces formes comme interchangeables.'},
@@ -3001,9 +3016,9 @@ function applyCurrentUsageOverrides(words){
     const override=CURRENT_USAGE_OVERRIDES[key];
     let next=w;
     if(override){
-      const {related:overrideRelated=[],note:overrideNote='',...fields}=override;
+      const {related:overrideRelated=[],note:overrideNote='',replaceNotes='',...fields}=override;
       const related=[...new Set([...(w.related||[]),...overrideRelated])];
-      const notes=overrideNote&&(w.notes||'').includes(overrideNote)?w.notes:[w.notes,overrideNote].filter(Boolean).join(' · ');
+      const notes=replaceNotes||(overrideNote&&(w.notes||'').includes(overrideNote)?w.notes:[w.notes,overrideNote].filter(Boolean).join(' · '));
       next={...w,...fields,related,notes};
     }
     const entryOverride=CURRENT_ENTRY_OVERRIDES[w.id];
@@ -3198,6 +3213,16 @@ async function deletePending(id){
 function loadFavs(){ return JSON.parse(localStorage.getItem(SK.favs)||'[]'); }
 function saveFavs(f){ localStorage.setItem(SK.favs,JSON.stringify(f)); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function dictionaryFormKey(value){
+  return String(value||'').normalize('NFC').trim().toLocaleLowerCase('fr')
+    .replace(/[’]/g,"'").replace(/\s+/g,' ');
+}
+function findDictionaryForm(value,exceptId='',publishedOnly=false){
+  const key=dictionaryFormKey(value);
+  if(!key) return null;
+  return WORDS.find(word=>word.id!==exceptId&&dictionaryFormKey(word.aln8ba)===key
+    &&(!publishedOnly||!enAttente(word)))||null;
+}
 
 // ══════════════════════════════════════════════════════════
 //  STATE
@@ -3286,7 +3311,8 @@ let WORD_SEARCH_CACHE=new WeakMap();
 function computeWordLevel(w){
   const source = (w.source||'').toLowerCase();
   const notes  = (w.notes ||'').toLowerCase();
-  if(notes.includes('usage actuel signalé par guillaum labrecque-houle')) return 'vert';
+  if(/usage actuel signalé par (?:guillaum labrecque-houle|alakws pamidoo)/.test(source+' '+notes)
+    ||/forme actuelle signalée par alakws pamidoo/.test(notes)) return 'vert';
   // ORANGE — source datée ou dérivation sans confirmation actuelle consignée dans le projet
   if(['laurent','day','gordon','bruchac','swarthmore','ling073'].some(k=>source.includes(k)))
     return 'orange';
@@ -3470,16 +3496,16 @@ function makeSingleCard(w){
 function renderWords(){
   const c=document.getElementById('wordsContainer');
   const r=filtered();
+  const items=buildDisplayItems(r);
   const sv=document.getElementById('sortSel').value;
   const renderKey=[S.view,S.cat,S.letter,S.q,S.lang,S.layout,sv,adminUnlocked].join('\u0001');
   if(renderKey!==WORD_RENDER_KEY){
     WORD_RENDER_KEY=renderKey;
     WORD_RENDER_LIMIT=wordBatchSize();
   }
-  document.getElementById('resCount').textContent=r.length+' résultat'+(r.length!==1?'s':'');
+  document.getElementById('resCount').textContent=`${r.length} forme${r.length!==1?'s':''} · ${items.length} fiche${items.length!==1?'s':''} regroupée${items.length!==1?'s':''}`;
   if(!r.length){c.innerHTML='<div class="nores"><div class="ni">🔍</div><h3>Aucun mot trouvé</h3><p>Essayez un autre terme ou effacez les filtres.</p></div>';return;}
   c.className=S.layout==='grid'?'wgrid':'wlist';
-  const items=buildDisplayItems(r);
   const visibleItems=items.slice(0,WORD_RENDER_LIMIT);
   let html='',lastCat=null;
   visibleItems.forEach(item=>{
@@ -3490,7 +3516,7 @@ function renderWords(){
   if(visibleItems.length<items.length){
     const remaining=items.length-visibleItems.length;
     const next=Math.min(wordBatchSize(),remaining);
-    html+=`<div class="load-more-wrap"><button type="button" onclick="showMoreWords()">Afficher ${next} fiche${next>1?'s':''} de plus</button><span>${visibleItems.length} sur ${items.length} fiches chargées</span></div>`;
+    html+=`<div class="load-more-wrap"><button type="button" onclick="showMoreWords()">Afficher ${next} fiche${next>1?'s':''} de plus</button><span>${visibleItems.length} sur ${items.length} fiches affichées · ${r.length} formes au total</span></div>`;
   }
   c.innerHTML=html;
 }
@@ -5302,7 +5328,7 @@ async function submitWord(){
   const fr=document.getElementById('f-fr').value.trim();
   const cat=document.getElementById('f-cat').value;
   if(!aln||!fr||!cat){toast('⚠️ Remplissez les champs obligatoires (Aln8ba, Français, Catégorie)');return;}
-  const duplicate=WORDS.find(w=>(w.aln8ba||'').normalize('NFC').toLocaleLowerCase('fr')===aln.normalize('NFC').toLocaleLowerCase('fr'));
+  const duplicate=findDictionaryForm(aln);
   if(duplicate){toast(`⚠️ « ${duplicate.aln8ba} » existe déjà dans le dictionnaire. Ouvre sa fiche au lieu d'en créer une seconde.`);return;}
   if(!document.getElementById('fPrivacyConsent').checked){
     toast('Lis l’avis de confidentialité et confirme ton consentement avant l’envoi.'); return;
@@ -11177,6 +11203,7 @@ function renderAtelier(){
   }
   const si = document.getElementById('atlSrc');
   if(si) si.onchange = e => { atlSrc = e.target.value; atlPage = 0; renderAtelier(); };
+  page.forEach(word=>atlFormStatus(word.id));
 }
 
 function atlFiche(w){
@@ -11191,42 +11218,100 @@ function atlFiche(w){
       <span class="a">${w.example_a}</span>
       <span class="f">${w.example_f||''}</span></div>` : ''}
     <div class="atl-form">
-      <input id="fr-${w.id}" placeholder="Sens en français" autocomplete="off">
-      <select id="cat-${w.id}">
-        <option value="">Catégorie…</option>
-        ${cats.map(c=>`<option value="${c}">${c}</option>`).join('')}
-      </select>
+      <div class="atl-form-help">La forme de la source est préremplie. Corrige-la seulement si la graphie à publier est connue; la forme originale restera dans l’historique.</div>
+      <label class="atl-field"><span>Forme à publier (aln8ba)</span>
+        <input id="aln-${w.id}" value="${escH(w.aln8ba)}" autocomplete="off" spellcheck="false" oninput="atlFormStatus('${w.id}')"></label>
+      <label class="atl-field"><span>Sens en français</span>
+        <input id="fr-${w.id}" placeholder="Sens établi" autocomplete="off"></label>
+      <label class="atl-field"><span>Catégorie</span>
+        <select id="cat-${w.id}">
+          <option value="">Catégorie…</option>
+          ${cats.map(c=>`<option value="${c}">${c}</option>`).join('')}
+        </select></label>
       <button class="atl-ok" onclick="atlValider('${w.id}')">Valider</button>
       <button class="atl-no" onclick="atlEcarter('${w.id}')">Écarter</button>
+      <div class="atl-duplicate" id="atl-dup-${w.id}" role="status" aria-live="polite"></div>
     </div>
   </div>`;
 }
 
+function atlFormStatus(id){
+  const source=WORDS.find(word=>word.id===id), input=document.getElementById('aln-'+id);
+  const status=document.getElementById('atl-dup-'+id);
+  if(!source||!input||!status) return;
+  const form=input.value.trim();
+  const existing=findDictionaryForm(form,id,true);
+  if(existing){
+    status.className='atl-duplicate existing';
+    status.innerHTML=`Déjà présente : <b>${escH(existing.aln8ba)}</b> — ${escH(existing.fr)}. La validation reliera cette source à la fiche existante et retirera l’entrée en attente, sans créer de doublon.`;
+  }else if(form&&dictionaryFormKey(form)!==dictionaryFormKey(source.aln8ba)){
+    status.className='atl-duplicate show';
+    status.innerHTML=`Nouvelle graphie à publier : <b>${escH(form)}</b>. La forme de la source <b>${escH(source.aln8ba)}</b> sera conservée dans l’historique de correction.`;
+  }else{
+    status.className='atl-duplicate';
+    status.textContent='';
+  }
+}
+
 async function atlValider(id){
   const w = WORDS.find(x=>x.id===id); if(!w) return;
+  const aln = (document.getElementById('aln-'+id).value||'').trim();
   const fr = (document.getElementById('fr-'+id).value||'').trim();
   const cat = document.getElementById('cat-'+id).value;
+  if(!aln){ toast('Il faut indiquer la forme aln8ba à publier.'); return; }
   if(!fr){ toast('Il faut un sens en français.'); return; }
   if(!cat){ toast('Il faut choisir une catégorie.'); return; }
-  const w2 = {...w, fr:fr, cat:cat,
+  const date=new Date().toISOString().slice(0,10);
+  const duplicate=findDictionaryForm(aln,id,true);
+  const sourceLabel=publicSourceLabel(w.source||'source à préciser');
+  const context=[w.example_a,w.example_f].filter(Boolean).join(' — ');
+  if(duplicate){
+    const evidence=`✓ SOURCE RELIÉE SANS DOUBLON le ${date} dans l’atelier : la forme de source « ${w.aln8ba} » (${sourceLabel}) a été reconnue comme la fiche existante « ${duplicate.aln8ba} ». Sens proposé : ${fr}.${context?` Contexte : ${context}`:''}`;
+    const merged={...duplicate,
+      related:[...new Set([...(duplicate.related||[]),...(w.related||[]),...(w.aln8ba!==duplicate.aln8ba?[w.aln8ba]:[])])],
+      notes:[duplicate.notes,evidence].filter(Boolean).join(' · '),
+      corrections:[...(duplicate.corrections||[]),{
+        by:'Atelier de validation',from:w.aln8ba,to:duplicate.aln8ba,date,field:'aln8ba',
+        note:'Source reliée à une forme déjà présente; aucune nouvelle fiche créée.'}]
+    };
+    try{
+      const saved=await pushToSB([merged]);
+      if(!saved) throw new Error('la fiche existante n’a pas pu être mise à jour');
+      const removed=await deleteFromSB(id);
+      if(!removed) throw new Error('la source a été reliée, mais l’entrée en attente n’a pas pu être retirée');
+      WORDS=WORDS.filter(word=>word.id!==id).map(word=>word.id===duplicate.id?merged:word);
+      markWordsChanged();
+      const el=document.getElementById('atl-'+id);
+      if(el){ el.style.opacity='.55'; el.style.pointerEvents='none';
+        el.querySelector('.atl-form').innerHTML=`<div style="grid-column:1/-1;font-size:.85rem;color:var(--green);font-weight:600">✓ ${escH(duplicate.aln8ba)} était déjà présente : source reliée et entrée en attente retirée, sans doublon.</div>`; }
+      updateCounts(); renderWords(); refreshAdminDashboard(PENDING_CACHE);
+      toast(`✓ ${duplicate.aln8ba} reliée sans doublon`);
+    }catch(e){ toast('Échec : '+e.message); }
+    return;
+  }
+  const formChanged=aln!==w.aln8ba;
+  const validationNote=`✓ VALIDATION DE L’ATELIER le ${date}. ${formChanged?`Forme de la source : « ${w.aln8ba} »; forme publiée : « ${aln} ». `:''}Sens établi à partir du contexte de la source.`;
+  const corrections=[...(w.corrections||[]), {
+    by:'Atelier de validation', from:'⚠ Sens à déterminer', to:fr,
+    date, field:'fr', note:'Sens établi à partir du passage où la forme apparaît.'}];
+  if(formChanged) corrections.push({
+    by:'Atelier de validation',from:w.aln8ba,to:aln,date,field:'aln8ba',
+    note:'Graphie à publier saisie lors de la validation; la forme de source reste dans l’historique.'});
+  const w2 = {...w, aln8ba:aln, fr:fr, cat:cat,
     grammar: w.grammar==='Forme attestée — non glosée' ? '' : w.grammar,
-    notes: `✓ SENS ÉTABLI le ${new Date().toISOString().slice(0,10)} à partir du contexte de la source. `
-           + (w.notes||''),
-    corrections: [...(w.corrections||[]), {
-      by:'Atelier de validation', from:'⚠ Sens à déterminer', to:fr,
-      date:new Date().toISOString().slice(0,10), field:'fr',
-      note:'Sens établi à partir du passage où la forme apparaît.'}]};
+    notes:validationNote+' '+(w.notes||''), corrections};
   try{
-    await pushToSB([w2]);
+    const saved=await pushToSB([w2]);
+    if(!saved) throw new Error('Supabase a refusé la validation');
     WORDS = WORDS.map(x=>x.id===id?w2:x);
     markWordsChanged();
     const el = document.getElementById('atl-'+id);
     if(el){ el.style.opacity='.35'; el.style.pointerEvents='none';
       el.querySelector('.atl-form').innerHTML =
         `<div style="grid-column:1/-1;font-size:.85rem;color:var(--green);font-weight:600">
-           ✓ ${w.aln8ba} — ${fr} · entré au dictionnaire</div>`; }
-    updateCounts(); renderWords();
-    toast(`✓ ${w.aln8ba} validé`);
+           ✓ ${escH(aln)} — ${escH(fr)} · entrée au dictionnaire</div>`; }
+    updateCounts(); renderWords(); refreshAdminDashboard(PENDING_CACHE);
+    toast(`✓ ${aln} validé`);
   }catch(e){ toast('Échec : '+e.message); }
 }
 
