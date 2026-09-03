@@ -360,23 +360,51 @@ test('le module des nombres enseigne une seule etape a la fois', () => {
   assert.match(lesson, /refuse donc 10 000 à 999 999 au lieu d'inventer/);
 });
 
-test('le module des couleurs est revenu a sa forme simple sans ancien enrichissement', () => {
-  const colors = sourceBetween('{t:"Les couleurs"', '{t:"Qualités et émotions"');
-  assert.match(colors, /Six formes verbales documentées/);
-  assert.match(colors, /Commence par regarder une chose, puis dis son état/);
-  assert.match(colors, /Notre exercice/);
-  assert.match(colors, /il ne sert pas à inventer l'étymologie/);
-  assert.doesNotMatch(colors, /couleurs-territoire|color-learning|color-observe|Mskikwimen|Observe →/);
-  assert.doesNotMatch(colors, /Dix couleurs/);
-  for (const word of ['Mkwigen','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen']) {
+test('le module des couleurs enseigne forme courte, etat inanime et etat anime', () => {
+  const colors = sourceBetween('{t:"Les couleurs : forme ou état?"', '{t:"Les émotions et -w8gan"');
+  for (const concept of ['Forme courte','État inanimé','État animé','-ig-','-en','-o']) {
+    assert.match(colors, new RegExp(concept));
+  }
+  for (const word of ['Mkwi','Mkwigen','Mkwigo','Mkwigoak','W8bigen','Mkazawigen','Wl8wigen','Wiz8wigen','Askaskwigen']) {
     assert.match(colors, new RegExp(word));
   }
+  assert.match(colors, /Mskikwimen[\s\S]*classé animé/);
+  assert.match(colors, /Sata[\s\S]*classé inanimé/);
+  assert.match(colors, /On ne retire jamais -igen mécaniquement/);
+  assert.match(colors, /itemNames:\['Mkwi','Mkwigen','Mkwigo'/);
+});
+
+test('le module des emotions enseigne w8gan avant de faire pratiquer les formes', () => {
+  const description = sourceBetween('{t:"Les émotions et -w8gan"', '{t:"Compter jusqu\'à dix"');
+  for (const concept of ['nominalisateur','Akwamalso','Akwamalsow8gan','-aldam-','Productif ne veut pas dire automatique']) {
+    assert.match(description, new RegExp(concept));
+  }
+  for (const word of ['Maji','Agajw8gan','Akwalgaw8gan','Kwalhialwaw8gan','Kzalzow8gan',
+    'Moskwaldamw8gan','Sagezow8gan','Siwaldamw8gan','Skawalchow8gan','Wiagaldamw8gan']) {
+    assert.match(description, new RegExp(word));
+  }
+  assert.match(description, /Maji n'appartient pas à cette construction/);
+  assert.match(description, /itemNames:\['Maji','Agajw8gan'/);
+  assert.doesNotMatch(description, /aprAutoLec/);
+});
+
+test('les fiches relient les couleurs et les noms en w8gan a leur famille grammaticale', () => {
+  const overrides = sourceBetween('const CURRENT_USAGE_OVERRIDES', 'const CURRENT_ENTRY_OVERRIDES');
+  assert.match(overrides, /mkwigen:\{grammar:"Verbe d'état intransitif inanimé — finale -ig-en"/);
+  assert.match(overrides, /mkwigen:[\s\S]*related:\['Mkwi','Mkwigo','Mkwigoak'\]/);
+  assert.match(overrides, /w8bigen:[\s\S]*related:\['W8bigi','W8bigid'\]/);
+  assert.match(overrides, /wiz8wigen:[\s\S]*related:\['Wiz8wi'\]/);
+  assert.match(overrides, /mskikwimen:[\s\S]*pluriel Mskikwimenak en -ak/);
+  assert.match(overrides, /sata:\{grammar:'Nom inanimé'[\s\S]*pluriel Satal en -al/);
+
+  const linker = sourceBetween('function applyCurrentUsageOverrides', 'async function fetchWordsFromSB');
+  assert.match(linker, /isAbstractW8gan/);
+  assert.match(linker, /nominalisateur\\s\+-w8gan/);
+  assert.match(linker, /SUFFIXE · -w8gan/);
+  assert.match(linker, /RÈGLE · Le radical -aldam- \(l'esprit\)/);
 });
 
 test('les banques automatiques respectent le principe annonce par leur module', () => {
-  const description = sourceBetween('{t:"Qualités et émotions"', '{t:"Compter jusqu\'à dix"');
-  assert.match(description, /qualité, un état ressenti et le nom d'une émotion/);
-  assert.doesNotMatch(description, /Grand, petit, beau/);
 
   const fauna = sourceBetween('{t:"Les bêtes de chez nous"', '{t:"Mon corps"');
   assert.match(fauna, /!\/esprit\|aulne\/i\.test/);

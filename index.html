@@ -2955,7 +2955,19 @@ const CURRENT_USAGE_OVERRIDES={
   mkazal:{aln8ba:'Mkazak',phonetic:'mka-zak',grammar:'Nom de partie du corps — pluriel documenté',related:['Mkaza'],note:'Correction de transcription affichée par le projet : Laurent (1884), page 24, écrit Mkazak pour « The nails ». Le dictionnaire moderne consulté confirme mkaz, pluriel mkazak. Mkazal est plutôt documenté comme pluriel de Mkaza « charbon ».'},
   mkaza:{related:['Mkazak','Mkazas','Mkazawigen'],note:'Repère lexical : Laurent documente séparément Mkaza « charbon », Mkazas « corneille » et la base Mkazawi- « noir ». Leur rapprochement sert ici à naviguer et à mémoriser, sans présenter ces formes comme interchangeables.'},
   mkazas:{related:['Mkaza','Mkazawigen'],note:'Repère de mémoire du projet : rapprocher la corneille de Mkazawigen « c’est noir ». Les sources documentent les deux formes séparément; ce lien pédagogique ne permet pas de construire un nouveau mot.'},
-  mkazawigen:{related:['Mkaza','Mkazas'],note:'Repère de mémoire du projet : Laurent donne Mkazawi- « noir », Mkazawigen « c’est noir » et Mkazas « corneille ». Les formes restent des entrées distinctes.'}
+  mkwi:{related:['Mkwigen','Mkwigo','Mkwigoak']},
+  mkwigen:{grammar:"Verbe d'état intransitif inanimé — finale -ig-en",related:['Mkwi','Mkwigo','Mkwigoak'],note:"Repère grammatical du projet : -ig- forme ici un verbe d'état et -en marque la forme inanimée. Beach (2004, p. 38 et 133, d'après Day 1994) documente cette structure; la série du Manuel de l'étudiant 1, p. 41, confirme l'usage inanimé de Mkwigen."},
+  mkwigo:{related:['Mkwi','Mkwigen','Mkwigoak']},
+  mkwigoak:{related:['Mkwi','Mkwigen','Mkwigo']},
+  mskikwimen:{related:['Mkwigo'],note:"Contraste d'apprentissage : Mskikwimen est animé, comme le confirme son pluriel Mskikwimenak en -ak. Pour exprimer qu'une fraise est rouge, il faut donc chercher la série animée de Mkwigo, et non Mkwigen."},
+  sata:{grammar:'Nom inanimé',related:['Wl8wigen'],note:"La classe inanimée est confirmée par le pluriel Satal en -al. Pour exprimer qu'un bleuet est bleu, la halte des couleurs enseigne donc l'état inanimé Wl8wigen."},
+  satal:{grammar:'Nom inanimé pluriel (-al)',related:['Sata']},
+  w8bigen:{grammar:"Verbe d'état intransitif inanimé — finale -ig-en",related:['W8bigi','W8bigid'],note:"Repère grammatical du projet : -ig- forme ici un verbe d'état et -en marque la forme inanimée. Beach (2004, p. 133, d'après Day 1994) analyse explicitement w8b-ig-en « c'est blanc »."},
+  mkazawigen:{grammar:"Verbe d'état intransitif inanimé — finale -ig-en",related:['Mkazawi','Mkaza','Mkazas'],note:"Repère grammatical du projet : -ig- forme ici un verbe d'état et -en marque la forme inanimée. Laurent donne Mkazawi- « noir », Mkazawigen « c'est noir » et Mkazas « corneille »; ces formes attestées restent distinctes."},
+  wl8wigen:{grammar:"Verbe d'état intransitif inanimé — finale -ig-en",note:"Repère grammatical du projet : cette forme complète est enseignée comme un état inanimé. La finale -ig-en est analysée comme verbaliseur d'état + marque inanimée; aucune forme courte n'est déduite automatiquement."},
+  wiz8wi:{related:['Wiz8wigen']},
+  wiz8wigen:{grammar:"Verbe d'état intransitif inanimé — finale -ig-en",related:['Wiz8wi'],note:"Repère grammatical du projet : -ig- forme ici un verbe d'état et -en marque la forme inanimée. Wiz8wi et Wiz8wigen sont reliés parce que les deux formes sont documentées, non parce qu'une terminaison peut être retirée librement."},
+  askaskwigen:{grammar:"Verbe d'état intransitif inanimé — finale -ig-en",note:"Repère grammatical du projet : cette forme complète est enseignée comme un état inanimé. La finale -ig-en est analysée comme verbaliseur d'état + marque inanimée; aucune forme courte n'est déduite automatiquement."}
 };
 const CURRENT_ENTRY_OVERRIDES={
   mst311:{cat:'archive',related:['Scotama','Skotam'],note:'Graphie historique conservée dans les Archives; la forme actuelle relevée sur le terrain est Skotam.'},
@@ -2995,6 +3007,14 @@ function applyCurrentUsageOverrides(words){
       next={...next,fr:'Les trois ordres de conjugaison · deuxième personne interrogative',
         notes:[next.notes,INTERROGATIVE_RULE_NOTE].filter(Boolean).join(' · '),
         related:[...new Set([...(next.related||[]),'T8ni aliwizian?','T8ni alosan?','T8ni wigian?',"T8ni kd'al8wzin?","Kagwi k'michi?"])]};
+    const isAbstractW8gan=/w8gan$/i.test(key)&&/nom abstrait/i.test(next.grammar||'')&&
+      /nominalisateur\s+-w8gan/i.test(next.notes||'');
+    if(isAbstractW8gan){
+      const morphologyLinks=['SUFFIXE · -w8gan'];
+      if(/aldam/i.test(key)||/radical\s+-aldam-/i.test(next.notes||''))
+        morphologyLinks.push("RÈGLE · Le radical -aldam- (l'esprit)");
+      next={...next,related:[...new Set([...(next.related||[]),...morphologyLinks])]};
+    }
     if(key==='ndakina') next={...next,related:[...new Set([...(next.related||[]),'Kdakinna'])]};
     return next;
   });
@@ -7094,32 +7114,109 @@ const APR_MODULE_LIBRARY=[
    1. Dis chaque phrase en lisant. 2. Redis-la en regardant seulement le français.
    3. Redis-la sans rien regarder. Si ça bloque, recommence — c'est normal, c'est comme ça
    que la mémoire se construit.</div>`},
- {t:"Les couleurs",d:"Six formes verbales documentées.",cat:'couleur',ex:'vocab',activity:'retrieve',lec:`
-  <p>Commence par regarder une chose, puis dis son état. Dans les six exemples retenus ici,
-  on apprend une forme complète comme <i>c'est rouge</i>, et non une étiquette française isolée.</p>
-  <table class="aprtab">
-  <tr><td class="k">Mkwigen</td><td>c'est rouge</td></tr>
-  <tr><td class="k">W8bigen</td><td>c'est blanc</td></tr>
-    <tr><td class="k">Mkazawigen</td><td>c'est noir</td></tr>
-    <tr><td class="k">Wl8wigen</td><td>c'est bleu</td></tr>
-    <tr><td class="k">Wiz8wigen</td><td>c'est jaune</td></tr>
-    <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>
-  <div class="aprnote"><b>Un lien de mémoire dans le territoire</b>
-   Laurent documente <span class="al8">Mkazawi-</span> « noir »,
-   <span class="al8">Mkazawigen</span> « c'est noir » et <span class="al8">Mkazas</span>
-   « une corneille ». Imagine la corneille noire pour retenir la couleur. Ce rapprochement relie
-   des formes attestées; il ne dit pas qu'elles sont interchangeables et ne sert pas à inventer un mot.</div>
-  <div class="aprnote"><b>Notre exercice</b>
-   Choisis d'abord une couleur que tu vois réellement. Cache ensuite la colonne aln8ba,
-   retrouve la forme complète, puis vérifie les lettres. Le rapprochement visuel aide la mémoire;
-   il ne sert pas à inventer l'étymologie d'un mot.</div>`},
- {t:"Qualités et émotions",d:"Distinguer une qualité, un état ressenti et le nom d'une émotion.",cat:'description',ex:'vocab',activity:'recognize',lec:aprAutoLec(`
-  <p>Après les couleurs, cette leçon change de principe : elle réunit les qualités et les émotions
-  documentées dans la catégorie Description. Observe toujours si la fiche donne une qualité,
-  un état ou un nom abstrait; ces fonctions ne sont pas interchangeables.</p>`,'description',16,`
-  <div class="aprnote"><b>⏱ Cinq mots par jour, pas plus</b>
-   Choisis cinq formes aujourd'hui et classe-les d'abord comme qualité ou émotion.
-   L'onglet <b>🔁 Révision</b> te les resservira ensuite au bon moment.</div>`)},
+ {t:"Les couleurs : forme ou état?",d:"Comprendre la forme courte et les verbes d'état animés ou inanimés.",cat:'couleur',ex:'vocab',activity:'retrieve',
+  itemNames:['Mkwi','Mkwigen','Mkwigo','Mkwigoak','W8bigi','W8bigen','W8bigid','Mkazawi','Mkazawigen','Wiz8wi','Wiz8wigen','Wl8wigen','Askaskwigen'],lec:`
+  <section class="morph-primer">
+   <strong>Une couleur n'a pas toujours une seule forme</strong>
+   <p>Avant de répondre, pose trois questions : est-ce la <b>couleur nommée</b>, l'état d'une chose
+   <b>inanimée</b>, ou l'état d'un être <b>animé</b>? Le français dit souvent seulement « rouge »;
+   l'aln8ba peut faire entendre une fonction grammaticale différente.</p>
+   <div class="morph-steps">
+    <div class="morph-step"><b>1 · Forme courte</b><span><span class="al8">Mkwi</span> nomme « rouge » dans l'entrée actuelle.</span></div>
+    <div class="morph-step"><b>2 · État inanimé</b><span><span class="al8">Mkwigen</span> dit « c'est rouge » d'une chose inanimée.</span></div>
+    <div class="morph-step"><b>3 · État animé</b><span><span class="al8">Mkwigo</span> dit « il ou elle est rouge »; <span class="al8">Mkwigoak</span> en est le pluriel animé attesté.</span></div>
+   </div>
+  </section>
+  <h3>La construction grammaticale documentée</h3>
+  <p>Beach (2004, p. 38 et 133, d'après Day 1994) décrit <b>-ig-</b> comme un élément qui forme ici
+  un verbe d'état. Dans son exemple avec la base <span class="al8">w8b-</span> « blanc », la fin
+  <b>-en</b> produit l'état inanimé et la fin <b>-o</b> l'état animé.</p>
+  <div class="morph-equation">
+   <div class="morph-piece"><code>w8b-</code><small>base « blanc »</small></div><span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-ig-</code><small>forme un verbe d'état</small></div><span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-en</code><small>inanimé</small></div><span class="morph-plus">=</span>
+   <div class="morph-piece"><code>W8bigen</code><small>c'est blanc</small></div>
+  </div>
+  <div class="morph-equation">
+   <div class="morph-piece"><code>w8b-</code><small>base « blanc »</small></div><span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-ig-</code><small>forme un verbe d'état</small></div><span class="morph-plus">+</span>
+   <div class="morph-piece"><code>-o</code><small>animé, 3e personne</small></div><span class="morph-plus">=</span>
+   <div class="morph-piece"><code>w8bigo</code><small>il ou elle est blanc·he</small></div>
+  </div>
+  <h3>Six états inanimés à retenir entiers</h3>
+  <table class="aprtab"><tr><th>Forme attestée</th><th>Fonction enseignée</th></tr>
+   <tr><td class="k">Mkwigen</td><td>c'est rouge</td></tr>
+   <tr><td class="k">W8bigen</td><td>c'est blanc</td></tr>
+   <tr><td class="k">Mkazawigen</td><td>c'est noir</td></tr>
+   <tr><td class="k">Wl8wigen</td><td>c'est bleu</td></tr>
+   <tr><td class="k">Wiz8wigen</td><td>c'est jaune</td></tr>
+   <tr><td class="k">Askaskwigen</td><td>c'est vert</td></tr></table>
+  <h3>Les rapprochements réellement documentés</h3>
+  <table class="aprtab"><tr><th>Forme courte ou base</th><th>État inanimé</th><th>État animé attesté</th></tr>
+   <tr><td class="k">Mkwi · rouge</td><td class="k">Mkwigen</td><td><span class="al8">Mkwigo</span> · pluriel <span class="al8">Mkwigoak</span></td></tr>
+   <tr><td class="k">w8b- · blanc</td><td class="k">W8bigen</td><td><span class="al8">w8bigo</span>, exemple grammatical de Beach; <span class="al8">W8bigid</span>, forme historique de Masta</td></tr>
+   <tr><td class="k">Mkazawi- · noir</td><td class="k">Mkazawigen</td><td>aucune forme animée introduite dans cette halte</td></tr>
+   <tr><td class="k">Wiz8wi · jaune</td><td class="k">Wiz8wigen</td><td>aucune forme animée introduite dans cette halte</td></tr></table>
+  <div class="aprnote"><b>Le contraste fraise / bleuet</b>
+   <span class="al8">Mskikwimen</span> « fraise » est classé animé : pour dire qu'une fraise est rouge,
+   la série attendue est donc celle de <span class="al8">Mkwigo</span>. <span class="al8">Sata</span>
+   « bleuet » est classé inanimé : <span class="al8">Wl8wigen</span> est la forme enseignée pour
+   « c'est bleu ». Ce repère choisit le verbe d'état; il ne prétend pas fournir ici l'ordre attesté
+   d'une phrase complète ni les accords du pluriel.</div>
+  <div class="aprnote w"><b>On ne retire jamais -igen mécaniquement</b>
+   Le dictionnaire ne présente pas encore une forme courte actuelle pour chaque couleur. Apprends
+   <span class="al8">Wl8wigen</span> et <span class="al8">Askaskwigen</span> comme des formes complètes;
+   ne fabrique pas une forme courte ou animée par analogie. Manuel de l'étudiant 1, p. 41; Masta 1932.</div>
+  <div class="aprnote"><b>Pratique courte, savoir complet</b>
+   Une visite pose au plus six questions. Reviens à cette halte pour faire tourner les familles :
+   identifier la fonction, retrouver la forme, puis expliquer pourquoi elle est courte, inanimée ou animée.</div>`},
+ {t:"Les émotions et -w8gan",d:"Lire le nominalisateur -w8gan et le radical mental -aldam- dans des noms abstraits attestés.",cat:'description',ex:'vocab',activity:'recognize',
+  itemNames:['Maji','Agajw8gan','Akwalgaw8gan','Kwalhialwaw8gan','Kzalzow8gan','Moskwaldamw8gan','Sagezow8gan','Siwaldamw8gan','Skawalchow8gan','Wiagaldamw8gan'],lec:`
+  <section class="morph-primer">
+   <strong>-w8gan transforme une idée d'action ou d'état en nom</strong>
+   <p>Dans les formes documentées de cette halte, <b>-w8gan</b> est un <b>nominalisateur</b> : il aide
+   à former un nom qui désigne le fait, l'action, l'état ou le résultat. Ce n'est donc pas un mot
+   qui veut dire « émotion » à lui seul, et ce n'est pas une terminaison décorative.</p>
+   <div class="morph-steps">
+    <div class="morph-step"><b>1 · Lis le mot entier</b><span>Commence toujours par le sens attesté de la fiche.</span></div>
+    <div class="morph-step"><b>2 · Repère -w8gan</b><span>Il signale ici un nom abstrait construit sur une base.</span></div>
+    <div class="morph-step"><b>3 · Vérifie la famille</b><span>Une source doit confirmer la base et les changements de sons avant toute analyse.</span></div>
+   </div>
+  </section>
+  <h3>Un couple qui montre vraiment le mécanisme</h3>
+  <p>Laurent (1884) relie explicitement les deux formes suivantes. On peut donc observer la relation
+  sans la deviner :</p>
+  <div class="morph-equation">
+   <div class="morph-piece"><code>Akwamalso</code><small>il ou elle est malade</small></div><span class="morph-plus">→</span>
+   <div class="morph-piece"><code>Akwamalsow8gan</code><small>la maladie · l'état d'être malade</small></div>
+  </div>
+  <p>D'autres noms attestés rendent le même nominalisateur visible, par exemple
+  <span class="al8">Pemegaw8gan</span> « danse » et <span class="al8">Lintow8gan</span> « chanson ».
+  Leur forme exacte doit toutefois être apprise : une base peut changer lorsqu'elle entre dans un mot.</p>
+  <h3>Les neuf noms d'émotion actuels</h3>
+  <table class="aprtab"><tr><th>Forme entière</th><th>Sens attesté</th><th>Repère de lecture</th></tr>
+   <tr><td class="k">Agaj<wbr>w8gan</td><td>timidité</td><td rowspan="6"><b>-w8gan</b> nominalise; la partie précédente n'est pas enseignée ici comme un mot autonome.</td></tr>
+   <tr><td class="k">Akwalga<wbr>w8gan</td><td>dégoût</td></tr>
+   <tr><td class="k">Kwalhialwa<wbr>w8gan</td><td>surprise</td></tr>
+   <tr><td class="k">Kzalzo<wbr>w8gan</td><td>fierté</td></tr>
+   <tr><td class="k">Sagezo<wbr>w8gan</td><td>peur</td></tr>
+   <tr><td class="k">Skawalcho<wbr>w8gan</td><td>envie</td></tr>
+   <tr><td class="k">Mosk<wbr>aldam<wbr>w8gan</td><td>colère</td><td rowspan="3"><b>-aldam-</b> concerne ici un processus de l'esprit; <b>-w8gan</b> en fait un nom abstrait.</td></tr>
+   <tr><td class="k">Siw<wbr>aldam<wbr>w8gan</td><td>tristesse</td></tr>
+   <tr><td class="k">Wiag<wbr>aldam<wbr>w8gan</td><td>joie</td></tr></table>
+  <div class="aprnote"><b>La famille -aldam- : penser ou ressentir</b>
+   Les fiches du Bureau du Ndakina identifient le radical <b>-aldam-</b> dans
+   <span class="al8">Moskwaldamw8gan</span>, <span class="al8">Siwaldamw8gan</span> et
+   <span class="al8">Wiagaldamw8gan</span>. Il relie ces mots aux processus de l'esprit; le sens précis
+   vient toujours du mot entier.</div>
+  <div class="aprnote w"><b>Maji n'appartient pas à cette construction</b>
+   <span class="al8">Maji</span> signifie « mauvais, pas beau » et peut fonctionner comme adjectif ou
+   préfixe négatif, par exemple <span class="al8">Maji kisgat</span> « mauvaise journée ».
+   Il ne contient ni <b>-aldam-</b> ni <b>-w8gan</b> et sert ici de contraste.</div>
+  <div class="aprnote w"><b>Productif ne veut pas dire automatique</b>
+   Reconnaître <b>-w8gan</b> aide à lire. Cela ne permet pas de couper chaque mot au même endroit,
+   de déclarer la partie restante autonome ou de créer un nouveau nom sans attestation. La pratique
+   porte seulement sur les dix formes explicitement enseignées ici, six questions à la fois.</div>`},
  {t:"Compter jusqu'à dix",d:"Les dix premiers chiffres.",cat:'nombre',ex:'vocab',activity:'retrieve',lec:`
   <p>Ce premier module numérique sert à <b>réciter ou nommer un nombre seul</b>. Il ne demande pas
   encore d'accorder un nombre avec un nom animé ou inanimé. Apprends d'abord ces onze formes de
@@ -7988,7 +8085,7 @@ const NIVEAUX=[
    aprCourse({t:'Prendre la parole',d:"Entendre les repères de la graphie, saluer et se présenter dans de vrais petits échanges.",chapters:[
     "Les sons d'abord","Kwaï — saluer","Se présenter"]}),
    aprCourse({t:'Observer et compter',d:"Décrire ce qui est visible, distinguer les états et construire progressivement les nombres.",chapters:[
-    "Les couleurs","Qualités et émotions","Compter jusqu'à dix","Compter plus loin"]})
+    "Les couleurs : forme ou état?","Les émotions et -w8gan","Compter jusqu'à dix","Compter plus loin"]})
   ]},
  {id:'f',t:'Fondations',d:"Nommer le monde proche et comprendre comment les formes changent selon les relations humaines.",
   c:'#5f7f3f',progressId:'course-f',progressOffset:0,mods:[
@@ -8035,7 +8132,7 @@ const APR_LEVEL_PATHS={
   d:[
     ['Sons et graphie','entendre les cinq repères, puis écrire les lettres exactes'],
     ['Premiers échanges','saluer, répondre et se présenter avec des phrases complètes'],
-    ['États visibles','observer et retrouver les six formes de couleur documentées'],
+    ['Formes et états','distinguer couleur courte, état inanimé, état animé et nom abstrait en -w8gan'],
     ['Premiers nombres','compter de zéro à dix, puis reconnaître les constructions suivantes']
   ],
   f:[
@@ -8084,15 +8181,15 @@ const APR_MODULE_CONTRACTS={
     steps:["lire la question entière","répondre avec la forme personnelle documentée","remplacer seulement le nom dans le modèle prévu"],
     mastery:"Tu demandes le nom et l'état de l'autre, puis tu réponds sans ajouter de préfixe à une forme qui n'en porte pas."
   },
-  "Les couleurs":{
-    principle:"Comprendre que les six couleurs du module sont apprises comme des états complets, par exemple « c'est rouge ».",
-    steps:["observer une couleur réelle","dire la forme complète","vérifier le sens et toutes les lettres"],
-    mastery:"Tu retrouves les six états de couleur à partir d'un objet observé, pas seulement à partir d'une liste française."
+  "Les couleurs : forme ou état?":{
+    principle:"Distinguer une couleur nommée, le verbe d'état inanimé en -ig-en et les formes animées réellement attestées.",
+    steps:["identifier ce que la forme doit faire","comparer une famille attestée","choisir la forme courte, inanimée ou animée sans analogie libre"],
+    mastery:"Tu expliques la différence entre Mkwi, Mkwigen et Mkwigo, puis tu reconnais les six états inanimés sans inventer leur contrepartie."
   },
-  "Qualités et émotions":{
-    principle:"Distinguer une qualité, un état ressenti et un nom d'émotion sans les traiter comme des couleurs ou des mots interchangeables.",
-    steps:["identifier qualité, état ou émotion","retrouver la forme et sa catégorie grammaticale","l'employer seulement avec le sens documenté"],
-    mastery:"Tu classes chaque nouvelle forme selon ce qu'elle exprime et tu la distingues des six états de couleur."
+  "Les émotions et -w8gan":{
+    principle:"Lire -w8gan comme un nominalisateur et -aldam- comme un radical mental seulement dans les familles où les sources les identifient.",
+    steps:["partir du sens du mot entier","repérer le nominalisateur documenté","relier la forme à sa famille sans fabriquer une base"],
+    mastery:"Tu reconnais les neuf noms d'émotion, expliques le rôle de -w8gan et distingues Maji de cette construction."
   },
   "Compter jusqu'à dix":{
     principle:"Mémoriser les formes de base de zéro à dix qui servent de fondation aux constructions numériques suivantes.",
@@ -8302,9 +8399,9 @@ const APR_COURSE_CONTRACTS={
     mastery:"Tu peux ouvrir un court échange, te présenter et le fermer en conservant les formes complètes documentées."
   },
   "Observer et compter":{
-    principle:"Décrire une réalité visible et la dénombrer en distinguant les états de couleur, les qualités et les constructions numériques documentées.",
-    steps:["observer avant de nommer","distinguer couleur, qualité et émotion","construire les nombres par étapes vérifiables"],
-    mastery:"Tu peux décrire un élément visible et compter une quantité sans confondre les catégories ni inventer une construction."
+    principle:"Décrire une réalité visible et un état intérieur en lisant les finales grammaticales avant de construire progressivement les nombres.",
+    steps:["distinguer forme courte, animé et inanimé","lire -w8gan et -aldam- dans des noms attestés","construire les nombres par étapes vérifiables"],
+    mastery:"Tu peux expliquer la fonction des formes étudiées et compter une quantité sans confondre les catégories ni inventer une construction."
   },
   "Nommer le vivant et le territoire":{
     principle:"Former une carte mentale du territoire en reliant les êtres vivants, les plantes, la nourriture, les phénomènes naturels et les lieux.",
