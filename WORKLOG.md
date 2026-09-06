@@ -12,6 +12,15 @@ Aln8ba8dwaw8gan.
 Le journal ne reproduit aucune ancienne version du code ni aucune ancienne
 banque de données. Il conserve seulement les grandes étapes du travail.
 
+## 6 septembre 2026 — parcours débutant allégé
+
+- Répartition des 47 haltes en 15 chemins courts répartis sur cinq passages; chaque chemin contient trois ou quatre haltes au lieu de grands blocs chargés.
+- Le passage Découverte reste concret : premiers sons, salutations, présentation, nature visible, animaux, arbre, nombres de zéro à dix, actions et première conversation.
+- Les émotions sont maintenant enseignées progressivement : trois mots entiers aux Fondations, six mots en deux groupes à la Consolidation, puis l'analyse de `-w8gan` et `-aldam-` seulement à l'Approfondissement.
+- Retrait de `Maji` du parcours des émotions, puisqu'il servait seulement de contre-exemple et détournait l'attention de l'objectif.
+- Les traces d'apprentissage utilisent désormais des clés stables par chemin et par halte; les résultats enregistrés dans la répartition précédente demeurent reconnus.
+- Validation automatisée : 109 tests réussis, 47 haltes assignées une seule fois et 15 contrats de chemin distincts.
+
 ## 28 août 2026 — pratique exhaustive et progression des leçons
 
 - La section Pratique passe à cinq niveaux : Découverte, Fondations, Consolidation, Approfondissement et Autonomie.

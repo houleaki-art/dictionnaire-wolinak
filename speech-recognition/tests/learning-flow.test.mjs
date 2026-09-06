@@ -156,13 +156,15 @@ test('la production grammaticale suit une procedure documentee', () => {
 
 test('le parcours affiche les prerequis dans leur ordre pedagogique', () => {
   const path = sourceBetween('const APR_LEVEL_PATHS', 'function aprModulePerfect');
-  for (const phase of ['Sons et graphie','Premiers échanges','Monde vivant','Conversation',
-    'Nom et classe','Phrase affirmative','Interrogation','Négation','Structure verbale',
-    'Temps verbaux','Ordres de conjugaison','Morphologie','Sources','Lecture complète','Transmission']) {
+  for (const phase of ['Écouter','Saluer','Pointer','Compter','Échanger','Corps et proches',
+    'Trois émotions','Monde vivant','Temps vécu','Précision','Personnes','Nom et classe',
+    'Émotions suivantes','Phrase simple','Transformations','Structure verbale','Temps verbaux',
+    'Mots construits','Sources','Lecture complète','Transmission']) {
     assert.match(path, new RegExp(phase));
   }
-  assert.ok(path.indexOf('Phrase affirmative') < path.indexOf('Interrogation'));
-  assert.ok(path.indexOf('Interrogation') < path.indexOf('Négation'));
+  assert.ok(path.indexOf('Trois émotions') < path.indexOf('Émotions suivantes'));
+  assert.ok(path.indexOf('Phrase simple') < path.indexOf('Transformations'));
+  assert.ok(path.indexOf('Transformations') < path.indexOf('Mots construits'));
 });
 
 test('chaque module affiche sa mission, sa place et ses formes nouvelles', () => {
@@ -183,17 +185,17 @@ test('chaque module affiche sa mission, sa place et ses formes nouvelles', () =>
   assert.match(lesson, /aprModuleGuideHtml\(n,m,i,lecHtml\)/);
 });
 
-test('les 45 chapitres et les 10 grands modules ont des objectifs complets et distincts', () => {
+test('les 47 haltes et les 15 chemins ont des objectifs complets et distincts', () => {
   const chapterSource = sourceBetween('const APR_MODULE_CONTRACTS=', 'const APR_COURSE_CONTRACTS=');
   const chapterContracts = new Function(`${chapterSource}; return APR_MODULE_CONTRACTS;`)();
   const courseSource = sourceBetween('const APR_COURSE_CONTRACTS=', 'function aprModuleContract');
   const courseContracts = new Function(`${courseSource}; return APR_COURSE_CONTRACTS;`)();
   const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
   const titles = [...library.matchAll(/\{t:"([^"]+)"/g)].map(match => match[1]);
-  assert.equal(titles.length, 45);
+  assert.equal(titles.length, 47);
   assert.deepEqual(new Set(Object.keys(chapterContracts)), new Set(titles));
-  assert.equal(Object.keys(courseContracts).length, 10);
-  assert.equal(new Set(Object.values(courseContracts).map(contract => contract.principle)).size, 10);
+  assert.equal(Object.keys(courseContracts).length, 15);
+  assert.equal(new Set(Object.values(courseContracts).map(contract => contract.principle)).size, 15);
   for (const [title, contract] of Object.entries(courseContracts)) {
     assert.ok(contract.principle.trim().length >= 80, `principe trop court: ${title}`);
     assert.equal(contract.steps.length, 3, `trois étapes requises: ${title}`);
@@ -217,26 +219,26 @@ test('le module des trois ordres avance en trois contrastes avant les approfondi
   assert.ok(lesson.indexOf('1 · Dire un fait') < lesson.indexOf('Interrogation historique'));
 });
 
-test('le parcours contient cinq etapes, 10 grands modules et les 45 chapitres une seule fois', () => {
+test('le parcours contient cinq etapes, 15 chemins et les 47 haltes une seule fois', () => {
   const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
   const levels = sourceBetween('const NIVEAUX=', 'function aprProgressKey');
-  assert.equal([...library.matchAll(/\{t:"/g)].length, 45);
+  assert.equal([...library.matchAll(/\{t:"/g)].length, 47);
   const exerciseTypes = [...library.matchAll(/ex:'([^']+)'/g)].map(match => match[1]);
-  assert.equal(exerciseTypes.length, 45);
+  assert.equal(exerciseTypes.length, 47);
   assert.doesNotMatch(library, /ex:null/);
-  assert.equal([...levels.matchAll(/aprCourse\(\{t:/g)].length, 10);
+  assert.equal([...levels.matchAll(/aprCourse\(\{t:/g)].length, 15);
   const chapterBlocks = [...levels.matchAll(/chapters:\[([\s\S]*?)\]\}\)/g)];
-  assert.equal(chapterBlocks.length, 10);
+  assert.equal(chapterBlocks.length, 15);
   const assignedChapters = chapterBlocks.flatMap(block => [...block[1].matchAll(/"([^"]+)"/g)].map(match => match[1]));
-  assert.equal(assignedChapters.length, 45);
-  assert.equal(new Set(assignedChapters).size, 45);
+  assert.equal(assignedChapters.length, 47);
+  assert.equal(new Set(assignedChapters).size, 47);
   assert.ok(chapterBlocks.every(block => [...block[1].matchAll(/"([^"]+)"/g)].length >= 3));
   for (const [id, title] of [['d','Découverte'],['f','Fondations'],['co','Consolidation'],
     ['a','Approfondissement'],['au','Autonomie']]) {
     assert.match(levels, new RegExp(`id:'${id}',t:'${title}'`));
   }
   for (const id of ['d','f','co','a','au']) assert.match(levels, new RegExp(`progressId:'course-${id}'`));
-  assert.match(html, /module\.legacyKey=`\$\{level\.id\}\.\$\{index\}`/);
+  assert.match(html, /module\.legacyKey=APR_ORIGINAL_MODULE_KEYS\[module\.t\]\|\|APR_NEW_MODULE_KEYS\[module\.t\]/);
   assert.match(html, /function aprCourseProgressState/);
   assert.match(html, /chapterComplete/);
   assert.match(html, /const APR_EXERCISE_TARGETS=\{d:20,f:24,co:24,a:24,au:24\}/);
@@ -275,6 +277,19 @@ test('chaque chapitre est appris et teste dans sa propre banque avant la synthes
   assert.match(exercise, /aprChapterProgressKey\(level,aprMod,exCourseChapterIndex\)/);
   assert.match(exercise, /aprCourseSynthesisProgressKey\(level,aprMod\)/);
   assert.match(exercise, /m\.chapters\.length\*APR_SYNTHESIS_QUESTIONS_PER_CHAPTER/);
+});
+
+test('la nouvelle repartition conserve les anciennes traces sans confondre les haltes', () => {
+  const progress = sourceBetween('const APR_PREVIOUS_COURSE_CHAPTER_KEYS', 'function aprProgressState');
+  assert.match(progress, /course\.chapter\.\$\{chapter\.legacyKey\}/);
+  assert.match(progress, /APR_PREVIOUS_COURSE_CHAPTER_KEYS\[chapter\.t\]/);
+  assert.match(progress, /APR_PREVIOUS_MODULE_PROGRESS_KEYS\[chapter\.t\]/);
+  assert.match(progress, /course\.path\.\$\{aprLessonKey\(module\.t\)\}/);
+  for (const title of ['Trois émotions à reconnaître','Élargir les émotions',"Comprendre les mots d\\'émotion construits"]) {
+    assert.match(progress, new RegExp(title));
+  }
+  assert.match(progress, /course-d\.1\.chapter\.1/);
+  assert.match(progress, /'p\.4'/);
 });
 
 test('chaque halte avance une idee a la fois au rythme du visiteur', () => {
@@ -377,7 +392,7 @@ test('le module des nombres enseigne une seule etape a la fois', () => {
 });
 
 test('le module des couleurs enseigne forme courte, etat inanime et etat anime', () => {
-  const colors = sourceBetween('{t:"Les couleurs : forme ou état?"', '{t:"Les émotions et -w8gan"');
+  const colors = sourceBetween('{t:"Les couleurs : forme ou état?"', '{t:"Trois émotions à reconnaître"');
   for (const concept of ['Forme courte','État inanimé','État animé','-ig-','-en','-o']) {
     assert.match(colors, new RegExp(concept));
   }
@@ -390,18 +405,32 @@ test('le module des couleurs enseigne forme courte, etat inanime et etat anime',
   assert.match(colors, /itemNames:\['Mkwi','Mkwigen','Mkwigo'/);
 });
 
-test('le module des emotions enseigne w8gan avant de faire pratiquer les formes', () => {
-  const description = sourceBetween('{t:"Les émotions et -w8gan"', '{t:"Compter jusqu\'à dix"');
-  for (const concept of ['nominalisateur','Akwamalso','Akwamalsow8gan','-aldam-','Productif ne veut pas dire automatique']) {
-    assert.match(description, new RegExp(concept));
+test('les emotions sont reparties du vocabulaire simple vers la morphologie', () => {
+  const starter = sourceBetween('{t:"Trois émotions à reconnaître"', '{t:"Élargir les émotions"');
+  const expansion = sourceBetween('{t:"Élargir les émotions"', '{t:"Comprendre les mots d\'émotion construits"');
+  const analysis = sourceBetween('{t:"Comprendre les mots d\'émotion construits"', '{t:"Compter jusqu\'à dix"');
+  for (const word of ['Wiagaldamw8gan','Siwaldamw8gan','Sagezow8gan']) assert.match(starter, new RegExp(word));
+  assert.match(starter, /aucun découpage grammatical n'est demandé/);
+  assert.doesNotMatch(starter, /nominalisateur/);
+  for (const word of ['Agajw8gan','Akwalgaw8gan','Kwalhialwaw8gan','Kzalzow8gan','Moskwaldamw8gan','Skawalchow8gan']) {
+    assert.match(expansion, new RegExp(word));
   }
-  for (const word of ['Maji','Agajw8gan','Akwalgaw8gan','Kwalhialwaw8gan','Kzalzow8gan',
-    'Moskwaldamw8gan','Sagezow8gan','Siwaldamw8gan','Skawalchow8gan','Wiagaldamw8gan']) {
-    assert.match(description, new RegExp(word));
+  assert.match(expansion, /Premier groupe/);
+  assert.match(expansion, /Deuxième groupe/);
+  for (const concept of ['nominalisateur','Akwamalso','Akwamalsow8gan','-aldam-','Observer ne veut pas dire fabriquer']) {
+    assert.match(analysis, new RegExp(concept));
   }
-  assert.match(description, /Maji n'appartient pas à cette construction/);
-  assert.match(description, /itemNames:\['Maji','Agajw8gan'/);
-  assert.doesNotMatch(description, /aprAutoLec/);
+  assert.doesNotMatch(`${starter}${expansion}${analysis}`, /Maji/);
+  assert.doesNotMatch(`${starter}${expansion}${analysis}`, /aprAutoLec/);
+
+  const levels = sourceBetween('const NIVEAUX=', 'function aprProgressKey');
+  const foundations = levels.slice(levels.indexOf("{id:'f'"), levels.indexOf("{id:'co'"));
+  const consolidation = levels.slice(levels.indexOf("{id:'co'"), levels.indexOf("{id:'a'"));
+  const advanced = levels.slice(levels.indexOf("{id:'a'"), levels.indexOf("{id:'au'"));
+  assert.match(foundations, /Trois émotions à reconnaître/);
+  assert.match(consolidation, /Élargir les émotions/);
+  assert.match(advanced, /Comprendre les mots d'émotion construits/);
+  assert.doesNotMatch(levels.slice(levels.indexOf("{id:'d'"), levels.indexOf("{id:'f'")), /émotion/i);
 });
 
 test('les fiches relient les couleurs et les noms en w8gan a leur famille grammaticale', () => {
@@ -550,7 +579,7 @@ test("le module de l'arbre utilise seulement sa banque active verifiee", () => {
   assert.match(lesson, /ne sont\s+pas transformés silencieusement en réponses modernes/);
 });
 
-test('le site audite les routes et les banques des 10 grands modules au chargement', () => {
+test('le site audite les routes et les banques des 15 chemins au chargement', () => {
   const audit = sourceBetween('const APR_EXERCISE_ROUTES', 'function aprModuleNeedsUse');
   assert.match(audit, /function aprLearningRuntimeAudit/);
   assert.match(audit, /aprExerciseCapacity\(module\.ex,module\.cat\|\|'',modulePool,module\)/);
@@ -572,11 +601,13 @@ test('le parcours montre la prochaine action et les modules avant les explicatio
   assert.match(helpers, /Voir le chemin complet/);
   assert.match(view, /class="apr-stage-tabs"/);
   assert.match(view, /aria-label="Prochaine action"/);
+  assert.match(view, /Prochain chemin/);
   assert.match(view, /class="apr-module-grid"/);
   assert.match(view, /À découvrir/);
   assert.match(view, /En chemin/);
   assert.match(view, /Bien ancré/);
   assert.ok(view.indexOf('class="apr-next"') < view.indexOf('class="apr-module-grid"'));
+  assert.match(view, /Chemins \$\{escH\(levelOf\)\}/);
   assert.match(html, /body:has\(\.apr-path-dashboard\) \.fab\{display:none\}/);
   assert.doesNotMatch(view, /Cinq étapes qui s'appuient l'une sur l'autre/);
 });
