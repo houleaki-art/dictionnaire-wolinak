@@ -824,6 +824,21 @@ body.music-dock-open .toast{bottom:116px}
 .apr-course-chapter-practice span{display:block;color:var(--text2);font-size:.74rem;line-height:1.45}
 .apr-course-chapter-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
 .apr-course-chapter-actions .aprbtn{padding:9px 13px;font-size:.76rem}
+.apr-paced-lesson{display:grid;gap:14px}
+.apr-paced-status{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border));border-radius:10px;background:var(--surface)}
+.apr-paced-status[hidden],.apr-paced-action[hidden],.apr-course-chapter-practice[hidden]{display:none}
+.apr-paced-status strong{flex:0 0 auto;color:var(--accent);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.apr-paced-track{height:5px;flex:1;overflow:hidden;border-radius:999px;background:var(--surface2)}
+.apr-paced-track span{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .25s ease}
+.apr-paced-hint{color:var(--text2);font-size:.73rem;line-height:1.45}
+.apr-paced-step{min-height:120px;animation:aprPacedIn .24s ease}
+.apr-paced-step[hidden]{display:none}
+.apr-paced-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:2px}
+.apr-paced-action{min-height:42px;padding:9px 16px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);font:700 .76rem Georgia,serif;cursor:pointer}
+.apr-paced-action.next{margin-left:auto;background:var(--accent);border-color:var(--accent);color:#fff}
+.apr-paced-action:hover,.apr-paced-action:focus-visible{border-color:var(--accent);outline:none;box-shadow:0 5px 14px rgba(45,29,17,.08)}
+@keyframes aprPacedIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.apr-paced-step{animation:none}.apr-paced-track span{transition:none}}
 .apr-course-synthesis{margin:12px 0 4px;padding:17px 18px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--border));border-radius:12px;background:color-mix(in srgb,var(--green) 7%,var(--surface))}
 .apr-course-synthesis-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px;padding-top:13px;border-top:1px solid color-mix(in srgb,var(--green) 28%,var(--border))}
 .apr-course-synthesis-actions small{color:var(--text2);font-size:.72rem;line-height:1.4}
@@ -1212,6 +1227,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .apr-course-chapter-practice{grid-template-columns:1fr}
   .apr-course-chapter-actions{justify-content:stretch}
   .apr-course-chapter-actions .aprbtn{width:100%}
+  .apr-paced-status{align-items:flex-start;flex-wrap:wrap}
+  .apr-paced-track{flex-basis:100%;order:3}
+  .apr-paced-actions{align-items:stretch}
+  .apr-paced-action{flex:1}
   .apr-course-synthesis-actions{align-items:stretch;flex-direction:column}
   .music-notice-body{columns:1}
   .morph-steps,.poss-groups{grid-template-columns:1fr}
@@ -5468,11 +5487,11 @@ function setEntryWarningActive(active){
     if(el.id!=='entryWarning'&&el.tagName!=='SCRIPT') el.inert=active;
   });
 }
-const ENTRY_WARNING_KEY='aln8ba_entry_welcome_seen_v2';
+const ENTRY_WARNING_KEY='aln8ba_entry_welcome_seen_session_v3';
 function acceptEntryWarning(){
   const warning=document.getElementById('entryWarning');
   if(!warning) return;
-  try{ localStorage.setItem(ENTRY_WARNING_KEY,'1'); }catch(_error){}
+  try{ sessionStorage.setItem(ENTRY_WARNING_KEY,'1'); }catch(_error){}
   warning.hidden=true; setEntryWarningActive(false);
   const search=document.getElementById('searchIn'); if(search) search.focus();
 }
@@ -5480,7 +5499,7 @@ function initEntryWarning(){
   const warning=document.getElementById('entryWarning'), accept=document.getElementById('entryWarningAccept');
   if(!warning||!accept) return;
   try{
-    if(localStorage.getItem(ENTRY_WARNING_KEY)==='1'){
+    if(sessionStorage.getItem(ENTRY_WARNING_KEY)==='1'){
       warning.hidden=true; setEntryWarningActive(false); return;
     }
   }catch(_error){}
@@ -8808,6 +8827,74 @@ function aprModuleTaskGuide(m){
     'Tu peux expliquer ta réponse et nommer la limite de ce que la leçon permet d’affirmer.'
   ]);
 }
+function aprPacedLessonGroups(content){
+  const groups=[], current=[];
+  [...content.children].forEach(element=>{
+    const startsSection=element.matches('h2,h3');
+    const denseBlock=element.matches('table.aprtab,.morph-equation,.aprnote,.morph-primer');
+    if(current.length&&(startsSection||(denseBlock&&current.length>=2))){
+      groups.push(current.splice(0));
+    }
+    current.push(element);
+  });
+  if(current.length) groups.push(current);
+  return groups;
+}
+function aprRenderPacedLesson(shell,index){
+  const content=shell.querySelector('.apr-paced-content');
+  const steps=content?[...content.querySelectorAll(':scope > .apr-paced-step')]:[];
+  if(!steps.length) return;
+  const active=Math.max(0,Math.min(index,steps.length-1));
+  shell.dataset.pacedStep=String(active);
+  steps.forEach((step,stepIndex)=>{ step.hidden=stepIndex!==active; });
+  const status=shell.querySelector('.apr-paced-status');
+  const counter=shell.querySelector('[data-paced-counter]');
+  const fill=shell.querySelector('[data-paced-fill]');
+  const previous=shell.querySelector('[data-paced-previous]');
+  const next=shell.querySelector('[data-paced-next]');
+  const practice=shell.querySelector('[data-paced-practice]');
+  const last=active===steps.length-1;
+  if(status) status.hidden=steps.length<2;
+  if(counter) counter.textContent=last&&steps.length>1?`Dernière étape · ${active+1} sur ${steps.length}`:`Étape ${active+1} sur ${steps.length}`;
+  if(fill) fill.style.width=`${Math.round(((active+1)/steps.length)*100)}%`;
+  if(previous) previous.hidden=active===0;
+  if(next){ next.hidden=last; next.textContent=active===steps.length-2?'Voir la dernière étape →':'Continuer à mon rythme →'; }
+  if(practice) practice.hidden=!last;
+}
+function aprMovePacedLesson(button,direction){
+  const shell=button.closest('[data-apr-paced-lesson]');
+  if(!shell) return;
+  aprRenderPacedLesson(shell,(Number(shell.dataset.pacedStep)||0)+direction);
+  const active=shell.querySelector('.apr-paced-step:not([hidden])');
+  requestAnimationFrame(()=>active?.scrollIntoView({behavior:'smooth',block:'start'}));
+}
+function aprInitPacedLessons(){
+  document.querySelectorAll('[data-apr-paced-lesson]').forEach(shell=>{
+    if(shell.dataset.pacedReady==='1') return;
+    const content=shell.querySelector('.apr-paced-content');
+    if(!content) return;
+    const groups=aprPacedLessonGroups(content);
+    const fragment=document.createDocumentFragment();
+    groups.forEach((group,index)=>{
+      const step=document.createElement('section');
+      step.className='apr-paced-step';
+      step.setAttribute('aria-label',`Étape ${index+1} sur ${groups.length}`);
+      group.forEach(element=>step.appendChild(element));
+      fragment.appendChild(step);
+    });
+    content.replaceChildren(fragment);
+    shell.dataset.pacedReady='1';
+    aprRenderPacedLesson(shell,0);
+  });
+  document.querySelectorAll('.apr-course-chapter').forEach(chapter=>{
+    if(chapter.dataset.exclusiveReady==='1') return;
+    chapter.dataset.exclusiveReady='1';
+    chapter.addEventListener('toggle',()=>{
+      if(!chapter.open) return;
+      document.querySelectorAll('.apr-course-chapter').forEach(other=>{ if(other!==chapter) other.open=false; });
+    });
+  });
+}
 function aprCourseLessonHtml(module){
   const level=NIVEAUX.find(candidate=>candidate.id===aprNiv), moduleIndex=aprMod;
   const progress=progAll();
@@ -8816,7 +8903,7 @@ function aprCourseLessonHtml(module){
   const synthesisReady=retainedCount===module.chapters.length;
   const synthesisState=level?progress[aprCourseSynthesisProgressKey(level,moduleIndex)]||null:null;
   const chapterLinks=module.chapters.map((chapter,index)=>
-    `<a href="#apr-course-chapter-${index+1}"><span>${String(index+1).padStart(2,'0')}</span>${escH(chapter.t)}</a>`).join('');
+    `<a href="#apr-course-chapter-${index+1}" onclick="aprFocusCourseChapter(${index});return false"><span>${String(index+1).padStart(2,'0')}</span>${escH(chapter.t)}</a>`).join('');
   const chapters=module.chapters.map((chapter,index)=>{
     const lesson=typeof chapter.lec==='function'?chapter.lec():chapter.lec;
     const chapterContract=aprModuleContract(chapter);
@@ -8829,13 +8916,24 @@ function aprCourseLessonHtml(module){
       <summary><span>Halte ${index+1} sur ${module.chapters.length}</span><strong>${escH(chapter.t)}</strong><small>${escH(chapter.d)}</small></summary>
       <div class="apr-course-chapter-body">
         ${chapterContract?`<div class="apr-course-chapter-goal"><b>À la fin de cette halte</b><span>${escH(chapterContract.mastery.replace(/^Tu\s+/,'').replace(/\.$/,''))}.</span></div>`:''}
-        ${lesson}
-        <div class="apr-course-chapter-practice">
-          <div><strong>${escH(status)}</strong><span>La pratique porte seulement sur « ${escH(chapter.t)} ». Rien d'autre à retenir maintenant.</span></div>
-          <div class="apr-course-chapter-actions">
-            ${aprChapterPool(chapter).length>=2?`<button class="aprbtn" type="button" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)" onclick="aprFCChapter(${index})">Voir les cartes</button>`:''}
-            ${retainCapacity?`<button class="aprbtn" type="button" onclick="aprStartCourseChapter(${index},'retenir')">Pratiquer cette halte · ${retainCapacity}</button>`:''}
-            ${useCapacity?`<button class="aprbtn" type="button" style="background:var(--gold);color:#1a1208" ${retainScore>=75?'':`disabled title="Ancre d'abord les formes de cette halte"`} onclick="aprStartCourseChapter(${index},'utiliser')">Écrire cette halte${useScore!=null?` · ${useScore}%`:''}</button>`:''}
+        <div class="apr-paced-lesson" data-apr-paced-lesson>
+          <div class="apr-paced-status" hidden>
+            <strong data-paced-counter>Étape 1</strong>
+            <div class="apr-paced-track" aria-hidden="true"><span data-paced-fill></span></div>
+            <span class="apr-paced-hint">Une seule idée à la fois. Avance quand tu te sens prêt.</span>
+          </div>
+          <div class="apr-paced-content">${lesson}</div>
+          <div class="apr-paced-actions">
+            <button class="apr-paced-action" type="button" data-paced-previous hidden onclick="aprMovePacedLesson(this,-1)">← Revenir</button>
+            <button class="apr-paced-action next" type="button" data-paced-next onclick="aprMovePacedLesson(this,1)">Continuer à mon rythme →</button>
+          </div>
+          <div class="apr-course-chapter-practice" data-paced-practice>
+            <div><strong>${escH(status)}</strong><span>La pratique porte seulement sur « ${escH(chapter.t)} ». Rien d'autre à retenir maintenant.</span></div>
+            <div class="apr-course-chapter-actions">
+              ${aprChapterPool(chapter).length>=2?`<button class="aprbtn" type="button" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)" onclick="aprFCChapter(${index})">Voir les cartes</button>`:''}
+              ${retainCapacity?`<button class="aprbtn" type="button" onclick="aprStartCourseChapter(${index},'retenir')">Pratiquer cette halte · ${retainCapacity}</button>`:''}
+              ${useCapacity?`<button class="aprbtn" type="button" style="background:var(--gold);color:#1a1208" ${retainScore>=75?'':`disabled title="Ancre d'abord les formes de cette halte"`} onclick="aprStartCourseChapter(${index},'utiliser')">Écrire cette halte${useScore!=null?` · ${useScore}%`:''}</button>`:''}
+            </div>
           </div>
         </div>
       </div>
@@ -9124,6 +9222,7 @@ function aprLecon(i){
         </div>
       </div>
     </div>`;
+  aprInitPacedLessons();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function aprDecorView(){

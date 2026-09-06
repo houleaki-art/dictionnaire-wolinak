@@ -277,6 +277,20 @@ test('chaque chapitre est appris et teste dans sa propre banque avant la synthes
   assert.match(exercise, /m\.chapters\.length\*APR_SYNTHESIS_QUESTIONS_PER_CHAPTER/);
 });
 
+test('chaque halte avance une idee a la fois au rythme du visiteur', () => {
+  const paced = sourceBetween('function aprPacedLessonGroups', 'function aprCourseLessonHtml');
+  const lesson = sourceBetween('function aprCourseLessonHtml', 'function aprModuleItemsForGuide');
+  const render = sourceBetween('function aprLecon(i)', 'function aprDecorView');
+  assert.match(paced, /apr-paced-step/);
+  assert.match(paced, /aprRenderPacedLesson/);
+  assert.match(paced, /practice\.hidden=!last/);
+  assert.match(paced, /other\.open=false/);
+  assert.match(lesson, /Une seule idée à la fois/);
+  assert.match(lesson, /Continuer à mon rythme/);
+  assert.match(lesson, /data-paced-practice/);
+  assert.match(render, /aprInitPacedLessons\(\)/);
+});
+
 test('les syntheses et les modules de sources ont des exercices distincts', () => {
   const library = sourceBetween('const APR_MODULE_LIBRARY', 'const APR_LIBRARY_BY_ID');
   for (const type of ['conversation','dialogue','day','sourcecheck','history','evidence']) {

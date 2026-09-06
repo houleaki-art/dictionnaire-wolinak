@@ -49,7 +49,7 @@ test('legal notices distinguish sources and third-party rights', () => {
   assert.doesNotMatch(html, /Toute reproduction identique est illégale/);
 });
 
-test('la bienvenue reste legere et ne revient pas a chaque visite', () => {
+test('la bienvenue reste lisible jusqu au choix du visiteur et revient a chaque session', () => {
   const warning = sourceBetween('<div class="entry-warning"', '<!-- HEADER -->');
   const behavior = sourceBetween('const ENTRY_WARNING_KEY', 'function openAbout');
   assert.match(warning, /id="entryWarning" hidden/);
@@ -58,8 +58,8 @@ test('la bienvenue reste legere et ne revient pas a chaque visite', () => {
   assert.match(warning, /Sources et repères/);
   assert.doesNotMatch(warning, /financement/i);
   assert.doesNotMatch(warning, /Avertissement important/);
-  assert.match(behavior, /localStorage\.setItem\(ENTRY_WARNING_KEY,'1'\)/);
-  assert.match(behavior, /localStorage\.getItem\(ENTRY_WARNING_KEY\)==='1'/);
+  assert.match(behavior, /sessionStorage\.setItem\(ENTRY_WARNING_KEY,'1'\)/);
+  assert.match(behavior, /sessionStorage\.getItem\(ENTRY_WARNING_KEY\)==='1'/);
   assert.match(behavior, /warning\.hidden=false/);
   assert.doesNotMatch(behavior, /setTimeout/);
 });
