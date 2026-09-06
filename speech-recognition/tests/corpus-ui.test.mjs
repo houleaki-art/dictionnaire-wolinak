@@ -161,6 +161,19 @@ test('le compteur distingue les formes des fiches regroupees', () => {
   assert.match(render, /fiches affichées · \$\{r\.length\} formes au total/);
 });
 
+test('les formes regroupees restent repliees jusqu a une action volontaire', () => {
+  const familyCard = sourceBetween('function makeFamilyCard(members)', '// Carte pour un mot seul');
+  const grouping = sourceBetween('function buildDisplayItems(words)', 'function cardPhonetic(w)');
+  const toggle = sourceBetween('function toggleCard(id,e)', 'function toggleFav(id)');
+  assert.match(html, /\.family-forms\[hidden\]\{display:none\}/);
+  assert.match(html, /\.wgrid\{[^}]*align-items:start/);
+  assert.match(familyCard, /aria-expanded="\$\{isExp\}"/);
+  assert.match(familyCard, /\$\{renderDetails\?'':' hidden'\}/);
+  assert.match(grouping, /w\.familyId&&String\(w\.formType\|\|''\)\.trim\(\)/);
+  assert.match(grouping, /members\.length>1\?\{type:'family',members\}/);
+  assert.match(toggle, /S\.expanded\.clear\(\)/);
+});
+
 test('la collecte de poissons ne conserve aucun script de migration public', () => {
   assert.doesNotMatch(html, /FISH_FIELD_MIGRATION_KEY/);
   assert.doesNotMatch(html, /applyFishFieldMigration/);

@@ -83,7 +83,7 @@ main{flex:1;padding:24px 28px;min-width:0}
 .vb{padding:6px 10px;border:none;background:none;color:var(--text3);cursor:pointer;font-size:13px;transition:var(--tr)}
 .vb.on{background:var(--accent);color:#fff}
 /* ── CARDS ── */
-.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-items:start}
 .wlist{display:flex;flex-direction:column;gap:8px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:var(--tr);cursor:pointer;position:relative;overflow:hidden;content-visibility:auto;contain-intrinsic-size:auto 190px}
 .card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent);opacity:0;transition:var(--tr)}
@@ -600,8 +600,10 @@ body.music-dock-open .toast{bottom:116px}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,69,69,.4)}50%{box-shadow:0 0 0 6px rgba(232,69,69,0)}}
 @media print{header,.fab,aside,.toolbar,.cacts,.pending-banner{display:none!important}.layout{display:block}.card{break-inside:avoid;border:1px solid #ccc;margin-bottom:10px;box-shadow:none}.cdet{display:block!important}}
 /* ── FAMILLE DE MOTS ── */
-.family-badge{font-size:.67rem;padding:2px 8px;border-radius:9px;font-weight:700;background:rgba(184,92,42,.12);color:var(--accent);border:1px solid rgba(184,92,42,.22)}
+.family-badge{font:700 .67rem Georgia,serif;padding:3px 9px;border-radius:9px;background:rgba(184,92,42,.08);color:var(--accent);border:1px solid rgba(184,92,42,.22);cursor:pointer;transition:var(--tr)}
+.family-badge:hover,.family-badge:focus-visible{background:rgba(184,92,42,.16);border-color:var(--accent);outline:none}
 .family-forms{display:flex;flex-direction:column;gap:5px;margin-top:10px;padding:10px 13px;background:var(--bg3);border-radius:8px}
+.family-forms[hidden]{display:none}
 .family-form-row{display:grid;grid-template-columns:max-content 1fr 1.6fr;gap:4px 14px;align-items:center}
 .form-lbl{font-size:.62rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 .form-val{font-size:.95rem;color:var(--accent);font-style:italic;font-weight:700}
@@ -1241,7 +1243,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </head>
 <body>
 
-<div class="entry-warning" id="entryWarning" role="dialog" aria-modal="true"
+<div class="entry-warning" id="entryWarning" hidden role="dialog" aria-modal="true"
      aria-labelledby="entryWarningTitle" aria-describedby="entryWarningText">
   <section class="warning-card">
     <div class="warning-kicker">Bienvenue</div>
@@ -3391,17 +3393,19 @@ const FORM_LABELS = {'base':'Base','singulier':'Singulier','diminutif':'Diminuti
 function buildDisplayItems(words){
   // En mode recherche → tout individuel pour ne rien cacher
   if(S.q.trim()) return words.map(w=>({type:'single',word:w}));
-  // Grouper par familyId
+  // Un familyId seul peut designer un theme. Il faut aussi un type de forme
+  // explicite pour presenter plusieurs entrees comme les formes d'un meme mot.
+  const canGroup=w=>Boolean(w.familyId&&String(w.formType||'').trim());
   const fmap={};
-  words.forEach(w=>{ if(w.familyId){ if(!fmap[w.familyId])fmap[w.familyId]=[]; fmap[w.familyId].push(w); }});
+  words.forEach(w=>{ if(canGroup(w)){ if(!fmap[w.familyId])fmap[w.familyId]=[]; fmap[w.familyId].push(w); }});
   const seen=new Set(), items=[];
   words.forEach(w=>{
-    if(!w.familyId){
+    if(!canGroup(w)){
       items.push({type:'single',word:w});
     } else if(!seen.has(w.familyId)){
       seen.add(w.familyId);
       const members=(fmap[w.familyId]||[]).sort((a,b)=>(FORM_ORDER[a.formType]??5)-(FORM_ORDER[b.formType]??5));
-      items.push({type:'family',members});
+      items.push(members.length>1?{type:'family',members}:{type:'single',word:members[0]});
     }
   });
   return items;
@@ -3447,9 +3451,9 @@ function makeFamilyCard(members){
     <div class="ctags">
       <span class="tag t-${escH(base.cat)}">${escH(catLabel(base.cat))}</span>
       ${base.grammar?`<span class="tag t-gram">${escH(base.grammar)}</span>`:''}
-      <span class="family-badge">🔤 ${members.length} forme${members.length>1?'s':''}</span>
+      <button type="button" class="family-badge" aria-expanded="${isExp}" aria-controls="forms-${escH(id)}" onclick="toggleCard('${id}',event);event.stopPropagation()">${isExp?'Masquer':'Voir'} ${members.length} forme${members.length>1?'s':''}</button>
     </div>
-    <div class="family-forms">${formsHtml}</div>
+    <div class="family-forms" id="forms-${escH(id)}"${renderDetails?'':' hidden'}>${formsHtml}</div>
     ${renderDetails?`<div class="cdet">
       ${base.example_a?`<div class="dr"><span class="dl">Exemple</span><div class="dv"><span class="ex-a">${escH(base.example_a)}</span>${base.example_f?`<br><span style="font-style:italic;color:var(--text3);font-size:.82rem">${escH(base.example_f)}</span>`:''}</div></div>`:''}
       ${base.notes?`<div class="dr"><span class="dl">Note</span><span class="dv">${escH(publicNoteText(base.notes))}</span></div>`:''}
@@ -3548,7 +3552,11 @@ function hl(text){
 // ══════════════════════════════════════════════════════════
 function toggleCard(id,e){
   if(e&&e.target.closest('.cacts,.corr-badge')) return;
-  S.expanded.has(id)?S.expanded.delete(id):S.expanded.add(id);
+  if(S.expanded.has(id)) S.expanded.delete(id);
+  else {
+    S.expanded.clear();
+    S.expanded.add(id);
+  }
   renderWords();
 }
 function toggleFav(id){
@@ -5460,7 +5468,7 @@ function setEntryWarningActive(active){
     if(el.id!=='entryWarning'&&el.tagName!=='SCRIPT') el.inert=active;
   });
 }
-const ENTRY_WARNING_KEY='aln8ba_entry_welcome_seen';
+const ENTRY_WARNING_KEY='aln8ba_entry_welcome_seen_v2';
 function acceptEntryWarning(){
   const warning=document.getElementById('entryWarning');
   if(!warning) return;
@@ -5476,6 +5484,7 @@ function initEntryWarning(){
       warning.hidden=true; setEntryWarningActive(false); return;
     }
   }catch(_error){}
+  warning.hidden=false;
   setEntryWarningActive(true);
   warning.addEventListener('keydown',e=>{
     if(e.key==='Tab'){e.preventDefault();accept.focus();}

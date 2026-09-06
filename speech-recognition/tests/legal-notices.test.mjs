@@ -52,6 +52,7 @@ test('legal notices distinguish sources and third-party rights', () => {
 test('la bienvenue reste legere et ne revient pas a chaque visite', () => {
   const warning = sourceBetween('<div class="entry-warning"', '<!-- HEADER -->');
   const behavior = sourceBetween('const ENTRY_WARNING_KEY', 'function openAbout');
+  assert.match(warning, /id="entryWarning" hidden/);
   assert.match(warning, /Entre avec curiosité/);
   assert.match(warning, /<details class="warning-copy">/);
   assert.match(warning, /Sources et repères/);
@@ -59,6 +60,8 @@ test('la bienvenue reste legere et ne revient pas a chaque visite', () => {
   assert.doesNotMatch(warning, /Avertissement important/);
   assert.match(behavior, /localStorage\.setItem\(ENTRY_WARNING_KEY,'1'\)/);
   assert.match(behavior, /localStorage\.getItem\(ENTRY_WARNING_KEY\)==='1'/);
+  assert.match(behavior, /warning\.hidden=false/);
+  assert.doesNotMatch(behavior, /setTimeout/);
 });
 
 test("le financement personnel ne parait nulle part sur le site public", () => {
