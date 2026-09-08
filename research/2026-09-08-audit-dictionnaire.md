@@ -2,6 +2,20 @@
 
 Cet audit technique et éditorial ne constitue pas une validation linguistique externe. Il ne reproduit pas la conversation privée à l’origine de la correction.
 
+## Consigne complémentaire : Mkwigen, retrait des graphies avec u
+
+Après le premier audit, l’auteur demande de retenir **Mkwigen** et de retirer les graphies avec `u` partout dans le dictionnaire courant. Cette décision remplace le simple signalement décrit plus bas.
+
+La fiche existante `mn2_048` demeure l’unique fiche actuelle Mkwigen. L’ancienne `lsn025` est classée en archive, sans fusionner artificiellement ses notes avec celles du manuel. Ses liens rejoignent la fiche actuelle.
+
+Le contrôle paginé des 1 476 fiches compte désormais **64 fiches retirées de la vue courante**, et zéro signalement lexical avec u restant dans cette vue. Les noms propres sont inclus dans ce retrait à la suite de la nouvelle consigne; ils ne sont pas réécrits. Les titres explicatifs français et les guides phonétiques ne sont pas concernés.
+
+Les données brutes ne sont pas détruites : cette classification est appliquée au chargement par le site, comme les autres corrections d’usage du projet. Les archives conservent la transcription et sa source. Les exemplaires audio, les citations historiques et les exercices explicitement consacrés à lire les sources anciennes restent identifiables comme tels.
+
+Dans les modèles débutants, retrait de P8guas (la halte Nature contient désormais six repères), des exemples K'dup/dep→dup, et de l’entrée `muk` du décortiqueur productif. Aucune graphie de remplacement n’est inventée. Les exemples aln8ba non corrigés contenant u sont masqués dans les fiches actuelles, en conservant les données brutes.
+
+Vérification supplémentaire : cartes mémoire sans retour vers toute la banque lorsqu’un module devient vide; décortiqueur refusant de produire une analyse actuelle d’une saisie avec u. Le résultat du contrôle distant confirme une fiche Iotali et une fiche Mkwigen, avec leurs identifiants conservés.
+
 ## Correction explicite : Iotali
 
 L’auteur du projet demande de retenir **Iotali — Ici**, à la place de la graphie erronée de la fiche `mst287`.

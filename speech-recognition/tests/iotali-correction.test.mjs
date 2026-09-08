@@ -64,13 +64,81 @@ test('u dans une graphie à revoir empêche les exercices automatiques sans chan
   }
 });
 
-test('le contrôle ne confond pas guide phonétique, nom de lieu et graphie lexicale',()=>{
+test('le contrôle vise les mots, y compris noms propres, mais pas les guides ni les titres français',()=>{
   const ctx=harness();
   assert.equal(ctx.needsOrthographyReview({aln8ba:'Iotali',phonetic:'guide français avec ou'}),false);
-  assert.equal(ctx.needsOrthographyReview({id:'s84',aln8ba:'Ouabmaska',cat:'territoire'}),false);
-  assert.equal(ctx.needsOrthographyReview({aln8ba:'Nom du lieu',cat:'toponymie'}),false);
+  assert.equal(ctx.needsOrthographyReview({id:'s84',aln8ba:'Ouabmaska',cat:'toponymie'}),true);
   assert.equal(ctx.needsOrthographyReview({aln8ba:'Aimuk',cat:'archive'}),false);
   assert.equal(ctx.needsOrthographyReview({aln8ba:'RACINE · mkw- / makw- (le rouge)',cat:'grammaire'}),false);
+});
+
+test('les fiches avec u quittent la vue courante sans destruction ni remplacement inventé',()=>{
+  const ctx=harness();
+  const input=[
+    {id:'mst236',aln8ba:'Yugik',fr:'Ceux-ci',cat:'grammaire',source:'Source initiale',notes:'Note initiale'},
+    {id:'s84',aln8ba:'Ouabmaska',fr:'Lieu',cat:'toponymie',source:'Source initiale'},
+    {id:'clean',aln8ba:'Iotali',cat:'grammaire',phonetic:'guide avec ou'},
+    {id:'technical',aln8ba:'RACINE · mkw- (le rouge)',cat:'grammaire'},
+  ];
+  const output=ctx.applyCurrentUsageOverrides(input);
+  assert.equal(output[0].cat,'archive');
+  assert.equal(output[0].aln8ba,'Yugik');
+  assert.equal(output[0].source,'Source initiale');
+  assert.match(output[0].notes,/Note initiale/);
+  assert.equal(output[1].cat,'archive');
+  assert.equal(output[1].aln8ba,'Ouabmaska');
+  assert.equal(output[2].cat,'grammaire');
+  assert.equal(output[3].cat,'grammaire');
+  assert.equal(input[0].cat,'grammaire');
+  assert.equal(JSON.stringify(ctx.applyCurrentUsageOverrides(output)),JSON.stringify(output));
+});
+
+test('Mkwigen reste la seule fiche actuelle du mot et les liens abandonnent le doublon erroné',()=>{
+  const ctx=harness();
+  const result=ctx.applyCurrentUsageOverrides([
+    {id:'lsn025',aln8ba:'Mkuigen',fr:'C’est rouge',cat:'couleur'},
+    {id:'mn2_048',aln8ba:'Mkwigen',fr:'Rouge (c’est rouge)',cat:'couleur',source:'Manuel de l’étudiant 1 · Bomsawin'},
+    {id:'link',aln8ba:'Mkwi',cat:'couleur',related:['Mkuigen','Mkwigen']},
+  ]);
+  assert.equal(result[0].cat,'archive');
+  assert.match(result[0].notes,/Mkwigen/);
+  assert.equal(result[1].id,'mn2_048');
+  assert.equal(result[1].cat,'couleur');
+  assert.equal(result[1].aln8ba,'Mkwigen');
+  assert.deepEqual(Array.from(result[2].related),['Mkwigen','Mkwigo','Mkwigoak']);
+});
+
+test('un exemple aln8ba non corrigé est retiré sans toucher à la graphie du mot ou à sa prononciation',()=>{
+  const ctx=harness();
+  const original={id:'example',aln8ba:'Kwai',cat:'salut',fr:'Bonjour',phonetic:'prononciation avec ou',example_a:'Yudali',example_f:'Ici'};
+  const [word]=ctx.applyCurrentUsageOverrides([original]);
+  assert.equal(word.example_a,'');
+  assert.equal(word.example_f,'');
+  assert.equal(word.aln8ba,'Kwai');
+  assert.equal(word.phonetic,original.phonetic);
+  assert.equal(original.example_a,'Yudali');
+});
+
+test('les cartes excluent les graphies retirées et une liste vide ne devient jamais tout le dictionnaire',()=>{
+  const ctx=harness();
+  ctx.WORDS=[{aln8ba:'Iotali',cat:'grammaire'},{aln8ba:'Yugik',cat:'grammaire'},{aln8ba:'Mkuigen',cat:'archive'}];
+  ctx.S={};ctx.document={getElementById:()=>null};ctx.showFC=()=>{};
+  vm.runInContext(block('function initFC(', '/* Isole les mots réellement'),ctx);
+  ctx.initFC();
+  assert.deepEqual(Array.from(ctx.S.fcWords,w=>w.aln8ba),['Iotali']);
+  ctx.initFC([]);
+  assert.equal(ctx.S.fcWords.length,0);
+  ctx.initFC([{aln8ba:'Yugik',cat:'grammaire'}]);
+  assert.equal(ctx.S.fcWords.length,0);
+});
+
+test('le décortiqueur ne fabrique pas une analyse actuelle de graphie contenant u',()=>{
+  const ctx=harness();
+  const output={};ctx.document={getElementById:()=>output};
+  vm.runInContext(block('function aprDecor(mot)', 'const APR_CONJ_PARADIGMS='),ctx);
+  ctx.aprDecor('Mkuigen');
+  assert.match(output.innerHTML,/retirée des modèles actuels/);
+  assert.doesNotMatch(output.innerHTML,/racine|suffixe/);
 });
 
 test('les exemples actifs et le quiz utilisent Iotali, les paroles anciennes restent explicitement archivées',()=>{

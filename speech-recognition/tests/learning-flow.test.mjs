@@ -535,9 +535,9 @@ test('les noms du corps enseignent la possession sans substitution automatique',
   const body = sourceBetween('{t:"Mon corps",d:', '{t:"Le corps en entier"');
   assert.match(body, /Avant les mots : pourquoi la forme porte déjà « mon »/);
   assert.match(body, /Ndep<\/span> « ma tête »/);
-  assert.match(body, /K'dup<\/span> « ta tête »/);
   assert.match(body, /Wdep<\/span> « sa tête »/);
-  assert.match(body, /dep → dup/);
+  assert.match(body, /Une autre personne demande sa propre forme vérifiée/);
+  assert.doesNotMatch(body, /K'dup|dep → dup/);
   assert.doesNotMatch(body, /Change le N pour un K/);
   const fullBody = sourceBetween('{t:"Le corps en entier"', '{t:"Ma famille par générations"');
   assert.match(fullBody, /lec:aprBodyPossessionLec/);

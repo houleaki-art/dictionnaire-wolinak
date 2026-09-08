@@ -28,15 +28,20 @@ vm.runInContext(block('let WORD_LEVEL_CACHE=new WeakMap();', "// ── Ordre d'
 const normalized=words.map(w=>({...w,related:context.parseWordList(w.related),corrections:context.parseWordList(w.corrections)}));
 const current=context.applyCurrentUsageOverrides(normalized);
 const iotali=current.filter(w=>/^iotali$/i.test(w.aln8ba||''));
+const mkwigen=current.filter(w=>!context.enAttente(w)&&/^mkwigen$/i.test(w.aln8ba||''));
 const uncorrected=current.filter(w=>!context.enAttente(w)&&/^yudali$/i.test(w.aln8ba||''));
 const flagged=current.filter(w=>context.needsOrthographyReview(w)&&!context.enAttente(w));
 const unsafeInExercises=flagged.filter(w=>context.isExerciseSafe(w));
+const originals=new Map(normalized.map(w=>[w.id,w]));
+const newlyArchived=current.filter(w=>w.cat==='archive'&&!context.enAttente(originals.get(w.id)));
 console.log(JSON.stringify({
   remoteRows:words.length,
   currentIotali:iotali.map(({id,aln8ba,fr})=>({id,aln8ba,fr})),
+  currentMkwigen:mkwigen.map(({id,aln8ba,fr})=>({id,aln8ba,fr})),
+  movedOutOfCurrentView:newlyArchived.length,
   uncorrectedIci:uncorrected.length,
   spellingReviewSignals:flagged.length,
   reviewSignalsInAutomaticExercises:unsafeInExercises.length,
   priority:flagged.filter(w=>/^yu|ou|^mkuigen$|^amku$|^paakuin8gwzian$/i.test(w.aln8ba)).map(({id,aln8ba})=>({id,aln8ba})),
 },null,2));
-if(iotali.length!==1||iotali[0].id!=='mst287'||uncorrected.length||unsafeInExercises.length) process.exitCode=1;
+if(iotali.length!==1||iotali[0].id!=='mst287'||mkwigen.length!==1||mkwigen[0].id!=='mn2_048'||uncorrected.length||flagged.length||unsafeInExercises.length) process.exitCode=1;

@@ -119,7 +119,7 @@ test('la nature commence par une introduction seule puis trois étapes Ciel, Pay
   assert.match(steps[0][0].markup, /Construis une carte du monde visible/);
   assert.doesNotMatch(steps[0][0].markup, /<table/);
   const expected = [
-    ['Ciel',['Kizos','P8guas','Alakws']],
+    ['Ciel',['Kizos','Alakws']],
     ['Paysage',['Nebi','Watzo']],
     ['Sol',['Aki','Skweda']]
   ];
@@ -130,6 +130,23 @@ test('la nature commence par une introduction seule puis trois étapes Ciel, Pay
     assert.match(markup,new RegExp(`rowspan="${names.length}"><b>${label}</b>`));
     assert.deepEqual([...markup.matchAll(/<td class="k">([^<]+)<\/td>/g)].map(match=>match[1]),names);
   });
+  assert.equal(expected.flatMap(([,names])=>names).length,6);
+  assert.doesNotMatch(lesson,/P8guas/);
+  assert.match(lesson,/six <b>grands repères naturels/);
+});
+
+test('les modèles actuels retirent les exemples à revoir sans réécrire les sources historiques', () => {
+  const body = between('{t:"Mon corps"', '{t:"Le corps en entier"');
+  const roots = between('{t:"Racines et suffixes"', '{t:"Décomposer un mot"');
+  assert.doesNotMatch(body, /K'dup|dep → dup/);
+  assert.doesNotMatch(roots, /K'dup/);
+  const suffixes = between('const APR_SUF=', 'function aprInit');
+  const bank = new Function(`${suffixes};return APR_SUF;`)();
+  assert.ok(bank.every(([form])=>!/u/i.test(form)));
+  assert.ok(bank.some(([form])=>form==='w8gan'));
+  const paradigms = between('const APR_CONJ_PARADIGMS=', 'function aprConjView');
+  assert.match(paradigms, /Aimuk.*1884/);
+  assert.match(paradigms, /Namihômuk.*1884/);
 });
 
 test('le retour reprend la dernière étape de lecture et garde une seule étape visible', () => {

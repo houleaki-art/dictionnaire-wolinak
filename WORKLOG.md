@@ -12,6 +12,15 @@ Aln8ba8dwaw8gan.
 Le journal ne reproduit aucune ancienne version du code ni aucune ancienne
 banque de données. Il conserve seulement les grandes étapes du travail.
 
+## 8 septembre 2026 — retrait des graphies avec u
+
+- Nouvelle consigne de l’auteur : Mkwigen est l’écriture retenue; retirer les autres graphies avec u du dictionnaire courant.
+- La fiche actuelle Mkwigen (`mn2_048`) est conservée sans doublon; l’ancienne Mkuigen (`lsn025`) est rangée en archive et liée à Mkwigen.
+- Contrôle sur les 1 476 fiches : 64 fiches quittent la vue courante, zéro graphie lexicale avec u y subsiste après correction. Les noms propres sont cette fois inclus dans le retrait, sans être réécrits.
+- Textes français, guides de prononciation, fichiers audio et citations historiques conservés. Le retrait s’applique à la présentation du site, sans suppression de données dans Supabase.
+- Exemples actuels concernés retirés des haltes débutantes, source historique distinguée du modèle actuel; cartes mémoire et décortiqueur protégés contre le retour de ces graphies.
+- Vérification finale : 180 tests réussis et contrôle distant en lecture seule.
+
 ## 8 septembre 2026 — correction Iotali et audit du dictionnaire
 
 - Iotali remplace la graphie erronée de la fiche « Ici » et les exemples actifs concernés, selon la correction transmise par l’auteur du projet. L’identifiant de la fiche est conservé. Aucune citation historique ni phrase complète n’est reconstruite.
