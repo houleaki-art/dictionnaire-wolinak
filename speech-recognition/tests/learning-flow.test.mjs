@@ -66,7 +66,8 @@ test('la deuxieme personne interrogative est enseignee sans regle inventee', () 
   const search = sourceBetween('function filtered()', "// ── Ordre d'affichage");
   assert.match(search, /wordSearchText\(w\)/);
   const searchText = sourceBetween('function wordSearchText', '// Étiquette affichée');
-  assert.match(searchText, /w\.grammar,w\.notes/);
+  assert.match(searchText, /w\.aln8ba,w\.fr,w\.en/);
+  assert.doesNotMatch(searchText, /w\.grammar|w\.notes/);
 });
 
 test('le quiz interrogatif utilise seulement les contrastes documentes', () => {
@@ -504,7 +505,7 @@ test('le jeu du territoire relie observation et vocabulaire vert actuel', () => 
   assert.match(gameSource, /answer-learning-content/);
   assert.match(html, /d:\['caches'\]/);
   assert.match(html, /f:\['territoire','memoire','caches'\]/);
-  assert.match(html, /co:\['territoire','memoire','genre','negat','plur','caches'\]/);
+  assert.match(html, /co:\['territoire','memoire','genre','plur','caches'\]/);
   assert.match(html, /a:\['genre','negat','plur','fam'\]/);
   assert.match(html, /au:\['territoire','memoire','negat','fam'\]/);
 

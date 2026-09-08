@@ -12,6 +12,17 @@ Aln8ba8dwaw8gan.
 Le journal ne reproduit aucune ancienne version du code ni aucune ancienne
 banque de données. Il conserve seulement les grandes étapes du travail.
 
+## 8 septembre 2026 — correction Iotali et audit du dictionnaire
+
+- Iotali remplace la graphie erronée de la fiche « Ici » et les exemples actifs concernés, selon la correction transmise par l’auteur du projet. L’identifiant de la fiche est conservé. Aucune citation historique ni phrase complète n’est reconstruite.
+- Contrôle en lecture seule de 1 476 fiches distantes : une seule fiche Iotali après application des corrections; 60 graphies lexicales signalées à revoir, sans changement automatique de lettres. Noms propres, titres explicatifs français, guides phonétiques et archives restent distingués.
+- Les accents et trémas ne sont plus rejetés automatiquement par le vérificateur.
+- Recherche limitée aux mots et traductions, avec priorité aux correspondances directes; filtre alphabétique réparé, recherche sans accents et sélecteur de langue fonctionnel.
+- Apprentissage réparti en étapes de lecture courtes, quiz limités à leur halte, conservation des progrès et reprise de lecture. Enregistrement des contributions sécurisé contre les faux succès et les doubles clics.
+- Les nouvelles versions sont proposées au visiteur sans recharge automatique pendant sa séance. Accueil accessible au clavier, chargement et échec réseau distingués, contraste de recherche corrigé.
+- Vérification : 174 tests automatisés réussis. Les contrôles dans Chrome sur ordinateur ont été partiels; les derniers essais sur petit écran n’ont pas été réalisés, l’outil navigateur ayant refusé de poursuivre en signalant un manque de crédits.
+- Détails et limites : `research/2026-09-08-audit-dictionnaire.md`.
+
 ## 6 septembre 2026 — parcours débutant allégé
 
 - Répartition des 47 haltes en 15 chemins courts répartis sur cinq passages; chaque chemin contient trois ou quatre haltes au lieu de grands blocs chargés.

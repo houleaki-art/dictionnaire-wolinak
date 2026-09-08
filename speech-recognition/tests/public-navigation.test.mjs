@@ -30,7 +30,7 @@ test('une ancienne demande douverture du traducteur revient au dictionnaire', ()
 });
 
 test('la recherche predictive publique reste active', () => {
-  assert.match(html, /id="searchIn"[^>]+Recherche prédictive/);
+  assert.match(html, /id="searchIn"[^>]+placeholder="Chercher un mot ou son sens…"[^>]+aria-label="Chercher dans le dictionnaire"/);
   const init = sourceBetween("document.addEventListener('DOMContentLoaded'", '// ===== TRADUCTEUR IA =====');
   assert.match(init, /si\.addEventListener\('input'/);
   assert.match(init, /S\.q=si\.value/);

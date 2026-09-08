@@ -63,12 +63,14 @@ test('la confidentialité annonce clairement l absence de collecte vocale', () =
 test('la session administrateur survit au rechargement sans conserver le mot de passe', () => {
   const sessionSource = sourceBetween('const ADMIN_SESSION_KEY', 'function openAdmin()');
   const loginSource = sourceBetween('async function checkPin()', 'async function changePin()');
-  const initSource = sourceBetween("document.addEventListener('DOMContentLoaded'", '// ===== TRADUCTEUR IA =====');
+  const initSource = sourceBetween("document.addEventListener('DOMContentLoaded', ()=>{", '// ===== TRADUCTEUR IA =====');
   assert.match(sessionSource, /sessionStorage\.setItem/);
   assert.match(sessionSource, /refresh_token/);
   assert.doesNotMatch(sessionSource, /password/);
   assert.match(loginSource, /activateAdminSession\(d\)/);
-  assert.ok(initSource.indexOf('restoreAdminSession()') < initSource.indexOf('loadWords()'));
+  assert.match(initSource, /const sessionPromise=restoreAdminSession\(\)/);
+  assert.match(initSource, /const wordsPromise=loadWords\(\)/);
+  assert.doesNotMatch(initSource, /await (?:restoreAdminSession\(\)|sessionPromise)/);
 });
 
 test('le tableau administrateur separe le travail, la qualite et les outils', () => {
@@ -98,7 +100,7 @@ test('l editeur admin expose la source et documente tous les changements', () =>
   assert.match(html, /id="e-corrNote"/);
   assert.match(editor, /source:document\.getElementById\('e-source'\)/);
   assert.match(editor, /tracked=\{aln8ba:/);
-  assert.match(editor, /saveWords\(\[w\]\)/);
+  assert.match(editor, /await saveWords\(\[updated\]\)/);
 });
 
 test('les ecritures Supabase signalent un refus au lieu d afficher un faux succes', () => {
